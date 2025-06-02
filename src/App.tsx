@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import AffiliatePage from "./pages/AffiliatePage";
 import TrackingPage from "./pages/TrackingPage";
+import ShortLinkPage from "./pages/ShortLinkPage";
 import LandingPage from "./pages/LandingPage";
 
 const queryClient = new QueryClient();
@@ -44,6 +45,7 @@ const DomainRouter = () => {
       {/* Pages fonctionnelles - disponibles sur tous les domaines */}
       <Route path="/r/:campaignId" element={<AffiliatePage />} />
       <Route path="/track/:campaignId/:affiliateId" element={<TrackingPage />} />
+      <Route path="/s/:shortCode" element={<ShortLinkPage />} />
       
       {/* 404 - doit être en dernier */}
       <Route path="*" element={<NotFound />} />

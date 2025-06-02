@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -91,7 +90,7 @@ export const CampaignCard = ({ campaign, onCopyUrl }: CampaignCardProps) => {
     window.open(publicDashboardUrl, '_blank');
   };
 
-  // Fonction pour copier le lien de tracking d'un affilié
+  // Fonction pour copier le lien de tracking d'un affilié - maintenant asynchrone
   const handleCopyTrackingLink = async (affiliateId: string) => {
     if (!campaign.targetUrl) {
       toast({
@@ -102,13 +101,18 @@ export const CampaignCard = ({ campaign, onCopyUrl }: CampaignCardProps) => {
       return;
     }
 
-    const trackingLink = generateTrackingLink(campaign.id, affiliateId, campaign.targetUrl);
-    
     try {
+      toast({
+        title: "Génération du lien...",
+        description: "Création de votre lien court en cours",
+      });
+
+      const trackingLink = await generateTrackingLink(campaign.id, affiliateId, campaign.targetUrl);
+      
       await navigator.clipboard.writeText(trackingLink);
       toast({
         title: "Lien de tracking copié !",
-        description: "Le lien de tracking a été copié dans le presse-papiers",
+        description: "Le lien court a été copié dans le presse-papiers",
       });
     } catch (error) {
       toast({

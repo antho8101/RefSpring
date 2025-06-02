@@ -1,4 +1,3 @@
-
 import { useAffiliates } from '@/hooks/useAffiliates';
 import { useTrackingLinkGenerator } from '@/hooks/useTrackingLinkGenerator';
 import { Button } from '@/components/ui/button';
