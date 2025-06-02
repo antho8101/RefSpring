@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -11,6 +12,8 @@ import TrackingPage from "./pages/TrackingPage";
 import ShortLinkPage from "./pages/ShortLinkPage";
 import LandingPage from "./pages/LandingPage";
 import TrackingJsRoute from "./pages/TrackingJsRoute";
+import TestProductsPage from "./pages/TestProductsPage";
+import TestThankYouPage from "./pages/TestThankYouPage";
 
 const queryClient = new QueryClient();
 
@@ -44,6 +47,10 @@ const DomainRouter = () => {
       
       {/* Route pour servir le fichier tracking.js */}
       <Route path="/tracking.js" element={<TrackingJsRoute />} />
+      
+      {/* Pages de test */}
+      <Route path="/test-products" element={<TestProductsPage />} />
+      <Route path="/test-thankyou" element={<TestThankYouPage />} />
       
       {/* Pages fonctionnelles - disponibles sur tous les domaines */}
       <Route path="/r/:campaignId" element={<AffiliatePage />} />
