@@ -4,14 +4,19 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Link, Copy, ExternalLink } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useTrackingLinkGenerator } from '@/hooks/useTrackingLinkGenerator';
 
 interface TrackingLinkGeneratorProps {
-  generatedLink: string;
+  campaignId: string;
+  affiliateId: string;
   targetUrl: string;
 }
 
-export const TrackingLinkGenerator = ({ generatedLink, targetUrl }: TrackingLinkGeneratorProps) => {
+export const TrackingLinkGenerator = ({ campaignId, affiliateId, targetUrl }: TrackingLinkGeneratorProps) => {
   const { toast } = useToast();
+  const { generateTrackingLink } = useTrackingLinkGenerator();
+  
+  const generatedLink = targetUrl ? generateTrackingLink(campaignId, affiliateId, targetUrl) : '';
 
   const copyLink = async () => {
     if (!generatedLink) return;

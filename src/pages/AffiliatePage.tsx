@@ -1,4 +1,3 @@
-
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -23,7 +22,6 @@ const AffiliatePage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [targetUrl, setTargetUrl] = useState('');
-  const [generatedLink, setGeneratedLink] = useState('');
   
   // Utiliser le hook pour les vraies statistiques
   const { stats, loading: statsLoading } = useAffiliateStats(selectedAffiliate);
@@ -108,27 +106,6 @@ const AffiliatePage = () => {
     fetchCampaignData();
   }, [campaignId, refCode]);
 
-  // Générer le lien de tracking automatiquement avec le targetUrl de la campagne
-  useEffect(() => {
-    if (selectedAffiliate && targetUrl) {
-      const currentHostname = window.location.hostname;
-      let baseUrl;
-      
-      if (currentHostname.includes('localhost') || currentHostname.includes('lovableproject.com')) {
-        baseUrl = window.location.origin;
-      } else {
-        baseUrl = 'https://refspring.com';
-      }
-      
-      // IMPORTANT: Ajouter le paramètre url avec l'URL de destination
-      const link = `${baseUrl}/track/${campaignId}/${selectedAffiliate}?url=${encodeURIComponent(targetUrl)}`;
-      setGeneratedLink(link);
-      console.log('Generated tracking link:', link);
-    } else {
-      setGeneratedLink('');
-    }
-  }, [selectedAffiliate, campaignId, targetUrl]);
-
   // Error display with more helpful message for public access
   if (error) {
     return (
@@ -191,10 +168,11 @@ const AffiliatePage = () => {
               loading={loading}
             />
 
-            {selectedAffiliate ? (
+            {selectedAffiliate && campaignId ? (
               <>
                 <TrackingLinkGenerator
-                  generatedLink={generatedLink}
+                  campaignId={campaignId}
+                  affiliateId={selectedAffiliate}
                   targetUrl={targetUrl}
                 />
 
