@@ -2,10 +2,28 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuTrigger 
+} from '@/components/ui/dropdown-menu';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { useCampaigns } from '@/hooks/useCampaigns';
 import { useAffiliates } from '@/hooks/useAffiliates';
-import { Settings, Users, Eye, Copy } from 'lucide-react';
+import { Settings, Users, Eye, Copy, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useState } from 'react';
 
 export const CampaignsList = () => {
   const { campaigns, loading } = useCampaigns();
@@ -17,8 +35,8 @@ export const CampaignsList = () => {
     const trackingUrl = `https://refspring.com/r/${campaignId}`;
     navigator.clipboard.writeText(trackingUrl);
     toast({
-      title: "URL copiée",
-      description: "L'URL de tracking a été copiée dans le presse-papiers",
+      title: "URL de tracking copiée",
+      description: "Partagez cette URL avec vos affiliés pour qu'ils puissent tracker leurs conversions",
     });
   };
 
@@ -70,6 +88,29 @@ interface CampaignCardProps {
 
 const CampaignCard = ({ campaign, onCopyUrl }: CampaignCardProps) => {
   const { affiliates } = useAffiliates(campaign.id);
+  const { deleteCampaign } = useCampaigns();
+  const { toast } = useToast();
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleDelete = async () => {
+    setIsDeleting(true);
+    try {
+      await deleteCampaign(campaign.id);
+      toast({
+        title: "Campagne supprimée",
+        description: "La campagne a été supprimée avec succès",
+      });
+    } catch (error) {
+      console.error('Erreur lors de la suppression:', error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de supprimer la campagne",
+        variant: "destructive",
+      });
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   return (
     <Card>
@@ -85,12 +126,51 @@ const CampaignCard = ({ campaign, onCopyUrl }: CampaignCardProps) => {
             <CardDescription>{campaign.description}</CardDescription>
           </div>
           <div className="flex items-center space-x-2">
-            <Button variant="outline" size="sm" onClick={() => onCopyUrl(campaign.id)}>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => onCopyUrl(campaign.id)}
+              title="Copier l'URL de tracking pour vos affiliés"
+            >
               <Copy className="h-4 w-4" />
             </Button>
-            <Button variant="outline" size="sm">
-              <Settings className="h-4 w-4" />
-            </Button>
+            
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <Settings className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-destructive cursor-pointer">
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      Supprimer
+                    </DropdownMenuItem>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Supprimer la campagne</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Êtes-vous sûr de vouloir supprimer la campagne "{campaign.name}" ? 
+                        Cette action est irréversible et supprimera tous les affiliés et données associés.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Annuler</AlertDialogCancel>
+                      <AlertDialogAction 
+                        onClick={handleDelete}
+                        disabled={isDeleting}
+                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                      >
+                        {isDeleting ? "Suppression..." : "Supprimer"}
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </CardHeader>
