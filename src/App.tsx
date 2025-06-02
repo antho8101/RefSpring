@@ -10,6 +10,7 @@ import AffiliatePage from "./pages/AffiliatePage";
 import TrackingPage from "./pages/TrackingPage";
 import ShortLinkPage from "./pages/ShortLinkPage";
 import LandingPage from "./pages/LandingPage";
+import TrackingJsRoute from "./pages/TrackingJsRoute";
 
 const queryClient = new QueryClient();
 
