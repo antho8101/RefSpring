@@ -1,73 +1,213 @@
-# Welcome to your Lovable project
 
-## Project info
+<div align="center">
+  <h1>🌟 RefSpring</h1>
+  <p><strong>La plateforme d'affiliation nouvelle génération</strong></p>
+  <p>Gérez vos campagnes d'affiliation avec style et efficacité</p>
+  
+  <img src="https://img.shields.io/badge/React-18.3.1-61DAFB?style=for-the-badge&logo=react&logoColor=white" alt="React" />
+  <img src="https://img.shields.io/badge/TypeScript-5.0-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/Tailwind_CSS-3.0-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind" />
+  <img src="https://img.shields.io/badge/Firebase-10.0-FFCA28?style=for-the-badge&logo=firebase&logoColor=black" alt="Firebase" />
+</div>
 
-**URL**: https://lovable.dev/projects/9854001e-2d59-4000-a09f-a43d207622ce
+---
 
-## How can I edit this code?
+## ✨ Fonctionnalités
 
-There are several ways of editing your application.
+### 🎯 **Gestion de campagnes**
+- Création et configuration de campagnes d'affiliation
+- Activation/désactivation en temps réel
+- URLs de destination personnalisables
+- Suivi des performances en direct
 
-**Use Lovable**
+### 👥 **Gestion des affiliés**
+- Ajout et organisation de vos partenaires
+- Génération automatique de liens de tracking
+- Liens courts personnalisés pour chaque affilié
+- Calcul automatique des commissions
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/9854001e-2d59-4000-a09f-a43d207622ce) and start prompting.
+### 📊 **Analytics avancées**
+- Dashboard en temps réel avec métriques clés
+- Suivi des clics, conversions et revenus
+- Taux de conversion par campagne et affilié
+- Historique complet des performances
 
-Changes made via Lovable will be committed automatically to this repo.
+### 🔗 **Liens intelligents**
+- Génération automatique de liens courts
+- Redirection conditionnelle (campagnes actives/en pause)
+- Tracking précis des clics et conversions
+- Protection contre la fraude
 
-**Use your preferred IDE**
+---
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## 🚀 Démarrage rapide
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### Prérequis
+- Node.js 18+ et npm
+- Compte Firebase pour la base de données
 
-Follow these steps:
+### Installation
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+```bash
+# Cloner le repository
+git clone https://github.com/votre-username/refspring.git
+cd refspring
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+# Installer les dépendances
+npm install
 
-# Step 3: Install the necessary dependencies.
-npm i
+# Configurer Firebase
+# Créez un fichier .env avec vos clés Firebase :
+# VITE_FIREBASE_API_KEY=votre_api_key
+# VITE_FIREBASE_AUTH_DOMAIN=votre_auth_domain
+# VITE_FIREBASE_PROJECT_ID=votre_project_id
+# etc...
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Lancer en mode développement
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+L'application sera accessible sur `http://localhost:8080`
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+---
 
-**Use GitHub Codespaces**
+## 🏗️ Architecture
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+### Stack technique
+- **Frontend** : React 18 + TypeScript + Vite
+- **Styling** : Tailwind CSS + shadcn/ui
+- **Backend** : Firebase (Firestore + Auth)
+- **State Management** : TanStack Query
+- **Routing** : React Router Dom
 
-## What technologies are used for this project?
+### Structure du projet
+```
+src/
+├── components/          # Composants UI réutilisables
+│   ├── ui/             # Composants shadcn/ui
+│   ├── Dashboard.tsx   # Page principale
+│   └── Campaign*.tsx   # Gestion des campagnes
+├── hooks/              # Hooks personnalisés
+│   ├── useAuth.tsx     # Authentification
+│   ├── useCampaigns.ts # Gestion des campagnes
+│   └── useTracking.ts  # Suivi des liens
+├── pages/              # Pages de l'application
+│   ├── TrackingPage.tsx    # Redirection des liens
+│   └── ShortLinkPage.tsx   # Liens courts
+├── lib/                # Configuration et utilitaires
+└── types/              # Définitions TypeScript
+```
 
-This project is built with:
+---
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## 📈 Fonctionnement du tracking
 
-## How can I deploy this project?
+RefSpring utilise un système de tracking avancé :
 
-Simply open [Lovable](https://lovable.dev/projects/9854001e-2d59-4000-a09f-a43d207622ce) and click on Share -> Publish.
+1. **Génération de liens** : Chaque affilié reçoit un lien unique
+2. **Redirection intelligente** : Les clics sont trackés avant redirection
+3. **Campagnes en pause** : Affichage d'une page d'information
+4. **Analytics temps réel** : Mise à jour instantanée des métriques
 
-## Can I connect a custom domain to my Lovable project?
+### Exemple de lien généré
+```
+https://votre-domaine.com/s/ABC123
+│                           └── Code court unique
+└── Redirection automatique vers l'URL de la campagne
+```
 
-Yes, you can!
+---
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## 🎨 Interface utilisateur
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+### Dashboard moderne
+- **Design responsive** avec animations fluides
+- **Métriques en temps réel** (clics, conversions, revenus)
+- **Gestion intuitive** des campagnes et affiliés
+- **Thème cohérent** avec Tailwind CSS
+
+### Fonctionnalités UX
+- Copie de liens en un clic
+- Notifications toast pour les actions
+- Cartes extensibles/réductibles
+- Badges de statut visuels
+
+---
+
+## 🔧 Configuration Firebase
+
+1. Créez un projet Firebase
+2. Activez Firestore et Authentication
+3. Configurez les règles de sécurité
+4. Ajoutez vos clés dans `.env`
+
+### Structure Firestore
+```
+campaigns/
+├── {campaignId}/
+│   ├── name: string
+│   ├── isActive: boolean
+│   ├── targetUrl: string
+│   └── ...
+
+affiliates/
+├── {affiliateId}/
+│   ├── name: string
+│   ├── email: string
+│   └── ...
+
+clicks/
+├── {clickId}/
+│   ├── campaignId: string
+│   ├── affiliateId: string
+│   ├── timestamp: Date
+│   └── ...
+```
+
+---
+
+## 🚀 Déploiement
+
+### Avec Lovable (recommandé)
+1. Connectez votre projet à GitHub
+2. Cliquez sur "Publish" dans l'interface Lovable
+3. Votre app est en ligne ! 🎉
+
+### Déploiement manuel
+```bash
+# Build de production
+npm run build
+
+# Déployer sur votre plateforme préférée
+# (Vercel, Netlify, Firebase Hosting, etc.)
+```
+
+---
+
+## 📝 Licence
+
+Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
+
+---
+
+## 👨‍💻 Contribution
+
+Les contributions sont les bienvenues ! N'hésitez pas à :
+- Ouvrir une issue pour signaler un bug
+- Proposer de nouvelles fonctionnalités
+- Soumettre une pull request
+
+---
+
+## 📞 Support
+
+- 📧 Email : support@refspring.com
+- 🐛 Issues : [GitHub Issues](https://github.com/votre-username/refspring/issues)
+- 💬 Discord : [Rejoindre la communauté](https://discord.gg/refspring)
+
+---
+
+<div align="center">
+  <p>Fait avec ❤️ par l'équipe RefSpring</p>
+  <p><strong>Révolutionnez votre affiliation dès aujourd'hui !</strong></p>
+</div>
