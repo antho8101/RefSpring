@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { 
   collection, 
@@ -8,8 +7,7 @@ import {
   onSnapshot, 
   updateDoc, 
   deleteDoc, 
-  doc,
-  orderBy 
+  doc 
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { useAuth } from '@/hooks/useAuth';
@@ -28,10 +26,11 @@ export const useAffiliates = (campaignId?: string) => {
     }
 
     const affiliatesRef = collection(db, 'affiliates');
-    let q = query(affiliatesRef, where('userId', '==', user.uid), orderBy('createdAt', 'desc'));
+    // Suppression temporaire du orderBy pour éviter l'erreur d'index
+    let q = query(affiliatesRef, where('userId', '==', user.uid));
     
     if (campaignId) {
-      q = query(affiliatesRef, where('campaignId', '==', campaignId), orderBy('createdAt', 'desc'));
+      q = query(affiliatesRef, where('campaignId', '==', campaignId));
     }
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -40,6 +39,12 @@ export const useAffiliates = (campaignId?: string) => {
         ...doc.data(),
         createdAt: doc.data().createdAt?.toDate(),
       })) as Affiliate[];
+      
+      // Tri côté client en attendant l'index Firestore
+      affiliatesData.sort((a, b) => {
+        if (!a.createdAt || !b.createdAt) return 0;
+        return b.createdAt.getTime() - a.createdAt.getTime();
+      });
       
       setAffiliates(affiliatesData);
       setLoading(false);
