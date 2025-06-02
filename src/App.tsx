@@ -14,6 +14,7 @@ import LandingPage from "./pages/LandingPage";
 import TrackingJsRoute from "./pages/TrackingJsRoute";
 import TestProductsPage from "./pages/TestProductsPage";
 import TestThankYouPage from "./pages/TestThankYouPage";
+import AdvancedStatsPage from "./pages/AdvancedStatsPage";
 
 const queryClient = new QueryClient();
 
@@ -44,6 +45,7 @@ const DomainRouter = () => {
       {/* Pages principales */}
       <Route path="/dashboard" element={<Index />} />
       <Route path="/landing" element={<LandingPage />} />
+      <Route path="/advanced-stats" element={<AdvancedStatsPage />} />
       
       {/* Route pour servir le fichier tracking.js */}
       <Route path="/tracking.js" element={<TrackingJsRoute />} />

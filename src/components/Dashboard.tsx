@@ -85,6 +85,16 @@ export const Dashboard = () => {
               <p className="text-sm text-slate-600 font-medium">Dashboard</p>
             </Link>
             <div className="flex items-center space-x-4">
+              <Link to="/advanced-stats">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="hover:scale-105 transition-all shadow-lg backdrop-blur-sm bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200 hover:border-blue-300"
+                >
+                  <BarChart3 className="h-4 w-4 mr-2" />
+                  Statistiques Avancées
+                </Button>
+              </Link>
               <div className="text-sm text-slate-700 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full border border-slate-200">
                 Bonjour, <span className="font-semibold">{user?.displayName || user?.email}</span>
               </div>
