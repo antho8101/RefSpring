@@ -68,7 +68,9 @@ export class ErrorBoundary extends Component<Props, State> {
       }
 
       const isAppError = this.state.error instanceof AppError;
-      const userMessage = isAppError ? this.state.error.userMessage : 'Une erreur inattendue s\'est produite.';
+      const userMessage = isAppError 
+        ? (this.state.error as AppError).userMessage 
+        : 'Une erreur inattendue s\'est produite.';
 
       return (
         <div className="min-h-screen bg-gradient-to-br from-red-50 to-pink-50 flex items-center justify-center p-4">
