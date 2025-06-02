@@ -58,7 +58,7 @@ const LandingPage = () => {
             </h1>
             
             <p className="text-xl md:text-2xl text-slate-600 mb-12 max-w-4xl mx-auto leading-relaxed">
-              Unlike other platforms charging €99-299/month, RefSpring follows the <strong>Stripe model</strong>: 
+              Unlike other platforms charging €99-299/month, RefSpring uses a <strong>revenue-based model</strong>: 
               <br />
               <span className="text-slate-900 font-semibold">100% free access, we only earn when you do.</span>
             </p>
