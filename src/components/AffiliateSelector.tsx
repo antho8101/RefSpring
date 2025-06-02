@@ -1,6 +1,7 @@
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Affiliate } from '@/types';
+import { useTranslation } from 'react-i18next';
 
 interface AffiliateSelectorProps {
   affiliates: Affiliate[];
@@ -15,6 +16,8 @@ export const AffiliateSelector = ({
   onAffiliateChange, 
   loading 
 }: AffiliateSelectorProps) => {
+  const { t } = useTranslation();
+
   if (loading) {
     return (
       <div className="mb-6">
@@ -30,7 +33,7 @@ export const AffiliateSelector = ({
     <div className="mb-6">
       <div className="flex items-center gap-2 mb-2">
         <label htmlFor="affiliate-selector" className="text-sm font-medium">
-          Sélectionner un affilié:
+          {t('affiliateSelector.label')}
         </label>
         <div className="w-64">
           <Select 
@@ -38,7 +41,7 @@ export const AffiliateSelector = ({
             onValueChange={onAffiliateChange}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Choisir un affilié" />
+              <SelectValue placeholder={t('affiliateSelector.placeholder')} />
             </SelectTrigger>
             <SelectContent>
               {affiliates.map((affiliate) => (
@@ -51,7 +54,7 @@ export const AffiliateSelector = ({
         </div>
       </div>
       <p className="text-xs text-gray-500">
-        {affiliates.length} affilié(s) trouvé(s)
+        {affiliates.length} {t('affiliateSelector.affiliatesFound')}
       </p>
     </div>
   );

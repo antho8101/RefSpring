@@ -1,0 +1,65 @@
+
+{
+  "auth": {
+    "title": "RefSpring",
+    "loginDescription": "Sign in to your account",
+    "signupDescription": "Create your account",
+    "continueWithGoogle": "Continue with Google",
+    "or": "or",
+    "email": "Email",
+    "password": "Password",
+    "emailPlaceholder": "your@email.com",
+    "passwordPlaceholder": "••••••••",
+    "signIn": "Sign In",
+    "signUp": "Create Account",
+    "loading": "Loading...",
+    "noAccount": "Don't have an account? Create one",
+    "hasAccount": "Already have an account? Sign in",
+    "loginSuccess": "Login successful",
+    "welcome": "Welcome to RefSpring!",
+    "accountCreated": "Account created",
+    "accountCreatedDesc": "Your account has been created successfully!",
+    "error": "Error",
+    "genericError": "An error occurred"
+  },
+  "loading": "Loading...",
+  "dashboard": {
+    "title": "Dashboard",
+    "logout": "Logout"
+  },
+  "affiliateSelector": {
+    "label": "Select an affiliate:",
+    "placeholder": "Choose an affiliate",
+    "affiliatesFound": "affiliate(s) found"
+  },
+  "stats": {
+    "totalClicks": "Total Clicks",
+    "uniqueVisitors": "Unique tracked visitors",
+    "conversions": "Conversions",
+    "conversionRate": "Conversion rate",
+    "pendingValidation": "Pending validation",
+    "commissions": "Commissions",
+    "evolutionTitle": "Performance Evolution",
+    "chartsPlaceholder": "Detailed charts will be available soon",
+    "affiliatesCount": "Affiliates",
+    "active": "active",
+    "totalPayments": "Total Payments",
+    "globalPerformance": "Global performance",
+    "netRevenue": "Net Revenue",
+    "afterCommissions": "after {{amount}} in commissions",
+    "noCommissions": "No commissions",
+    "calculating": "Calculating...",
+    "detailedPerformance": "Detailed affiliate performance",
+    "overviewAllAffiliates": "Overview of all your affiliates",
+    "noClicks": "No clicks recorded",
+    "noFinancialData": "No financial data",
+    "clicksEvolution": "Clicks Evolution",
+    "last30Days": "Trend over the last 30 days",
+    "financialBreakdown": "Financial Breakdown",
+    "netVsCommissions": "Net Revenue vs Paid Commissions",
+    "actionsPerformed": "Actions performed",
+    "grossRevenue": "Gross revenue",
+    "costPerAcquisition": "Cost per acquisition",
+    "returnOnAdSpend": "Return on ad spend"
+  }
+}

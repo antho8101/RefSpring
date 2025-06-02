@@ -1,0 +1,65 @@
+
+{
+  "auth": {
+    "title": "RefSpring",
+    "loginDescription": "Войдите в свой аккаунт",
+    "signupDescription": "Создайте свой аккаунт",
+    "continueWithGoogle": "Продолжить с Google",
+    "or": "или",
+    "email": "Email",
+    "password": "Пароль",
+    "emailPlaceholder": "ваш@email.com",
+    "passwordPlaceholder": "••••••••",
+    "signIn": "Войти",
+    "signUp": "Создать Аккаунт",
+    "loading": "Загрузка...",
+    "noAccount": "Нет аккаунта? Создайте его",
+    "hasAccount": "Уже есть аккаунт? Войдите",
+    "loginSuccess": "Успешный вход",
+    "welcome": "Добро пожаловать в RefSpring!",
+    "accountCreated": "Аккаунт создан",
+    "accountCreatedDesc": "Ваш аккаунт был успешно создан!",
+    "error": "Ошибка",
+    "genericError": "Произошла ошибка"
+  },
+  "loading": "Загрузка...",
+  "dashboard": {
+    "title": "Панель управления",
+    "logout": "Выйти"
+  },
+  "affiliateSelector": {
+    "label": "Выберите партнера:",
+    "placeholder": "Выбрать партнера",
+    "affiliatesFound": "партнер(ов) найдено"
+  },
+  "stats": {
+    "totalClicks": "Всего Кликов",
+    "uniqueVisitors": "Уникальные отслеженные посетители",
+    "conversions": "Конверсии",
+    "conversionRate": "Коэффициент конверсии",
+    "pendingValidation": "Ожидает подтверждения",
+    "commissions": "Комиссии",
+    "evolutionTitle": "Эволюция Производительности",
+    "chartsPlaceholder": "Подробные графики будут доступны в ближайшее время",
+    "affiliatesCount": "Партнеры",
+    "active": "активные",
+    "totalPayments": "Общие Платежи",
+    "globalPerformance": "Глобальная производительность",
+    "netRevenue": "Чистый Доход",
+    "afterCommissions": "после {{amount}} комиссий",
+    "noCommissions": "Без комиссий",
+    "calculating": "Вычисление...",
+    "detailedPerformance": "Подробная производительность партнеров",
+    "overviewAllAffiliates": "Обзор всех ваших партнеров",
+    "noClicks": "Клики не зарегистрированы",
+    "noFinancialData": "Нет финансовых данных",
+    "clicksEvolution": "Эволюция Кликов",
+    "last30Days": "Тенденция за последние 30 дней",
+    "financialBreakdown": "Финансовая Разбивка",
+    "netVsCommissions": "Чистый Доход против Выплаченных Комиссий",
+    "actionsPerformed": "Выполненные действия",
+    "grossRevenue": "Валовой доход",
+    "costPerAcquisition": "Стоимость привлечения",
+    "returnOnAdSpend": "Возврат рекламных инвестиций"
+  }
+}

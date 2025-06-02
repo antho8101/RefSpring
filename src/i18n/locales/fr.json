@@ -1,0 +1,65 @@
+
+{
+  "auth": {
+    "title": "RefSpring",
+    "loginDescription": "Connectez-vous à votre compte",
+    "signupDescription": "Créez votre compte",
+    "continueWithGoogle": "Continuer avec Google",
+    "or": "ou",
+    "email": "Email",
+    "password": "Mot de passe",
+    "emailPlaceholder": "votre@email.com",
+    "passwordPlaceholder": "••••••••",
+    "signIn": "Se connecter",
+    "signUp": "Créer un compte",
+    "loading": "Chargement...",
+    "noAccount": "Pas encore de compte ? Créez-en un",
+    "hasAccount": "Déjà un compte ? Connectez-vous",
+    "loginSuccess": "Connexion réussie",
+    "welcome": "Bienvenue sur RefSpring !",
+    "accountCreated": "Compte créé",
+    "accountCreatedDesc": "Votre compte a été créé avec succès !",
+    "error": "Erreur",
+    "genericError": "Une erreur s'est produite"
+  },
+  "loading": "Chargement...",
+  "dashboard": {
+    "title": "Tableau de bord",
+    "logout": "Déconnexion"
+  },
+  "affiliateSelector": {
+    "label": "Sélectionner un affilié:",
+    "placeholder": "Choisir un affilié",
+    "affiliatesFound": "affilié(s) trouvé(s)"
+  },
+  "stats": {
+    "totalClicks": "Clics Total",
+    "uniqueVisitors": "Visiteurs uniques tracés",
+    "conversions": "Conversions",
+    "conversionRate": "Taux de conversion",
+    "pendingValidation": "En attente de validation",
+    "commissions": "Commissions",
+    "evolutionTitle": "Évolution des performances",
+    "chartsPlaceholder": "Les graphiques détaillés seront disponibles prochainement",
+    "affiliatesCount": "Affiliés",
+    "active": "actifs",
+    "totalPayments": "Total Paiements",
+    "globalPerformance": "Performance globale",
+    "netRevenue": "CA Net",
+    "afterCommissions": "après {{amount}} de commissions",
+    "noCommissions": "Aucune commission",
+    "calculating": "Calcul...",
+    "detailedPerformance": "Performance détaillée des affiliés",
+    "overviewAllAffiliates": "Vue d'ensemble de tous vos affiliés",
+    "noClicks": "Aucun clic enregistré",
+    "noFinancialData": "Aucune donnée financière",
+    "clicksEvolution": "Évolution des clics",
+    "last30Days": "Tendance sur les 30 derniers jours",
+    "financialBreakdown": "Répartition financière",
+    "netVsCommissions": "CA Net vs Commissions versées",
+    "actionsPerformed": "Actions réalisées",
+    "grossRevenue": "Chiffre d'affaires brut",
+    "costPerAcquisition": "Coût par acquisition",
+    "returnOnAdSpend": "Retour sur investissement publicitaire"
+  }
+}

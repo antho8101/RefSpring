@@ -15,6 +15,7 @@ import TrackingJsRoute from "./pages/TrackingJsRoute";
 import TestProductsPage from "./pages/TestProductsPage";
 import TestThankYouPage from "./pages/TestThankYouPage";
 import AdvancedStatsPage from "./pages/AdvancedStatsPage";
+import './i18n';
 
 const queryClient = new QueryClient();
 

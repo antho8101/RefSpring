@@ -1,0 +1,65 @@
+
+{
+  "auth": {
+    "title": "RefSpring",
+    "loginDescription": "登录您的账户",
+    "signupDescription": "创建您的账户",
+    "continueWithGoogle": "使用Google继续",
+    "or": "或",
+    "email": "邮箱",
+    "password": "密码",
+    "emailPlaceholder": "您的@邮箱.com",
+    "passwordPlaceholder": "••••••••",
+    "signIn": "登录",
+    "signUp": "创建账户",
+    "loading": "加载中...",
+    "noAccount": "没有账户？创建一个",
+    "hasAccount": "已有账户？登录",
+    "loginSuccess": "登录成功",
+    "welcome": "欢迎使用RefSpring！",
+    "accountCreated": "账户已创建",
+    "accountCreatedDesc": "您的账户已成功创建！",
+    "error": "错误",
+    "genericError": "发生了错误"
+  },
+  "loading": "加载中...",
+  "dashboard": {
+    "title": "仪表板",
+    "logout": "登出"
+  },
+  "affiliateSelector": {
+    "label": "选择联盟伙伴：",
+    "placeholder": "选择联盟伙伴",
+    "affiliatesFound": "找到联盟伙伴"
+  },
+  "stats": {
+    "totalClicks": "总点击数",
+    "uniqueVisitors": "跟踪的独特访问者",
+    "conversions": "转化",
+    "conversionRate": "转化率",
+    "pendingValidation": "等待验证",
+    "commissions": "佣金",
+    "evolutionTitle": "性能演进",
+    "chartsPlaceholder": "详细图表即将推出",
+    "affiliatesCount": "联盟伙伴",
+    "active": "活跃",
+    "totalPayments": "总支付",
+    "globalPerformance": "全球表现",
+    "netRevenue": "净收入",
+    "afterCommissions": "扣除{{amount}}佣金后",
+    "noCommissions": "无佣金",
+    "calculating": "计算中...",
+    "detailedPerformance": "联盟伙伴详细表现",
+    "overviewAllAffiliates": "所有联盟伙伴概览",
+    "noClicks": "未记录点击",
+    "noFinancialData": "无财务数据",
+    "clicksEvolution": "点击演进",
+    "last30Days": "过去30天趋势",
+    "financialBreakdown": "财务分解",
+    "netVsCommissions": "净收入对比已付佣金",
+    "actionsPerformed": "执行的操作",
+    "grossRevenue": "总收入",
+    "costPerAcquisition": "获客成本",
+    "returnOnAdSpend": "广告支出回报"
+  }
+}
