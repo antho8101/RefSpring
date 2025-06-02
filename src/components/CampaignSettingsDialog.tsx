@@ -6,9 +6,20 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { useCampaigns } from '@/hooks/useCampaigns';
 import { useToast } from '@/hooks/use-toast';
-import { Settings } from 'lucide-react';
+import { Settings, Trash2 } from 'lucide-react';
 import { Campaign } from '@/types';
 
 interface CampaignSettingsDialogProps {
@@ -18,6 +29,7 @@ interface CampaignSettingsDialogProps {
 export const CampaignSettingsDialog = ({ campaign }: CampaignSettingsDialogProps) => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [formData, setFormData] = useState({
     name: campaign.name,
     description: campaign.description,
@@ -25,7 +37,7 @@ export const CampaignSettingsDialog = ({ campaign }: CampaignSettingsDialogProps
     isActive: campaign.isActive,
   });
   
-  const { updateCampaign } = useCampaigns();
+  const { updateCampaign, deleteCampaign } = useCampaigns();
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -49,6 +61,27 @@ export const CampaignSettingsDialog = ({ campaign }: CampaignSettingsDialogProps
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    setIsDeleting(true);
+    try {
+      await deleteCampaign(campaign.id);
+      toast({
+        title: "Campagne supprimée",
+        description: "La campagne a été supprimée avec succès",
+      });
+      setOpen(false);
+    } catch (error) {
+      console.error('Erreur lors de la suppression:', error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de supprimer la campagne",
+        variant: "destructive",
+      });
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -119,6 +152,56 @@ export const CampaignSettingsDialog = ({ campaign }: CampaignSettingsDialogProps
                 <p className="text-xs text-slate-500">
                   URL vers laquelle vos affiliés dirigeront le trafic
                 </p>
+              </div>
+            </div>
+
+            {/* Zone de danger */}
+            <div className="border-t pt-6 mt-6">
+              <div className="space-y-4">
+                <div>
+                  <h3 className="text-lg font-medium text-red-900">Zone de danger</h3>
+                  <p className="text-sm text-red-600">
+                    Les actions suivantes sont irréversibles. Soyez prudent.
+                  </p>
+                </div>
+                
+                <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="font-medium text-red-900">Supprimer la campagne</h4>
+                      <p className="text-sm text-red-600">
+                        Cette action supprimera définitivement la campagne et tous ses affiliés.
+                      </p>
+                    </div>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="destructive" size="sm">
+                          <Trash2 className="h-4 w-4 mr-2" />
+                          Supprimer
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent className="bg-white/95 backdrop-blur-xl border-slate-200">
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Supprimer la campagne</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Êtes-vous sûr de vouloir supprimer la campagne "{campaign.name}" ? 
+                            Cette action est irréversible et supprimera tous les affiliés et données associés.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Annuler</AlertDialogCancel>
+                          <AlertDialogAction 
+                            onClick={handleDelete}
+                            disabled={isDeleting}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                          >
+                            {isDeleting ? "Suppression..." : "Supprimer"}
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
