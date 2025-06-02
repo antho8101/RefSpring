@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Link, Copy, ExternalLink, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useTrackingLinkGenerator } from '@/hooks/useTrackingLinkGenerator';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 interface TrackingLinkGeneratorProps {
   campaignId: string;
@@ -18,6 +18,7 @@ export const TrackingLinkGenerator = ({ campaignId, affiliateId, targetUrl }: Tr
   const { generateTrackingLink } = useTrackingLinkGenerator();
   const [generatedLink, setGeneratedLink] = useState('');
   const [loading, setLoading] = useState(false);
+  const isGeneratingRef = useRef(false);
 
   useEffect(() => {
     const generateLink = async () => {
@@ -25,12 +26,26 @@ export const TrackingLinkGenerator = ({ campaignId, affiliateId, targetUrl }: Tr
         console.log('⚠️ TRACKING LINK GENERATOR - Pas d\'URL cible');
         return;
       }
+
+      // Éviter les générations multiples simultanées
+      if (isGeneratingRef.current) {
+        console.log('⚠️ TRACKING LINK GENERATOR - Génération déjà en cours, ignoré');
+        return;
+      }
+
+      // Si on a déjà un lien généré pour ces paramètres, on évite de regénérer
+      if (generatedLink) {
+        console.log('⚠️ TRACKING LINK GENERATOR - Lien déjà généré, ignoré');
+        return;
+      }
       
       console.log('🚀 TRACKING LINK GENERATOR - Début génération');
       console.log('🚀 Paramètres:', { campaignId, affiliateId, targetUrl });
       console.log('🚀 Contexte utilisateur:', window.location.hostname);
       
+      isGeneratingRef.current = true;
       setLoading(true);
+      
       try {
         console.log('⏳ TRACKING LINK GENERATOR - Appel generateTrackingLink...');
         const link = await generateTrackingLink(campaignId, affiliateId, targetUrl);
@@ -46,11 +61,12 @@ export const TrackingLinkGenerator = ({ campaignId, affiliateId, targetUrl }: Tr
       } finally {
         console.log('🏁 TRACKING LINK GENERATOR - Fin (loading = false)');
         setLoading(false);
+        isGeneratingRef.current = false;
       }
     };
 
     generateLink();
-  }, [campaignId, affiliateId, targetUrl, generateTrackingLink, toast]);
+  }, [campaignId, affiliateId, targetUrl]); // Suppression de generateTrackingLink et toast des dépendances pour éviter la boucle
 
   const copyLink = async () => {
     if (!generatedLink) return;

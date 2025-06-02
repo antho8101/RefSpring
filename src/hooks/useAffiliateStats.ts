@@ -27,6 +27,8 @@ export const useAffiliateStats = (affiliateId: string | null) => {
       setLoading(true);
       
       try {
+        console.log('📊 Chargement des stats pour affilié:', affiliateId);
+        
         // Compter les clics
         const clicksQuery = query(
           collection(db, 'clicks'),
@@ -34,6 +36,7 @@ export const useAffiliateStats = (affiliateId: string | null) => {
         );
         const clicksSnapshot = await getDocs(clicksQuery);
         const clicksCount = clicksSnapshot.size;
+        console.log('📊 Clics trouvés:', clicksCount);
 
         // Compter les conversions et calculer les commissions
         const conversionsQuery = query(
@@ -48,7 +51,7 @@ export const useAffiliateStats = (affiliateId: string | null) => {
           return total + (data.commission || 0);
         }, 0);
 
-        console.log('Stats loaded for affiliate:', affiliateId, {
+        console.log('📊 Stats finales:', {
           clicks: clicksCount,
           conversions: conversionsCount,
           commissions: totalCommissions
@@ -60,8 +63,9 @@ export const useAffiliateStats = (affiliateId: string | null) => {
           commissions: totalCommissions,
         });
       } catch (error) {
-        console.error('Error loading affiliate stats:', error);
-        // En cas d'erreur, on garde les stats à 0
+        console.error('❌ Erreur lors du chargement des stats (permissions manquantes pour dashboard public):', error);
+        // En cas d'erreur (permissions), on garde les stats à 0 au lieu de faire planter
+        setStats({ clicks: 0, conversions: 0, commissions: 0 });
       }
       
       setLoading(false);
