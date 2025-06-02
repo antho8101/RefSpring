@@ -1,5 +1,5 @@
 
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { useCampaigns } from '@/hooks/useCampaigns';
 import { Eye, TrendingUp } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
