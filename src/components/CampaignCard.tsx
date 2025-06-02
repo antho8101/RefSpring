@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -27,7 +26,20 @@ export const CampaignCard = ({ campaign, onCopyUrl }: CampaignCardProps) => {
   const [isAffiliatesOpen, setIsAffiliatesOpen] = useState(false);
   const { toast } = useToast();
   
-  const publicDashboardUrl = `${window.location.origin}/r/${campaign.id}`;
+  // Génération de l'URL selon l'environnement
+  const getPublicDashboardUrl = () => {
+    const currentHostname = window.location.hostname;
+    
+    // En développement local ou prévisualisation Lovable
+    if (currentHostname.includes('localhost') || currentHostname.includes('lovableproject.com')) {
+      return `${window.location.origin}/r/${campaign.id}`;
+    }
+    
+    // En production - toujours pointer vers refspring.com
+    return `https://refspring.com/r/${campaign.id}`;
+  };
+
+  const publicDashboardUrl = getPublicDashboardUrl();
 
   const handleCopyUrl = async () => {
     try {
