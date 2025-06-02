@@ -1,0 +1,15 @@
+
+{
+  "name": "refspring-landing",
+  "version": "1.0.0",
+  "description": "RefSpring Landing Page",
+  "main": "index.html",
+  "scripts": {
+    "dev": "serve .",
+    "build": "cp -r . dist/",
+    "preview": "serve dist"
+  },
+  "devDependencies": {
+    "serve": "^14.2.0"
+  }
+}

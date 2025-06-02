@@ -1,0 +1,239 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RefSpring - Plateforme d'affiliation moderne</title>
+    <meta name="description" content="La plateforme d'affiliation moderne pour développer votre business" />
+    
+    <!-- Space Grotesk Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              'space': ['Space Grotesk', 'sans-serif'],
+              'sans': ['Space Grotesk', 'system-ui', 'sans-serif'],
+            },
+            animation: {
+              'fade-in': 'fade-in 0.6s ease-out'
+            },
+            keyframes: {
+              'fade-in': {
+                '0%': {
+                  opacity: '0',
+                  transform: 'translateY(10px)'
+                },
+                '100%': {
+                  opacity: '1',
+                  transform: 'translateY(0)'
+                }
+              }
+            }
+          }
+        }
+      }
+    </script>
+  </head>
+  <body class="font-sans">
+    <div class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+      <!-- Header -->
+      <header class="border-b border-slate-200 bg-white/80 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="flex justify-between items-center h-16">
+            <div class="font-bold text-2xl text-slate-900">
+              RefSpring
+            </div>
+            <nav class="hidden md:flex space-x-8">
+              <a href="#features" class="text-slate-600 hover:text-slate-900 font-medium transition-colors">
+                Fonctionnalités
+              </a>
+              <a href="#pricing" class="text-slate-600 hover:text-slate-900 font-medium transition-colors">
+                Tarifs
+              </a>
+              <a href="#contact" class="text-slate-600 hover:text-slate-900 font-medium transition-colors">
+                Contact
+              </a>
+            </nav>
+            <a href="https://app.refspring.com" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-slate-300 bg-white hover:bg-slate-100 hover:text-slate-900 h-10 px-4 py-2 hidden md:flex">
+              Se connecter
+            </a>
+          </div>
+        </div>
+      </header>
+
+      <!-- Hero Section -->
+      <section class="pt-20 pb-32 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto text-center">
+          <div class="animate-fade-in">
+            <h1 class="text-5xl md:text-7xl font-bold text-slate-900 leading-tight mb-6">
+              La façon moderne de
+              <span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                gérer vos affiliés
+              </span>
+            </h1>
+            <p class="text-xl md:text-2xl text-slate-600 mb-8 max-w-3xl mx-auto leading-relaxed">
+              Créez, suivez et développez votre programme d'affiliation avec la plateforme de confiance de milliers d'entreprises.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+              <a href="https://app.refspring.com" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-lg font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-blue-600 text-white hover:bg-blue-700 h-12 px-8 py-6">
+                Essai gratuit
+                <svg class="ml-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                </svg>
+              </a>
+              <a href="#contact" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-lg font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-slate-300 bg-white hover:bg-slate-100 hover:text-slate-900 h-12 px-8 py-6">
+                Demander une démo
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Features Section -->
+      <section id="features" class="py-24 px-4 sm:px-6 lg:px-8 bg-white">
+        <div class="max-w-7xl mx-auto">
+          <div class="text-center mb-16">
+            <h2 class="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
+              Tout ce dont vous avez besoin pour réussir
+            </h2>
+            <p class="text-xl text-slate-600 max-w-2xl mx-auto">
+              Des outils puissants conçus pour vous aider à créer et gérer des programmes d'affiliation performants.
+            </p>
+          </div>
+          
+          <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div class="p-6 rounded-2xl bg-slate-50 hover:bg-slate-100 transition-colors">
+              <div class="mb-4">
+                <svg class="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                </svg>
+              </div>
+              <h3 class="text-xl font-semibold text-slate-900 mb-2">Ultra-rapide</h3>
+              <p class="text-slate-600">Configurez votre programme d'affiliation en minutes, pas en semaines.</p>
+            </div>
+            
+            <div class="p-6 rounded-2xl bg-slate-50 hover:bg-slate-100 transition-colors">
+              <div class="mb-4">
+                <svg class="h-8 w-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                </svg>
+              </div>
+              <h3 class="text-xl font-semibold text-slate-900 mb-2">Recrutement d'affiliés</h3>
+              <p class="text-slate-600">Trouvez et intégrez facilement les meilleurs affiliés performants.</p>
+            </div>
+            
+            <div class="p-6 rounded-2xl bg-slate-50 hover:bg-slate-100 transition-colors">
+              <div class="mb-4">
+                <svg class="h-8 w-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                </svg>
+              </div>
+              <h3 class="text-xl font-semibold text-slate-900 mb-2">Analytics avancées</h3>
+              <p class="text-slate-600">Suivez les performances avec des insights et rapports en temps réel.</p>
+            </div>
+            
+            <div class="p-6 rounded-2xl bg-slate-50 hover:bg-slate-100 transition-colors">
+              <div class="mb-4">
+                <svg class="h-8 w-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                </svg>
+              </div>
+              <h3 class="text-xl font-semibold text-slate-900 mb-2">Protection anti-fraude</h3>
+              <p class="text-slate-600">Sécurité avancée pour vous protéger contre les activités frauduleuses.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Stats Section -->
+      <section class="py-24 px-4 sm:px-6 lg:px-8 bg-slate-900">
+        <div class="max-w-7xl mx-auto text-center">
+          <h2 class="text-4xl font-bold text-white mb-16">
+            La confiance des leaders du secteur
+          </h2>
+          <div class="grid md:grid-cols-3 gap-8">
+            <div class="text-center">
+              <div class="text-5xl font-bold text-white mb-2">10K+</div>
+              <div class="text-xl text-slate-400">Campagnes actives</div>
+            </div>
+            <div class="text-center">
+              <div class="text-5xl font-bold text-white mb-2">€50M+</div>
+              <div class="text-xl text-slate-400">Chiffre d'affaires généré</div>
+            </div>
+            <div class="text-center">
+              <div class="text-5xl font-bold text-white mb-2">99.9%</div>
+              <div class="text-xl text-slate-400">Disponibilité</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- CTA Section -->
+      <section class="py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-blue-600 to-purple-600">
+        <div class="max-w-4xl mx-auto text-center">
+          <h2 class="text-4xl md:text-5xl font-bold text-white mb-6">
+            Prêt à développer votre business ?
+          </h2>
+          <p class="text-xl text-blue-100 mb-8">
+            Rejoignez des milliers d'entreprises qui utilisent RefSpring pour développer leurs programmes d'affiliation.
+          </p>
+          <a href="https://app.refspring.com" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-lg font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-white text-slate-900 hover:bg-slate-100 h-12 px-8 py-6">
+            Commencer gratuitement
+            <svg class="ml-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </a>
+        </div>
+      </section>
+
+      <!-- Footer -->
+      <footer class="py-12 px-4 sm:px-6 lg:px-8 bg-slate-900 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto">
+          <div class="grid md:grid-cols-4 gap-8">
+            <div>
+              <div class="font-bold text-2xl text-white mb-4">RefSpring</div>
+              <p class="text-slate-400">
+                La plateforme moderne de gestion d'affiliation.
+              </p>
+            </div>
+            <div>
+              <h3 class="font-semibold text-white mb-4">Produit</h3>
+              <ul class="space-y-2 text-slate-400">
+                <li><a href="#features" class="hover:text-white transition-colors">Fonctionnalités</a></li>
+                <li><a href="#pricing" class="hover:text-white transition-colors">Tarifs</a></li>
+                <li><a href="#" class="hover:text-white transition-colors">API</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="font-semibold text-white mb-4">Entreprise</h3>
+              <ul class="space-y-2 text-slate-400">
+                <li><a href="#" class="hover:text-white transition-colors">À propos</a></li>
+                <li><a href="#" class="hover:text-white transition-colors">Blog</a></li>
+                <li><a href="#" class="hover:text-white transition-colors">Carrières</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="font-semibold text-white mb-4">Support</h3>
+              <ul class="space-y-2 text-slate-400">
+                <li><a href="#" class="hover:text-white transition-colors">Centre d'aide</a></li>
+                <li><a href="#contact" class="hover:text-white transition-colors">Contact</a></li>
+                <li><a href="#" class="hover:text-white transition-colors">Statut</a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="border-t border-slate-800 mt-8 pt-8 text-center text-slate-400">
+            <p>&copy; 2024 RefSpring. Tous droits réservés.</p>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>
