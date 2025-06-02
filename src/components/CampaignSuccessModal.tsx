@@ -208,7 +208,7 @@ export const CampaignSuccessModal = ({
 
         <div className="flex justify-end">
           <Button onClick={() => onOpenChange(false)}>
-            Fermer
+            Terminer
           </Button>
         </div>
       </DialogContent>
