@@ -1,3 +1,4 @@
+
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAdvancedStats } from '@/hooks/useAdvancedStats';
 import { useCampaigns } from '@/hooks/useCampaigns';
@@ -16,10 +17,10 @@ const AdvancedStatsPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50/30 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Chargement des statistiques avancées...</p>
+      <div className="min-h-screen w-full bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/20 flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent mx-auto"></div>
+          <p className="text-slate-600 font-medium">Chargement des statistiques avancées...</p>
         </div>
       </div>
     );
@@ -27,10 +28,11 @@ const AdvancedStatsPage = () => {
 
   if (!campaign) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50/30 flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Campagne introuvable</h1>
-          <Button onClick={() => navigate('/dashboard')}>
+      <div className="min-h-screen w-full bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/20 flex items-center justify-center">
+        <div className="text-center space-y-6">
+          <h1 className="text-3xl font-bold text-slate-900">Campagne introuvable</h1>
+          <p className="text-slate-600">Cette campagne n'existe pas ou vous n'y avez pas accès.</p>
+          <Button onClick={() => navigate('/dashboard')} size="lg" className="bg-blue-600 hover:bg-blue-700">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Retour au dashboard
           </Button>
@@ -55,98 +57,115 @@ const AdvancedStatsPage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50/30">
-      <div className="container mx-auto p-6 space-y-6">
-        {/* En-tête */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Button 
-              variant="outline" 
-              onClick={() => navigate('/dashboard')}
-              className="flex items-center gap-2"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              Retour
-            </Button>
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Statistiques Avancées</h1>
-              <p className="text-gray-600 mt-1">Campagne : {campaign.name}</p>
+    <div className="min-h-screen w-full bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/20">
+      <div className="w-full max-w-none px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
+        {/* En-tête avec design moderne */}
+        <div className="mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+            <div className="flex items-center gap-4">
+              <Button 
+                variant="outline" 
+                onClick={() => navigate('/dashboard')}
+                className="flex items-center gap-2 bg-white/80 backdrop-blur-sm border-slate-200 hover:bg-white hover:shadow-md transition-all"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Retour
+              </Button>
+              <div>
+                <h1 className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
+                  Statistiques Avancées
+                </h1>
+                <p className="text-slate-600 mt-1 text-lg">Campagne : <span className="font-semibold text-slate-800">{campaign.name}</span></p>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Métriques principales */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Clics totaux</CardTitle>
-              <MousePointer className="h-4 w-4 text-muted-foreground" />
+        {/* Métriques principales - responsive grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 lg:gap-6 mb-8">
+          <Card className="bg-white/80 backdrop-blur-sm border-slate-200 shadow-lg hover:shadow-xl transition-all">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+              <CardTitle className="text-sm font-medium text-slate-600">Clics totaux</CardTitle>
+              <MousePointer className="h-5 w-5 text-blue-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.totalClicks.toLocaleString()}</div>
+              <div className="text-3xl font-bold text-slate-900">{stats.totalClicks.toLocaleString()}</div>
+              <p className="text-xs text-slate-500 mt-1">Total des clics générés</p>
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Conversions</CardTitle>
-              <Target className="h-4 w-4 text-muted-foreground" />
+          <Card className="bg-white/80 backdrop-blur-sm border-slate-200 shadow-lg hover:shadow-xl transition-all">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+              <CardTitle className="text-sm font-medium text-slate-600">Conversions</CardTitle>
+              <Target className="h-5 w-5 text-green-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.totalConversions}</div>
+              <div className="text-3xl font-bold text-slate-900">{stats.totalConversions}</div>
+              <p className="text-xs text-slate-500 mt-1">Actions réalisées</p>
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">CA Net</CardTitle>
-              <DollarSign className="h-4 w-4 text-muted-foreground" />
+          <Card className="bg-white/80 backdrop-blur-sm border-slate-200 shadow-lg hover:shadow-xl transition-all">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+              <CardTitle className="text-sm font-medium text-slate-600">CA Net</CardTitle>
+              <DollarSign className="h-5 w-5 text-emerald-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-green-600">{formatCurrency(stats.netRevenue)}</div>
+              <div className="text-3xl font-bold text-emerald-600">{formatCurrency(stats.netRevenue)}</div>
+              <p className="text-xs text-slate-500 mt-1">Chiffre d'affaires net</p>
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Taux de conversion</CardTitle>
-              <Percent className="h-4 w-4 text-muted-foreground" />
+          <Card className="bg-white/80 backdrop-blur-sm border-slate-200 shadow-lg hover:shadow-xl transition-all">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+              <CardTitle className="text-sm font-medium text-slate-600">Taux de conversion</CardTitle>
+              <Percent className="h-5 w-5 text-purple-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.conversionRate.toFixed(2)}%</div>
+              <div className="text-3xl font-bold text-slate-900">{stats.conversionRate.toFixed(2)}%</div>
+              <p className="text-xs text-slate-500 mt-1">Performance globale</p>
             </CardContent>
           </Card>
         </div>
 
-        {/* Graphiques */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Graphiques - responsive grid */}
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 lg:gap-8 mb-8">
           {/* Évolution des clics */}
-          <Card>
+          <Card className="bg-white/80 backdrop-blur-sm border-slate-200 shadow-lg">
             <CardHeader>
-              <CardTitle>Évolution des clics (30 derniers jours)</CardTitle>
+              <CardTitle className="text-xl font-bold text-slate-900">Évolution des clics</CardTitle>
+              <CardDescription className="text-slate-600">Tendance sur les 30 derniers jours</CardDescription>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>
                 <AreaChart data={stats.dailyStats}>
-                  <CartesianGrid strokeDasharray="3 3" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                   <XAxis 
                     dataKey="date" 
                     tickFormatter={(value) => new Date(value).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' })}
+                    tick={{ fontSize: 12, fill: '#64748b' }}
                   />
-                  <YAxis />
+                  <YAxis tick={{ fontSize: 12, fill: '#64748b' }} />
                   <Tooltip 
                     labelFormatter={(value) => new Date(value).toLocaleDateString('fr-FR')}
+                    contentStyle={{ 
+                      backgroundColor: 'white', 
+                      border: '1px solid #e2e8f0', 
+                      borderRadius: '8px',
+                      boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
+                    }}
                   />
-                  <Area type="monotone" dataKey="clicks" stroke="#3B82F6" fill="#3B82F6" fillOpacity={0.3} />
+                  <Area type="monotone" dataKey="clicks" stroke="#3B82F6" fill="#3B82F6" fillOpacity={0.2} strokeWidth={2} />
                 </AreaChart>
               </ResponsiveContainer>
             </CardContent>
           </Card>
 
           {/* Répartition CA vs Commissions */}
-          <Card>
+          <Card className="bg-white/80 backdrop-blur-sm border-slate-200 shadow-lg">
             <CardHeader>
-              <CardTitle>Répartition CA Net vs Commissions</CardTitle>
+              <CardTitle className="text-xl font-bold text-slate-900">Répartition financière</CardTitle>
+              <CardDescription className="text-slate-600">CA Net vs Commissions versées</CardDescription>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>
@@ -164,50 +183,87 @@ const AdvancedStatsPage = () => {
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
-                  <Tooltip formatter={(value) => formatCurrency(Number(value))} />
+                  <Tooltip 
+                    formatter={(value) => formatCurrency(Number(value))}
+                    contentStyle={{ 
+                      backgroundColor: 'white', 
+                      border: '1px solid #e2e8f0', 
+                      borderRadius: '8px',
+                      boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
+                    }}
+                  />
                 </PieChart>
               </ResponsiveContainer>
+              <div className="flex justify-center gap-6 mt-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                  <span className="text-sm text-slate-600">CA Net</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+                  <span className="text-sm text-slate-600">Commissions</span>
+                </div>
+              </div>
             </CardContent>
           </Card>
 
           {/* Évolution du CA */}
-          <Card>
+          <Card className="bg-white/80 backdrop-blur-sm border-slate-200 shadow-lg">
             <CardHeader>
-              <CardTitle>Évolution du chiffre d'affaires</CardTitle>
+              <CardTitle className="text-xl font-bold text-slate-900">Évolution du CA</CardTitle>
+              <CardDescription className="text-slate-600">Chiffre d'affaires journalier</CardDescription>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>
                 <LineChart data={stats.dailyStats}>
-                  <CartesianGrid strokeDasharray="3 3" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                   <XAxis 
                     dataKey="date" 
                     tickFormatter={(value) => new Date(value).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' })}
+                    tick={{ fontSize: 12, fill: '#64748b' }}
                   />
-                  <YAxis tickFormatter={(value) => `${value}€`} />
+                  <YAxis 
+                    tickFormatter={(value) => `${value}€`}
+                    tick={{ fontSize: 12, fill: '#64748b' }}
+                  />
                   <Tooltip 
                     labelFormatter={(value) => new Date(value).toLocaleDateString('fr-FR')}
                     formatter={(value) => [`${value}€`, 'CA']}
+                    contentStyle={{ 
+                      backgroundColor: 'white', 
+                      border: '1px solid #e2e8f0', 
+                      borderRadius: '8px',
+                      boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
+                    }}
                   />
-                  <Line type="monotone" dataKey="revenue" stroke="#10B981" strokeWidth={2} dot={{ fill: '#10B981' }} />
+                  <Line type="monotone" dataKey="revenue" stroke="#10B981" strokeWidth={3} dot={{ fill: '#10B981', strokeWidth: 2, r: 4 }} />
                 </LineChart>
               </ResponsiveContainer>
             </CardContent>
           </Card>
 
           {/* Top Affiliés */}
-          <Card>
+          <Card className="bg-white/80 backdrop-blur-sm border-slate-200 shadow-lg">
             <CardHeader>
-              <CardTitle>Top Affiliés</CardTitle>
-              <CardDescription>Classement par commissions générées</CardDescription>
+              <CardTitle className="text-xl font-bold text-slate-900">Top Affiliés</CardTitle>
+              <CardDescription className="text-slate-600">Classement par commissions générées</CardDescription>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={stats.topAffiliates.slice(0, 5)} layout="horizontal">
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis type="number" tickFormatter={(value) => `${value}€`} />
-                  <YAxis type="category" dataKey="name" width={100} />
-                  <Tooltip formatter={(value) => [`${value}€`, 'Commissions']} />
-                  <Bar dataKey="commissions" fill="#8B5CF6" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                  <XAxis type="number" tickFormatter={(value) => `${value}€`} tick={{ fontSize: 12, fill: '#64748b' }} />
+                  <YAxis type="category" dataKey="name" width={100} tick={{ fontSize: 12, fill: '#64748b' }} />
+                  <Tooltip 
+                    formatter={(value) => [`${value}€`, 'Commissions']}
+                    contentStyle={{ 
+                      backgroundColor: 'white', 
+                      border: '1px solid #e2e8f0', 
+                      borderRadius: '8px',
+                      boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
+                    }}
+                  />
+                  <Bar dataKey="commissions" fill="#8B5CF6" radius={[0, 4, 4, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>
@@ -215,32 +271,33 @@ const AdvancedStatsPage = () => {
         </div>
 
         {/* Tableau des affiliés */}
-        <Card>
+        <Card className="bg-white/80 backdrop-blur-sm border-slate-200 shadow-lg">
           <CardHeader>
-            <CardTitle>Performance détaillée des affiliés</CardTitle>
+            <CardTitle className="text-xl font-bold text-slate-900">Performance détaillée des affiliés</CardTitle>
+            <CardDescription className="text-slate-600">Vue d'ensemble de tous vos affiliés</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b">
-                    <th className="text-left p-2">Nom</th>
-                    <th className="text-left p-2">Email</th>
-                    <th className="text-right p-2">Clics</th>
-                    <th className="text-right p-2">Conversions</th>
-                    <th className="text-right p-2">Taux (%)</th>
-                    <th className="text-right p-2">Commissions</th>
+                  <tr className="border-b border-slate-200">
+                    <th className="text-left p-3 text-sm font-semibold text-slate-700">Nom</th>
+                    <th className="text-left p-3 text-sm font-semibold text-slate-700 hidden sm:table-cell">Email</th>
+                    <th className="text-right p-3 text-sm font-semibold text-slate-700">Clics</th>
+                    <th className="text-right p-3 text-sm font-semibold text-slate-700">Conv.</th>
+                    <th className="text-right p-3 text-sm font-semibold text-slate-700 hidden md:table-cell">Taux (%)</th>
+                    <th className="text-right p-3 text-sm font-semibold text-slate-700">Commissions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {stats.topAffiliates.map((affiliate, index) => (
-                    <tr key={affiliate.id} className="border-b hover:bg-gray-50">
-                      <td className="p-2 font-medium">{affiliate.name}</td>
-                      <td className="p-2 text-gray-600">{affiliate.email}</td>
-                      <td className="p-2 text-right">{affiliate.clicks}</td>
-                      <td className="p-2 text-right">{affiliate.conversions}</td>
-                      <td className="p-2 text-right">{affiliate.conversionRate.toFixed(1)}%</td>
-                      <td className="p-2 text-right font-semibold text-green-600">
+                    <tr key={affiliate.id} className="border-b border-slate-100 hover:bg-slate-50/50 transition-colors">
+                      <td className="p-3 font-medium text-slate-900">{affiliate.name}</td>
+                      <td className="p-3 text-slate-600 hidden sm:table-cell text-sm">{affiliate.email}</td>
+                      <td className="p-3 text-right text-slate-900 font-medium">{affiliate.clicks}</td>
+                      <td className="p-3 text-right text-slate-900 font-medium">{affiliate.conversions}</td>
+                      <td className="p-3 text-right text-slate-600 hidden md:table-cell">{affiliate.conversionRate.toFixed(1)}%</td>
+                      <td className="p-3 text-right font-semibold text-emerald-600">
                         {formatCurrency(affiliate.commissions)}
                       </td>
                     </tr>
