@@ -8,8 +8,7 @@ import {
   onSnapshot, 
   updateDoc, 
   deleteDoc, 
-  doc,
-  orderBy 
+  doc
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { useAuth } from '@/hooks/useAuth';
@@ -31,10 +30,10 @@ export const useCampaigns = () => {
     }
 
     const campaignsRef = collection(db, 'campaigns');
+    // Requête temporaire sans orderBy pour éviter l'erreur d'index
     const q = query(
       campaignsRef, 
-      where('userId', '==', user.uid),
-      orderBy('createdAt', 'desc')
+      where('userId', '==', user.uid)
     );
 
     console.log('Setting up Firestore listener for user:', user.uid);
@@ -52,6 +51,12 @@ export const useCampaigns = () => {
           updatedAt: data.updatedAt?.toDate(),
         };
       }) as Campaign[];
+      
+      // Tri côté client en attendant l'index Firestore
+      campaignsData.sort((a, b) => {
+        if (!a.createdAt || !b.createdAt) return 0;
+        return b.createdAt.getTime() - a.createdAt.getTime();
+      });
       
       console.log('Processed campaigns data:', campaignsData);
       setCampaigns(campaignsData);
