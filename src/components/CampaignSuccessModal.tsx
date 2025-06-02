@@ -24,7 +24,7 @@ export const CampaignSuccessModal = ({
   const [copiedItems, setCopiedItems] = useState<Set<string>>(new Set());
   const { toast } = useToast();
 
-  const trackingUrl = `https://refspring.com/r/${campaignId}`;
+  const publicDashboardUrl = `https://refspring.com/r/${campaignId}`;
   
   const trackingScript = `<!-- RefSpring Tracking Script -->
 <script>
@@ -119,27 +119,30 @@ export const CampaignSuccessModal = ({
         </DialogHeader>
 
         <div className="space-y-6 py-4">
-          {/* URL de tracking */}
+          {/* URL du dashboard public */}
           <div className="space-y-2">
             <Label className="flex items-center gap-2 text-base font-medium">
               <Link className="h-4 w-4" />
-              URL de tracking pour vos affiliés
+              Dashboard public
             </Label>
             <p className="text-sm text-muted-foreground">
-              Partagez cette URL avec vos affiliés. Toutes les visites via cette URL seront trackées.
+              URL du dashboard public où les affiliés pourront consulter leurs statistiques.
             </p>
             <div className="flex items-center gap-2">
               <Input 
-                value={trackingUrl} 
+                value={publicDashboardUrl} 
                 readOnly 
                 className="font-mono text-sm"
               />
               <CopyButton 
-                onClick={() => copyToClipboard(trackingUrl, 'url', 'URL de tracking')}
+                onClick={() => copyToClipboard(publicDashboardUrl, 'url', 'URL du dashboard public')}
                 itemKey="url"
                 label="URL"
               />
             </div>
+            <p className="text-xs text-amber-600">
+              Note: Pour créer des liens de tracking spécifiques à chaque affilié, ajoutez des affiliés à cette campagne.
+            </p>
           </div>
 
           {/* Script de tracking */}
@@ -197,8 +200,8 @@ export const CampaignSuccessModal = ({
             <ol className="text-sm text-blue-800 space-y-1 list-decimal list-inside">
               <li>Copiez et ajoutez le script de tracking dans votre site</li>
               <li>Copiez et ajoutez le code de conversion sur votre page de commande</li>
-              <li>Partagez l'URL de tracking avec vos affiliés</li>
-              <li>Consultez les statistiques dans votre dashboard</li>
+              <li>Ajoutez des affiliés à votre campagne pour générer leurs liens de tracking</li>
+              <li>Partagez ces liens avec vos affiliés</li>
             </ol>
           </div>
         </div>
