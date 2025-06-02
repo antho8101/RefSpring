@@ -32,8 +32,8 @@ const ShortLinkPage = () => {
 
         console.log('Données du lien court trouvées:', shortLinkData);
 
-        // Enregistrer le clic
-        await recordClick(shortLinkData.campaignId, shortLinkData.affiliateId);
+        // Enregistrer le clic avec les 3 paramètres requis
+        await recordClick(shortLinkData.affiliateId, shortLinkData.campaignId, shortLinkData.targetUrl);
         
         console.log('Redirection vers:', shortLinkData.targetUrl);
         
