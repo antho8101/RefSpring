@@ -23,8 +23,17 @@ export const useTrackingLinkGenerator = () => {
       
       try {
         console.log('🔗 Tentative création lien court...');
-        // Créer un lien court
-        const shortCode = await createShortLink(campaignId, affiliateId, targetUrl);
+        
+        // Ajouter les paramètres d'affiliation à l'URL de destination
+        const url = new URL(targetUrl);
+        url.searchParams.set('ref', affiliateId);
+        url.searchParams.set('campaign', campaignId);
+        const enhancedTargetUrl = url.toString();
+        
+        console.log('🔗 URL enrichie avec paramètres affiliation:', enhancedTargetUrl);
+        
+        // Créer un lien court avec l'URL enrichie
+        const shortCode = await createShortLink(campaignId, affiliateId, enhancedTargetUrl);
         console.log('✅ Lien court créé:', shortCode);
         const finalLink = `${baseUrl}/s/${shortCode}`;
         console.log('✅ Lien final:', finalLink);

@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -41,6 +40,9 @@ const DomainRouter = () => {
       {/* Pages principales */}
       <Route path="/dashboard" element={<Index />} />
       <Route path="/landing" element={<LandingPage />} />
+      
+      {/* Route pour servir le fichier tracking.js */}
+      <Route path="/tracking.js" element={<TrackingJsRoute />} />
       
       {/* Pages fonctionnelles - disponibles sur tous les domaines */}
       <Route path="/r/:campaignId" element={<AffiliatePage />} />
