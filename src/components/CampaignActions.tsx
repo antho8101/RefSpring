@@ -20,6 +20,7 @@ export const CampaignActions = ({ campaign, onCopyUrl }: CampaignActionsProps) =
 
   return (
     <div className="flex items-center space-x-2">
+      <CreateAffiliateDialog campaignId={campaign.id} campaignName={campaign.name} />
       <Button
         variant="outline"
         size="sm"
@@ -29,7 +30,6 @@ export const CampaignActions = ({ campaign, onCopyUrl }: CampaignActionsProps) =
         <BarChart3 className="h-4 w-4 mr-1" />
         Stats avancées
       </Button>
-      <CreateAffiliateDialog campaignId={campaign.id} campaignName={campaign.name} />
       <CampaignSettingsDialog campaign={campaign} />
     </div>
   );
