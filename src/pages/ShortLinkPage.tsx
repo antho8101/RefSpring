@@ -25,6 +25,7 @@ const ShortLinkPage = () => {
         const shortLinkData = await getShortLinkData(shortCode);
         
         if (!shortLinkData) {
+          console.log('Aucune donnée trouvée pour le code:', shortCode);
           setError('Lien court non trouvé');
           setLoading(false);
           return;
@@ -32,7 +33,7 @@ const ShortLinkPage = () => {
 
         console.log('Données du lien court trouvées:', shortLinkData);
 
-        // Enregistrer le clic avec les 3 paramètres requis
+        // Enregistrer le clic avec les 3 paramètres requis dans le bon ordre
         await recordClick(shortLinkData.affiliateId, shortLinkData.campaignId, shortLinkData.targetUrl);
         
         console.log('Redirection vers:', shortLinkData.targetUrl);
@@ -68,6 +69,7 @@ const ShortLinkPage = () => {
         <div className="text-center">
           <h2 className="text-lg font-medium text-red-600 mb-2">Erreur</h2>
           <p className="text-gray-600">{error}</p>
+          <p className="text-sm text-gray-400 mt-2">Code: {shortCode}</p>
         </div>
       </div>
     );

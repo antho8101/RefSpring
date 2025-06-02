@@ -37,6 +37,8 @@ export const useShortLinks = () => {
     setLoading(true);
     
     try {
+      console.log('Création de lien court pour:', { campaignId, affiliateId, targetUrl });
+      
       // Vérifier s'il existe déjà un lien court pour cette combinaison
       const existingQuery = query(
         collection(db, 'shortLinks'),
@@ -49,6 +51,7 @@ export const useShortLinks = () => {
       
       if (!existingSnapshot.empty) {
         const existingLink = existingSnapshot.docs[0].data() as ShortLink;
+        console.log('Lien court existant trouvé:', existingLink.shortCode);
         setLoading(false);
         return existingLink.shortCode;
       }
@@ -71,6 +74,8 @@ export const useShortLinks = () => {
         }
       }
 
+      console.log('Nouveau code court généré:', shortCode);
+
       // Créer le nouveau lien court
       const shortLinkData = {
         shortCode,
@@ -81,7 +86,9 @@ export const useShortLinks = () => {
         clickCount: 0
       };
 
-      await addDoc(collection(db, 'shortLinks'), shortLinkData);
+      const docRef = await addDoc(collection(db, 'shortLinks'), shortLinkData);
+      console.log('Lien court créé avec l\'ID:', docRef.id);
+      
       setLoading(false);
       return shortCode;
       
@@ -94,23 +101,30 @@ export const useShortLinks = () => {
 
   const getShortLinkData = async (shortCode: string) => {
     try {
+      console.log('Recherche du lien court:', shortCode);
+      
       const shortLinksQuery = query(
         collection(db, 'shortLinks'),
         where('shortCode', '==', shortCode)
       );
       
       const snapshot = await getDocs(shortLinksQuery);
+      console.log('Résultats de la recherche:', snapshot.size, 'documents trouvés');
       
       if (snapshot.empty) {
+        console.log('Aucun lien court trouvé pour le code:', shortCode);
         return null;
       }
       
       const doc = snapshot.docs[0];
-      return {
+      const data = {
         id: doc.id,
         ...doc.data(),
         createdAt: doc.data().createdAt?.toDate(),
       } as ShortLink;
+      
+      console.log('Données du lien court récupérées:', data);
+      return data;
       
     } catch (error) {
       console.error('Erreur lors de la récupération du lien court:', error);
