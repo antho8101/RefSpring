@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -9,12 +10,14 @@ import {
 import { useAffiliates } from '@/hooks/useAffiliates';
 import { useToast } from '@/hooks/use-toast';
 import { useTrackingLinkGenerator } from '@/hooks/useTrackingLinkGenerator';
-import { Users, ChevronDown, ChevronRight } from 'lucide-react';
+import { Users, ChevronDown, ChevronRight, BarChart3 } from 'lucide-react';
 import { useState } from 'react';
 import { AffiliatesList } from '@/components/AffiliatesList';
 import { CampaignActions } from '@/components/CampaignActions';
 import { CampaignStats } from '@/components/CampaignStats';
+import { CreateAffiliateDialog } from '@/components/CreateAffiliateDialog';
 import { Campaign } from '@/types';
+import { useNavigate } from 'react-router-dom';
 
 interface CampaignCardProps {
   campaign: Campaign;
@@ -27,6 +30,7 @@ export const CampaignCard = ({ campaign, onCopyUrl }: CampaignCardProps) => {
   const [isExpanded, setIsExpanded] = useState(true);
   const { toast } = useToast();
   const { generateTrackingLink } = useTrackingLinkGenerator();
+  const navigate = useNavigate();
 
   // Fonction pour copier le lien de tracking d'un affilié - maintenant asynchrone
   const handleCopyTrackingLink = async (affiliateId: string) => {
@@ -59,6 +63,10 @@ export const CampaignCard = ({ campaign, onCopyUrl }: CampaignCardProps) => {
         variant: "destructive",
       });
     }
+  };
+
+  const handleAdvancedStats = () => {
+    navigate(`/advanced-stats/${campaign.id}`);
   };
 
   return (
@@ -94,7 +102,17 @@ export const CampaignCard = ({ campaign, onCopyUrl }: CampaignCardProps) => {
                   )}
                 </div>
               </div>
-              <div className="ml-4" onClick={(e) => e.stopPropagation()}>
+              <div className="ml-4 flex items-center space-x-2" onClick={(e) => e.stopPropagation()}>
+                <CreateAffiliateDialog campaignId={campaign.id} campaignName={campaign.name} />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleAdvancedStats}
+                  className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 border-blue-200"
+                >
+                  <BarChart3 className="h-4 w-4 mr-1" />
+                  Stats avancées
+                </Button>
                 <CampaignActions campaign={campaign} onCopyUrl={onCopyUrl} />
               </div>
             </div>
