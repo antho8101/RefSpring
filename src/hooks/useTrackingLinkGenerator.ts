@@ -10,20 +10,32 @@ export const useTrackingLinkGenerator = () => {
       const currentHostname = window.location.hostname;
       let baseUrl;
       
+      console.log('🔗 TRACKING LINK GENERATOR - Début génération');
+      console.log('🔗 Hostname actuel:', currentHostname);
+      
       if (currentHostname.includes('localhost') || currentHostname.includes('lovableproject.com')) {
         baseUrl = window.location.origin;
       } else {
         baseUrl = 'https://refspring.com';
       }
       
+      console.log('🔗 Base URL déterminée:', baseUrl);
+      
       try {
+        console.log('🔗 Tentative création lien court...');
         // Créer un lien court
         const shortCode = await createShortLink(campaignId, affiliateId, targetUrl);
-        return `${baseUrl}/s/${shortCode}`;
+        console.log('✅ Lien court créé:', shortCode);
+        const finalLink = `${baseUrl}/s/${shortCode}`;
+        console.log('✅ Lien final:', finalLink);
+        return finalLink;
       } catch (error) {
-        console.error('Erreur lors de la création du lien court, utilisation du lien long:', error);
+        console.error('❌ Erreur création lien court:', error);
+        console.log('🔄 Fallback vers lien long...');
         // Fallback vers le lien long en cas d'erreur
-        return `${baseUrl}/track/${campaignId}/${affiliateId}?url=${encodeURIComponent(targetUrl)}`;
+        const fallbackLink = `${baseUrl}/track/${campaignId}/${affiliateId}?url=${encodeURIComponent(targetUrl)}`;
+        console.log('🔄 Lien fallback:', fallbackLink);
+        return fallbackLink;
       }
     };
   }, [createShortLink]);

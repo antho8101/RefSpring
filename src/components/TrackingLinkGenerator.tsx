@@ -21,19 +21,30 @@ export const TrackingLinkGenerator = ({ campaignId, affiliateId, targetUrl }: Tr
 
   useEffect(() => {
     const generateLink = async () => {
-      if (!targetUrl) return;
+      if (!targetUrl) {
+        console.log('⚠️ TRACKING LINK GENERATOR - Pas d\'URL cible');
+        return;
+      }
+      
+      console.log('🚀 TRACKING LINK GENERATOR - Début génération');
+      console.log('🚀 Paramètres:', { campaignId, affiliateId, targetUrl });
+      console.log('🚀 Contexte utilisateur:', window.location.hostname);
       
       setLoading(true);
       try {
+        console.log('⏳ TRACKING LINK GENERATOR - Appel generateTrackingLink...');
         const link = await generateTrackingLink(campaignId, affiliateId, targetUrl);
+        console.log('✅ TRACKING LINK GENERATOR - Lien généré:', link);
         setGeneratedLink(link);
       } catch (error) {
+        console.error('❌ TRACKING LINK GENERATOR - Erreur:', error);
         toast({
           title: "Erreur",
           description: "Impossible de générer le lien de tracking",
           variant: "destructive",
         });
       } finally {
+        console.log('🏁 TRACKING LINK GENERATOR - Fin (loading = false)');
         setLoading(false);
       }
     };
