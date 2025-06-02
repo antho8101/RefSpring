@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -26,11 +25,12 @@ import {
 } from '@/components/ui/collapsible';
 import { useCampaigns } from '@/hooks/useCampaigns';
 import { useAffiliates } from '@/hooks/useAffiliates';
-import { Settings, Users, Eye, Copy, Trash2, TrendingUp, Calendar, ChevronDown, ChevronRight } from 'lucide-react';
+import { Settings, Users, Eye, Copy, Trash2, TrendingUp, Calendar, ChevronDown, ChevronRight, MoreHorizontal } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
 import { CreateAffiliateDialog } from '@/components/CreateAffiliateDialog';
 import { AffiliatesList } from '@/components/AffiliatesList';
+import { CampaignSettingsDialog } from '@/components/CampaignSettingsDialog';
 
 export const CampaignsList = () => {
   const { campaigns, loading } = useCampaigns();
@@ -150,7 +150,7 @@ const CampaignCard = ({ campaign, onCopyUrl }: CampaignCardProps) => {
                     : "bg-slate-200 text-slate-600"
                   }
                 >
-                  {campaign.isActive ? "Active" : "Inactive"}
+                  {campaign.isActive ? "Active" : "En pause"}
                 </Badge>
               </div>
             </CardTitle>
@@ -171,10 +171,12 @@ const CampaignCard = ({ campaign, onCopyUrl }: CampaignCardProps) => {
               <Copy className="h-4 w-4" />
             </Button>
             
+            <CampaignSettingsDialog campaign={campaign} />
+            
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="sm" className="hover:scale-105 transition-all shadow-lg backdrop-blur-sm border-slate-300">
-                  <Settings className="h-4 w-4" />
+                  <MoreHorizontal className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="bg-white/95 backdrop-blur-xl border-slate-200 shadow-xl">
