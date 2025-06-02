@@ -45,59 +45,67 @@ const AffiliatePage = () => {
       try {
         console.log('Fetching campaign with ID:', campaignId);
         
-        // Récupérer les infos de la campagne directement par son ID
-        const campaignRef = doc(db, 'campaigns', campaignId);
-        const campaignDoc = await getDoc(campaignRef);
-        
-        if (campaignDoc.exists()) {
-          const campaignData = campaignDoc.data();
-          console.log('Campaign data:', campaignData);
-          setCampaignName(campaignData.name || 'Campagne');
-        } else {
-          console.log('Campaign not found with ID:', campaignId);
-          setCampaignName('Campagne introuvable');
-          setError('Campagne introuvable');
+        // Try to get campaign data - this might fail due to security rules
+        try {
+          const campaignRef = doc(db, 'campaigns', campaignId);
+          const campaignDoc = await getDoc(campaignRef);
+          
+          if (campaignDoc.exists()) {
+            const campaignData = campaignDoc.data();
+            console.log('Campaign data:', campaignData);
+            setCampaignName(campaignData.name || 'Campagne');
+          } else {
+            console.log('Campaign not found with ID:', campaignId);
+            setCampaignName('Campagne publique');
+          }
+        } catch (campaignError) {
+          console.log('Cannot access campaign due to permissions, using default name');
+          setCampaignName('Campagne publique');
         }
         
-        // Récupérer tous les affiliés pour cette campagne
-        console.log('Fetching affiliates for campaign:', campaignId);
-        const affiliatesQuery = query(
-          collection(db, 'affiliates'), 
-          where('campaignId', '==', campaignId)
-        );
-        
-        const affiliatesSnapshot = await getDocs(affiliatesQuery);
-        console.log('Affiliates snapshot size:', affiliatesSnapshot.size);
-        
-        const affiliatesData = affiliatesSnapshot.docs.map(doc => {
-          const data = doc.data();
-          console.log('Affiliate doc:', doc.id, data);
-          return {
-            id: doc.id,
-            ...data
-          };
-        }) as Affiliate[];
-        
-        console.log('Processed affiliates data:', affiliatesData);
-        setAffiliates(affiliatesData);
-        
-        // Si un code d'affilié est dans l'URL, le sélectionner
-        if (refCode) {
-          console.log('Looking for affiliate with tracking code:', refCode);
-          const affiliate = affiliatesData.find(a => a.trackingCode === refCode);
-          if (affiliate) {
-            console.log('Found affiliate:', affiliate);
-            setSelectedAffiliate(affiliate.id);
-          } else {
-            console.log('No affiliate found with tracking code:', refCode);
+        // Try to get affiliates - this might also fail due to security rules
+        try {
+          console.log('Fetching affiliates for campaign:', campaignId);
+          const affiliatesQuery = query(
+            collection(db, 'affiliates'), 
+            where('campaignId', '==', campaignId)
+          );
+          
+          const affiliatesSnapshot = await getDocs(affiliatesQuery);
+          console.log('Affiliates snapshot size:', affiliatesSnapshot.size);
+          
+          const affiliatesData = affiliatesSnapshot.docs.map(doc => {
+            const data = doc.data();
+            console.log('Affiliate doc:', doc.id, data);
+            return {
+              id: doc.id,
+              ...data
+            };
+          }) as Affiliate[];
+          
+          console.log('Processed affiliates data:', affiliatesData);
+          setAffiliates(affiliatesData);
+          
+          if (refCode) {
+            console.log('Looking for affiliate with tracking code:', refCode);
+            const affiliate = affiliatesData.find(a => a.trackingCode === refCode);
+            if (affiliate) {
+              console.log('Found affiliate:', affiliate);
+              setSelectedAffiliate(affiliate.id);
+            } else {
+              console.log('No affiliate found with tracking code:', refCode);
+            }
           }
+        } catch (affiliatesError) {
+          console.log('Cannot access affiliates due to permissions:', affiliatesError);
+          setError('Cette campagne nécessite une authentification pour afficher les données des affiliés');
         }
         
         setLoading(false);
       } catch (error) {
         console.error("Erreur lors de la récupération des données:", error);
-        setError(`Erreur: ${error.message || 'Erreur inconnue'}`);
-        setCampaignName('Erreur de chargement');
+        setError(`Cette campagne n'est pas accessible publiquement`);
+        setCampaignName('Accès restreint');
         setLoading(false);
       }
     };
@@ -122,16 +130,19 @@ const AffiliatePage = () => {
     loadAffiliateStats();
   }, [selectedAffiliate]);
 
-  // Debug info
+  // Error display with more helpful message for public access
   if (error) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <Card className="max-w-md">
           <CardContent className="p-6">
             <div className="text-center">
-              <h3 className="text-lg font-medium mb-2 text-red-600">Erreur</h3>
+              <h3 className="text-lg font-medium mb-2 text-red-600">Accès restreint</h3>
               <p className="text-gray-600">{error}</p>
-              <p className="text-sm text-gray-400 mt-2">ID: {campaignId}</p>
+              <p className="text-sm text-gray-400 mt-4">
+                Cette campagne nécessite peut-être une configuration spéciale pour l'accès public.
+              </p>
+              <p className="text-xs text-gray-400 mt-2">ID: {campaignId}</p>
             </div>
           </CardContent>
         </Card>
@@ -147,7 +158,7 @@ const AffiliatePage = () => {
           <div className="flex justify-between items-center h-16">
             <div>
               <h1 className="text-2xl font-bold text-blue-600">RefSpring</h1>
-              <p className="text-sm text-gray-600">Dashboard Affiliés</p>
+              <p className="text-sm text-gray-600">Dashboard Public</p>
             </div>
             <Badge variant="outline">
               {loading ? 'Chargement...' : (campaignName || 'Campagne')}
