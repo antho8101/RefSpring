@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import AffiliatePage from "./pages/AffiliatePage";
 import TrackingPage from "./pages/TrackingPage";
+import LandingPage from "./pages/LandingPage";
 
 const queryClient = new QueryClient();
 
@@ -18,7 +19,8 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Index />} />
+          <Route path="/dashboard" element={<Index />} />
+          <Route path="/landing" element={<LandingPage />} />
           <Route path="/r/:campaignId" element={<AffiliatePage />} />
           <Route path="/track/:campaignId/:affiliateId" element={<TrackingPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
