@@ -1,26 +1,26 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useTranslation } from 'react-i18next';
 
-interface AffiliatePerformance {
+interface Affiliate {
   id: string;
   name: string;
   email: string;
   clicks: number;
   conversions: number;
-  commissions: number;
   conversionRate: number;
+  commissions: number;
 }
 
 interface AdvancedStatsAffiliateTableProps {
-  affiliates: AffiliatePerformance[];
+  affiliates: Affiliate[];
 }
 
-const formatCurrency = (value: number) => {
+const formatCurrency = (amount: number) => {
   return new Intl.NumberFormat('fr-FR', {
     style: 'currency',
     currency: 'EUR',
-    minimumFractionDigits: 2,
-  }).format(value);
+  }).format(amount);
 };
 
 export const AdvancedStatsAffiliateTable = ({ affiliates }: AdvancedStatsAffiliateTableProps) => {

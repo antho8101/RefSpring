@@ -1,5 +1,6 @@
-import { MousePointer, Target, DollarSign, Percent } from 'lucide-react';
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { MousePointer, Target, DollarSign, Percent } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 interface AdvancedStatsMetricsProps {
@@ -7,21 +8,20 @@ interface AdvancedStatsMetricsProps {
     totalClicks: number;
     totalConversions: number;
     totalRevenue: number;
-    conversionRate: number;
     netRevenue: number;
     totalCommissions: number;
+    conversionRate: number;
     averageCPA: number;
     averageROAS: number;
   };
   loading: boolean;
 }
 
-const formatCurrency = (value: number) => {
+const formatCurrency = (amount: number) => {
   return new Intl.NumberFormat('fr-FR', {
     style: 'currency',
     currency: 'EUR',
-    minimumFractionDigits: 2,
-  }).format(value);
+  }).format(amount);
 };
 
 export const AdvancedStatsMetrics = ({ stats, loading }: AdvancedStatsMetricsProps) => {

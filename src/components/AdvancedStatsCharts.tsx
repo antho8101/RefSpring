@@ -1,29 +1,26 @@
-import { MousePointer, DollarSign } from 'lucide-react';
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { MousePointer, DollarSign } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-interface DailyStats {
-  date: string;
-  clicks: number;
-  conversions: number;
-  revenue: number;
-  commissions: number;
-}
-
 interface AdvancedStatsChartsProps {
-  dailyStats: DailyStats[];
+  dailyStats: Array<{
+    date: string;
+    clicks: number;
+    conversions: number;
+    revenue: number;
+  }>;
   totalRevenue: number;
   netRevenue: number;
   totalCommissions: number;
 }
 
-const formatCurrency = (value: number) => {
+const formatCurrency = (amount: number) => {
   return new Intl.NumberFormat('fr-FR', {
     style: 'currency',
     currency: 'EUR',
-    minimumFractionDigits: 2,
-  }).format(value);
+  }).format(amount);
 };
 
 export const AdvancedStatsCharts = ({ dailyStats, totalRevenue, netRevenue, totalCommissions }: AdvancedStatsChartsProps) => {

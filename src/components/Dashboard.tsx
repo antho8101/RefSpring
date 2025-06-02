@@ -1,3 +1,4 @@
+
 import { useAuth } from '@/hooks/useAuth';
 import { useCampaigns } from '@/hooks/useCampaigns';
 import { Button } from '@/components/ui/button';
@@ -12,7 +13,7 @@ import { LogOut, BarChart3, TrendingUp, Users } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 export const Dashboard = () => {
-  const { user, signOut } = useAuth();
+  const { user, logout } = useAuth();
   const { campaigns, loading } = useCampaigns();
   const { toast } = useToast();
   const { t } = useTranslation();
@@ -40,7 +41,7 @@ export const Dashboard = () => {
 
   const handleSignOut = async () => {
     try {
-      await signOut();
+      await logout();
       toast({
         title: t('common.success'),
         description: "Disconnected successfully",
@@ -120,7 +121,7 @@ export const Dashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="text-xl sm:text-2xl font-bold text-slate-900">
-                {loading ? '...' : campaigns.reduce((total, campaign) => total + (campaign.affiliatesCount || 0), 0)}
+                {loading ? '...' : '0'}
               </div>
               <p className="text-xs text-slate-500 mt-1">
                 {t('stats.activeAffiliates')}
@@ -137,7 +138,7 @@ export const Dashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="text-xl sm:text-2xl font-bold text-slate-900">
-                {loading ? '...' : campaigns.reduce((total, campaign) => total + (campaign.totalClicks || 0), 0)}
+                {loading ? '...' : '0'}
               </div>
               <p className="text-xs text-slate-500 mt-1">
                 {t('stats.totalClicks').toLowerCase()}
