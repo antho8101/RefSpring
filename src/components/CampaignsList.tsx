@@ -21,7 +21,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { useCampaigns } from '@/hooks/useCampaigns';
 import { useAffiliates } from '@/hooks/useAffiliates';
-import { Settings, Users, Eye, Copy, Trash2 } from 'lucide-react';
+import { Settings, Users, Eye, Copy, Trash2, TrendingUp, Calendar } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
 
@@ -43,13 +43,16 @@ export const CampaignsList = () => {
   if (loading) {
     console.log('CampaignsList: showing loading state');
     return (
-      <div className="space-y-4">
+      <div className="space-y-6">
         {[1, 2, 3].map((i) => (
-          <Card key={i} className="animate-pulse">
+          <Card key={i} className="animate-pulse bg-gradient-to-br from-white to-slate-50/50 border-slate-200/50 shadow-lg">
             <CardHeader>
-              <div className="h-4 bg-gray-200 rounded w-1/4"></div>
-              <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+              <div className="h-6 bg-gray-200 rounded w-1/4"></div>
+              <div className="h-4 bg-gray-200 rounded w-1/2"></div>
             </CardHeader>
+            <CardContent>
+              <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+            </CardContent>
           </Card>
         ))}
       </div>
@@ -59,13 +62,19 @@ export const CampaignsList = () => {
   if (campaigns.length === 0) {
     console.log('CampaignsList: showing empty state');
     return (
-      <Card>
-        <CardContent className="flex flex-col items-center justify-center py-12">
-          <Eye className="h-12 w-12 text-muted-foreground mb-4" />
-          <h3 className="text-lg font-semibold mb-2">Aucune campagne</h3>
-          <p className="text-muted-foreground text-center">
-            Créez votre première campagne pour commencer à gérer vos affiliés.
+      <Card className="bg-gradient-to-br from-white to-slate-50/50 border-slate-200/50 shadow-xl backdrop-blur-sm">
+        <CardContent className="flex flex-col items-center justify-center py-16">
+          <div className="p-4 bg-blue-100 rounded-full mb-6">
+            <Eye className="h-12 w-12 text-blue-600" />
+          </div>
+          <h3 className="text-xl font-bold text-slate-900 mb-3">Aucune campagne</h3>
+          <p className="text-slate-600 text-center max-w-md leading-relaxed">
+            Créez votre première campagne pour commencer à gérer vos affiliés et générer des revenus.
           </p>
+          <div className="mt-6 flex items-center gap-2 text-sm text-slate-500">
+            <TrendingUp className="h-4 w-4" />
+            <span>Prêt à transformer votre business</span>
+          </div>
         </CardContent>
       </Card>
     );
@@ -73,9 +82,15 @@ export const CampaignsList = () => {
 
   console.log('CampaignsList: rendering campaigns list');
   return (
-    <div className="space-y-4">
-      {campaigns.map((campaign) => (
-        <CampaignCard key={campaign.id} campaign={campaign} onCopyUrl={copyTrackingUrl} />
+    <div className="space-y-6">
+      {campaigns.map((campaign, index) => (
+        <div 
+          key={campaign.id} 
+          className="animate-fade-in" 
+          style={{ animationDelay: `${index * 0.1}s` }}
+        >
+          <CampaignCard campaign={campaign} onCopyUrl={copyTrackingUrl} />
+        </div>
       ))}
     </div>
   );
@@ -113,17 +128,27 @@ const CampaignCard = ({ campaign, onCopyUrl }: CampaignCardProps) => {
   };
 
   return (
-    <Card>
+    <Card className="bg-gradient-to-br from-white to-slate-50/50 border-slate-200/50 shadow-xl hover:shadow-2xl transition-all hover:scale-[1.02] backdrop-blur-sm group">
       <CardHeader>
         <div className="flex items-center justify-between">
-          <div>
-            <CardTitle className="flex items-center gap-2">
-              {campaign.name}
-              <Badge variant={campaign.isActive ? "default" : "secondary"}>
-                {campaign.isActive ? "Active" : "Inactive"}
-              </Badge>
+          <div className="flex-1">
+            <CardTitle className="flex items-center gap-3 text-xl">
+              <div className="flex items-center gap-2">
+                {campaign.name}
+                <Badge 
+                  variant={campaign.isActive ? "default" : "secondary"}
+                  className={campaign.isActive 
+                    ? "bg-gradient-to-r from-green-500 to-green-600 text-white border-0" 
+                    : "bg-slate-200 text-slate-600"
+                  }
+                >
+                  {campaign.isActive ? "Active" : "Inactive"}
+                </Badge>
+              </div>
             </CardTitle>
-            <CardDescription>{campaign.description}</CardDescription>
+            <CardDescription className="text-slate-600 mt-2 leading-relaxed">
+              {campaign.description}
+            </CardDescription>
           </div>
           <div className="flex items-center space-x-2">
             <Button 
@@ -131,25 +156,26 @@ const CampaignCard = ({ campaign, onCopyUrl }: CampaignCardProps) => {
               size="sm" 
               onClick={() => onCopyUrl(campaign.id)}
               title="Copier l'URL de tracking pour vos affiliés"
+              className="hover:scale-105 transition-all shadow-lg backdrop-blur-sm border-slate-300"
             >
               <Copy className="h-4 w-4" />
             </Button>
             
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm">
+                <Button variant="outline" size="sm" className="hover:scale-105 transition-all shadow-lg backdrop-blur-sm border-slate-300">
                   <Settings className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent>
+              <DropdownMenuContent className="bg-white/95 backdrop-blur-xl border-slate-200 shadow-xl">
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
-                    <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-destructive cursor-pointer">
+                    <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-destructive cursor-pointer hover:bg-red-50">
                       <Trash2 className="h-4 w-4 mr-2" />
                       Supprimer
                     </DropdownMenuItem>
                   </AlertDialogTrigger>
-                  <AlertDialogContent>
+                  <AlertDialogContent className="bg-white/95 backdrop-blur-xl border-slate-200">
                     <AlertDialogHeader>
                       <AlertDialogTitle>Supprimer la campagne</AlertDialogTitle>
                       <AlertDialogDescription>
@@ -175,21 +201,36 @@ const CampaignCard = ({ campaign, onCopyUrl }: CampaignCardProps) => {
         </div>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-          <div>
-            <span className="text-muted-foreground">URL:</span>
-            <p className="font-mono text-xs truncate">{campaign.targetUrl}</p>
-          </div>
-          <div>
-            <span className="text-muted-foreground">Affiliés:</span>
-            <p className="flex items-center gap-1">
-              <Users className="h-3 w-3" />
-              {affiliates.length}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bg-blue-50/50 p-4 rounded-xl">
+            <div className="flex items-center gap-2 text-blue-600 mb-2">
+              <TrendingUp className="h-4 w-4" />
+              <span className="text-sm font-medium">URL Cible</span>
+            </div>
+            <p className="font-mono text-xs text-slate-600 truncate bg-white/70 px-2 py-1 rounded">
+              {campaign.targetUrl}
             </p>
           </div>
-          <div>
-            <span className="text-muted-foreground">Créée le:</span>
-            <p>{new Date(campaign.createdAt).toLocaleDateString('fr-FR')}</p>
+          
+          <div className="bg-green-50/50 p-4 rounded-xl">
+            <div className="flex items-center gap-2 text-green-600 mb-2">
+              <Users className="h-4 w-4" />
+              <span className="text-sm font-medium">Affiliés</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-2xl font-bold text-slate-900">{affiliates.length}</span>
+              <span className="text-xs text-slate-500">actifs</span>
+            </div>
+          </div>
+          
+          <div className="bg-purple-50/50 p-4 rounded-xl">
+            <div className="flex items-center gap-2 text-purple-600 mb-2">
+              <Calendar className="h-4 w-4" />
+              <span className="text-sm font-medium">Créée le</span>
+            </div>
+            <p className="text-sm font-semibold text-slate-900">
+              {new Date(campaign.createdAt).toLocaleDateString('fr-FR')}
+            </p>
           </div>
         </div>
       </CardContent>
