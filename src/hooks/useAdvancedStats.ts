@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import { collection, query, where, getDocs, orderBy } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
@@ -67,6 +68,7 @@ export const useAdvancedStats = (campaignId?: string) => {
         if (campaignId) {
           // Stats pour une campagne spécifique
           campaignIds = [campaignId];
+          console.log('📊 Mode campagne spécifique:', campaignId);
         } else {
           // Stats pour toutes les campagnes de l'utilisateur
           const campaignsQuery = query(
@@ -75,49 +77,85 @@ export const useAdvancedStats = (campaignId?: string) => {
           );
           const campaignsSnapshot = await getDocs(campaignsQuery);
           campaignIds = campaignsSnapshot.docs.map(doc => doc.id);
+          console.log('📊 Campagnes trouvées:', campaignIds.length);
         }
 
         if (campaignIds.length === 0) {
+          console.log('📊 Aucune campagne trouvée');
           setLoading(false);
           return;
         }
 
-        // 2. Récupérer tous les clics avec dates
+        // Récupérer tous les clics
         let allClicks: any[] = [];
         for (const cId of campaignIds) {
-          const clicksQuery = query(
-            collection(db, 'clicks'),
-            where('campaignId', '==', cId),
-            orderBy('timestamp', 'desc')
-          );
-          const clicksSnapshot = await getDocs(clicksQuery);
-          allClicks = [...allClicks, ...clicksSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))];
+          try {
+            const clicksQuery = query(
+              collection(db, 'clicks'),
+              where('campaignId', '==', cId)
+            );
+            const clicksSnapshot = await getDocs(clicksQuery);
+            const campaignClicks = clicksSnapshot.docs.map(doc => ({ 
+              id: doc.id, 
+              ...doc.data(),
+              campaignId: cId 
+            }));
+            allClicks = [...allClicks, ...campaignClicks];
+            console.log(`📊 Clics pour campagne ${cId}:`, campaignClicks.length);
+          } catch (error) {
+            console.warn(`⚠️ Erreur lors du chargement des clics pour ${cId}:`, error);
+          }
         }
 
-        // 3. Récupérer toutes les conversions avec dates
+        // Récupérer toutes les conversions
         let allConversions: any[] = [];
         for (const cId of campaignIds) {
-          const conversionsQuery = query(
-            collection(db, 'conversions'),
-            where('campaignId', '==', cId),
-            orderBy('timestamp', 'desc')
-          );
-          const conversionsSnapshot = await getDocs(conversionsQuery);
-          allConversions = [...allConversions, ...conversionsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))];
+          try {
+            const conversionsQuery = query(
+              collection(db, 'conversions'),
+              where('campaignId', '==', cId)
+            );
+            const conversionsSnapshot = await getDocs(conversionsQuery);
+            const campaignConversions = conversionsSnapshot.docs.map(doc => ({ 
+              id: doc.id, 
+              ...doc.data(),
+              campaignId: cId 
+            }));
+            allConversions = [...allConversions, ...campaignConversions];
+            console.log(`📊 Conversions pour campagne ${cId}:`, campaignConversions.length);
+          } catch (error) {
+            console.warn(`⚠️ Erreur lors du chargement des conversions pour ${cId}:`, error);
+          }
         }
 
-        // 4. Récupérer tous les affiliés
+        // Récupérer tous les affiliés
         let allAffiliates: any[] = [];
         for (const cId of campaignIds) {
-          const affiliatesQuery = query(
-            collection(db, 'affiliates'),
-            where('campaignId', '==', cId)
-          );
-          const affiliatesSnapshot = await getDocs(affiliatesQuery);
-          allAffiliates = [...allAffiliates, ...affiliatesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))];
+          try {
+            const affiliatesQuery = query(
+              collection(db, 'affiliates'),
+              where('campaignId', '==', cId)
+            );
+            const affiliatesSnapshot = await getDocs(affiliatesQuery);
+            const campaignAffiliates = affiliatesSnapshot.docs.map(doc => ({ 
+              id: doc.id, 
+              ...doc.data(),
+              campaignId: cId 
+            }));
+            allAffiliates = [...allAffiliates, ...campaignAffiliates];
+            console.log(`📊 Affiliés pour campagne ${cId}:`, campaignAffiliates.length);
+          } catch (error) {
+            console.warn(`⚠️ Erreur lors du chargement des affiliés pour ${cId}:`, error);
+          }
         }
 
-        // 5. Calculer les stats journalières (derniers 30 jours)
+        console.log('📊 TOTAUX:', { 
+          clicks: allClicks.length, 
+          conversions: allConversions.length, 
+          affiliates: allAffiliates.length 
+        });
+
+        // Calculer les stats journalières (derniers 30 jours)
         const last30Days = Array.from({ length: 30 }, (_, i) => {
           const date = new Date();
           date.setDate(date.getDate() - i);
@@ -126,17 +164,31 @@ export const useAdvancedStats = (campaignId?: string) => {
 
         const dailyStats = last30Days.map(date => {
           const dayClicks = allClicks.filter(click => {
-            const clickDate = click.timestamp?.toDate?.()?.toISOString?.().split('T')[0] || date;
-            return clickDate === date;
+            if (!click.timestamp) return false;
+            try {
+              const clickDate = click.timestamp.toDate ? 
+                click.timestamp.toDate().toISOString().split('T')[0] : 
+                new Date(click.timestamp).toISOString().split('T')[0];
+              return clickDate === date;
+            } catch (error) {
+              return false;
+            }
           });
           
           const dayConversions = allConversions.filter(conversion => {
-            const conversionDate = conversion.timestamp?.toDate?.()?.toISOString?.().split('T')[0] || date;
-            return conversionDate === date;
+            if (!conversion.timestamp) return false;
+            try {
+              const conversionDate = conversion.timestamp.toDate ? 
+                conversion.timestamp.toDate().toISOString().split('T')[0] : 
+                new Date(conversion.timestamp).toISOString().split('T')[0];
+              return conversionDate === date;
+            } catch (error) {
+              return false;
+            }
           });
 
-          const dayRevenue = dayConversions.reduce((sum, conv) => sum + (conv.amount || 0), 0);
-          const dayCommissions = dayConversions.reduce((sum, conv) => sum + (conv.commission || 0), 0);
+          const dayRevenue = dayConversions.reduce((sum, conv) => sum + (parseFloat(conv.amount) || 0), 0);
+          const dayCommissions = dayConversions.reduce((sum, conv) => sum + (parseFloat(conv.commission) || 0), 0);
 
           return {
             date,
@@ -147,17 +199,17 @@ export const useAdvancedStats = (campaignId?: string) => {
           };
         });
 
-        // 6. Calculer les performances par affilié
+        // Calculer les performances par affilié
         const affiliatePerformance = allAffiliates.map(affiliate => {
           const affiliateClicks = allClicks.filter(click => click.affiliateId === affiliate.id);
           const affiliateConversions = allConversions.filter(conv => conv.affiliateId === affiliate.id);
-          const affiliateCommissions = affiliateConversions.reduce((sum, conv) => sum + (conv.commission || 0), 0);
+          const affiliateCommissions = affiliateConversions.reduce((sum, conv) => sum + (parseFloat(conv.commission) || 0), 0);
           const conversionRate = affiliateClicks.length > 0 ? (affiliateConversions.length / affiliateClicks.length) * 100 : 0;
 
           return {
             id: affiliate.id,
-            name: affiliate.name || 'Anonyme',
-            email: affiliate.email || '',
+            name: affiliate.name || 'Affilié anonyme',
+            email: affiliate.email || 'Email non renseigné',
             clicks: affiliateClicks.length,
             conversions: affiliateConversions.length,
             commissions: affiliateCommissions,
@@ -165,15 +217,26 @@ export const useAdvancedStats = (campaignId?: string) => {
           };
         }).sort((a, b) => b.commissions - a.commissions);
 
-        // 7. Calculer les métriques globales
+        // Calculer les métriques globales
         const totalClicks = allClicks.length;
         const totalConversions = allConversions.length;
-        const totalRevenue = allConversions.reduce((sum, conv) => sum + (conv.amount || 0), 0);
-        const totalCommissions = allConversions.reduce((sum, conv) => sum + (conv.commission || 0), 0);
+        const totalRevenue = allConversions.reduce((sum, conv) => sum + (parseFloat(conv.amount) || 0), 0);
+        const totalCommissions = allConversions.reduce((sum, conv) => sum + (parseFloat(conv.commission) || 0), 0);
         const netRevenue = totalRevenue - totalCommissions;
         const conversionRate = totalClicks > 0 ? (totalConversions / totalClicks) * 100 : 0;
         const averageCPA = totalConversions > 0 ? totalCommissions / totalConversions : 0;
         const averageROAS = totalCommissions > 0 ? totalRevenue / totalCommissions : 0;
+
+        console.log('📊 MÉTRIQUES CALCULÉES:', {
+          totalClicks,
+          totalConversions,
+          totalRevenue,
+          totalCommissions,
+          netRevenue,
+          conversionRate,
+          averageCPA,
+          averageROAS
+        });
 
         setStats({
           dailyStats,
