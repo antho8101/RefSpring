@@ -9,14 +9,16 @@ import {
 } from '@/components/ui/collapsible';
 import { useAffiliates } from '@/hooks/useAffiliates';
 import { useCampaignStats } from '@/hooks/useCampaignStats';
-import { ChevronDown, ChevronRight, Users, MousePointer, DollarSign } from 'lucide-react';
+import { ChevronDown, ChevronRight, Users, MousePointer, DollarSign, BarChart3 } from 'lucide-react';
 import { useState } from 'react';
 import { CampaignStats } from '@/components/CampaignStats';
 import { AffiliatesList } from '@/components/AffiliatesList';
 import { CampaignActions } from '@/components/CampaignActions';
+import { CreateAffiliateDialog } from '@/components/CreateAffiliateDialog';
 import { Campaign } from '@/types';
 import { useToast } from '@/hooks/use-toast';
 import { useTrackingLinkGenerator } from '@/hooks/useTrackingLinkGenerator';
+import { useNavigate } from 'react-router-dom';
 
 interface CompactCampaignCardProps {
   campaign: Campaign;
@@ -30,6 +32,7 @@ export const CompactCampaignCard = ({ campaign, onCopyUrl }: CompactCampaignCard
   const [isAffiliatesOpen, setIsAffiliatesOpen] = useState(false);
   const { toast } = useToast();
   const { generateTrackingLink } = useTrackingLinkGenerator();
+  const navigate = useNavigate();
 
   const handleCopyTrackingLink = async (affiliateId: string) => {
     if (!campaign.targetUrl) {
@@ -61,6 +64,10 @@ export const CompactCampaignCard = ({ campaign, onCopyUrl }: CompactCampaignCard
         variant: "destructive",
       });
     }
+  };
+
+  const handleAdvancedStats = () => {
+    navigate(`/advanced-stats/${campaign.id}`);
   };
 
   return (
@@ -108,7 +115,17 @@ export const CompactCampaignCard = ({ campaign, onCopyUrl }: CompactCampaignCard
                 </div>
               </div>
               
-              <div className="ml-4" onClick={(e) => e.stopPropagation()}>
+              <div className="ml-4 flex items-center space-x-2" onClick={(e) => e.stopPropagation()}>
+                <CreateAffiliateDialog campaignId={campaign.id} campaignName={campaign.name} />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleAdvancedStats}
+                  className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 border-blue-200"
+                >
+                  <BarChart3 className="h-4 w-4 mr-1" />
+                  Stats avancées
+                </Button>
                 <CampaignActions campaign={campaign} onCopyUrl={onCopyUrl} />
               </div>
             </div>
