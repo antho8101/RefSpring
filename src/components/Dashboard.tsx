@@ -1,4 +1,3 @@
-
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/hooks/useAuth';
@@ -89,16 +88,6 @@ export const Dashboard = () => {
 
             {/* Desktop Navigation */}
             <div className="hidden lg:flex items-center space-x-4">
-              <Link to="/advanced-stats">
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  className="hover:scale-105 transition-all shadow-lg backdrop-blur-sm bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200 hover:border-blue-300"
-                >
-                  <BarChart3 className="h-4 w-4 mr-2" />
-                  Statistiques Avancées
-                </Button>
-              </Link>
               <div className="text-sm text-slate-700 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full border border-slate-200 max-w-[200px] truncate">
                 Bonjour, <span className="font-semibold">{user?.displayName || user?.email}</span>
               </div>
@@ -131,20 +120,6 @@ export const Dashboard = () => {
                 <div className="text-sm text-slate-700 px-4 py-2 bg-slate-50 rounded-lg">
                   Bonjour, <span className="font-semibold">{user?.displayName || user?.email}</span>
                 </div>
-                <Link 
-                  to="/advanced-stats" 
-                  className="block"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="w-full justify-start"
-                  >
-                    <BarChart3 className="h-4 w-4 mr-2" />
-                    Statistiques Avancées
-                  </Button>
-                </Link>
                 <Button 
                   variant="outline" 
                   size="sm" 
