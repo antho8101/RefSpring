@@ -4,7 +4,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useAuth } from '@/hooks/useAuth';
 import { useCampaigns } from '@/hooks/useCampaigns';
 import { useAffiliates } from '@/hooks/useAffiliates';
-import { LogOut, Settings, Users, BarChart3, Plus, TrendingUp, DollarSign, Zap, Globe } from 'lucide-react';
+import { useGlobalStats } from '@/hooks/useGlobalStats';
+import { LogOut, Settings, Users, BarChart3, Plus, TrendingUp, DollarSign, Zap, Globe, Percent } from 'lucide-react';
 import { CreateCampaignDialog } from '@/components/CreateCampaignDialog';
 import { CampaignsList } from '@/components/CampaignsList';
 import { useEffect, useState } from 'react';
@@ -13,6 +14,7 @@ export const Dashboard = () => {
   const { user, logout } = useAuth();
   const { campaigns } = useCampaigns();
   const { affiliates } = useAffiliates();
+  const { stats: globalStats, loading: globalStatsLoading } = useGlobalStats();
   const [scrollY, setScrollY] = useState(0);
 
   useEffect(() => {
@@ -50,10 +52,8 @@ export const Dashboard = () => {
         ></div>
       </div>
 
-      {/* Animated Grid Background */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px] animate-pulse pointer-events-none"></div>
 
-      {/* Floating Icons */}
       <div className="absolute inset-0 pointer-events-none">
         <DollarSign 
           className="absolute top-1/4 left-1/4 w-8 h-8 text-green-500/10 animate-bounce" 
@@ -104,7 +104,7 @@ export const Dashboard = () => {
       {/* Main Content */}
       <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 animate-fade-in">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8 animate-fade-in">
           <Card className="bg-gradient-to-br from-white to-blue-50/50 border-slate-200/50 shadow-xl hover:shadow-2xl transition-all hover:scale-105 backdrop-blur-sm">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-slate-700">Campagnes Actives</CardTitle>
@@ -140,25 +140,60 @@ export const Dashboard = () => {
               </p>
               <div className="mt-2 flex items-center gap-1 text-green-600">
                 <TrendingUp className="h-3 w-3" />
-                <span className="text-xs font-medium">Croissance</span>
+                <span className="text-xs font-medium">
+                  {globalStatsLoading ? '...' : `${globalStats.totalClicks} clics`}
+                </span>
               </div>
             </CardContent>
           </Card>
 
           <Card className="bg-gradient-to-br from-white to-purple-50/50 border-slate-200/50 shadow-xl hover:shadow-2xl transition-all hover:scale-105 backdrop-blur-sm">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-slate-700">CA Total</CardTitle>
+              <CardTitle className="text-sm font-medium text-slate-700">CA Net</CardTitle>
               <div className="p-2 bg-purple-100 rounded-full">
                 <DollarSign className="h-5 w-5 text-purple-600" />
               </div>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-slate-900 mb-1">0€</div>
+              <div className="text-3xl font-bold text-slate-900 mb-1">
+                {globalStatsLoading ? '...' : `${globalStats.netRevenue.toFixed(2)}€`}
+              </div>
               <p className="text-xs text-slate-500">
-                Aucune conversion
+                {globalStatsLoading ? 'Chargement...' : 
+                  globalStats.totalConversions === 0 ? 'Aucune conversion' : 
+                  `après ${globalStats.totalCommissions.toFixed(2)}€ de commissions`
+                }
               </p>
               <div className="mt-2 text-xs text-purple-600 font-medium">
-                Prêt à décoller 🚀
+                {globalStatsLoading ? '' : 
+                  globalStats.totalConversions === 0 ? 'Prêt à décoller 🚀' :
+                  `${globalStats.totalConversions} conversion${globalStats.totalConversions > 1 ? 's' : ''}`
+                }
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gradient-to-br from-white to-orange-50/50 border-slate-200/50 shadow-xl hover:shadow-2xl transition-all hover:scale-105 backdrop-blur-sm">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-slate-700">Taux Conversion</CardTitle>
+              <div className="p-2 bg-orange-100 rounded-full">
+                <Percent className="h-5 w-5 text-orange-600" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-slate-900 mb-1">
+                {globalStatsLoading ? '...' : `${globalStats.conversionRate.toFixed(1)}%`}
+              </div>
+              <p className="text-xs text-slate-500">
+                {globalStatsLoading ? 'Calcul...' : 
+                  `sur ${globalStats.totalClicks} clics totaux`
+                }
+              </p>
+              <div className="mt-2 h-1 bg-orange-100 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-gradient-to-r from-orange-500 to-orange-600 rounded-full transition-all"
+                  style={{ width: `${Math.min(globalStats.conversionRate * 2, 100)}%` }}
+                ></div>
               </div>
             </CardContent>
           </Card>
