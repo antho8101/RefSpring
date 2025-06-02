@@ -1,33 +1,58 @@
 
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Zap, Users, BarChart3, Shield, CheckCircle } from "lucide-react";
+import { ArrowRight, Zap, Users, BarChart3, Shield, CheckCircle, Star, TrendingUp, DollarSign, Clock, Globe, Award } from "lucide-react";
+import { useEffect, useState } from "react";
 
 const LandingPage = () => {
+  const [scrollY, setScrollY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => setScrollY(window.scrollY);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   const redirectToDashboard = () => {
     window.location.href = 'https://dashboard.refspring.com';
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white overflow-hidden">
+      {/* Floating Background Elements */}
+      <div className="fixed inset-0 pointer-events-none">
+        <div 
+          className="absolute top-20 right-10 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl animate-pulse"
+          style={{ transform: `translateY(${scrollY * 0.1}px)` }}
+        ></div>
+        <div 
+          className="absolute top-1/2 left-10 w-48 h-48 bg-purple-500/5 rounded-full blur-3xl animate-pulse"
+          style={{ transform: `translateY(${scrollY * -0.05}px)` }}
+        ></div>
+        <div 
+          className="absolute bottom-1/4 right-1/4 w-32 h-32 bg-green-500/5 rounded-full blur-2xl animate-pulse"
+          style={{ transform: `translateY(${scrollY * 0.15}px)` }}
+        ></div>
+      </div>
+
       {/* Header */}
-      <header className="fixed top-0 w-full border-b border-slate-200 bg-white/95 backdrop-blur-md z-50">
+      <header className="fixed top-0 w-full border-b border-slate-200/80 bg-white/90 backdrop-blur-xl z-50 transition-all">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <div className="font-bold text-2xl text-slate-900">
+            <div className="font-bold text-2xl text-slate-900 animate-fade-in">
               RefSpring
             </div>
             <nav className="hidden md:flex space-x-8">
-              <a href="#features" className="text-slate-600 hover:text-slate-900 font-medium transition-colors">
+              <a href="#features" className="text-slate-600 hover:text-slate-900 font-medium transition-all hover:scale-105">
                 Features
               </a>
-              <a href="#pricing" className="text-slate-600 hover:text-slate-900 font-medium transition-colors">
-                Pricing
+              <a href="#dashboard" className="text-slate-600 hover:text-slate-900 font-medium transition-all hover:scale-105">
+                Dashboard
               </a>
-              <a href="#contact" className="text-slate-600 hover:text-slate-900 font-medium transition-colors">
-                Contact
+              <a href="#testimonials" className="text-slate-600 hover:text-slate-900 font-medium transition-all hover:scale-105">
+                Success Stories
               </a>
             </nav>
-            <Button variant="outline" className="hidden md:flex" onClick={redirectToDashboard}>
+            <Button variant="outline" className="hidden md:flex hover:scale-105 transition-transform" onClick={redirectToDashboard}>
               Sign In
             </Button>
           </div>
@@ -35,83 +60,276 @@ const LandingPage = () => {
       </header>
 
       {/* Hero Section - Full Viewport */}
-      <section className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50 relative overflow-hidden">
-        {/* Background elements */}
-        <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
-        <div className="absolute top-20 right-20 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-20 left-20 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"></div>
+      <section className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50/50 via-white to-purple-50/50 relative">
+        {/* Animated Grid Background */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px] animate-pulse"></div>
+        
+        {/* Floating Icons */}
+        <div className="absolute inset-0 pointer-events-none">
+          <DollarSign 
+            className="absolute top-1/4 left-1/4 w-8 h-8 text-green-500/20 animate-bounce" 
+            style={{ animationDelay: '0s', animationDuration: '3s' }}
+          />
+          <TrendingUp 
+            className="absolute top-1/3 right-1/3 w-6 h-6 text-blue-500/20 animate-bounce" 
+            style={{ animationDelay: '1s', animationDuration: '4s' }}
+          />
+          <Zap 
+            className="absolute bottom-1/3 left-1/5 w-7 h-7 text-purple-500/20 animate-bounce" 
+            style={{ animationDelay: '2s', animationDuration: '3.5s' }}
+          />
+          <Globe 
+            className="absolute top-1/5 right-1/5 w-9 h-9 text-indigo-500/20 animate-bounce" 
+            style={{ animationDelay: '0.5s', animationDuration: '4.5s' }}
+          />
+        </div>
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
           <div className="animate-fade-in">
             {/* Badge */}
-            <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-medium mb-8">
+            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-100 to-purple-100 text-blue-800 px-6 py-3 rounded-full text-sm font-medium mb-8 border border-blue-200/50 backdrop-blur-sm animate-scale-in">
               <CheckCircle className="w-4 h-4" />
               No monthly fees • Pay only when you earn
+              <Star className="w-4 h-4 text-yellow-500" />
             </div>
             
-            <h1 className="text-6xl md:text-8xl font-bold text-slate-900 leading-tight mb-8">
+            <h1 className="text-6xl md:text-8xl font-bold text-slate-900 leading-tight mb-8 animate-fade-in">
               The affiliate platform
               <br />
-              <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 bg-clip-text text-transparent animate-pulse">
                 that pays for itself
               </span>
             </h1>
             
-            <p className="text-xl md:text-2xl text-slate-600 mb-12 max-w-4xl mx-auto leading-relaxed">
+            <p className="text-xl md:text-2xl text-slate-600 mb-12 max-w-4xl mx-auto leading-relaxed animate-fade-in" style={{ animationDelay: '0.2s' }}>
               Unlike other platforms charging €99-299/month, RefSpring uses a <strong>revenue-based model</strong>: 
               <br />
               <span className="text-slate-900 font-semibold">100% free access, we only earn when you do.</span>
             </p>
 
-            {/* Value props */}
+            {/* Value props with animations */}
             <div className="flex flex-wrap justify-center gap-6 mb-12">
-              <div className="flex items-center gap-2 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full border border-slate-200">
-                <CheckCircle className="w-5 h-5 text-green-600" />
-                <span className="text-slate-700 font-medium">No setup fees</span>
-              </div>
-              <div className="flex items-center gap-2 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full border border-slate-200">
-                <CheckCircle className="w-5 h-5 text-green-600" />
-                <span className="text-slate-700 font-medium">No monthly subscription</span>
-              </div>
-              <div className="flex items-center gap-2 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full border border-slate-200">
-                <CheckCircle className="w-5 h-5 text-green-600" />
-                <span className="text-slate-700 font-medium">Full platform access</span>
-              </div>
+              {[
+                { icon: CheckCircle, text: "No setup fees", delay: "0.3s" },
+                { icon: CheckCircle, text: "No monthly subscription", delay: "0.4s" },
+                { icon: CheckCircle, text: "Full platform access", delay: "0.5s" }
+              ].map((item, index) => (
+                <div 
+                  key={index}
+                  className="flex items-center gap-2 bg-white/80 backdrop-blur-sm px-6 py-3 rounded-full border border-slate-200 hover:scale-105 transition-all animate-fade-in shadow-lg"
+                  style={{ animationDelay: item.delay }}
+                >
+                  <item.icon className="w-5 h-5 text-green-600" />
+                  <span className="text-slate-700 font-medium">{item.text}</span>
+                </div>
+              ))}
             </div>
             
-            <div className="flex flex-col sm:flex-row gap-6 justify-center">
-              <Button size="lg" className="text-lg px-10 py-6 bg-blue-600 hover:bg-blue-700 shadow-xl hover:shadow-2xl transition-all" onClick={redirectToDashboard}>
+            <div className="flex flex-col sm:flex-row gap-6 justify-center animate-fade-in" style={{ animationDelay: '0.6s' }}>
+              <Button 
+                size="lg" 
+                className="text-lg px-12 py-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-2xl hover:shadow-3xl transition-all hover:scale-105 border-0" 
+                onClick={redirectToDashboard}
+              >
                 Start earning today
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
-              <Button size="lg" variant="outline" className="text-lg px-10 py-6 border-2 hover:bg-slate-50 shadow-lg" onClick={redirectToDashboard}>
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="text-lg px-12 py-6 border-2 hover:bg-slate-50 shadow-lg hover:scale-105 transition-all backdrop-blur-sm" 
+                onClick={redirectToDashboard}
+              >
                 See how it works
               </Button>
             </div>
 
-            {/* Social proof */}
-            <div className="mt-16 pt-8 border-t border-slate-200">
-              <p className="text-slate-500 text-sm mb-4">Trusted by companies who want results, not recurring bills</p>
-              <div className="flex justify-center items-center gap-8 opacity-60">
-                <div className="text-2xl font-bold text-slate-400">€2.1M+</div>
+            {/* Social proof with animation */}
+            <div className="mt-16 pt-8 border-t border-slate-200/50 animate-fade-in" style={{ animationDelay: '0.8s' }}>
+              <p className="text-slate-500 text-sm mb-6">Trusted by companies who want results, not recurring bills</p>
+              <div className="flex justify-center items-center gap-8 opacity-70">
+                <div className="text-3xl font-bold text-slate-600 hover:text-blue-600 transition-colors">€2.1M+</div>
                 <div className="w-px h-8 bg-slate-300"></div>
-                <div className="text-2xl font-bold text-slate-400">Generated</div>
+                <div className="text-lg font-medium text-slate-500">Generated</div>
                 <div className="w-px h-8 bg-slate-300"></div>
-                <div className="text-2xl font-bold text-slate-400">€0</div>
+                <div className="text-3xl font-bold text-green-600">€0</div>
                 <div className="w-px h-8 bg-slate-300"></div>
-                <div className="text-2xl font-bold text-slate-400">Upfront</div>
+                <div className="text-lg font-medium text-slate-500">Upfront</div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Features Section */}
-      <section id="features" className="py-24 px-4 sm:px-6 lg:px-8 bg-white">
+      {/* Story Section */}
+      <section className="py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white to-slate-50">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6">
+              The story that changes everything
+            </h2>
+            <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
+              While other platforms ask for €299/month upfront before you earn a single euro, 
+              we believe in a different approach: <strong>your success is our success.</strong>
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-8 mb-16">
+            {[
+              {
+                step: "01",
+                title: "Traditional platforms",
+                description: "Pay €99-299/month, hope for the best, pray you'll make enough to cover costs",
+                icon: "❌",
+                color: "red"
+              },
+              {
+                step: "02", 
+                title: "RefSpring way",
+                description: "Start immediately, full access, we earn only when you earn. Zero risk for you.",
+                icon: "✅",
+                color: "green"
+              },
+              {
+                step: "03",
+                title: "Your result",
+                description: "Focus on growing your business, not on monthly bills. Every euro earned is pure profit.",
+                icon: "🚀",
+                color: "blue"
+              }
+            ].map((item, index) => (
+              <div key={index} className="text-center p-8 rounded-2xl bg-white shadow-lg hover:shadow-xl transition-all hover:scale-105">
+                <div className="text-4xl mb-4">{item.icon}</div>
+                <div className="text-sm font-bold text-slate-400 mb-2">{item.step}</div>
+                <h3 className="text-xl font-bold text-slate-900 mb-4">{item.title}</h3>
+                <p className="text-slate-600 leading-relaxed">{item.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Dashboard Preview Section */}
+      <section id="dashboard" className="py-24 px-4 sm:px-6 lg:px-8 bg-slate-900">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
-              Everything you need to succeed
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+              Your command center awaits
+            </h2>
+            <p className="text-xl text-slate-300 max-w-3xl mx-auto">
+              A dashboard so intuitive, you'll wonder how you ever managed without it.
+            </p>
+          </div>
+          
+          {/* Mock Dashboard Preview */}
+          <div className="relative max-w-5xl mx-auto">
+            <div className="bg-gradient-to-br from-slate-800 to-slate-900 p-8 rounded-3xl shadow-2xl border border-slate-700">
+              <div className="bg-white rounded-2xl p-6 shadow-xl">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                  <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                  <div className="ml-auto text-sm text-slate-500">dashboard.refspring.com</div>
+                </div>
+                
+                <div className="grid md:grid-cols-3 gap-6 mb-8">
+                  <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl">
+                    <div className="flex items-center gap-3 mb-2">
+                      <TrendingUp className="w-8 h-8 text-blue-600" />
+                      <div className="text-2xl font-bold text-slate-900">€12,847</div>
+                    </div>
+                    <div className="text-sm text-slate-600">This month's revenue</div>
+                  </div>
+                  <div className="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-xl">
+                    <div className="flex items-center gap-3 mb-2">
+                      <Users className="w-8 h-8 text-green-600" />
+                      <div className="text-2xl font-bold text-slate-900">847</div>
+                    </div>
+                    <div className="text-sm text-slate-600">Active affiliates</div>
+                  </div>
+                  <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-xl">
+                    <div className="flex items-center gap-3 mb-2">
+                      <BarChart3 className="w-8 h-8 text-purple-600" />
+                      <div className="text-2xl font-bold text-slate-900">+23%</div>
+                    </div>
+                    <div className="text-sm text-slate-600">Growth this week</div>
+                  </div>
+                </div>
+                
+                <div className="h-32 bg-gradient-to-r from-blue-100 via-purple-100 to-pink-100 rounded-xl flex items-center justify-center">
+                  <div className="text-slate-600 font-medium">Interactive Analytics Dashboard</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <section id="testimonials" className="py-24 px-4 sm:px-6 lg:px-8 bg-white">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6">
+              Success stories that inspire
+            </h2>
+            <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+              Real companies, real results, real revenue growth.
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              {
+                name: "Marie Laurent",
+                company: "TechFlow SaaS",
+                revenue: "€45K",
+                quote: "We went from €0 to €45K in affiliate revenue in 6 months. The fact that RefSpring only earns when we earn made the decision so easy.",
+                avatar: "ML"
+              },
+              {
+                name: "Thomas Dubois", 
+                company: "EcoCommerce",
+                revenue: "€78K",
+                quote: "No monthly fees means we could test and scale without fear. Our affiliate program now generates more revenue than our direct sales.",
+                avatar: "TD"
+              },
+              {
+                name: "Sophie Chen",
+                company: "FinanceApp",
+                revenue: "€120K",
+                quote: "RefSpring's transparent model aligned perfectly with our startup mindset. We only pay for actual results, not promises.",
+                avatar: "SC"
+              }
+            ].map((testimonial, index) => (
+              <div key={index} className="bg-gradient-to-br from-slate-50 to-white p-8 rounded-2xl shadow-lg border border-slate-100 hover:shadow-xl transition-all hover:scale-105">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold">
+                    {testimonial.avatar}
+                  </div>
+                  <div>
+                    <div className="font-bold text-slate-900">{testimonial.name}</div>
+                    <div className="text-sm text-slate-500">{testimonial.company}</div>
+                  </div>
+                  <div className="ml-auto text-2xl font-bold text-green-600">{testimonial.revenue}</div>
+                </div>
+                <div className="flex mb-4">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="w-5 h-5 text-yellow-500 fill-current" />
+                  ))}
+                </div>
+                <p className="text-slate-600 leading-relaxed italic">"{testimonial.quote}"</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section Enhanced */}
+      <section id="features" className="py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-slate-50 to-blue-50">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6">
+              Everything you need to dominate
             </h2>
             <p className="text-xl text-slate-600 max-w-2xl mx-auto">
               Powerful tools designed to help you build and manage successful affiliate programs at scale.
@@ -121,50 +339,63 @@ const LandingPage = () => {
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {[
               {
-                icon: <Zap className="h-8 w-8 text-blue-600" />,
+                icon: <Zap className="h-10 w-10 text-blue-600" />,
                 title: "Lightning Fast",
-                description: "Set up your affiliate program in minutes, not weeks."
+                description: "Set up your affiliate program in minutes, not weeks. One-click deployment.",
+                metric: "3 min setup"
               },
               {
-                icon: <Users className="h-8 w-8 text-green-600" />,
-                title: "Recruit Affiliates",
-                description: "Find and onboard top-performing affiliates effortlessly."
+                icon: <Users className="h-10 w-10 text-green-600" />,
+                title: "Smart Recruitment",
+                description: "AI-powered affiliate matching. Find and onboard top performers automatically.",
+                metric: "847 affiliates"
               },
               {
-                icon: <BarChart3 className="h-8 w-8 text-purple-600" />,
-                title: "Advanced Analytics",
-                description: "Track performance with real-time insights and reporting."
+                icon: <BarChart3 className="h-10 w-10 text-purple-600" />,
+                title: "Real-time Analytics",
+                description: "Track performance with crystal-clear insights. Know what's working instantly.",
+                metric: "Live tracking"
               },
               {
-                icon: <Shield className="h-8 w-8 text-orange-600" />,
+                icon: <Shield className="h-10 w-10 text-orange-600" />,
                 title: "Fraud Protection",
-                description: "Advanced security to protect against fraudulent activities."
+                description: "Advanced AI security to protect against fraudulent activities and fake traffic.",
+                metric: "99.9% accuracy"
               }
             ].map((feature, index) => (
-              <div key={index} className="p-6 rounded-2xl bg-slate-50 hover:bg-slate-100 transition-colors">
-                <div className="mb-4">{feature.icon}</div>
-                <h3 className="text-xl font-semibold text-slate-900 mb-2">{feature.title}</h3>
-                <p className="text-slate-600">{feature.description}</p>
+              <div key={index} className="group p-8 rounded-2xl bg-white hover:bg-gradient-to-br hover:from-white hover:to-slate-50 transition-all hover:scale-105 shadow-lg hover:shadow-xl border border-slate-100">
+                <div className="mb-6 transform group-hover:scale-110 transition-transform">{feature.icon}</div>
+                <h3 className="text-xl font-bold text-slate-900 mb-3">{feature.title}</h3>
+                <p className="text-slate-600 mb-4 leading-relaxed">{feature.description}</p>
+                <div className="text-sm font-bold text-blue-600">{feature.metric}</div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8 bg-slate-900">
-        <div className="max-w-7xl mx-auto text-center">
-          <h2 className="text-4xl font-bold text-white mb-16">
-            Trusted by industry leaders
+      {/* Stats Section Enhanced */}
+      <section className="py-24 px-4 sm:px-6 lg:px-8 bg-slate-900 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-900/20 to-purple-900/20"></div>
+        <div className="max-w-7xl mx-auto text-center relative z-10">
+          <h2 className="text-4xl font-bold text-white mb-4">
+            Numbers that speak louder than words
           </h2>
-          <div className="grid md:grid-cols-3 gap-8">
+          <p className="text-xl text-slate-300 mb-16 max-w-2xl mx-auto">
+            Join the revolution of performance-based affiliate marketing.
+          </p>
+          <div className="grid md:grid-cols-4 gap-8">
             {[
-              { number: "10K+", label: "Active Campaigns" },
-              { number: "€50M+", label: "Revenue Generated" },
-              { number: "99.9%", label: "Uptime" }
+              { number: "10K+", label: "Active Campaigns", icon: <Globe className="w-8 h-8" /> },
+              { number: "€50M+", label: "Revenue Generated", icon: <TrendingUp className="w-8 h-8" /> },
+              { number: "99.9%", label: "Uptime", icon: <Shield className="w-8 h-8" /> },
+              { number: "€0", label: "Upfront Costs", icon: <Award className="w-8 h-8" /> }
             ].map((stat, index) => (
-              <div key={index} className="text-center">
-                <div className="text-5xl font-bold text-white mb-2">{stat.number}</div>
+              <div key={index} className="text-center group">
+                <div className="flex justify-center mb-4 text-blue-400 group-hover:text-blue-300 transition-colors">
+                  {stat.icon}
+                </div>
+                <div className="text-5xl font-bold text-white mb-2 group-hover:scale-110 transition-transform">{stat.number}</div>
                 <div className="text-xl text-slate-400">{stat.label}</div>
               </div>
             ))}
@@ -172,59 +403,96 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-blue-600 to-purple-600">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-            Ready to grow your business?
+      {/* CTA Section Enhanced */}
+      <section className="py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 relative overflow-hidden">
+        <div className="absolute inset-0 bg-black/10"></div>
+        <div className="max-w-4xl mx-auto text-center relative z-10">
+          <div className="mb-8">
+            <Clock className="w-16 h-16 text-blue-200 mx-auto mb-4 animate-pulse" />
+          </div>
+          <h2 className="text-4xl md:text-6xl font-bold text-white mb-6">
+            Your competition is already here
           </h2>
-          <p className="text-xl text-blue-100 mb-8">
-            Join thousands of companies using RefSpring to scale their affiliate programs.
+          <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto leading-relaxed">
+            While others pay monthly fees for uncertain results, smart companies are already earning with RefSpring's 
+            performance-based model. Don't let them get ahead.
           </p>
-          <Button size="lg" variant="secondary" className="text-lg px-8 py-6" onClick={redirectToDashboard}>
-            Get started for free
-            <ArrowRight className="ml-2 h-5 w-5" />
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-6 justify-center">
+            <Button 
+              size="lg" 
+              variant="secondary" 
+              className="text-lg px-12 py-6 bg-white text-slate-900 hover:bg-slate-100 hover:scale-105 transition-all shadow-xl" 
+              onClick={redirectToDashboard}
+            >
+              Start earning now
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
+            <Button 
+              size="lg" 
+              variant="outline" 
+              className="text-lg px-12 py-6 border-2 border-white text-white hover:bg-white hover:text-slate-900 hover:scale-105 transition-all" 
+              onClick={redirectToDashboard}
+            >
+              See live demo
+            </Button>
+          </div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="py-12 px-4 sm:px-6 lg:px-8 bg-slate-900 border-t border-slate-800">
+      {/* Footer Enhanced */}
+      <footer className="py-16 px-4 sm:px-6 lg:px-8 bg-slate-900 border-t border-slate-800">
         <div className="max-w-7xl mx-auto">
-          <div className="grid md:grid-cols-4 gap-8">
-            <div>
-              <div className="font-bold text-2xl text-white mb-4">RefSpring</div>
-              <p className="text-slate-400">
-                The modern affiliate management platform.
+          <div className="grid md:grid-cols-5 gap-8">
+            <div className="md:col-span-2">
+              <div className="font-bold text-3xl text-white mb-4">RefSpring</div>
+              <p className="text-slate-400 mb-6 leading-relaxed">
+                The performance-based affiliate platform that only earns when you earn. 
+                Join the future of affiliate marketing.
               </p>
+              <div className="flex gap-4">
+                <div className="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center hover:bg-slate-700 transition-colors cursor-pointer">
+                  <Globe className="w-5 h-5 text-slate-400" />
+                </div>
+                <div className="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center hover:bg-slate-700 transition-colors cursor-pointer">
+                  <TrendingUp className="w-5 h-5 text-slate-400" />
+                </div>
+              </div>
             </div>
             <div>
               <h3 className="font-semibold text-white mb-4">Product</h3>
-              <ul className="space-y-2 text-slate-400">
-                <li><a href="#" className="hover:text-white transition-colors">Features</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Pricing</a></li>
+              <ul className="space-y-3 text-slate-400">
+                <li><a href="#features" className="hover:text-white transition-colors">Features</a></li>
+                <li><a href="#dashboard" className="hover:text-white transition-colors">Dashboard</a></li>
                 <li><a href="#" className="hover:text-white transition-colors">API</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Integrations</a></li>
               </ul>
             </div>
             <div>
               <h3 className="font-semibold text-white mb-4">Company</h3>
-              <ul className="space-y-2 text-slate-400">
+              <ul className="space-y-3 text-slate-400">
                 <li><a href="#" className="hover:text-white transition-colors">About</a></li>
                 <li><a href="#" className="hover:text-white transition-colors">Blog</a></li>
                 <li><a href="#" className="hover:text-white transition-colors">Careers</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Press</a></li>
               </ul>
             </div>
             <div>
               <h3 className="font-semibold text-white mb-4">Support</h3>
-              <ul className="space-y-2 text-slate-400">
+              <ul className="space-y-3 text-slate-400">
                 <li><a href="#" className="hover:text-white transition-colors">Help Center</a></li>
                 <li><a href="#" className="hover:text-white transition-colors">Contact</a></li>
                 <li><a href="#" className="hover:text-white transition-colors">Status</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Community</a></li>
               </ul>
             </div>
           </div>
-          <div className="border-t border-slate-800 mt-8 pt-8 text-center text-slate-400">
-            <p>&copy; 2024 RefSpring. All rights reserved.</p>
+          <div className="border-t border-slate-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
+            <p className="text-slate-400">&copy; 2024 RefSpring. All rights reserved.</p>
+            <div className="flex gap-6 mt-4 md:mt-0">
+              <a href="#" className="text-slate-400 hover:text-white transition-colors">Privacy</a>
+              <a href="#" className="text-slate-400 hover:text-white transition-colors">Terms</a>
+              <a href="#" className="text-slate-400 hover:text-white transition-colors">Security</a>
+            </div>
           </div>
         </div>
       </footer>
