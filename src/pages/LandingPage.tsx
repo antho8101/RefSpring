@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Zap, Users, BarChart3, Shield } from "lucide-react";
+import { ArrowRight, Zap, Users, BarChart3, Shield, CheckCircle } from "lucide-react";
 
 const LandingPage = () => {
   const redirectToDashboard = () => {
@@ -8,9 +8,9 @@ const LandingPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+    <div className="min-h-screen bg-white">
       {/* Header */}
-      <header className="border-b border-slate-200 bg-white/80 backdrop-blur-md sticky top-0 z-50">
+      <header className="fixed top-0 w-full border-b border-slate-200 bg-white/95 backdrop-blur-md z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="font-bold text-2xl text-slate-900">
@@ -34,27 +34,73 @@ const LandingPage = () => {
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="pt-20 pb-32 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto text-center">
+      {/* Hero Section - Full Viewport */}
+      <section className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50 relative overflow-hidden">
+        {/* Background elements */}
+        <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
+        <div className="absolute top-20 right-20 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 left-20 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"></div>
+        
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
           <div className="animate-fade-in">
-            <h1 className="text-5xl md:text-7xl font-bold text-slate-900 leading-tight mb-6">
-              The modern way to
-              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                {" "}manage affiliates
+            {/* Badge */}
+            <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-medium mb-8">
+              <CheckCircle className="w-4 h-4" />
+              No monthly fees • Pay only when you earn
+            </div>
+            
+            <h1 className="text-6xl md:text-8xl font-bold text-slate-900 leading-tight mb-8">
+              The affiliate platform
+              <br />
+              <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 bg-clip-text text-transparent">
+                that pays for itself
               </span>
             </h1>
-            <p className="text-xl md:text-2xl text-slate-600 mb-8 max-w-3xl mx-auto leading-relaxed">
-              Build, track, and scale your affiliate program with the platform trusted by thousands of businesses worldwide.
+            
+            <p className="text-xl md:text-2xl text-slate-600 mb-12 max-w-4xl mx-auto leading-relaxed">
+              Unlike other platforms charging €99-299/month, RefSpring follows the <strong>Stripe model</strong>: 
+              <br />
+              <span className="text-slate-900 font-semibold">100% free access, we only earn when you do.</span>
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="text-lg px-8 py-6 bg-blue-600 hover:bg-blue-700" onClick={redirectToDashboard}>
-                Start free trial
+
+            {/* Value props */}
+            <div className="flex flex-wrap justify-center gap-6 mb-12">
+              <div className="flex items-center gap-2 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full border border-slate-200">
+                <CheckCircle className="w-5 h-5 text-green-600" />
+                <span className="text-slate-700 font-medium">No setup fees</span>
+              </div>
+              <div className="flex items-center gap-2 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full border border-slate-200">
+                <CheckCircle className="w-5 h-5 text-green-600" />
+                <span className="text-slate-700 font-medium">No monthly subscription</span>
+              </div>
+              <div className="flex items-center gap-2 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full border border-slate-200">
+                <CheckCircle className="w-5 h-5 text-green-600" />
+                <span className="text-slate-700 font-medium">Full platform access</span>
+              </div>
+            </div>
+            
+            <div className="flex flex-col sm:flex-row gap-6 justify-center">
+              <Button size="lg" className="text-lg px-10 py-6 bg-blue-600 hover:bg-blue-700 shadow-xl hover:shadow-2xl transition-all" onClick={redirectToDashboard}>
+                Start earning today
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
-              <Button size="lg" variant="outline" className="text-lg px-8 py-6" onClick={redirectToDashboard}>
-                Book a demo
+              <Button size="lg" variant="outline" className="text-lg px-10 py-6 border-2 hover:bg-slate-50 shadow-lg" onClick={redirectToDashboard}>
+                See how it works
               </Button>
+            </div>
+
+            {/* Social proof */}
+            <div className="mt-16 pt-8 border-t border-slate-200">
+              <p className="text-slate-500 text-sm mb-4">Trusted by companies who want results, not recurring bills</p>
+              <div className="flex justify-center items-center gap-8 opacity-60">
+                <div className="text-2xl font-bold text-slate-400">€2.1M+</div>
+                <div className="w-px h-8 bg-slate-300"></div>
+                <div className="text-2xl font-bold text-slate-400">Generated</div>
+                <div className="w-px h-8 bg-slate-300"></div>
+                <div className="text-2xl font-bold text-slate-400">€0</div>
+                <div className="w-px h-8 bg-slate-300"></div>
+                <div className="text-2xl font-bold text-slate-400">Upfront</div>
+              </div>
             </div>
           </div>
         </div>
