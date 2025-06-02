@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -24,7 +23,8 @@ export const CampaignSuccessModal = ({
   const [copiedItems, setCopiedItems] = useState<Set<string>>(new Set());
   const { toast } = useToast();
 
-  const publicDashboardUrl = `https://refspring.com/r/${campaignId}`;
+  // Utilise l'URL actuelle au lieu d'une URL codée en dur
+  const publicDashboardUrl = `${window.location.origin}/r/${campaignId}`;
   
   const trackingScript = `<!-- RefSpring Tracking Script -->
 <script>
