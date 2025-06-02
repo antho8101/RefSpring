@@ -14,35 +14,38 @@ const ShortLinkPage = () => {
   useEffect(() => {
     const handleShortLink = async () => {
       if (!shortCode) {
+        console.log('❌ Code de lien manquant');
         setError('Code de lien manquant');
         setLoading(false);
         return;
       }
 
       try {
-        console.log('Récupération des données pour le code court:', shortCode);
+        console.log('🚀 Début traitement lien court:', shortCode);
+        console.log('🚀 URL actuelle:', window.location.href);
         
         const shortLinkData = await getShortLinkData(shortCode);
         
         if (!shortLinkData) {
-          console.log('Aucune donnée trouvée pour le code:', shortCode);
+          console.log('❌ Aucune donnée trouvée pour le code:', shortCode);
           setError('Lien court non trouvé');
           setLoading(false);
           return;
         }
 
-        console.log('Données du lien court trouvées:', shortLinkData);
+        console.log('✅ Données du lien court trouvées:', shortLinkData);
 
         // Enregistrer le clic avec les 3 paramètres requis dans le bon ordre
+        console.log('📊 Enregistrement du clic...');
         await recordClick(shortLinkData.affiliateId, shortLinkData.campaignId, shortLinkData.targetUrl);
         
-        console.log('Redirection vers:', shortLinkData.targetUrl);
+        console.log('🎯 Redirection vers:', shortLinkData.targetUrl);
         
         // Rediriger vers l'URL de destination
         window.location.href = shortLinkData.targetUrl;
         
       } catch (error) {
-        console.error('Erreur lors du traitement du lien court:', error);
+        console.error('❌ Erreur lors du traitement du lien court:', error);
         setError('Erreur lors du traitement du lien');
         setLoading(false);
       }
@@ -70,6 +73,7 @@ const ShortLinkPage = () => {
           <h2 className="text-lg font-medium text-red-600 mb-2">Erreur</h2>
           <p className="text-gray-600">{error}</p>
           <p className="text-sm text-gray-400 mt-2">Code: {shortCode}</p>
+          <p className="text-xs text-gray-400 mt-1">Vérifiez la console pour plus de détails</p>
         </div>
       </div>
     );
