@@ -16,9 +16,6 @@ import TestProductsPage from "./pages/TestProductsPage";
 import TestThankYouPage from "./pages/TestThankYouPage";
 import AdvancedStatsPage from "./pages/AdvancedStatsPage";
 
-// Import i18n
-import './i18n';
-
 const queryClient = new QueryClient();
 
 const DomainRouter = () => {
