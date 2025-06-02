@@ -1,8 +1,12 @@
+
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { BarChart3, Users, TrendingUp, Calendar } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { BarChart3, Users, TrendingUp, Calendar, Copy, ExternalLink, Link } from 'lucide-react';
 import { 
   Select,
   SelectContent,
@@ -14,6 +18,7 @@ import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firesto
 import { db } from '@/lib/firebase';
 import { Affiliate } from '@/types';
 import { useAffiliateStats } from '@/hooks/useAffiliateStats';
+import { useToast } from '@/hooks/use-toast';
 
 const AffiliatePage = () => {
   const { campaignId } = useParams();
@@ -25,6 +30,10 @@ const AffiliatePage = () => {
   const [affiliates, setAffiliates] = useState<Affiliate[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [targetUrl, setTargetUrl] = useState('');
+  const [generatedLink, setGeneratedLink] = useState('');
+  
+  const { toast } = useToast();
   
   // Utiliser le hook pour les vraies statistiques
   const { stats, loading: statsLoading } = useAffiliateStats(selectedAffiliate);
@@ -50,6 +59,7 @@ const AffiliatePage = () => {
             const campaignData = campaignDoc.data();
             console.log('Campaign data:', campaignData);
             setCampaignName(campaignData.name || 'Campagne');
+            setTargetUrl(campaignData.targetUrl || '');
           } else {
             console.log('Campaign not found with ID:', campaignId);
             setCampaignName('Campagne publique');
@@ -108,6 +118,49 @@ const AffiliatePage = () => {
     fetchCampaignData();
   }, [campaignId, refCode]);
 
+  // Générer le lien de tracking
+  useEffect(() => {
+    if (selectedAffiliate && targetUrl) {
+      const currentHostname = window.location.hostname;
+      let baseUrl;
+      
+      if (currentHostname.includes('localhost') || currentHostname.includes('lovableproject.com')) {
+        baseUrl = window.location.origin;
+      } else {
+        baseUrl = 'https://refspring.com';
+      }
+      
+      const link = `${baseUrl}/track/${campaignId}/${selectedAffiliate}?url=${encodeURIComponent(targetUrl)}`;
+      setGeneratedLink(link);
+    } else {
+      setGeneratedLink('');
+    }
+  }, [selectedAffiliate, campaignId, targetUrl]);
+
+  const copyLink = async () => {
+    if (!generatedLink) return;
+    
+    try {
+      await navigator.clipboard.writeText(generatedLink);
+      toast({
+        title: "Lien copié !",
+        description: "Le lien de tracking a été copié dans le presse-papiers",
+      });
+    } catch (error) {
+      toast({
+        title: "Erreur",
+        description: "Impossible de copier le lien",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const testLink = () => {
+    if (generatedLink) {
+      window.open(generatedLink, '_blank');
+    }
+  };
+
   // Error display with more helpful message for public access
   if (error) {
     return (
@@ -149,14 +202,11 @@ const AffiliatePage = () => {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
           <h2 className="text-3xl font-bold text-gray-900 mb-2">
-            {loading ? 'Chargement...' : (campaignName || 'Campagne')} - Statistiques
+            {loading ? 'Chargement...' : (campaignName || 'Campagne')} - Dashboard Affilié
           </h2>
           <p className="text-gray-600">
-            Suivez les performances des affiliés en temps réel
+            Générez vos liens de tracking et suivez vos performances
           </p>
-          <div className="mt-2 text-xs text-gray-400">
-            Debug: Campaign ID = {campaignId}, Affiliates count = {affiliates.length}, Loading = {loading.toString()}
-          </div>
         </div>
 
         {loading ? (
@@ -197,6 +247,56 @@ const AffiliatePage = () => {
 
             {selectedAffiliate ? (
               <>
+                {/* Générateur de liens de tracking */}
+                <Card className="mb-8">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Link className="h-5 w-5" />
+                      Générateur de liens de tracking
+                    </CardTitle>
+                    <CardDescription>
+                      Créez votre lien de tracking personnalisé avec l'URL de destination
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="target-url">URL de destination</Label>
+                      <Input
+                        id="target-url"
+                        type="url"
+                        placeholder="https://example.com/produit"
+                        value={targetUrl}
+                        onChange={(e) => setTargetUrl(e.target.value)}
+                      />
+                      <p className="text-xs text-gray-500">
+                        L'URL vers laquelle vos visiteurs seront redirigés après le tracking
+                      </p>
+                    </div>
+                    
+                    {generatedLink && (
+                      <div className="space-y-2">
+                        <Label>Votre lien de tracking</Label>
+                        <div className="flex gap-2">
+                          <Input
+                            value={generatedLink}
+                            readOnly
+                            className="font-mono text-xs"
+                          />
+                          <Button onClick={copyLink} size="sm">
+                            <Copy className="h-4 w-4" />
+                          </Button>
+                          <Button onClick={testLink} size="sm" variant="outline">
+                            <ExternalLink className="h-4 w-4" />
+                          </Button>
+                        </div>
+                        <p className="text-xs text-green-600">
+                          ✅ Lien prêt à être partagé ! Cliquez sur "Copier" puis partagez-le.
+                        </p>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+
                 {/* Stats Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                   <Card>
@@ -271,7 +371,7 @@ const AffiliatePage = () => {
                     <h3 className="text-lg font-medium mb-2">Sélectionnez un affilié</h3>
                     <p className="text-gray-500">
                       {affiliates.length > 0 
-                        ? "Choisissez un affilié dans le menu déroulant pour voir ses statistiques"
+                        ? "Choisissez un affilié dans le menu déroulant pour voir ses statistiques et générer ses liens de tracking"
                         : "Aucun affilié trouvé pour cette campagne"
                       }
                     </p>
