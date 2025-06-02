@@ -1,8 +1,27 @@
+
+User-agent: *
+Allow: /
+Disallow: /dashboard/
+Disallow: /admin/
+Disallow: /api/
+Disallow: /r/
+Disallow: /track/
+Disallow: /s/
+
+# Sitemap
+Sitemap: https://refspring.com/sitemap.xml
+
+# Crawl-delay for performance
+Crawl-delay: 1
+
+# Specific bots
 User-agent: Googlebot
 Allow: /
+Crawl-delay: 0
 
 User-agent: Bingbot
 Allow: /
+Crawl-delay: 1
 
 User-agent: Twitterbot
 Allow: /
@@ -10,5 +29,12 @@ Allow: /
 User-agent: facebookexternalhit
 Allow: /
 
-User-agent: *
-Allow: /
+# Block unwanted bots
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
