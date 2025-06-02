@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/collapsible';
 import { useAffiliates } from '@/hooks/useAffiliates';
 import { useToast } from '@/hooks/use-toast';
+import { useTrackingLinkGenerator } from '@/hooks/useTrackingLinkGenerator';
 import { Users, ChevronDown, ChevronRight, Copy, ExternalLink } from 'lucide-react';
 import { useState } from 'react';
 import { AffiliatesList } from '@/components/AffiliatesList';
@@ -26,6 +27,7 @@ export const CampaignCard = ({ campaign, onCopyUrl }: CampaignCardProps) => {
   const { affiliates } = useAffiliates(campaign.id);
   const [isAffiliatesOpen, setIsAffiliatesOpen] = useState(false);
   const { toast } = useToast();
+  const { generateTrackingLink } = useTrackingLinkGenerator();
   
   // Génération de l'URL selon l'environnement
   const getPublicDashboardUrl = () => {
@@ -87,6 +89,34 @@ export const CampaignCard = ({ campaign, onCopyUrl }: CampaignCardProps) => {
 
   const handleOpenDashboard = () => {
     window.open(publicDashboardUrl, '_blank');
+  };
+
+  // Fonction pour copier le lien de tracking d'un affilié
+  const handleCopyTrackingLink = async (affiliateId: string) => {
+    if (!campaign.targetUrl) {
+      toast({
+        title: "URL manquante",
+        description: "Cette campagne n'a pas d'URL de destination configurée",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const trackingLink = generateTrackingLink(campaign.id, affiliateId, campaign.targetUrl);
+    
+    try {
+      await navigator.clipboard.writeText(trackingLink);
+      toast({
+        title: "Lien de tracking copié !",
+        description: "Le lien de tracking a été copié dans le presse-papiers",
+      });
+    } catch (error) {
+      toast({
+        title: "Erreur",
+        description: "Impossible de copier le lien de tracking",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -181,7 +211,10 @@ export const CampaignCard = ({ campaign, onCopyUrl }: CampaignCardProps) => {
             </Button>
           </CollapsibleTrigger>
           <CollapsibleContent className="mt-4">
-            <AffiliatesList campaignId={campaign.id} />
+            <AffiliatesList 
+              campaignId={campaign.id}
+              onCopyTrackingLink={handleCopyTrackingLink}
+            />
           </CollapsibleContent>
         </Collapsible>
       </CardContent>
