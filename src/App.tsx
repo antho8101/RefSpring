@@ -18,7 +18,7 @@ const DomainRouter = () => {
     const hostname = window.location.hostname;
     const currentPath = window.location.pathname;
     
-    // Redirection basée sur le domaine
+    // Redirection basée sur le domaine, mais on évite de rediriger les routes fonctionnelles
     if (hostname === 'refspring.com' && currentPath === '/') {
       window.location.replace('/landing');
     } else if (hostname === 'dashboard.refspring.com' && currentPath === '/') {
@@ -41,7 +41,7 @@ const DomainRouter = () => {
       <Route path="/dashboard" element={<Index />} />
       <Route path="/landing" element={<LandingPage />} />
       
-      {/* Pages fonctionnelles */}
+      {/* Pages fonctionnelles - disponibles sur tous les domaines */}
       <Route path="/r/:campaignId" element={<AffiliatePage />} />
       <Route path="/track/:campaignId/:affiliateId" element={<TrackingPage />} />
       
