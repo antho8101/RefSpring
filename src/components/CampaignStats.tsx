@@ -1,3 +1,4 @@
+
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -108,8 +109,8 @@ export const CampaignStats = ({ campaign, affiliatesCount }: CampaignStatsProps)
               <ExternalLink className="h-4 w-4" />
               <span className="text-sm font-medium">Dashboard public</span>
               <Tooltip>
-                <TooltipTrigger>
-                  <HelpCircle className="h-3 w-3 text-blue-500/70" />
+                <TooltipTrigger asChild>
+                  <HelpCircle className="h-3 w-3 text-blue-500/70 cursor-help" />
                 </TooltipTrigger>
                 <TooltipContent>
                   <p className="text-xs">Partagez ce lien avec vos affiliés pour qu'ils puissent consulter leurs statistiques et accéder à leurs liens de tracking.</p>
