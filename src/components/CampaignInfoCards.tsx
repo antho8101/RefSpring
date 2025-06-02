@@ -1,7 +1,6 @@
-
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 import { TrendingUp, Calendar, ExternalLink, Copy, HelpCircle } from 'lucide-react';
 import { Campaign } from '@/types';
 import { useToast } from '@/hooks/use-toast';
@@ -76,66 +75,68 @@ export const CampaignInfoCards = ({ campaign }: CampaignInfoCardsProps) => {
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <div className="bg-blue-50/50 p-4 rounded-xl">
-        <div className="flex items-center gap-2 text-blue-600 mb-2">
-          <TrendingUp className="h-4 w-4" />
-          <span className="text-sm font-medium">URL Cible</span>
+    <TooltipProvider delayDuration={200} skipDelayDuration={100}>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="bg-blue-50/50 p-4 rounded-xl">
+          <div className="flex items-center gap-2 text-blue-600 mb-2">
+            <TrendingUp className="h-4 w-4" />
+            <span className="text-sm font-medium">URL Cible</span>
+          </div>
+          <p className="font-mono text-xs text-slate-600 truncate bg-white/70 px-2 py-1 rounded">
+            {campaign.targetUrl}
+          </p>
         </div>
-        <p className="font-mono text-xs text-slate-600 truncate bg-white/70 px-2 py-1 rounded">
-          {campaign.targetUrl}
-        </p>
-      </div>
-      
-      <div className="bg-purple-50/50 p-4 rounded-xl">
-        <div className="flex items-center gap-2 text-purple-600 mb-2">
-          <Calendar className="h-4 w-4" />
-          <span className="text-sm font-medium">Créée le</span>
+        
+        <div className="bg-purple-50/50 p-4 rounded-xl">
+          <div className="flex items-center gap-2 text-purple-600 mb-2">
+            <Calendar className="h-4 w-4" />
+            <span className="text-sm font-medium">Créée le</span>
+          </div>
+          <p className="text-sm font-semibold text-slate-900">
+            {new Date(campaign.createdAt).toLocaleDateString('fr-FR')}
+          </p>
         </div>
-        <p className="text-sm font-semibold text-slate-900">
-          {new Date(campaign.createdAt).toLocaleDateString('fr-FR')}
-        </p>
-      </div>
 
-      <div className="bg-blue-50/50 p-4 rounded-xl">
-        <div className="flex items-center gap-2 text-blue-600 mb-2">
-          <ExternalLink className="h-4 w-4" />
-          <span className="text-sm font-medium">Dashboard public</span>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <HelpCircle className="h-3 w-3 text-blue-500/70 cursor-help" />
-            </TooltipTrigger>
-            <TooltipContent>
-              <p className="text-xs">Partagez ce lien avec vos affiliés pour qu'ils puissent consulter leurs statistiques et accéder à leurs liens de tracking.</p>
-            </TooltipContent>
-          </Tooltip>
-        </div>
-        <div className="space-y-2">
-          <Input 
-            value={publicDashboardUrl}
-            readOnly 
-            className="font-mono text-xs bg-white/80 border-blue-200/60 focus:border-blue-300 text-slate-700"
-          />
-          <div className="flex items-center gap-2">
-            <Button 
-              variant="outline" 
-              size="icon" 
-              onClick={handleCopyUrl}
-              className="border-blue-300/60 text-blue-700 hover:bg-blue-100/50 hover:border-blue-400 transition-all"
-            >
-              <Copy className="h-4 w-4" />
-            </Button>
-            <Button 
-              variant="outline" 
-              size="icon" 
-              onClick={handleOpenDashboard}
-              className="border-blue-300/60 text-blue-700 hover:bg-blue-100/50 hover:border-blue-400 transition-all"
-            >
-              <ExternalLink className="h-4 w-4" />
-            </Button>
+        <div className="bg-blue-50/50 p-4 rounded-xl">
+          <div className="flex items-center gap-2 text-blue-600 mb-2">
+            <ExternalLink className="h-4 w-4" />
+            <span className="text-sm font-medium">Dashboard public</span>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <HelpCircle className="h-3 w-3 text-blue-500/70 cursor-help" />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p className="text-xs">Partagez ce lien avec vos affiliés pour qu'ils puissent consulter leurs statistiques et accéder à leurs liens de tracking.</p>
+              </TooltipContent>
+            </Tooltip>
+          </div>
+          <div className="space-y-2">
+            <Input 
+              value={publicDashboardUrl}
+              readOnly 
+              className="font-mono text-xs bg-white/80 border-blue-200/60 focus:border-blue-300 text-slate-700"
+            />
+            <div className="flex items-center gap-2">
+              <Button 
+                variant="outline" 
+                size="icon" 
+                onClick={handleCopyUrl}
+                className="border-blue-300/60 text-blue-700 hover:bg-blue-100/50 hover:border-blue-400 transition-all"
+              >
+                <Copy className="h-4 w-4" />
+              </Button>
+              <Button 
+                variant="outline" 
+                size="icon" 
+                onClick={handleOpenDashboard}
+                className="border-blue-300/60 text-blue-700 hover:bg-blue-100/50 hover:border-blue-400 transition-all"
+              >
+                <ExternalLink className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </TooltipProvider>
   );
 };
