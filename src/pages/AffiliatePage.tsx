@@ -1,23 +1,16 @@
+
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { BarChart3, Users, TrendingUp, Calendar, Copy, ExternalLink, Link } from 'lucide-react';
-import { 
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { Users } from 'lucide-react';
 import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Affiliate } from '@/types';
 import { useAffiliateStats } from '@/hooks/useAffiliateStats';
-import { useToast } from '@/hooks/use-toast';
+import { AffiliateSelector } from '@/components/AffiliateSelector';
+import { TrackingLinkGenerator } from '@/components/TrackingLinkGenerator';
+import { AffiliateStatsDisplay } from '@/components/AffiliateStatsDisplay';
 
 const AffiliatePage = () => {
   const { campaignId } = useParams();
@@ -31,8 +24,6 @@ const AffiliatePage = () => {
   const [error, setError] = useState<string | null>(null);
   const [targetUrl, setTargetUrl] = useState('');
   const [generatedLink, setGeneratedLink] = useState('');
-  
-  const { toast } = useToast();
   
   // Utiliser le hook pour les vraies statistiques
   const { stats, loading: statsLoading } = useAffiliateStats(selectedAffiliate);
@@ -138,30 +129,6 @@ const AffiliatePage = () => {
     }
   }, [selectedAffiliate, campaignId, targetUrl]);
 
-  const copyLink = async () => {
-    if (!generatedLink) return;
-    
-    try {
-      await navigator.clipboard.writeText(generatedLink);
-      toast({
-        title: "Lien copié !",
-        description: "Le lien de tracking a été copié dans le presse-papiers",
-      });
-    } catch (error) {
-      toast({
-        title: "Erreur",
-        description: "Impossible de copier le lien",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const testLink = () => {
-    if (generatedLink) {
-      window.open(generatedLink, '_blank');
-    }
-  };
-
   // Error display with more helpful message for public access
   if (error) {
     return (
@@ -217,148 +184,24 @@ const AffiliatePage = () => {
           </div>
         ) : (
           <>
-            {/* Sélecteur d'affilié */}
-            <div className="mb-6">
-              <div className="flex items-center gap-2 mb-2">
-                <label htmlFor="affiliate-selector" className="text-sm font-medium">
-                  Sélectionner un affilié:
-                </label>
-                <div className="w-64">
-                  <Select 
-                    value={selectedAffiliate || ''} 
-                    onValueChange={setSelectedAffiliate}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Choisir un affilié" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {affiliates.map((affiliate) => (
-                        <SelectItem key={affiliate.id} value={affiliate.id}>
-                          {affiliate.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              <p className="text-xs text-gray-500">
-                {affiliates.length} affilié(s) trouvé(s)
-              </p>
-            </div>
+            <AffiliateSelector
+              affiliates={affiliates}
+              selectedAffiliate={selectedAffiliate}
+              onAffiliateChange={setSelectedAffiliate}
+              loading={loading}
+            />
 
             {selectedAffiliate ? (
               <>
-                {/* Lien de tracking généré automatiquement */}
-                <Card className="mb-8">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Link className="h-5 w-5" />
-                      Votre lien de tracking
-                    </CardTitle>
-                    <CardDescription>
-                      Ce lien redirige automatiquement vers : <strong>{targetUrl}</strong>
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    {generatedLink ? (
-                      <div className="space-y-3">
-                        <div className="flex gap-2">
-                          <Input
-                            value={generatedLink}
-                            readOnly
-                            className="font-mono text-xs"
-                          />
-                          <Button onClick={copyLink} size="sm">
-                            <Copy className="h-4 w-4" />
-                          </Button>
-                          <Button onClick={testLink} size="sm" variant="outline">
-                            <ExternalLink className="h-4 w-4" />
-                          </Button>
-                        </div>
-                        <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-                          <p className="text-sm text-green-700">
-                            ✅ <strong>Lien prêt !</strong> Partagez ce lien pour tracker vos conversions.
-                          </p>
-                          <p className="text-xs text-green-600 mt-1">
-                            Vos visiteurs seront automatiquement redirigés vers {targetUrl}
-                          </p>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="bg-orange-50 border border-orange-200 rounded-lg p-3">
-                        <p className="text-sm text-orange-700">
-                          ⚠️ URL de destination manquante dans la configuration de la campagne
-                        </p>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
+                <TrackingLinkGenerator
+                  generatedLink={generatedLink}
+                  targetUrl={targetUrl}
+                />
 
-                {/* Stats Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                  <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium">Clics Total</CardTitle>
-                      <Users className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-2xl font-bold">
-                        {statsLoading ? '...' : stats.clicks}
-                      </div>
-                      <p className="text-xs text-muted-foreground">
-                        Visiteurs uniques tracés
-                      </p>
-                    </CardContent>
-                  </Card>
-
-                  <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium">Conversions</CardTitle>
-                      <TrendingUp className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-2xl font-bold">
-                        {statsLoading ? '...' : stats.conversions}
-                      </div>
-                      <p className="text-xs text-muted-foreground">
-                        Taux de conversion: {stats.clicks ? ((stats.conversions / stats.clicks) * 100).toFixed(1) : 0}%
-                      </p>
-                    </CardContent>
-                  </Card>
-
-                  <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium">Commissions</CardTitle>
-                      <BarChart3 className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-2xl font-bold">
-                        {statsLoading ? '...' : `${stats.commissions}€`}
-                      </div>
-                      <p className="text-xs text-muted-foreground">
-                        En attente de validation
-                      </p>
-                    </CardContent>
-                  </Card>
-                </div>
-
-                {/* Placeholder pour futurs graphiques */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Évolution des performances</CardTitle>
-                    <CardDescription>
-                      Graphiques et données détaillées
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="h-48 flex items-center justify-center text-gray-500">
-                      <div className="text-center">
-                        <BarChart3 className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                        <p>Les graphiques détaillés seront disponibles prochainement</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                <AffiliateStatsDisplay
+                  stats={stats}
+                  loading={statsLoading}
+                />
               </>
             ) : (
               <Card>
