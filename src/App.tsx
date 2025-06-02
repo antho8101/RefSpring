@@ -4,20 +4,49 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { useEffect } from "react";
-import Index from "./pages/Index";
-import NotFound from "./pages/NotFound";
-import AffiliatePage from "./pages/AffiliatePage";
-import TrackingPage from "./pages/TrackingPage";
-import ShortLinkPage from "./pages/ShortLinkPage";
-import LandingPage from "./pages/LandingPage";
-import TrackingJsRoute from "./pages/TrackingJsRoute";
-import TestProductsPage from "./pages/TestProductsPage";
-import TestThankYouPage from "./pages/TestThankYouPage";
-import AdvancedStatsPage from "./pages/AdvancedStatsPage";
+import { useEffect, lazy, Suspense } from "react";
 import './i18n';
 
-const queryClient = new QueryClient();
+// Lazy loading des composants de page
+const Index = lazy(() => import("./pages/Index"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+const AffiliatePage = lazy(() => import("./pages/AffiliatePage"));
+const TrackingPage = lazy(() => import("./pages/TrackingPage"));
+const ShortLinkPage = lazy(() => import("./pages/ShortLinkPage"));
+const LandingPage = lazy(() => import("./pages/LandingPage"));
+const TrackingJsRoute = lazy(() => import("./pages/TrackingJsRoute"));
+const TestProductsPage = lazy(() => import("./pages/TestProductsPage"));
+const TestThankYouPage = lazy(() => import("./pages/TestThankYouPage"));
+const AdvancedStatsPage = lazy(() => import("./pages/AdvancedStatsPage"));
+
+// Optimisation du QueryClient avec cache persistant
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      cacheTime: 10 * 60 * 1000, // 10 minutes
+      retry: (failureCount, error) => {
+        // Ne pas retry sur les erreurs 4xx
+        if (error && typeof error === 'object' && 'status' in error) {
+          return (error.status as number) >= 500 && failureCount < 3;
+        }
+        return failureCount < 3;
+      },
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+    },
+  },
+});
+
+// Composant de loading amélioré
+const PageSkeleton = () => (
+  <div className="min-h-screen bg-gradient-to-br from-blue-50/50 via-white to-purple-50/50 flex items-center justify-center">
+    <div className="flex flex-col items-center space-y-4">
+      <div className="w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
+      <div className="text-slate-600 text-sm">Chargement...</div>
+    </div>
+  </div>
+);
 
 const DomainRouter = () => {
   useEffect(() => {
@@ -35,35 +64,37 @@ const DomainRouter = () => {
   }, []);
 
   return (
-    <Routes>
-      {/* Route principale - comportement par défaut selon le domaine */}
-      <Route path="/" element={
-        window.location.hostname === 'dashboard.refspring.com' 
-          ? <Navigate to="/dashboard" replace />
-          : <Navigate to="/landing" replace />
-      } />
-      
-      {/* Pages principales */}
-      <Route path="/dashboard" element={<Index />} />
-      <Route path="/landing" element={<LandingPage />} />
-      <Route path="/advanced-stats" element={<AdvancedStatsPage />} />
-      <Route path="/advanced-stats/:campaignId" element={<AdvancedStatsPage />} />
-      
-      {/* Route pour servir le fichier tracking.js */}
-      <Route path="/tracking.js" element={<TrackingJsRoute />} />
-      
-      {/* Pages de test */}
-      <Route path="/test-products" element={<TestProductsPage />} />
-      <Route path="/test-thankyou" element={<TestThankYouPage />} />
-      
-      {/* Pages fonctionnelles - disponibles sur tous les domaines */}
-      <Route path="/r/:campaignId" element={<AffiliatePage />} />
-      <Route path="/track/:campaignId/:affiliateId" element={<TrackingPage />} />
-      <Route path="/s/:shortCode" element={<ShortLinkPage />} />
-      
-      {/* 404 - doit être en dernier */}
-      <Route path="*" element={<NotFound />} />
-    </Routes>
+    <Suspense fallback={<PageSkeleton />}>
+      <Routes>
+        {/* Route principale - comportement par défaut selon le domaine */}
+        <Route path="/" element={
+          window.location.hostname === 'dashboard.refspring.com' 
+            ? <Navigate to="/dashboard" replace />
+            : <Navigate to="/landing" replace />
+        } />
+        
+        {/* Pages principales */}
+        <Route path="/dashboard" element={<Index />} />
+        <Route path="/landing" element={<LandingPage />} />
+        <Route path="/advanced-stats" element={<AdvancedStatsPage />} />
+        <Route path="/advanced-stats/:campaignId" element={<AdvancedStatsPage />} />
+        
+        {/* Route pour servir le fichier tracking.js */}
+        <Route path="/tracking.js" element={<TrackingJsRoute />} />
+        
+        {/* Pages de test */}
+        <Route path="/test-products" element={<TestProductsPage />} />
+        <Route path="/test-thankyou" element={<TestThankYouPage />} />
+        
+        {/* Pages fonctionnelles - disponibles sur tous les domaines */}
+        <Route path="/r/:campaignId" element={<AffiliatePage />} />
+        <Route path="/track/:campaignId/:affiliateId" element={<TrackingPage />} />
+        <Route path="/s/:shortCode" element={<ShortLinkPage />} />
+        
+        {/* 404 - doit être en dernier */}
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </Suspense>
   );
 };
 

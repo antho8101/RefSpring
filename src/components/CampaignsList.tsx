@@ -7,23 +7,27 @@ import { Eye, TrendingUp, LayoutGrid, List } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { CampaignCard } from '@/components/CampaignCard';
 import { CompactCampaignCard } from '@/components/CompactCampaignCard';
-import { useState } from 'react';
+import { useState, useCallback, memo } from 'react';
 
-export const CampaignsList = () => {
+export const CampaignsList = memo(() => {
   const { campaigns, loading } = useCampaigns();
   const { toast } = useToast();
   const [viewMode, setViewMode] = useState<'normal' | 'compact'>('normal');
 
   console.log('CampaignsList render - campaigns:', campaigns, 'loading:', loading);
 
-  const copyTrackingUrl = (campaignId: string) => {
+  const copyTrackingUrl = useCallback((campaignId: string) => {
     const trackingUrl = `https://refspring.com/r/${campaignId}`;
     navigator.clipboard.writeText(trackingUrl);
     toast({
       title: "URL de tracking copiée",
       description: "Partagez cette URL avec vos affiliés pour qu'ils puissent tracker leurs conversions",
     });
-  };
+  }, [toast]);
+
+  const handleViewModeChange = useCallback((value: string | undefined) => {
+    if (value) setViewMode(value as 'normal' | 'compact');
+  }, []);
 
   if (loading) {
     console.log('CampaignsList: showing loading state');
@@ -74,7 +78,7 @@ export const CampaignsList = () => {
           <ToggleGroup 
             type="single" 
             value={viewMode} 
-            onValueChange={(value) => value && setViewMode(value as 'normal' | 'compact')}
+            onValueChange={handleViewModeChange}
             className="bg-white border border-slate-200 rounded-lg p-1"
           >
             <ToggleGroupItem value="normal" aria-label="Vue normale" className="data-[state=on]:bg-blue-100 data-[state=on]:text-blue-700">
@@ -105,4 +109,6 @@ export const CampaignsList = () => {
       </div>
     </div>
   );
-};
+});
+
+CampaignsList.displayName = 'CampaignsList';

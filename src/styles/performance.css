@@ -1,0 +1,63 @@
+
+/* Optimisations de performance CSS */
+
+/* Force la composition par couches pour les animations */
+.animate-fade-in,
+.animate-pulse,
+.animate-spin {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+}
+
+/* Optimisation pour les gradients */
+.bg-gradient-to-br,
+.bg-gradient-to-r,
+.bg-gradient-to-t {
+  background-attachment: local;
+}
+
+/* Optimisation pour les ombres */
+.shadow-lg,
+.shadow-xl,
+.shadow-2xl {
+  will-change: box-shadow;
+}
+
+/* Préchargement des polices critiques */
+@font-display: swap;
+
+/* Optimisation pour les transitions */
+.transition-colors,
+.transition-all,
+.transition-opacity {
+  will-change: auto;
+}
+
+/* Réduction des repaints pour les hover states */
+.hover\:bg-blue-600:hover,
+.hover\:bg-green-600:hover,
+.hover\:shadow-lg:hover {
+  transform: translateZ(0);
+}
+
+/* Optimisation pour les scroll areas */
+.overflow-auto,
+.overflow-y-auto {
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+/* Optimisation pour les images */
+img {
+  content-visibility: auto;
+}
+
+/* Cache les éléments hors écran */
+.offscreen {
+  content-visibility: hidden;
+}
+
+/* Optimisation pour les listes longues */
+.virtual-list-item {
+  contain: layout style paint;
+}
