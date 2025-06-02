@@ -102,10 +102,18 @@ export const CampaignSettingsDialog = ({ campaign }: CampaignSettingsDialogProps
         <form onSubmit={handleSubmit}>
           <div className="grid gap-6 py-4">
             {/* État de la campagne */}
-            <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg">
+            <div className={`flex items-center justify-between p-4 rounded-lg ${
+              formData.isActive 
+                ? 'bg-green-50 border border-green-200' 
+                : 'bg-orange-50 border border-orange-200'
+            }`}>
               <div className="space-y-1">
                 <Label className="text-sm font-medium">État de la campagne</Label>
-                <p className="text-xs text-slate-600">
+                <p className={`text-xs ${
+                  formData.isActive 
+                    ? 'text-green-700' 
+                    : 'text-orange-700'
+                }`}>
                   {formData.isActive ? 'La campagne est active et accepte les conversions' : 'La campagne est en pause'}
                 </p>
               </div>
