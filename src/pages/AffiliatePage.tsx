@@ -13,11 +13,12 @@ import {
 import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Affiliate } from '@/types';
+import { useAffiliateStats } from '@/hooks/useAffiliateStats';
 
 const AffiliatePage = () => {
   const { campaignId } = useParams();
   const [searchParams] = useSearchParams();
-  const refCode = searchParams.get('ref'); // Récupère le code d'affilié s'il existe dans l'URL
+  const refCode = searchParams.get('ref');
   
   const [campaignName, setCampaignName] = useState('');
   const [selectedAffiliate, setSelectedAffiliate] = useState<string | null>(null);
@@ -25,12 +26,8 @@ const AffiliatePage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
-  // Statistiques (à connecter à de vraies données plus tard)
-  const [stats, setStats] = useState({
-    clicks: 0,
-    conversions: 0,
-    commissions: 0,
-  });
+  // Utiliser le hook pour les vraies statistiques
+  const { stats, loading: statsLoading } = useAffiliateStats(selectedAffiliate);
 
   // Récupérer les infos de la campagne et ses affiliés
   useEffect(() => {
@@ -45,7 +42,6 @@ const AffiliatePage = () => {
       try {
         console.log('Fetching campaign with ID:', campaignId);
         
-        // Try to get campaign data - this might fail due to security rules
         try {
           const campaignRef = doc(db, 'campaigns', campaignId);
           const campaignDoc = await getDoc(campaignRef);
@@ -63,7 +59,6 @@ const AffiliatePage = () => {
           setCampaignName('Campagne publique');
         }
         
-        // Try to get affiliates - this might also fail due to security rules
         try {
           console.log('Fetching affiliates for campaign:', campaignId);
           const affiliatesQuery = query(
@@ -113,23 +108,6 @@ const AffiliatePage = () => {
     fetchCampaignData();
   }, [campaignId, refCode]);
 
-  // Charger les statistiques lorsqu'un affilié est sélectionné
-  useEffect(() => {
-    // Cette fonction sera implémentée plus tard pour charger les vraies stats
-    const loadAffiliateStats = async () => {
-      if (!selectedAffiliate) return;
-      
-      // Simulation de chargement - à remplacer par de vraies données
-      setStats({
-        clicks: Math.floor(Math.random() * 100),
-        conversions: Math.floor(Math.random() * 20),
-        commissions: Math.floor(Math.random() * 1000),
-      });
-    };
-    
-    loadAffiliateStats();
-  }, [selectedAffiliate]);
-
   // Error display with more helpful message for public access
   if (error) {
     return (
@@ -176,7 +154,6 @@ const AffiliatePage = () => {
           <p className="text-gray-600">
             Suivez les performances des affiliés en temps réel
           </p>
-          {/* Debug info */}
           <div className="mt-2 text-xs text-gray-400">
             Debug: Campaign ID = {campaignId}, Affiliates count = {affiliates.length}, Loading = {loading.toString()}
           </div>
@@ -228,7 +205,9 @@ const AffiliatePage = () => {
                       <Users className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                      <div className="text-2xl font-bold">{stats.clicks}</div>
+                      <div className="text-2xl font-bold">
+                        {statsLoading ? '...' : stats.clicks}
+                      </div>
                       <p className="text-xs text-muted-foreground">
                         Visiteurs uniques tracés
                       </p>
@@ -241,7 +220,9 @@ const AffiliatePage = () => {
                       <TrendingUp className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                      <div className="text-2xl font-bold">{stats.conversions}</div>
+                      <div className="text-2xl font-bold">
+                        {statsLoading ? '...' : stats.conversions}
+                      </div>
                       <p className="text-xs text-muted-foreground">
                         Taux de conversion: {stats.clicks ? ((stats.conversions / stats.clicks) * 100).toFixed(1) : 0}%
                       </p>
@@ -254,7 +235,9 @@ const AffiliatePage = () => {
                       <BarChart3 className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                      <div className="text-2xl font-bold">{stats.commissions}€</div>
+                      <div className="text-2xl font-bold">
+                        {statsLoading ? '...' : `${stats.commissions}€`}
+                      </div>
                       <p className="text-xs text-muted-foreground">
                         En attente de validation
                       </p>
