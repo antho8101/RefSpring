@@ -9,10 +9,13 @@ import { Switch } from '@/components/ui/switch';
 import { useCampaigns } from '@/hooks/useCampaigns';
 import { useToast } from '@/hooks/use-toast';
 import { Plus } from 'lucide-react';
+import { CampaignSuccessModal } from '@/components/CampaignSuccessModal';
 
 export const CreateCampaignDialog = () => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [successModalOpen, setSuccessModalOpen] = useState(false);
+  const [createdCampaign, setCreatedCampaign] = useState<{ id: string; name: string } | null>(null);
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -28,12 +31,18 @@ export const CreateCampaignDialog = () => {
     setLoading(true);
 
     try {
-      await createCampaign(formData);
+      const campaignId = await createCampaign(formData);
       toast({
         title: "Campagne créée",
         description: "Votre nouvelle campagne a été créée avec succès !",
       });
+      
+      // Fermer la modale de création et ouvrir celle de succès
       setOpen(false);
+      setCreatedCampaign({ id: campaignId, name: formData.name });
+      setSuccessModalOpen(true);
+      
+      // Reset le formulaire
       setFormData({ name: '', description: '', targetUrl: '', isActive: true });
     } catch (error: any) {
       toast({
@@ -47,72 +56,84 @@ export const CreateCampaignDialog = () => {
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button>
-          <Plus className="h-4 w-4 mr-2" />
-          Nouvelle Campagne
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Créer une nouvelle campagne</DialogTitle>
-          <DialogDescription>
-            Configurez une nouvelle campagne d'affiliation
-          </DialogDescription>
-        </DialogHeader>
-        <form onSubmit={handleSubmit}>
-          <div className="grid gap-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">Nom de la campagne</Label>
-              <Input
-                id="name"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="Ex: Vente Produit A"
-                required
-              />
+    <>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogTrigger asChild>
+          <Button>
+            <Plus className="h-4 w-4 mr-2" />
+            Nouvelle Campagne
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Créer une nouvelle campagne</DialogTitle>
+            <DialogDescription>
+              Configurez une nouvelle campagne d'affiliation
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleSubmit}>
+            <div className="grid gap-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="name">Nom de la campagne</Label>
+                <Input
+                  id="name"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  placeholder="Ex: Vente Produit A"
+                  required
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="description">Description</Label>
+                <Textarea
+                  id="description"
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  placeholder="Description de la campagne..."
+                  rows={3}
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="targetUrl">URL de destination</Label>
+                <Input
+                  id="targetUrl"
+                  value={formData.targetUrl}
+                  onChange={(e) => setFormData({ ...formData, targetUrl: e.target.value })}
+                  placeholder="https://monsite.com/produit"
+                  required
+                />
+              </div>
+              
+              <div className="flex items-center space-x-2">
+                <Switch
+                  id="isActive"
+                  checked={formData.isActive}
+                  onCheckedChange={(checked) => setFormData({ ...formData, isActive: checked })}
+                />
+                <Label htmlFor="isActive">Campagne active</Label>
+              </div>
             </div>
             
-            <div className="space-y-2">
-              <Label htmlFor="description">Description</Label>
-              <Textarea
-                id="description"
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                placeholder="Description de la campagne..."
-                rows={3}
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="targetUrl">URL de destination</Label>
-              <Input
-                id="targetUrl"
-                value={formData.targetUrl}
-                onChange={(e) => setFormData({ ...formData, targetUrl: e.target.value })}
-                placeholder="https://monsite.com/produit"
-                required
-              />
-            </div>
-            
-            <div className="flex items-center space-x-2">
-              <Switch
-                id="isActive"
-                checked={formData.isActive}
-                onCheckedChange={(checked) => setFormData({ ...formData, isActive: checked })}
-              />
-              <Label htmlFor="isActive">Campagne active</Label>
-            </div>
-          </div>
-          
-          <DialogFooter>
-            <Button type="submit" disabled={loading}>
-              {loading ? 'Création...' : 'Créer la campagne'}
-            </Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
+            <DialogFooter>
+              <Button type="submit" disabled={loading}>
+                {loading ? 'Création...' : 'Créer la campagne'}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Modale de succès */}
+      {createdCampaign && (
+        <CampaignSuccessModal
+          open={successModalOpen}
+          onOpenChange={setSuccessModalOpen}
+          campaignId={createdCampaign.id}
+          campaignName={createdCampaign.name}
+        />
+      )}
+    </>
   );
 };
