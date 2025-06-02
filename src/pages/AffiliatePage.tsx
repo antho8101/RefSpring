@@ -106,7 +106,7 @@ const AffiliatePage = () => {
               <h1 className="text-2xl font-bold text-blue-600">RefSpring</h1>
               <p className="text-sm text-gray-600">Dashboard Affiliés</p>
             </div>
-            <Badge variant="outline">Campagne #{campaignId}</Badge>
+            <Badge variant="outline">{campaignName || 'Chargement...'}</Badge>
           </div>
         </div>
       </header>
