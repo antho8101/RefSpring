@@ -36,19 +36,12 @@
     --radius: 0.5rem;
 
     --sidebar-background: 0 0% 98%;
-
     --sidebar-foreground: 240 5.3% 26.1%;
-
     --sidebar-primary: 240 5.9% 10%;
-
     --sidebar-primary-foreground: 0 0% 98%;
-
     --sidebar-accent: 240 4.8% 95.9%;
-
     --sidebar-accent-foreground: 240 5.9% 10%;
-
     --sidebar-border: 220 13% 91%;
-
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
@@ -102,6 +95,10 @@
 
   body {
     @apply bg-background text-foreground;
+    /* Amélioration de la performance sur mobile */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
   
   /* Allow text selection for inputs and textareas */
@@ -110,5 +107,56 @@
     -webkit-user-select: text;
     -moz-user-select: text;
     -ms-user-select: text;
+  }
+
+  /* Amélioration de la responsivité pour les tables */
+  @media (max-width: 640px) {
+    table {
+      font-size: 0.875rem;
+    }
+  }
+
+  /* Optimisation du scroll sur mobile */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Amélioration des performances d'animation sur mobile */
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Meilleur contraste pour les petits écrans */
+  @media (max-width: 768px) {
+    .text-slate-500 {
+      @apply text-slate-600;
+    }
+    .text-slate-400 {
+      @apply text-slate-500;
+    }
+  }
+}
+
+/* Utilitaires responsifs personnalisés */
+@layer utilities {
+  .safe-area-inset {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+
+  .text-responsive {
+    @apply text-sm sm:text-base lg:text-lg;
+  }
+
+  .heading-responsive {
+    @apply text-lg sm:text-xl lg:text-2xl;
+  }
+
+  .card-responsive {
+    @apply p-3 sm:p-4 lg:p-6;
+  }
+
+  .gap-responsive {
+    @apply gap-3 sm:gap-4 lg:gap-6;
   }
 }
