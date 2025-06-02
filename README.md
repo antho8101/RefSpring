@@ -1,8 +1,8 @@
 
 <div align="center">
   <h1>🌟 RefSpring</h1>
-  <p><strong>La plateforme d'affiliation nouvelle génération</strong></p>
-  <p>Gérez vos campagnes d'affiliation avec style et efficacité</p>
+  <p><strong>Next-generation affiliate platform</strong></p>
+  <p>Manage your affiliate campaigns with style and efficiency</p>
   
   <img src="https://img.shields.io/badge/React-18.3.1-61DAFB?style=for-the-badge&logo=react&logoColor=white" alt="React" />
   <img src="https://img.shields.io/badge/TypeScript-5.0-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
@@ -12,136 +12,136 @@
 
 ---
 
-## ✨ Fonctionnalités
+## ✨ Features
 
-### 🎯 **Gestion de campagnes**
-- Création et configuration de campagnes d'affiliation
-- Activation/désactivation en temps réel
-- URLs de destination personnalisables
-- Suivi des performances en direct
+### 🎯 **Campaign Management**
+- Create and configure affiliate campaigns
+- Real-time activation/deactivation
+- Customizable destination URLs
+- Live performance tracking
 
-### 👥 **Gestion des affiliés**
-- Ajout et organisation de vos partenaires
-- Génération automatique de liens de tracking
-- Liens courts personnalisés pour chaque affilié
-- Calcul automatique des commissions
+### 👥 **Affiliate Management**
+- Add and organize your partners
+- Automatic tracking link generation
+- Custom short links for each affiliate
+- Automatic commission calculation
 
-### 📊 **Analytics avancées**
-- Dashboard en temps réel avec métriques clés
-- Suivi des clics, conversions et revenus
-- Taux de conversion par campagne et affilié
-- Historique complet des performances
+### 📊 **Advanced Analytics**
+- Real-time dashboard with key metrics
+- Track clicks, conversions, and revenue
+- Conversion rates by campaign and affiliate
+- Complete performance history
 
-### 🔗 **Liens intelligents**
-- Génération automatique de liens courts
-- Redirection conditionnelle (campagnes actives/en pause)
-- Tracking précis des clics et conversions
-- Protection contre la fraude
+### 🔗 **Smart Links**
+- Automatic short link generation
+- Conditional redirection (active/paused campaigns)
+- Precise click and conversion tracking
+- Fraud protection
 
 ---
 
-## 🚀 Démarrage rapide
+## 🚀 Quick Start
 
-### Prérequis
-- Node.js 18+ et npm
-- Compte Firebase pour la base de données
+### Prerequisites
+- Node.js 18+ and npm
+- Firebase account for database
 
 ### Installation
 
 ```bash
-# Cloner le repository
-git clone https://github.com/votre-username/refspring.git
+# Clone the repository
+git clone https://github.com/your-username/refspring.git
 cd refspring
 
-# Installer les dépendances
+# Install dependencies
 npm install
 
-# Configurer Firebase
-# Créez un fichier .env avec vos clés Firebase :
-# VITE_FIREBASE_API_KEY=votre_api_key
-# VITE_FIREBASE_AUTH_DOMAIN=votre_auth_domain
-# VITE_FIREBASE_PROJECT_ID=votre_project_id
+# Configure Firebase
+# Create a .env file with your Firebase keys:
+# VITE_FIREBASE_API_KEY=your_api_key
+# VITE_FIREBASE_AUTH_DOMAIN=your_auth_domain
+# VITE_FIREBASE_PROJECT_ID=your_project_id
 # etc...
 
-# Lancer en mode développement
+# Start development server
 npm run dev
 ```
 
-L'application sera accessible sur `http://localhost:8080`
+The application will be accessible at `http://localhost:8080`
 
 ---
 
 ## 🏗️ Architecture
 
-### Stack technique
-- **Frontend** : React 18 + TypeScript + Vite
-- **Styling** : Tailwind CSS + shadcn/ui
-- **Backend** : Firebase (Firestore + Auth)
-- **State Management** : TanStack Query
-- **Routing** : React Router Dom
+### Tech Stack
+- **Frontend**: React 18 + TypeScript + Vite
+- **Styling**: Tailwind CSS + shadcn/ui
+- **Backend**: Firebase (Firestore + Auth)
+- **State Management**: TanStack Query
+- **Routing**: React Router Dom
 
-### Structure du projet
+### Project Structure
 ```
 src/
-├── components/          # Composants UI réutilisables
-│   ├── ui/             # Composants shadcn/ui
-│   ├── Dashboard.tsx   # Page principale
-│   └── Campaign*.tsx   # Gestion des campagnes
-├── hooks/              # Hooks personnalisés
-│   ├── useAuth.tsx     # Authentification
-│   ├── useCampaigns.ts # Gestion des campagnes
-│   └── useTracking.ts  # Suivi des liens
-├── pages/              # Pages de l'application
-│   ├── TrackingPage.tsx    # Redirection des liens
-│   └── ShortLinkPage.tsx   # Liens courts
-├── lib/                # Configuration et utilitaires
-└── types/              # Définitions TypeScript
+├── components/          # Reusable UI components
+│   ├── ui/             # shadcn/ui components
+│   ├── Dashboard.tsx   # Main dashboard page
+│   └── Campaign*.tsx   # Campaign management
+├── hooks/              # Custom hooks
+│   ├── useAuth.tsx     # Authentication
+│   ├── useCampaigns.ts # Campaign management
+│   └── useTracking.ts  # Link tracking
+├── pages/              # Application pages
+│   ├── TrackingPage.tsx    # Link redirection
+│   └── ShortLinkPage.tsx   # Short links
+├── lib/                # Configuration and utilities
+└── types/              # TypeScript definitions
 ```
 
 ---
 
-## 📈 Fonctionnement du tracking
+## 📈 How Tracking Works
 
-RefSpring utilise un système de tracking avancé :
+RefSpring uses an advanced tracking system:
 
-1. **Génération de liens** : Chaque affilié reçoit un lien unique
-2. **Redirection intelligente** : Les clics sont trackés avant redirection
-3. **Campagnes en pause** : Affichage d'une page d'information
-4. **Analytics temps réel** : Mise à jour instantanée des métriques
+1. **Link Generation**: Each affiliate receives a unique link
+2. **Smart Redirection**: Clicks are tracked before redirection
+3. **Paused Campaigns**: Display information page instead of redirecting
+4. **Real-time Analytics**: Instant metrics updates
 
-### Exemple de lien généré
+### Example Generated Link
 ```
-https://votre-domaine.com/s/ABC123
-│                           └── Code court unique
-└── Redirection automatique vers l'URL de la campagne
+https://your-domain.com/s/ABC123
+│                           └── Unique short code
+└── Automatic redirection to campaign URL
 ```
 
 ---
 
-## 🎨 Interface utilisateur
+## 🎨 User Interface
 
-### Dashboard moderne
-- **Design responsive** avec animations fluides
-- **Métriques en temps réel** (clics, conversions, revenus)
-- **Gestion intuitive** des campagnes et affiliés
-- **Thème cohérent** avec Tailwind CSS
+### Modern Dashboard
+- **Responsive design** with smooth animations
+- **Real-time metrics** (clicks, conversions, revenue)
+- **Intuitive management** of campaigns and affiliates
+- **Consistent theme** with Tailwind CSS
 
-### Fonctionnalités UX
-- Copie de liens en un clic
-- Notifications toast pour les actions
-- Cartes extensibles/réductibles
-- Badges de statut visuels
+### UX Features
+- One-click link copying
+- Toast notifications for actions
+- Expandable/collapsible cards
+- Visual status badges
 
 ---
 
-## 🔧 Configuration Firebase
+## 🔧 Firebase Configuration
 
-1. Créez un projet Firebase
-2. Activez Firestore et Authentication
-3. Configurez les règles de sécurité
-4. Ajoutez vos clés dans `.env`
+1. Create a Firebase project
+2. Enable Firestore and Authentication
+3. Configure security rules
+4. Add your keys to `.env`
 
-### Structure Firestore
+### Firestore Structure
 ```
 campaigns/
 ├── {campaignId}/
@@ -166,48 +166,48 @@ clicks/
 
 ---
 
-## 🚀 Déploiement
+## 🚀 Deployment
 
-### Avec Lovable (recommandé)
-1. Connectez votre projet à GitHub
-2. Cliquez sur "Publish" dans l'interface Lovable
-3. Votre app est en ligne ! 🎉
+### With Lovable (recommended)
+1. Connect your project to GitHub
+2. Click "Publish" in the Lovable interface
+3. Your app is live! 🎉
 
-### Déploiement manuel
+### Manual Deployment
 ```bash
-# Build de production
+# Production build
 npm run build
 
-# Déployer sur votre plateforme préférée
+# Deploy to your preferred platform
 # (Vercel, Netlify, Firebase Hosting, etc.)
 ```
 
 ---
 
-## 📝 Licence
+## 📝 License
 
-Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
+This project is licensed under the MIT License. See the `LICENSE` file for more details.
 
 ---
 
-## 👨‍💻 Contribution
+## 👨‍💻 Contributing
 
-Les contributions sont les bienvenues ! N'hésitez pas à :
-- Ouvrir une issue pour signaler un bug
-- Proposer de nouvelles fonctionnalités
-- Soumettre une pull request
+Contributions are welcome! Feel free to:
+- Open an issue to report a bug
+- Suggest new features
+- Submit a pull request
 
 ---
 
 ## 📞 Support
 
-- 📧 Email : support@refspring.com
-- 🐛 Issues : [GitHub Issues](https://github.com/votre-username/refspring/issues)
-- 💬 Discord : [Rejoindre la communauté](https://discord.gg/refspring)
+- 📧 Email: support@refspring.com
+- 🐛 Issues: [GitHub Issues](https://github.com/your-username/refspring/issues)
+- 💬 Discord: [Join the community](https://discord.gg/refspring)
 
 ---
 
 <div align="center">
-  <p>Fait avec ❤️ par l'équipe RefSpring</p>
-  <p><strong>Révolutionnez votre affiliation dès aujourd'hui !</strong></p>
+  <p>Made with ❤️ by the RefSpring team</p>
+  <p><strong>Revolutionize your affiliate marketing today!</strong></p>
 </div>
