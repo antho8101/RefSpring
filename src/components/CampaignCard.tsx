@@ -1,6 +1,5 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import {
   Collapsible,
@@ -10,7 +9,7 @@ import {
 import { useAffiliates } from '@/hooks/useAffiliates';
 import { useToast } from '@/hooks/use-toast';
 import { useTrackingLinkGenerator } from '@/hooks/useTrackingLinkGenerator';
-import { Users, ChevronDown, ChevronRight, Copy, ExternalLink } from 'lucide-react';
+import { Users, ChevronDown, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
 import { AffiliatesList } from '@/components/AffiliatesList';
 import { CampaignActions } from '@/components/CampaignActions';
@@ -27,68 +26,6 @@ export const CampaignCard = ({ campaign, onCopyUrl }: CampaignCardProps) => {
   const [isAffiliatesOpen, setIsAffiliatesOpen] = useState(false);
   const { toast } = useToast();
   const { generateTrackingLink } = useTrackingLinkGenerator();
-  
-  // Génération de l'URL selon l'environnement
-  const getPublicDashboardUrl = () => {
-    const currentHostname = window.location.hostname;
-    
-    // En développement local ou prévisualisation Lovable
-    if (currentHostname.includes('localhost') || currentHostname.includes('lovableproject.com')) {
-      return `${window.location.origin}/r/${campaign.id}`;
-    }
-    
-    // En production - toujours pointer vers refspring.com
-    return `https://refspring.com/r/${campaign.id}`;
-  };
-
-  const publicDashboardUrl = getPublicDashboardUrl();
-
-  const handleCopyUrl = async () => {
-    try {
-      // Méthode moderne avec navigator.clipboard
-      if (navigator.clipboard && window.isSecureContext) {
-        await navigator.clipboard.writeText(publicDashboardUrl);
-        toast({
-          title: "Lien copié !",
-          description: "Le lien du dashboard public a été copié dans le presse-papiers",
-        });
-        return;
-      }
-
-      // Méthode de fallback pour navigateurs plus anciens ou contextes non-sécurisés
-      const textArea = document.createElement('textarea');
-      textArea.value = publicDashboardUrl;
-      textArea.style.position = 'fixed';
-      textArea.style.left = '-999999px';
-      textArea.style.top = '-999999px';
-      document.body.appendChild(textArea);
-      textArea.focus();
-      textArea.select();
-      
-      const successful = document.execCommand('copy');
-      document.body.removeChild(textArea);
-      
-      if (successful) {
-        toast({
-          title: "Lien copié !",
-          description: "Le lien du dashboard public a été copié dans le presse-papiers",
-        });
-      } else {
-        throw new Error('Fallback copy failed');
-      }
-    } catch (error) {
-      console.error('Copy failed:', error);
-      toast({
-        title: "Copie impossible",
-        description: "Sélectionnez et copiez le lien manuellement avec Ctrl+C",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleOpenDashboard = () => {
-    window.open(publicDashboardUrl, '_blank');
-  };
 
   // Fonction pour copier le lien de tracking d'un affilié - maintenant asynchrone
   const handleCopyTrackingLink = async (affiliateId: string) => {
@@ -151,44 +88,6 @@ export const CampaignCard = ({ campaign, onCopyUrl }: CampaignCardProps) => {
       </CardHeader>
       <CardContent>
         <CampaignStats campaign={campaign} affiliatesCount={affiliates.length} />
-
-        {/* Dashboard public - Section repositionnée dans une grille */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <div className="bg-blue-50/50 p-4 rounded-xl">
-            <div className="flex items-center gap-2 text-blue-600 mb-2">
-              <ExternalLink className="h-4 w-4" />
-              <span className="text-sm font-medium">Dashboard public</span>
-            </div>
-            <p className="text-xs text-blue-700/80 leading-relaxed mb-3">
-              Partagez ce lien avec vos affiliés pour qu'ils puissent consulter leurs statistiques et accéder à leurs liens de tracking.
-            </p>
-            <div className="space-y-2">
-              <Input 
-                value={publicDashboardUrl}
-                readOnly 
-                className="font-mono text-xs bg-white/80 border-blue-200/60 focus:border-blue-300 text-slate-700"
-              />
-              <div className="flex items-center gap-2">
-                <Button 
-                  variant="outline" 
-                  size="icon" 
-                  onClick={handleCopyUrl}
-                  className="border-blue-300/60 text-blue-700 hover:bg-blue-100/50 hover:border-blue-400 transition-all"
-                >
-                  <Copy className="h-4 w-4" />
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="icon" 
-                  onClick={handleOpenDashboard}
-                  className="border-blue-300/60 text-blue-700 hover:bg-blue-100/50 hover:border-blue-400 transition-all"
-                >
-                  <ExternalLink className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
 
         {/* Section des affiliés */}
         <Collapsible open={isAffiliatesOpen} onOpenChange={setIsAffiliatesOpen}>
