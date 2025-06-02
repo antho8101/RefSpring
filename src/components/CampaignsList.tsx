@@ -1,13 +1,18 @@
 
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { useCampaigns } from '@/hooks/useCampaigns';
-import { Eye, TrendingUp } from 'lucide-react';
+import { Eye, TrendingUp, LayoutGrid, List } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { CampaignCard } from '@/components/CampaignCard';
+import { CompactCampaignCard } from '@/components/CompactCampaignCard';
+import { useState } from 'react';
 
 export const CampaignsList = () => {
   const { campaigns, loading } = useCampaigns();
   const { toast } = useToast();
+  const [viewMode, setViewMode] = useState<'normal' | 'compact'>('normal');
 
   console.log('CampaignsList render - campaigns:', campaigns, 'loading:', loading);
 
@@ -63,15 +68,41 @@ export const CampaignsList = () => {
   console.log('CampaignsList: rendering campaigns list');
   return (
     <div className="space-y-6">
-      {campaigns.map((campaign, index) => (
-        <div 
-          key={campaign.id} 
-          className="animate-fade-in" 
-          style={{ animationDelay: `${index * 0.1}s` }}
-        >
-          <CampaignCard campaign={campaign} onCopyUrl={copyTrackingUrl} />
+      {/* Sélecteur de mode d'affichage */}
+      {campaigns.length > 3 && (
+        <div className="flex justify-end">
+          <ToggleGroup 
+            type="single" 
+            value={viewMode} 
+            onValueChange={(value) => value && setViewMode(value as 'normal' | 'compact')}
+            className="bg-white border border-slate-200 rounded-lg p-1"
+          >
+            <ToggleGroupItem value="normal" aria-label="Vue normale" className="data-[state=on]:bg-blue-100 data-[state=on]:text-blue-700">
+              <LayoutGrid className="h-4 w-4" />
+            </ToggleGroupItem>
+            <ToggleGroupItem value="compact" aria-label="Vue compacte" className="data-[state=on]:bg-blue-100 data-[state=on]:text-blue-700">
+              <List className="h-4 w-4" />
+            </ToggleGroupItem>
+          </ToggleGroup>
         </div>
-      ))}
+      )}
+
+      {/* Liste des campagnes */}
+      <div className="space-y-4">
+        {campaigns.map((campaign, index) => (
+          <div 
+            key={campaign.id} 
+            className="animate-fade-in" 
+            style={{ animationDelay: `${index * 0.1}s` }}
+          >
+            {viewMode === 'compact' ? (
+              <CompactCampaignCard campaign={campaign} onCopyUrl={copyTrackingUrl} />
+            ) : (
+              <CampaignCard campaign={campaign} onCopyUrl={copyTrackingUrl} />
+            )}
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
