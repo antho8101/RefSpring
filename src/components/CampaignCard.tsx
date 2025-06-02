@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -61,32 +62,32 @@ export const CampaignCard = ({ campaign, onCopyUrl }: CampaignCardProps) => {
   };
 
   return (
-    <Card className="bg-gradient-to-br from-white to-slate-50/50 border-slate-200/50 shadow-xl hover:shadow-2xl transition-all hover:scale-[1.02] backdrop-blur-sm group">
-      <CardHeader>
+    <Card className="bg-gradient-to-br from-white to-slate-50/50 border-slate-200/50 shadow-md hover:shadow-lg transition-all hover:scale-[1.01] backdrop-blur-sm group">
+      <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <div className="flex-1">
-            <CardTitle className="flex items-center gap-3 text-xl">
+            <CardTitle className="flex items-center gap-2 text-lg">
               <div className="flex items-center gap-2">
                 {campaign.name}
                 <Badge 
                   variant={campaign.isActive ? "default" : "secondary"}
                   className={campaign.isActive 
-                    ? "bg-gradient-to-r from-green-500 to-green-600 text-white border-0" 
-                    : "bg-slate-200 text-slate-600"
+                    ? "bg-gradient-to-r from-green-500 to-green-600 text-white border-0 text-xs px-2 py-0.5" 
+                    : "bg-slate-200 text-slate-600 text-xs px-2 py-0.5"
                   }
                 >
                   {campaign.isActive ? "Active" : "En pause"}
                 </Badge>
               </div>
             </CardTitle>
-            <CardDescription className="text-slate-600 mt-2 leading-relaxed">
+            <CardDescription className="text-slate-600 mt-1 text-sm leading-relaxed line-clamp-2">
               {campaign.description}
             </CardDescription>
           </div>
           <CampaignActions campaign={campaign} onCopyUrl={onCopyUrl} />
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="pt-0">
         <CampaignStats campaign={campaign} affiliatesCount={affiliates.length} />
 
         {/* Section des affiliés */}
@@ -94,11 +95,11 @@ export const CampaignCard = ({ campaign, onCopyUrl }: CampaignCardProps) => {
           <CollapsibleTrigger asChild>
             <Button 
               variant="ghost" 
-              className="w-full flex items-center justify-between p-3 hover:bg-slate-100/50 rounded-lg"
+              className="w-full flex items-center justify-between p-2 hover:bg-slate-100/50 rounded-lg mt-3"
             >
               <div className="flex items-center gap-2">
                 <Users className="h-4 w-4" />
-                <span className="font-medium">Affiliés de cette campagne ({affiliates.length})</span>
+                <span className="font-medium text-sm">Affiliés ({affiliates.length})</span>
               </div>
               {isAffiliatesOpen ? 
                 <ChevronDown className="h-4 w-4" /> : 
@@ -106,7 +107,7 @@ export const CampaignCard = ({ campaign, onCopyUrl }: CampaignCardProps) => {
               }
             </Button>
           </CollapsibleTrigger>
-          <CollapsibleContent className="mt-4">
+          <CollapsibleContent className="mt-2">
             <AffiliatesList 
               campaignId={campaign.id}
               onCopyTrackingLink={handleCopyTrackingLink}
