@@ -79,8 +79,8 @@ const LandingPage = () => {
         
         {/* Canonical et liens */}
         <link rel="canonical" href="https://refspring.com" />
-        <link rel="alternate" hreflang="fr" href="https://refspring.com" />
-        <link rel="alternate" hreflang="en" href="https://refspring.com/en" />
+        <link rel="alternate" hrefLang="fr" href="https://refspring.com" />
+        <link rel="alternate" hrefLang="en" href="https://refspring.com/en" />
         
         {/* Robots et indexation */}
         <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
