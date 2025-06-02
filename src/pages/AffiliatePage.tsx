@@ -1,4 +1,3 @@
-
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -24,6 +23,7 @@ const AffiliatePage = () => {
   const [selectedAffiliate, setSelectedAffiliate] = useState<string | null>(null);
   const [affiliates, setAffiliates] = useState<Affiliate[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   
   // Statistiques (à connecter à de vraies données plus tard)
   const [stats, setStats] = useState({
@@ -35,7 +35,12 @@ const AffiliatePage = () => {
   // Récupérer les infos de la campagne et ses affiliés
   useEffect(() => {
     const fetchCampaignData = async () => {
-      if (!campaignId) return;
+      if (!campaignId) {
+        console.log('No campaignId provided');
+        setError('ID de campagne manquant');
+        setLoading(false);
+        return;
+      }
       
       try {
         console.log('Fetching campaign with ID:', campaignId);
@@ -49,36 +54,49 @@ const AffiliatePage = () => {
           console.log('Campaign data:', campaignData);
           setCampaignName(campaignData.name || 'Campagne');
         } else {
-          console.log('Campaign not found');
+          console.log('Campaign not found with ID:', campaignId);
           setCampaignName('Campagne introuvable');
+          setError('Campagne introuvable');
         }
         
         // Récupérer tous les affiliés pour cette campagne
+        console.log('Fetching affiliates for campaign:', campaignId);
         const affiliatesQuery = query(
           collection(db, 'affiliates'), 
           where('campaignId', '==', campaignId)
         );
         
         const affiliatesSnapshot = await getDocs(affiliatesQuery);
-        const affiliatesData = affiliatesSnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        })) as Affiliate[];
+        console.log('Affiliates snapshot size:', affiliatesSnapshot.size);
         
-        console.log('Affiliates data:', affiliatesData);
+        const affiliatesData = affiliatesSnapshot.docs.map(doc => {
+          const data = doc.data();
+          console.log('Affiliate doc:', doc.id, data);
+          return {
+            id: doc.id,
+            ...data
+          };
+        }) as Affiliate[];
+        
+        console.log('Processed affiliates data:', affiliatesData);
         setAffiliates(affiliatesData);
         
         // Si un code d'affilié est dans l'URL, le sélectionner
         if (refCode) {
+          console.log('Looking for affiliate with tracking code:', refCode);
           const affiliate = affiliatesData.find(a => a.trackingCode === refCode);
           if (affiliate) {
+            console.log('Found affiliate:', affiliate);
             setSelectedAffiliate(affiliate.id);
+          } else {
+            console.log('No affiliate found with tracking code:', refCode);
           }
         }
         
         setLoading(false);
       } catch (error) {
         console.error("Erreur lors de la récupération des données:", error);
+        setError(`Erreur: ${error.message || 'Erreur inconnue'}`);
         setCampaignName('Erreur de chargement');
         setLoading(false);
       }
@@ -104,6 +122,23 @@ const AffiliatePage = () => {
     loadAffiliateStats();
   }, [selectedAffiliate]);
 
+  // Debug info
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <Card className="max-w-md">
+          <CardContent className="p-6">
+            <div className="text-center">
+              <h3 className="text-lg font-medium mb-2 text-red-600">Erreur</h3>
+              <p className="text-gray-600">{error}</p>
+              <p className="text-sm text-gray-400 mt-2">ID: {campaignId}</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -114,7 +149,9 @@ const AffiliatePage = () => {
               <h1 className="text-2xl font-bold text-blue-600">RefSpring</h1>
               <p className="text-sm text-gray-600">Dashboard Affiliés</p>
             </div>
-            <Badge variant="outline">{campaignName || 'Chargement...'}</Badge>
+            <Badge variant="outline">
+              {loading ? 'Chargement...' : (campaignName || 'Campagne')}
+            </Badge>
           </div>
         </div>
       </header>
@@ -123,113 +160,132 @@ const AffiliatePage = () => {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
           <h2 className="text-3xl font-bold text-gray-900 mb-2">
-            {campaignName || 'Campagne'} - Statistiques
+            {loading ? 'Chargement...' : (campaignName || 'Campagne')} - Statistiques
           </h2>
           <p className="text-gray-600">
             Suivez les performances des affiliés en temps réel
           </p>
-        </div>
-
-        {/* Sélecteur d'affilié */}
-        <div className="mb-6">
-          <div className="flex items-center gap-2 mb-2">
-            <label htmlFor="affiliate-selector" className="text-sm font-medium">
-              Sélectionner un affilié:
-            </label>
-            <div className="w-64">
-              <Select 
-                value={selectedAffiliate || ''} 
-                onValueChange={setSelectedAffiliate}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Choisir un affilié" />
-                </SelectTrigger>
-                <SelectContent>
-                  {affiliates.map((affiliate) => (
-                    <SelectItem key={affiliate.id} value={affiliate.id}>
-                      {affiliate.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+          {/* Debug info */}
+          <div className="mt-2 text-xs text-gray-400">
+            Debug: Campaign ID = {campaignId}, Affiliates count = {affiliates.length}, Loading = {loading.toString()}
           </div>
         </div>
 
-        {selectedAffiliate ? (
+        {loading ? (
+          <div className="text-center py-10">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+            <p className="mt-4 text-gray-600">Chargement des données...</p>
+          </div>
+        ) : (
           <>
-            {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Clics Total</CardTitle>
-                  <Users className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{stats.clicks}</div>
-                  <p className="text-xs text-muted-foreground">
-                    Visiteurs uniques tracés
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Conversions</CardTitle>
-                  <TrendingUp className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{stats.conversions}</div>
-                  <p className="text-xs text-muted-foreground">
-                    Taux de conversion: {stats.clicks ? ((stats.conversions / stats.clicks) * 100).toFixed(1) : 0}%
-                  </p>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Commissions</CardTitle>
-                  <BarChart3 className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{stats.commissions}€</div>
-                  <p className="text-xs text-muted-foreground">
-                    En attente de validation
-                  </p>
-                </CardContent>
-              </Card>
+            {/* Sélecteur d'affilié */}
+            <div className="mb-6">
+              <div className="flex items-center gap-2 mb-2">
+                <label htmlFor="affiliate-selector" className="text-sm font-medium">
+                  Sélectionner un affilié:
+                </label>
+                <div className="w-64">
+                  <Select 
+                    value={selectedAffiliate || ''} 
+                    onValueChange={setSelectedAffiliate}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Choisir un affilié" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {affiliates.map((affiliate) => (
+                        <SelectItem key={affiliate.id} value={affiliate.id}>
+                          {affiliate.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <p className="text-xs text-gray-500">
+                {affiliates.length} affilié(s) trouvé(s)
+              </p>
             </div>
 
-            {/* Placeholder pour futurs graphiques */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Évolution des performances</CardTitle>
-                <CardDescription>
-                  Graphiques et données détaillées
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="h-48 flex items-center justify-center text-gray-500">
-                  <div className="text-center">
-                    <BarChart3 className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p>Les graphiques détaillés seront disponibles prochainement</p>
-                  </div>
+            {selectedAffiliate ? (
+              <>
+                {/* Stats Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                  <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-sm font-medium">Clics Total</CardTitle>
+                      <Users className="h-4 w-4 text-muted-foreground" />
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold">{stats.clicks}</div>
+                      <p className="text-xs text-muted-foreground">
+                        Visiteurs uniques tracés
+                      </p>
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-sm font-medium">Conversions</CardTitle>
+                      <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold">{stats.conversions}</div>
+                      <p className="text-xs text-muted-foreground">
+                        Taux de conversion: {stats.clicks ? ((stats.conversions / stats.clicks) * 100).toFixed(1) : 0}%
+                      </p>
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-sm font-medium">Commissions</CardTitle>
+                      <BarChart3 className="h-4 w-4 text-muted-foreground" />
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold">{stats.commissions}€</div>
+                      <p className="text-xs text-muted-foreground">
+                        En attente de validation
+                      </p>
+                    </CardContent>
+                  </Card>
                 </div>
-              </CardContent>
-            </Card>
+
+                {/* Placeholder pour futurs graphiques */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Évolution des performances</CardTitle>
+                    <CardDescription>
+                      Graphiques et données détaillées
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="h-48 flex items-center justify-center text-gray-500">
+                      <div className="text-center">
+                        <BarChart3 className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                        <p>Les graphiques détaillés seront disponibles prochainement</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </>
+            ) : (
+              <Card>
+                <CardContent className="py-10">
+                  <div className="text-center">
+                    <Users className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+                    <h3 className="text-lg font-medium mb-2">Sélectionnez un affilié</h3>
+                    <p className="text-gray-500">
+                      {affiliates.length > 0 
+                        ? "Choisissez un affilié dans le menu déroulant pour voir ses statistiques"
+                        : "Aucun affilié trouvé pour cette campagne"
+                      }
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </>
-        ) : (
-          <Card>
-            <CardContent className="py-10">
-              <div className="text-center">
-                <Users className="h-12 w-12 mx-auto mb-4 text-gray-400" />
-                <h3 className="text-lg font-medium mb-2">Sélectionnez un affilié</h3>
-                <p className="text-gray-500">
-                  Choisissez un affilié dans le menu déroulant pour voir ses statistiques
-                </p>
-              </div>
-            </CardContent>
-          </Card>
         )}
       </main>
     </div>
