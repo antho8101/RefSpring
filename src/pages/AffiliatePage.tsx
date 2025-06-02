@@ -129,8 +129,10 @@ const AffiliatePage = () => {
         baseUrl = 'https://refspring.com';
       }
       
+      // IMPORTANT: Ajouter le paramètre url avec l'URL de destination
       const link = `${baseUrl}/track/${campaignId}/${selectedAffiliate}?url=${encodeURIComponent(targetUrl)}`;
       setGeneratedLink(link);
+      console.log('Generated tracking link:', link);
     } else {
       setGeneratedLink('');
     }
