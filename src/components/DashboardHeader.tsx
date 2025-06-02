@@ -1,0 +1,76 @@
+
+import { Button } from '@/components/ui/button';
+import { LogOut, Menu } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { useState } from 'react';
+
+interface DashboardHeaderProps {
+  user: any;
+  onLogout: () => Promise<void>;
+}
+
+export const DashboardHeader = ({ user, onLogout }: DashboardHeaderProps) => {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  return (
+    <header className="relative z-50 border-b border-slate-200/80 bg-white/90 backdrop-blur-xl shadow-lg">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16">
+          {/* Logo */}
+          <Link to="/landing" className="animate-fade-in hover:opacity-80 transition-opacity flex-shrink-0">
+            <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              RefSpring
+            </h1>
+            <p className="text-xs sm:text-sm text-slate-600 font-medium">Dashboard</p>
+          </Link>
+
+          {/* Desktop Navigation */}
+          <div className="hidden lg:flex items-center space-x-4">
+            <div className="text-sm text-slate-700 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full border border-slate-200 max-w-[200px] truncate">
+              Bonjour, <span className="font-semibold">{user?.displayName || user?.email}</span>
+            </div>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={onLogout}
+              className="hover:scale-105 transition-all shadow-lg backdrop-blur-sm"
+            >
+              <LogOut className="h-4 w-4 mr-2" />
+              Déconnexion
+            </Button>
+          </div>
+
+          {/* Mobile Menu Button */}
+          <Button
+            variant="outline"
+            size="sm"
+            className="lg:hidden"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          >
+            <Menu className="h-4 w-4" />
+          </Button>
+        </div>
+
+        {/* Mobile Menu */}
+        {isMobileMenuOpen && (
+          <div className="lg:hidden border-t border-slate-200/80 bg-white/95 backdrop-blur-xl">
+            <div className="py-4 space-y-3">
+              <div className="text-sm text-slate-700 px-4 py-2 bg-slate-50 rounded-lg">
+                Bonjour, <span className="font-semibold">{user?.displayName || user?.email}</span>
+              </div>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={onLogout}
+                className="w-full justify-start"
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Déconnexion
+              </Button>
+            </div>
+          </div>
+        )}
+      </div>
+    </header>
+  );
+};
