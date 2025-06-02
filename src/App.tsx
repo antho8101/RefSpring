@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useEffect, lazy, Suspense } from "react";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import './i18n';
 
 // Lazy loading des composants de page
@@ -64,50 +65,54 @@ const DomainRouter = () => {
   }, []);
 
   return (
-    <Suspense fallback={<PageSkeleton />}>
-      <Routes>
-        {/* Route principale - comportement par défaut selon le domaine */}
-        <Route path="/" element={
-          window.location.hostname === 'dashboard.refspring.com' 
-            ? <Navigate to="/dashboard" replace />
-            : <Navigate to="/landing" replace />
-        } />
-        
-        {/* Pages principales */}
-        <Route path="/dashboard" element={<Index />} />
-        <Route path="/landing" element={<LandingPage />} />
-        <Route path="/advanced-stats" element={<AdvancedStatsPage />} />
-        <Route path="/advanced-stats/:campaignId" element={<AdvancedStatsPage />} />
-        
-        {/* Route pour servir le fichier tracking.js */}
-        <Route path="/tracking.js" element={<TrackingJsRoute />} />
-        
-        {/* Pages de test */}
-        <Route path="/test-products" element={<TestProductsPage />} />
-        <Route path="/test-thankyou" element={<TestThankYouPage />} />
-        
-        {/* Pages fonctionnelles - disponibles sur tous les domaines */}
-        <Route path="/r/:campaignId" element={<AffiliatePage />} />
-        <Route path="/track/:campaignId/:affiliateId" element={<TrackingPage />} />
-        <Route path="/s/:shortCode" element={<ShortLinkPage />} />
-        
-        {/* 404 - doit être en dernier */}
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </Suspense>
+    <ErrorBoundary>
+      <Suspense fallback={<PageSkeleton />}>
+        <Routes>
+          {/* Route principale - comportement par défaut selon le domaine */}
+          <Route path="/" element={
+            window.location.hostname === 'dashboard.refspring.com' 
+              ? <Navigate to="/dashboard" replace />
+              : <Navigate to="/landing" replace />
+          } />
+          
+          {/* Pages principales */}
+          <Route path="/dashboard" element={<Index />} />
+          <Route path="/landing" element={<LandingPage />} />
+          <Route path="/advanced-stats" element={<AdvancedStatsPage />} />
+          <Route path="/advanced-stats/:campaignId" element={<AdvancedStatsPage />} />
+          
+          {/* Route pour servir le fichier tracking.js */}
+          <Route path="/tracking.js" element={<TrackingJsRoute />} />
+          
+          {/* Pages de test */}
+          <Route path="/test-products" element={<TestProductsPage />} />
+          <Route path="/test-thankyou" element={<TestThankYouPage />} />
+          
+          {/* Pages fonctionnelles - disponibles sur tous les domaines */}
+          <Route path="/r/:campaignId" element={<AffiliatePage />} />
+          <Route path="/track/:campaignId/:affiliateId" element={<TrackingPage />} />
+          <Route path="/s/:shortCode" element={<ShortLinkPage />} />
+          
+          {/* 404 - doit être en dernier */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Suspense>
+    </ErrorBoundary>
   );
 };
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <DomainRouter />
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
+  <ErrorBoundary>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <DomainRouter />
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  </ErrorBoundary>
 );
 
 export default App;

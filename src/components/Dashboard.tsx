@@ -7,6 +7,8 @@ import { DashboardBackground } from '@/components/DashboardBackground';
 import { DashboardHeader } from '@/components/DashboardHeader';
 import { DashboardStats } from '@/components/DashboardStats';
 import { DashboardContent } from '@/components/DashboardContent';
+import { NetworkStatus } from '@/components/NetworkStatus';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { memo, useCallback, useMemo } from 'react';
 
 export const Dashboard = memo(() => {
@@ -35,24 +37,39 @@ export const Dashboard = memo(() => {
   }, [campaigns, affiliates]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50/50 via-white to-purple-50/50 relative overflow-hidden">
-      <DashboardBackground />
+    <>
+      <NetworkStatus />
+      <div className="min-h-screen bg-gradient-to-br from-blue-50/50 via-white to-purple-50/50 relative overflow-hidden">
+        <DashboardBackground />
 
-      <DashboardHeader user={user} onLogout={handleLogout} />
+        <DashboardHeader user={user} onLogout={handleLogout} />
 
-      {/* Main Content */}
-      <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
-        <DashboardStats 
-          activeCampaigns={dashboardMetrics.activeCampaigns}
-          totalCampaigns={dashboardMetrics.totalCampaigns}
-          totalAffiliates={dashboardMetrics.totalAffiliates}
-          globalStats={globalStats}
-          globalStatsLoading={globalStatsLoading}
-        />
+        {/* Main Content */}
+        <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+          <ErrorBoundary fallback={
+            <div className="text-center py-8">
+              <p className="text-gray-600">Erreur lors du chargement des statistiques</p>
+            </div>
+          }>
+            <DashboardStats 
+              activeCampaigns={dashboardMetrics.activeCampaigns}
+              totalCampaigns={dashboardMetrics.totalCampaigns}
+              totalAffiliates={dashboardMetrics.totalAffiliates}
+              globalStats={globalStats}
+              globalStatsLoading={globalStatsLoading}
+            />
+          </ErrorBoundary>
 
-        <DashboardContent />
-      </main>
-    </div>
+          <ErrorBoundary fallback={
+            <div className="text-center py-8">
+              <p className="text-gray-600">Erreur lors du chargement du contenu</p>
+            </div>
+          }>
+            <DashboardContent />
+          </ErrorBoundary>
+        </main>
+      </div>
+    </>
   );
 });
 
