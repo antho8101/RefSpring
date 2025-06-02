@@ -3,6 +3,10 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Zap, Users, BarChart3, Shield } from "lucide-react";
 
 const LandingPage = () => {
+  const redirectToDashboard = () => {
+    window.location.href = 'https://dashboard.refspring.com';
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
       {/* Header */}
@@ -23,7 +27,7 @@ const LandingPage = () => {
                 Contact
               </a>
             </nav>
-            <Button variant="outline" className="hidden md:flex">
+            <Button variant="outline" className="hidden md:flex" onClick={redirectToDashboard}>
               Sign In
             </Button>
           </div>
@@ -44,11 +48,11 @@ const LandingPage = () => {
               Build, track, and scale your affiliate program with the platform trusted by thousands of businesses worldwide.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="text-lg px-8 py-6 bg-blue-600 hover:bg-blue-700">
+              <Button size="lg" className="text-lg px-8 py-6 bg-blue-600 hover:bg-blue-700" onClick={redirectToDashboard}>
                 Start free trial
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
-              <Button size="lg" variant="outline" className="text-lg px-8 py-6">
+              <Button size="lg" variant="outline" className="text-lg px-8 py-6" onClick={redirectToDashboard}>
                 Book a demo
               </Button>
             </div>
@@ -131,7 +135,7 @@ const LandingPage = () => {
           <p className="text-xl text-blue-100 mb-8">
             Join thousands of companies using RefSpring to scale their affiliate programs.
           </p>
-          <Button size="lg" variant="secondary" className="text-lg px-8 py-6">
+          <Button size="lg" variant="secondary" className="text-lg px-8 py-6" onClick={redirectToDashboard}>
             Get started for free
             <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
