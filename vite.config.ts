@@ -21,11 +21,4 @@ export default defineConfig(({ mode }) => ({
     },
   },
   assetsInclude: ["**/*.html"],
-  build: {
-    rollupOptions: {
-      external: [
-        /^\/landing\//
-      ]
-    }
-  }
 }));
