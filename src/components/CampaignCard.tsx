@@ -148,54 +148,47 @@ export const CampaignCard = ({ campaign, onCopyUrl }: CampaignCardProps) => {
           </div>
           <CampaignActions campaign={campaign} onCopyUrl={onCopyUrl} />
         </div>
-
-        {/* Dashboard public - Section repositionnée */}
-        <div className="bg-gradient-to-br from-blue-50/80 to-indigo-50/40 border border-blue-200/60 rounded-xl p-4 space-y-3 shadow-sm mt-4">
-          <div className="flex items-start gap-3">
-            <div className="p-2 bg-blue-100/70 rounded-lg">
-              <ExternalLink className="h-4 w-4 text-blue-600" />
-            </div>
-            <div className="flex-1">
-              <h4 className="text-sm font-semibold text-blue-900 mb-1">
-                Dashboard public pour vos affiliés
-              </h4>
-              <p className="text-xs text-blue-700/80 leading-relaxed">
-                Partagez ce lien avec vos affiliés pour qu'ils puissent consulter leurs statistiques et générer leurs liens de tracking.
-              </p>
-            </div>
-          </div>
-          
-          <div className="space-y-2">
-            <Input 
-              value={publicDashboardUrl}
-              readOnly 
-              className="font-mono text-xs bg-white/80 border-blue-200/60 focus:border-blue-300 text-slate-700"
-            />
-            <div className="flex items-center gap-2">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={handleCopyUrl}
-                className="flex-1 border-blue-300/60 text-blue-700 hover:bg-blue-100/50 hover:border-blue-400 transition-all"
-              >
-                <Copy className="h-4 w-4 mr-2" />
-                Copier le lien
-              </Button>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={handleOpenDashboard}
-                className="flex-1 border-blue-300/60 text-blue-700 hover:bg-blue-100/50 hover:border-blue-400 transition-all"
-              >
-                <ExternalLink className="h-4 w-4 mr-2" />
-                Ouvrir
-              </Button>
-            </div>
-          </div>
-        </div>
       </CardHeader>
       <CardContent>
         <CampaignStats campaign={campaign} affiliatesCount={affiliates.length} />
+
+        {/* Dashboard public - Section repositionnée dans une grille */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <div className="bg-blue-50/50 p-4 rounded-xl">
+            <div className="flex items-center gap-2 text-blue-600 mb-2">
+              <ExternalLink className="h-4 w-4" />
+              <span className="text-sm font-medium">Dashboard public</span>
+            </div>
+            <p className="text-xs text-blue-700/80 leading-relaxed mb-3">
+              Partagez ce lien avec vos affiliés pour qu'ils puissent consulter leurs statistiques et accéder à leurs liens de tracking.
+            </p>
+            <div className="space-y-2">
+              <Input 
+                value={publicDashboardUrl}
+                readOnly 
+                className="font-mono text-xs bg-white/80 border-blue-200/60 focus:border-blue-300 text-slate-700"
+              />
+              <div className="flex items-center gap-2">
+                <Button 
+                  variant="outline" 
+                  size="icon" 
+                  onClick={handleCopyUrl}
+                  className="border-blue-300/60 text-blue-700 hover:bg-blue-100/50 hover:border-blue-400 transition-all"
+                >
+                  <Copy className="h-4 w-4" />
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="icon" 
+                  onClick={handleOpenDashboard}
+                  className="border-blue-300/60 text-blue-700 hover:bg-blue-100/50 hover:border-blue-400 transition-all"
+                >
+                  <ExternalLink className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
 
         {/* Section des affiliés */}
         <Collapsible open={isAffiliatesOpen} onOpenChange={setIsAffiliatesOpen}>
