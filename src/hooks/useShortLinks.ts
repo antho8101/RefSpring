@@ -39,6 +39,7 @@ export const useShortLinks = () => {
     try {
       console.log('🔧 Début création lien court pour:', { campaignId, affiliateId, targetUrl });
       console.log('🔧 Base de données connectée:', !!db);
+      console.log('🔧 URL À SAUVEGARDER:', targetUrl);
       
       // Vérifier s'il existe déjà un lien court pour cette combinaison
       const existingQuery = query(
@@ -55,6 +56,7 @@ export const useShortLinks = () => {
       if (!existingSnapshot.empty) {
         const existingLink = existingSnapshot.docs[0].data() as ShortLink;
         console.log('✅ Lien court existant trouvé:', existingLink.shortCode);
+        console.log('✅ URL stockée dans le lien existant:', existingLink.targetUrl);
         setLoading(false);
         return existingLink.shortCode;
       }
@@ -98,7 +100,8 @@ export const useShortLinks = () => {
         clickCount: 0
       };
 
-      console.log('💾 Sauvegarde des données:', shortLinkData);
+      console.log('💾 DONNÉES À SAUVEGARDER:', shortLinkData);
+      console.log('💾 URL FINALE SAUVEGARDÉE:', targetUrl);
       const docRef = await addDoc(collection(db, 'shortLinks'), shortLinkData);
       console.log('✅ Lien court créé avec succès - ID:', docRef.id, '- Code:', shortCode);
       
@@ -106,7 +109,7 @@ export const useShortLinks = () => {
       console.log('🔍 Vérification immédiate du lien créé...');
       const verificationData = await getShortLinkData(shortCode);
       if (verificationData) {
-        console.log('✅ Vérification réussie:', verificationData);
+        console.log('✅ Vérification réussie - URL récupérée:', verificationData.targetUrl);
       } else {
         console.log('❌ Échec de la vérification immédiate');
       }
@@ -144,7 +147,8 @@ export const useShortLinks = () => {
         const allSnapshot = await getDocs(allLinksQuery);
         console.log('🔍 Total liens dans la base:', allSnapshot.size);
         allSnapshot.forEach(doc => {
-          console.log('📄 Code existant:', doc.data().shortCode);
+          const data = doc.data();
+          console.log('📄 Code existant:', data.shortCode, '- URL:', data.targetUrl);
         });
         
         return null;
@@ -158,6 +162,7 @@ export const useShortLinks = () => {
       } as ShortLink;
       
       console.log('✅ Données du lien court récupérées:', data);
+      console.log('✅ URL DE REDIRECTION:', data.targetUrl);
       return data;
       
     } catch (error) {
