@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { collection, query, where, getDocs } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Affiliate } from '@/types';
 
@@ -38,13 +38,19 @@ const AffiliatePage = () => {
       if (!campaignId) return;
       
       try {
-        // Récupérer les infos de la campagne
-        const campaignDoc = await getDocs(
-          query(collection(db, 'campaigns'), where('id', '==', campaignId))
-        );
+        console.log('Fetching campaign with ID:', campaignId);
         
-        if (!campaignDoc.empty) {
-          setCampaignName(campaignDoc.docs[0].data().name || 'Campagne');
+        // Récupérer les infos de la campagne directement par son ID
+        const campaignRef = doc(db, 'campaigns', campaignId);
+        const campaignDoc = await getDoc(campaignRef);
+        
+        if (campaignDoc.exists()) {
+          const campaignData = campaignDoc.data();
+          console.log('Campaign data:', campaignData);
+          setCampaignName(campaignData.name || 'Campagne');
+        } else {
+          console.log('Campaign not found');
+          setCampaignName('Campagne introuvable');
         }
         
         // Récupérer tous les affiliés pour cette campagne
@@ -59,6 +65,7 @@ const AffiliatePage = () => {
           ...doc.data()
         })) as Affiliate[];
         
+        console.log('Affiliates data:', affiliatesData);
         setAffiliates(affiliatesData);
         
         // Si un code d'affilié est dans l'URL, le sélectionner
@@ -72,6 +79,7 @@ const AffiliatePage = () => {
         setLoading(false);
       } catch (error) {
         console.error("Erreur lors de la récupération des données:", error);
+        setCampaignName('Erreur de chargement');
         setLoading(false);
       }
     };
