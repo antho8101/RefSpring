@@ -16,7 +16,7 @@ interface CampaignMetricsCardsProps {
 export const CampaignMetricsCards = ({ stats, loading }: CampaignMetricsCardsProps) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
-      <div className="bg-green-50/50 p-4 rounded-xl">
+      <div className="bg-gradient-to-br from-green-50/20 to-green-100/10 p-4 rounded-xl border border-green-100/20">
         <div className="flex items-center gap-2 text-green-600 mb-2">
           <Users className="h-4 w-4" />
           <span className="text-sm font-medium">Affiliés</span>
@@ -29,7 +29,7 @@ export const CampaignMetricsCards = ({ stats, loading }: CampaignMetricsCardsPro
         </div>
       </div>
 
-      <div className="bg-blue-50/50 p-4 rounded-xl">
+      <div className="bg-gradient-to-br from-blue-50/20 to-blue-100/10 p-4 rounded-xl border border-blue-100/20">
         <div className="flex items-center gap-2 text-blue-600 mb-2">
           <MousePointer className="h-4 w-4" />
           <span className="text-sm font-medium">Total Clics</span>
@@ -39,7 +39,7 @@ export const CampaignMetricsCards = ({ stats, loading }: CampaignMetricsCardsPro
         </div>
       </div>
 
-      <div className="bg-orange-50/50 p-4 rounded-xl">
+      <div className="bg-gradient-to-br from-orange-50/20 to-orange-100/10 p-4 rounded-xl border border-orange-100/20">
         <div className="flex items-center gap-2 text-orange-600 mb-2">
           <DollarSign className="h-4 w-4" />
           <span className="text-sm font-medium">Total Paiements</span>
@@ -49,7 +49,7 @@ export const CampaignMetricsCards = ({ stats, loading }: CampaignMetricsCardsPro
         </div>
       </div>
 
-      <div className="bg-purple-50/50 p-4 rounded-xl">
+      <div className="bg-gradient-to-br from-purple-50/20 to-purple-100/10 p-4 rounded-xl border border-purple-100/20">
         <div className="flex items-center gap-2 text-purple-600 mb-2">
           <Percent className="h-4 w-4" />
           <span className="text-sm font-medium">Taux Conversion</span>
@@ -59,7 +59,7 @@ export const CampaignMetricsCards = ({ stats, loading }: CampaignMetricsCardsPro
         </div>
       </div>
 
-      <div className="bg-emerald-50/50 p-4 rounded-xl">
+      <div className="bg-gradient-to-br from-emerald-50/20 to-emerald-100/10 p-4 rounded-xl border border-emerald-100/20">
         <div className="flex items-center gap-2 text-emerald-600 mb-2">
           <DollarSign className="h-4 w-4" />
           <span className="text-sm font-medium">Total CA Généré</span>
