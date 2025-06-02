@@ -5,7 +5,6 @@
   "description": "RefSpring Landing Page",
   "main": "index.html",
   "scripts": {
-    "build": "mkdir -p dist && cp -r * dist/",
     "dev": "python3 -m http.server 3000 2>/dev/null || python -m http.server 3000 2>/dev/null || npx serve .",
     "start": "npx serve ."
   },
