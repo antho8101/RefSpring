@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -63,7 +62,7 @@ export const CampaignCard = ({ campaign, onCopyUrl }: CampaignCardProps) => {
   };
 
   return (
-    <Card className="bg-gradient-to-br from-white to-slate-50/50 border-slate-200/50 shadow-md hover:shadow-lg transition-all hover:scale-[1.01] backdrop-blur-sm group">
+    <Card className="bg-gradient-to-br from-white to-slate-50/50 border-slate-200/50 shadow-md hover:shadow-lg transition-all backdrop-blur-sm group">
       <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
         <CollapsibleTrigger asChild>
           <CardHeader className="pb-3 cursor-pointer hover:bg-slate-50/50 transition-colors">
