@@ -3,6 +3,9 @@ import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useShortLinks } from '@/hooks/useShortLinks';
 import { useTracking } from '@/hooks/useTracking';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
+import { Campaign } from '@/types';
 
 const ShortLinkPage = () => {
   const { shortCode } = useParams();
@@ -10,6 +13,7 @@ const ShortLinkPage = () => {
   const { recordClick } = useTracking();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [campaign, setCampaign] = useState<Campaign | null>(null);
 
   useEffect(() => {
     const handleShortLink = async () => {
@@ -22,7 +26,6 @@ const ShortLinkPage = () => {
 
       try {
         console.log('🚀 Début traitement lien court:', shortCode);
-        console.log('🚀 URL actuelle:', window.location.href);
         
         const shortLinkData = await getShortLinkData(shortCode);
         
@@ -35,10 +38,35 @@ const ShortLinkPage = () => {
 
         console.log('✅ Données du lien court trouvées:', shortLinkData);
 
+        // Récupérer les informations de la campagne
+        const campaignDoc = await getDoc(doc(db, 'campaigns', shortLinkData.campaignId));
+        
+        if (!campaignDoc.exists()) {
+          setError('Campagne introuvable');
+          setLoading(false);
+          return;
+        }
+
+        const campaignData = {
+          id: campaignDoc.id,
+          ...campaignDoc.data(),
+          createdAt: campaignDoc.data().createdAt?.toDate(),
+          updatedAt: campaignDoc.data().updatedAt?.toDate(),
+        } as Campaign;
+
+        setCampaign(campaignData);
+
         // Enregistrer le clic avec les 3 paramètres requis dans le bon ordre
         console.log('📊 Enregistrement du clic...');
         await recordClick(shortLinkData.affiliateId, shortLinkData.campaignId, shortLinkData.targetUrl);
         
+        // Vérifier si la campagne est active
+        if (!campaignData.isActive) {
+          console.log('⏸️ Campagne en pause, pas de redirection');
+          setLoading(false);
+          return;
+        }
+
         console.log('🎯 Redirection vers:', shortLinkData.targetUrl);
         
         // Rediriger vers l'URL de destination
@@ -69,11 +97,28 @@ const ShortLinkPage = () => {
   if (error) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
+        <div className="text-center bg-white p-8 rounded-lg shadow-md max-w-md">
+          <div className="text-red-500 text-4xl mb-4">⚠️</div>
           <h2 className="text-lg font-medium text-red-600 mb-2">Erreur</h2>
           <p className="text-gray-600">{error}</p>
           <p className="text-sm text-gray-400 mt-2">Code: {shortCode}</p>
-          <p className="text-xs text-gray-400 mt-1">Vérifiez la console pour plus de détails</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (campaign && !campaign.isActive) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center bg-white p-8 rounded-lg shadow-md max-w-md">
+          <div className="text-orange-500 text-4xl mb-4">⏸️</div>
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">Campagne en pause</h2>
+          <p className="text-gray-600 mb-4">
+            La campagne "{campaign.name}" est actuellement en pause.
+          </p>
+          <p className="text-sm text-gray-500">
+            Votre clic a été enregistré. Veuillez réessayer plus tard.
+          </p>
         </div>
       </div>
     );
