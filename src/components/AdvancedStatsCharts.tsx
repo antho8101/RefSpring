@@ -1,7 +1,7 @@
-
 import { MousePointer, DollarSign } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { useTranslation } from 'react-i18next';
 
 interface DailyStats {
   date: string;
@@ -27,9 +27,11 @@ const formatCurrency = (value: number) => {
 };
 
 export const AdvancedStatsCharts = ({ dailyStats, totalRevenue, netRevenue, totalCommissions }: AdvancedStatsChartsProps) => {
+  const { t } = useTranslation();
+
   const pieData = [
-    { name: 'CA Net', value: netRevenue, color: '#10B981' },
-    { name: 'Commissions', value: totalCommissions, color: '#3B82F6' }
+    { name: t('stats.netRevenue'), value: netRevenue, color: '#10B981' },
+    { name: t('stats.commissions'), value: totalCommissions, color: '#3B82F6' }
   ].filter(item => item.value > 0);
 
   return (
@@ -37,8 +39,8 @@ export const AdvancedStatsCharts = ({ dailyStats, totalRevenue, netRevenue, tota
       {/* Évolution des clics */}
       <Card className="bg-white border-slate-200 shadow-sm">
         <CardHeader>
-          <CardTitle className="text-lg sm:text-xl font-bold text-slate-900">Évolution des clics</CardTitle>
-          <CardDescription className="text-slate-600">Tendance sur les 30 derniers jours</CardDescription>
+          <CardTitle className="text-lg sm:text-xl font-bold text-slate-900">{t('charts.clicksEvolution')}</CardTitle>
+          <CardDescription className="text-slate-600">{t('charts.last30Days')}</CardDescription>
         </CardHeader>
         <CardContent>
           {dailyStats.length > 0 ? (
@@ -69,7 +71,7 @@ export const AdvancedStatsCharts = ({ dailyStats, totalRevenue, netRevenue, tota
             <div className="h-[250px] sm:h-[300px] flex items-center justify-center text-slate-500">
               <div className="text-center">
                 <MousePointer className="h-8 w-8 sm:h-12 sm:w-12 mx-auto mb-4 opacity-50" />
-                <p className="text-sm sm:text-base">Aucun clic enregistré</p>
+                <p className="text-sm sm:text-base">{t('charts.noClicks')}</p>
               </div>
             </div>
           )}
@@ -79,8 +81,8 @@ export const AdvancedStatsCharts = ({ dailyStats, totalRevenue, netRevenue, tota
       {/* Répartition financière */}
       <Card className="bg-white border-slate-200 shadow-sm">
         <CardHeader>
-          <CardTitle className="text-lg sm:text-xl font-bold text-slate-900">Répartition financière</CardTitle>
-          <CardDescription className="text-slate-600">CA Net vs Commissions versées</CardDescription>
+          <CardTitle className="text-lg sm:text-xl font-bold text-slate-900">{t('charts.financialBreakdown')}</CardTitle>
+          <CardDescription className="text-slate-600">{t('charts.netVsCommissions')}</CardDescription>
         </CardHeader>
         <CardContent>
           {pieData.length > 0 ? (
@@ -116,11 +118,11 @@ export const AdvancedStatsCharts = ({ dailyStats, totalRevenue, netRevenue, tota
               <div className="flex justify-center gap-4 sm:gap-6 mt-4">
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                  <span className="text-xs sm:text-sm text-slate-600">CA Net</span>
+                  <span className="text-xs sm:text-sm text-slate-600">{t('stats.netRevenue')}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 rounded-full bg-blue-500"></div>
-                  <span className="text-xs sm:text-sm text-slate-600">Commissions</span>
+                  <span className="text-xs sm:text-sm text-slate-600">{t('stats.commissions')}</span>
                 </div>
               </div>
             </>
@@ -128,7 +130,7 @@ export const AdvancedStatsCharts = ({ dailyStats, totalRevenue, netRevenue, tota
             <div className="h-[250px] sm:h-[300px] flex items-center justify-center text-slate-500">
               <div className="text-center">
                 <DollarSign className="h-8 w-8 sm:h-12 sm:w-12 mx-auto mb-4 opacity-50" />
-                <p className="text-sm sm:text-base">Aucune donnée financière</p>
+                <p className="text-sm sm:text-base">{t('charts.noFinancialData')}</p>
               </div>
             </div>
           )}

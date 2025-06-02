@@ -7,7 +7,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Separator } from '@/components/ui/separator';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
+import { LanguageSelector } from '@/components/LanguageSelector';
 import { Chrome, Mail, Lock } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export const AuthForm = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -17,6 +19,7 @@ export const AuthForm = () => {
   
   const { signInWithEmail, signUpWithEmail, signInWithGoogle } = useAuth();
   const { toast } = useToast();
+  const { t } = useTranslation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,20 +29,20 @@ export const AuthForm = () => {
       if (isLogin) {
         await signInWithEmail(email, password);
         toast({
-          title: "Connexion réussie",
-          description: "Bienvenue sur RefSpring !",
+          title: t('common.success'),
+          description: t('auth.welcomeBack'),
         });
       } else {
         await signUpWithEmail(email, password);
         toast({
-          title: "Compte créé",
-          description: "Votre compte a été créé avec succès !",
+          title: t('common.success'),
+          description: t('auth.accountCreated'),
         });
       }
     } catch (error: any) {
       toast({
-        title: "Erreur",
-        description: error.message || "Une erreur s'est produite",
+        title: t('common.error'),
+        description: error.message || "An error occurred",
         variant: "destructive",
       });
     } finally {
@@ -52,13 +55,13 @@ export const AuthForm = () => {
     try {
       await signInWithGoogle();
       toast({
-        title: "Connexion réussie",
-        description: "Bienvenue sur RefSpring !",
+        title: t('common.success'),
+        description: t('auth.welcomeBack'),
       });
     } catch (error: any) {
       toast({
-        title: "Erreur",
-        description: error.message || "Une erreur s'est produite",
+        title: t('common.error'),
+        description: error.message || "An error occurred",
         variant: "destructive",
       });
     } finally {
@@ -70,9 +73,13 @@ export const AuthForm = () => {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
+          <div className="flex items-center justify-between mb-4">
+            <div></div>
+            <LanguageSelector />
+          </div>
           <CardTitle className="text-2xl font-bold text-blue-600">RefSpring</CardTitle>
           <CardDescription>
-            {isLogin ? 'Connectez-vous à votre compte' : 'Créez votre compte'}
+            {isLogin ? t('auth.signInToAccount') : t('auth.createAccount')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -83,7 +90,7 @@ export const AuthForm = () => {
             className="w-full"
           >
             <Chrome className="mr-2 h-4 w-4" />
-            Continuer avec Google
+            {t('auth.signInWithGoogle')}
           </Button>
 
           <div className="relative">
@@ -95,7 +102,7 @@ export const AuthForm = () => {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t('auth.email')}</Label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
@@ -111,7 +118,7 @@ export const AuthForm = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">Mot de passe</Label>
+              <Label htmlFor="password">{t('auth.password')}</Label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
@@ -127,7 +134,7 @@ export const AuthForm = () => {
             </div>
 
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Chargement...' : (isLogin ? 'Se connecter' : 'Créer un compte')}
+              {loading ? t('common.loading') : (isLogin ? t('auth.signIn') : t('auth.signUp'))}
             </Button>
           </form>
 
@@ -137,10 +144,7 @@ export const AuthForm = () => {
               onClick={() => setIsLogin(!isLogin)}
               className="text-sm"
             >
-              {isLogin 
-                ? "Pas encore de compte ? Créez-en un" 
-                : "Déjà un compte ? Connectez-vous"
-              }
+              {isLogin ? t('auth.noAccount') : t('auth.haveAccount')}
             </Button>
           </div>
         </CardContent>

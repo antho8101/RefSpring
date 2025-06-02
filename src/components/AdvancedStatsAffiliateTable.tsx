@@ -1,5 +1,5 @@
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useTranslation } from 'react-i18next';
 
 interface AffiliatePerformance {
   id: string;
@@ -24,6 +24,8 @@ const formatCurrency = (value: number) => {
 };
 
 export const AdvancedStatsAffiliateTable = ({ affiliates }: AdvancedStatsAffiliateTableProps) => {
+  const { t } = useTranslation();
+
   if (affiliates.length === 0) {
     return null;
   }
@@ -31,8 +33,8 @@ export const AdvancedStatsAffiliateTable = ({ affiliates }: AdvancedStatsAffilia
   return (
     <Card className="bg-white border-slate-200 shadow-sm">
       <CardHeader>
-        <CardTitle className="text-lg sm:text-xl font-bold text-slate-900">Performance détaillée des affiliés</CardTitle>
-        <CardDescription className="text-slate-600">Vue d'ensemble de tous vos affiliés</CardDescription>
+        <CardTitle className="text-lg sm:text-xl font-bold text-slate-900">{t('table.detailedPerformance')}</CardTitle>
+        <CardDescription className="text-slate-600">{t('table.overviewAllAffiliates')}</CardDescription>
       </CardHeader>
       <CardContent className="p-0 sm:p-6">
         {/* Version mobile - Cards */}
@@ -54,15 +56,15 @@ export const AdvancedStatsAffiliateTable = ({ affiliates }: AdvancedStatsAffilia
                 <div className="grid grid-cols-3 gap-4 text-sm">
                   <div className="text-center">
                     <div className="font-medium text-slate-900">{affiliate.clicks}</div>
-                    <div className="text-xs text-slate-500">Clics</div>
+                    <div className="text-xs text-slate-500">{t('table.clicks')}</div>
                   </div>
                   <div className="text-center">
                     <div className="font-medium text-slate-900">{affiliate.conversions}</div>
-                    <div className="text-xs text-slate-500">Conv.</div>
+                    <div className="text-xs text-slate-500">{t('table.conversions')}</div>
                   </div>
                   <div className="text-center">
                     <div className="font-medium text-slate-900">{affiliate.conversionRate.toFixed(1)}%</div>
-                    <div className="text-xs text-slate-500">Taux</div>
+                    <div className="text-xs text-slate-500">{t('table.conversionRateShort')}</div>
                   </div>
                 </div>
               </div>
@@ -75,12 +77,12 @@ export const AdvancedStatsAffiliateTable = ({ affiliates }: AdvancedStatsAffilia
           <table className="w-full">
             <thead>
               <tr className="border-b border-slate-200">
-                <th className="text-left p-3 text-sm font-semibold text-slate-700">Nom</th>
-                <th className="text-left p-3 text-sm font-semibold text-slate-700 hidden lg:table-cell">Email</th>
-                <th className="text-right p-3 text-sm font-semibold text-slate-700">Clics</th>
-                <th className="text-right p-3 text-sm font-semibold text-slate-700">Conv.</th>
-                <th className="text-right p-3 text-sm font-semibold text-slate-700 hidden md:table-cell">Taux (%)</th>
-                <th className="text-right p-3 text-sm font-semibold text-slate-700">Commissions</th>
+                <th className="text-left p-3 text-sm font-semibold text-slate-700">{t('table.name')}</th>
+                <th className="text-left p-3 text-sm font-semibold text-slate-700 hidden lg:table-cell">{t('table.email')}</th>
+                <th className="text-right p-3 text-sm font-semibold text-slate-700">{t('table.clicks')}</th>
+                <th className="text-right p-3 text-sm font-semibold text-slate-700">{t('table.conversions')}</th>
+                <th className="text-right p-3 text-sm font-semibold text-slate-700 hidden md:table-cell">{t('table.conversionRateShort')}</th>
+                <th className="text-right p-3 text-sm font-semibold text-slate-700">{t('stats.commissions')}</th>
               </tr>
             </thead>
             <tbody>
