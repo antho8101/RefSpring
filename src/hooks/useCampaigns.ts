@@ -8,7 +8,8 @@ import {
   onSnapshot, 
   updateDoc, 
   deleteDoc, 
-  doc
+  doc,
+  getDocs
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { useAuth } from '@/hooks/useAuth';
@@ -94,8 +95,80 @@ export const useCampaigns = () => {
   };
 
   const deleteCampaign = async (id: string) => {
-    const campaignRef = doc(db, 'campaigns', id);
-    await deleteDoc(campaignRef);
+    console.log('🗑️ Début suppression campagne:', id);
+    
+    try {
+      // 1. Supprimer tous les affiliés de cette campagne
+      console.log('🗑️ Suppression des affiliés...');
+      const affiliatesQuery = query(
+        collection(db, 'affiliates'),
+        where('campaignId', '==', id)
+      );
+      const affiliatesSnapshot = await getDocs(affiliatesQuery);
+      console.log('🗑️ Affiliés trouvés:', affiliatesSnapshot.size);
+      
+      const deleteAffiliatesPromises = affiliatesSnapshot.docs.map(doc => {
+        console.log('🗑️ Suppression affilié:', doc.id);
+        return deleteDoc(doc.ref);
+      });
+      await Promise.all(deleteAffiliatesPromises);
+
+      // 2. Supprimer tous les clics de cette campagne
+      console.log('🗑️ Suppression des clics...');
+      const clicksQuery = query(
+        collection(db, 'clicks'),
+        where('campaignId', '==', id)
+      );
+      const clicksSnapshot = await getDocs(clicksQuery);
+      console.log('🗑️ Clics trouvés:', clicksSnapshot.size);
+      
+      const deleteClicksPromises = clicksSnapshot.docs.map(doc => {
+        console.log('🗑️ Suppression clic:', doc.id);
+        return deleteDoc(doc.ref);
+      });
+      await Promise.all(deleteClicksPromises);
+
+      // 3. Supprimer tous les liens courts de cette campagne
+      console.log('🗑️ Suppression des liens courts...');
+      const shortLinksQuery = query(
+        collection(db, 'shortLinks'),
+        where('campaignId', '==', id)
+      );
+      const shortLinksSnapshot = await getDocs(shortLinksQuery);
+      console.log('🗑️ Liens courts trouvés:', shortLinksSnapshot.size);
+      
+      const deleteShortLinksPromises = shortLinksSnapshot.docs.map(doc => {
+        console.log('🗑️ Suppression lien court:', doc.id);
+        return deleteDoc(doc.ref);
+      });
+      await Promise.all(deleteShortLinksPromises);
+
+      // 4. Supprimer toutes les conversions de cette campagne
+      console.log('🗑️ Suppression des conversions...');
+      const conversionsQuery = query(
+        collection(db, 'conversions'),
+        where('campaignId', '==', id)
+      );
+      const conversionsSnapshot = await getDocs(conversionsQuery);
+      console.log('🗑️ Conversions trouvées:', conversionsSnapshot.size);
+      
+      const deleteConversionsPromises = conversionsSnapshot.docs.map(doc => {
+        console.log('🗑️ Suppression conversion:', doc.id);
+        return deleteDoc(doc.ref);
+      });
+      await Promise.all(deleteConversionsPromises);
+
+      // 5. Finalement, supprimer la campagne elle-même
+      console.log('🗑️ Suppression de la campagne...');
+      const campaignRef = doc(db, 'campaigns', id);
+      await deleteDoc(campaignRef);
+      
+      console.log('✅ Suppression complète terminée pour la campagne:', id);
+      
+    } catch (error) {
+      console.error('❌ Erreur lors de la suppression en cascade:', error);
+      throw error;
+    }
   };
 
   return {

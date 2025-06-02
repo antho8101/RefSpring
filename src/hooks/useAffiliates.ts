@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import { 
   collection, 
@@ -8,7 +9,8 @@ import {
   updateDoc, 
   deleteDoc, 
   doc,
-  orderBy 
+  orderBy,
+  getDocs
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { useAuth } from '@/hooks/useAuth';
@@ -73,8 +75,65 @@ export const useAffiliates = (campaignId?: string) => {
   };
 
   const deleteAffiliate = async (id: string) => {
-    const affiliateRef = doc(db, 'affiliates', id);
-    await deleteDoc(affiliateRef);
+    console.log('🗑️ Début suppression affilié:', id);
+    
+    try {
+      // 1. Supprimer tous les clics de cet affilié
+      console.log('🗑️ Suppression des clics de l\'affilié...');
+      const clicksQuery = query(
+        collection(db, 'clicks'),
+        where('affiliateId', '==', id)
+      );
+      const clicksSnapshot = await getDocs(clicksQuery);
+      console.log('🗑️ Clics trouvés pour l\'affilié:', clicksSnapshot.size);
+      
+      const deleteClicksPromises = clicksSnapshot.docs.map(doc => {
+        console.log('🗑️ Suppression clic affilié:', doc.id);
+        return deleteDoc(doc.ref);
+      });
+      await Promise.all(deleteClicksPromises);
+
+      // 2. Supprimer tous les liens courts de cet affilié
+      console.log('🗑️ Suppression des liens courts de l\'affilié...');
+      const shortLinksQuery = query(
+        collection(db, 'shortLinks'),
+        where('affiliateId', '==', id)
+      );
+      const shortLinksSnapshot = await getDocs(shortLinksQuery);
+      console.log('🗑️ Liens courts trouvés pour l\'affilié:', shortLinksSnapshot.size);
+      
+      const deleteShortLinksPromises = shortLinksSnapshot.docs.map(doc => {
+        console.log('🗑️ Suppression lien court affilié:', doc.id);
+        return deleteDoc(doc.ref);
+      });
+      await Promise.all(deleteShortLinksPromises);
+
+      // 3. Supprimer toutes les conversions de cet affilié
+      console.log('🗑️ Suppression des conversions de l\'affilié...');
+      const conversionsQuery = query(
+        collection(db, 'conversions'),
+        where('affiliateId', '==', id)
+      );
+      const conversionsSnapshot = await getDocs(conversionsQuery);
+      console.log('🗑️ Conversions trouvées pour l\'affilié:', conversionsSnapshot.size);
+      
+      const deleteConversionsPromises = conversionsSnapshot.docs.map(doc => {
+        console.log('🗑️ Suppression conversion affilié:', doc.id);
+        return deleteDoc(doc.ref);
+      });
+      await Promise.all(deleteConversionsPromises);
+
+      // 4. Finalement, supprimer l'affilié lui-même
+      console.log('🗑️ Suppression de l\'affilié...');
+      const affiliateRef = doc(db, 'affiliates', id);
+      await deleteDoc(affiliateRef);
+      
+      console.log('✅ Suppression complète terminée pour l\'affilié:', id);
+      
+    } catch (error) {
+      console.error('❌ Erreur lors de la suppression en cascade de l\'affilié:', error);
+      throw error;
+    }
   };
 
   return {
