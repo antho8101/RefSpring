@@ -1,4 +1,3 @@
-
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -118,7 +117,7 @@ const AffiliatePage = () => {
     fetchCampaignData();
   }, [campaignId, refCode]);
 
-  // Générer le lien de tracking
+  // Générer le lien de tracking automatiquement avec le targetUrl de la campagne
   useEffect(() => {
     if (selectedAffiliate && targetUrl) {
       const currentHostname = window.location.hostname;
@@ -247,35 +246,20 @@ const AffiliatePage = () => {
 
             {selectedAffiliate ? (
               <>
-                {/* Générateur de liens de tracking */}
+                {/* Lien de tracking généré automatiquement */}
                 <Card className="mb-8">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                       <Link className="h-5 w-5" />
-                      Générateur de liens de tracking
+                      Votre lien de tracking
                     </CardTitle>
                     <CardDescription>
-                      Créez votre lien de tracking personnalisé avec l'URL de destination
+                      Ce lien redirige automatiquement vers : <strong>{targetUrl}</strong>
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="target-url">URL de destination</Label>
-                      <Input
-                        id="target-url"
-                        type="url"
-                        placeholder="https://example.com/produit"
-                        value={targetUrl}
-                        onChange={(e) => setTargetUrl(e.target.value)}
-                      />
-                      <p className="text-xs text-gray-500">
-                        L'URL vers laquelle vos visiteurs seront redirigés après le tracking
-                      </p>
-                    </div>
-                    
-                    {generatedLink && (
-                      <div className="space-y-2">
-                        <Label>Votre lien de tracking</Label>
+                    {generatedLink ? (
+                      <div className="space-y-3">
                         <div className="flex gap-2">
                           <Input
                             value={generatedLink}
@@ -289,8 +273,19 @@ const AffiliatePage = () => {
                             <ExternalLink className="h-4 w-4" />
                           </Button>
                         </div>
-                        <p className="text-xs text-green-600">
-                          ✅ Lien prêt à être partagé ! Cliquez sur "Copier" puis partagez-le.
+                        <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                          <p className="text-sm text-green-700">
+                            ✅ <strong>Lien prêt !</strong> Partagez ce lien pour tracker vos conversions.
+                          </p>
+                          <p className="text-xs text-green-600 mt-1">
+                            Vos visiteurs seront automatiquement redirigés vers {targetUrl}
+                          </p>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="bg-orange-50 border border-orange-200 rounded-lg p-3">
+                        <p className="text-sm text-orange-700">
+                          ⚠️ URL de destination manquante dans la configuration de la campagne
                         </p>
                       </div>
                     )}
