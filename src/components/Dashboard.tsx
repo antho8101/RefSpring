@@ -2,10 +2,16 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/hooks/useAuth';
-import { LogOut, Plus, Settings, Users, BarChart3 } from 'lucide-react';
+import { useCampaigns } from '@/hooks/useCampaigns';
+import { useAffiliates } from '@/hooks/useAffiliates';
+import { LogOut, Settings, Users, BarChart3, Plus } from 'lucide-react';
+import { CreateCampaignDialog } from '@/components/CreateCampaignDialog';
+import { CampaignsList } from '@/components/CampaignsList';
 
 export const Dashboard = () => {
   const { user, logout } = useAuth();
+  const { campaigns } = useCampaigns();
+  const { affiliates } = useAffiliates();
 
   const handleLogout = async () => {
     try {
@@ -14,6 +20,9 @@ export const Dashboard = () => {
       console.error('Erreur lors de la déconnexion:', error);
     }
   };
+
+  const activeCampaigns = campaigns.filter(c => c.isActive).length;
+  const totalAffiliates = affiliates.length;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -48,9 +57,9 @@ export const Dashboard = () => {
               <BarChart3 className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">0</div>
+              <div className="text-2xl font-bold">{activeCampaigns}</div>
               <p className="text-xs text-muted-foreground">
-                Aucune campagne créée
+                sur {campaigns.length} campagne{campaigns.length > 1 ? 's' : ''}
               </p>
             </CardContent>
           </Card>
@@ -61,9 +70,9 @@ export const Dashboard = () => {
               <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">0</div>
+              <div className="text-2xl font-bold">{totalAffiliates}</div>
               <p className="text-xs text-muted-foreground">
-                Aucun affilié ajouté
+                {totalAffiliates === 0 ? 'Aucun affilié ajouté' : 'affiliés actifs'}
               </p>
             </CardContent>
           </Card>
@@ -82,53 +91,15 @@ export const Dashboard = () => {
           </Card>
         </div>
 
-        {/* Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Créer une nouvelle campagne</CardTitle>
-              <CardDescription>
-                Configurez une nouvelle campagne d'affiliation et obtenez vos liens de tracking
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button className="w-full">
-                <Plus className="h-4 w-4 mr-2" />
-                Nouvelle Campagne
-              </Button>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Mes Campagnes</CardTitle>
-              <CardDescription>
-                Gérez vos campagnes existantes et consultez leurs performances
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button variant="outline" className="w-full">
-                <Settings className="h-4 w-4 mr-2" />
-                Gérer les Campagnes
-              </Button>
-            </CardContent>
-          </Card>
+        {/* Actions & Campaigns */}
+        <div className="space-y-6">
+          <div className="flex justify-between items-center">
+            <h2 className="text-xl font-semibold">Mes Campagnes</h2>
+            <CreateCampaignDialog />
+          </div>
+          
+          <CampaignsList />
         </div>
-
-        {/* Empty State */}
-        <Card className="mt-8">
-          <CardContent className="flex flex-col items-center justify-center py-12">
-            <BarChart3 className="h-12 w-12 text-muted-foreground mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Aucune campagne active</h3>
-            <p className="text-muted-foreground text-center mb-4">
-              Commencez par créer votre première campagne d'affiliation pour commencer à tracker vos conversions.
-            </p>
-            <Button>
-              <Plus className="h-4 w-4 mr-2" />
-              Créer ma première campagne
-            </Button>
-          </CardContent>
-        </Card>
       </main>
     </div>
   );
