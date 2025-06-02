@@ -31,15 +31,42 @@ export const CampaignCard = ({ campaign, onCopyUrl }: CampaignCardProps) => {
 
   const handleCopyUrl = async () => {
     try {
-      await navigator.clipboard.writeText(publicDashboardUrl);
-      toast({
-        title: "Lien copié !",
-        description: "Le lien du dashboard public a été copié dans le presse-papiers",
-      });
+      // Méthode moderne avec navigator.clipboard
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(publicDashboardUrl);
+        toast({
+          title: "Lien copié !",
+          description: "Le lien du dashboard public a été copié dans le presse-papiers",
+        });
+        return;
+      }
+
+      // Méthode de fallback pour navigateurs plus anciens ou contextes non-sécurisés
+      const textArea = document.createElement('textarea');
+      textArea.value = publicDashboardUrl;
+      textArea.style.position = 'fixed';
+      textArea.style.left = '-999999px';
+      textArea.style.top = '-999999px';
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      
+      const successful = document.execCommand('copy');
+      document.body.removeChild(textArea);
+      
+      if (successful) {
+        toast({
+          title: "Lien copié !",
+          description: "Le lien du dashboard public a été copié dans le presse-papiers",
+        });
+      } else {
+        throw new Error('Fallback copy failed');
+      }
     } catch (error) {
+      console.error('Copy failed:', error);
       toast({
-        title: "Erreur",
-        description: "Impossible de copier le lien",
+        title: "Copie impossible",
+        description: "Sélectionnez et copiez le lien manuellement avec Ctrl+C",
         variant: "destructive",
       });
     }
