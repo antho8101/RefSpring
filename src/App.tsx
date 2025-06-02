@@ -23,15 +23,19 @@ const DomainRouter = () => {
       window.location.replace('/landing');
     } else if (hostname === 'dashboard.refspring.com' && currentPath === '/') {
       window.location.replace('/dashboard');
-    } else if (hostname === 'dashboard.refspring.com' && currentPath === '/landing') {
-      window.location.replace('/dashboard');
+    } else if (hostname === 'refspring.com' && currentPath === '/dashboard') {
+      window.location.replace('/landing');
     }
   }, []);
 
   return (
     <Routes>
-      {/* Route principale - redirige vers dashboard */}
-      <Route path="/" element={<Navigate to="/dashboard" replace />} />
+      {/* Route principale - comportement par défaut selon le domaine */}
+      <Route path="/" element={
+        window.location.hostname === 'dashboard.refspring.com' 
+          ? <Navigate to="/dashboard" replace />
+          : <Navigate to="/landing" replace />
+      } />
       
       {/* Pages principales */}
       <Route path="/dashboard" element={<Index />} />
