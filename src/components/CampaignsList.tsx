@@ -19,11 +19,18 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
 import { useCampaigns } from '@/hooks/useCampaigns';
 import { useAffiliates } from '@/hooks/useAffiliates';
-import { Settings, Users, Eye, Copy, Trash2, TrendingUp, Calendar } from 'lucide-react';
+import { Settings, Users, Eye, Copy, Trash2, TrendingUp, Calendar, ChevronDown, ChevronRight } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
+import { CreateAffiliateDialog } from '@/components/CreateAffiliateDialog';
+import { AffiliatesList } from '@/components/AffiliatesList';
 
 export const CampaignsList = () => {
   const { campaigns, loading } = useCampaigns();
@@ -106,6 +113,7 @@ const CampaignCard = ({ campaign, onCopyUrl }: CampaignCardProps) => {
   const { deleteCampaign } = useCampaigns();
   const { toast } = useToast();
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isAffiliatesOpen, setIsAffiliatesOpen] = useState(false);
 
   const handleDelete = async () => {
     setIsDeleting(true);
@@ -151,6 +159,8 @@ const CampaignCard = ({ campaign, onCopyUrl }: CampaignCardProps) => {
             </CardDescription>
           </div>
           <div className="flex items-center space-x-2">
+            <CreateAffiliateDialog campaignId={campaign.id} campaignName={campaign.name} />
+            
             <Button 
               variant="outline" 
               size="sm" 
@@ -201,7 +211,7 @@ const CampaignCard = ({ campaign, onCopyUrl }: CampaignCardProps) => {
         </div>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
           <div className="bg-blue-50/50 p-4 rounded-xl">
             <div className="flex items-center gap-2 text-blue-600 mb-2">
               <TrendingUp className="h-4 w-4" />
@@ -233,6 +243,28 @@ const CampaignCard = ({ campaign, onCopyUrl }: CampaignCardProps) => {
             </p>
           </div>
         </div>
+
+        {/* Section des affiliés */}
+        <Collapsible open={isAffiliatesOpen} onOpenChange={setIsAffiliatesOpen}>
+          <CollapsibleTrigger asChild>
+            <Button 
+              variant="ghost" 
+              className="w-full flex items-center justify-between p-3 hover:bg-slate-100/50 rounded-lg"
+            >
+              <div className="flex items-center gap-2">
+                <Users className="h-4 w-4" />
+                <span className="font-medium">Affiliés de cette campagne ({affiliates.length})</span>
+              </div>
+              {isAffiliatesOpen ? 
+                <ChevronDown className="h-4 w-4" /> : 
+                <ChevronRight className="h-4 w-4" />
+              }
+            </Button>
+          </CollapsibleTrigger>
+          <CollapsibleContent className="mt-4">
+            <AffiliatesList campaignId={campaign.id} />
+          </CollapsibleContent>
+        </Collapsible>
       </CardContent>
     </Card>
   );
