@@ -21,7 +21,10 @@ export const useCampaigns = () => {
   const { user } = useAuth();
 
   useEffect(() => {
+    console.log('useCampaigns effect triggered, user:', user?.uid);
+    
     if (!user) {
+      console.log('No user, clearing campaigns');
       setCampaigns([]);
       setLoading(false);
       return;
@@ -34,15 +37,27 @@ export const useCampaigns = () => {
       orderBy('createdAt', 'desc')
     );
 
+    console.log('Setting up Firestore listener for user:', user.uid);
+
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const campaignsData = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-        createdAt: doc.data().createdAt?.toDate(),
-        updatedAt: doc.data().updatedAt?.toDate(),
-      })) as Campaign[];
+      console.log('Firestore snapshot received, docs count:', snapshot.docs.length);
       
+      const campaignsData = snapshot.docs.map(doc => {
+        const data = doc.data();
+        console.log('Campaign doc data:', data);
+        return {
+          id: doc.id,
+          ...data,
+          createdAt: data.createdAt?.toDate(),
+          updatedAt: data.updatedAt?.toDate(),
+        };
+      }) as Campaign[];
+      
+      console.log('Processed campaigns data:', campaignsData);
       setCampaigns(campaignsData);
+      setLoading(false);
+    }, (error) => {
+      console.error('Firestore listener error:', error);
       setLoading(false);
     });
 
@@ -59,7 +74,9 @@ export const useCampaigns = () => {
       updatedAt: new Date(),
     };
 
+    console.log('Creating campaign:', newCampaign);
     const docRef = await addDoc(collection(db, 'campaigns'), newCampaign);
+    console.log('Campaign created with ID:', docRef.id);
     return docRef.id;
   };
 

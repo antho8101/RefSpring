@@ -11,6 +11,8 @@ export const CampaignsList = () => {
   const { campaigns, loading } = useCampaigns();
   const { toast } = useToast();
 
+  console.log('CampaignsList render - campaigns:', campaigns, 'loading:', loading);
+
   const copyTrackingUrl = (campaignId: string) => {
     const trackingUrl = `https://refspring.com/r/${campaignId}`;
     navigator.clipboard.writeText(trackingUrl);
@@ -21,6 +23,7 @@ export const CampaignsList = () => {
   };
 
   if (loading) {
+    console.log('CampaignsList: showing loading state');
     return (
       <div className="space-y-4">
         {[1, 2, 3].map((i) => (
@@ -36,6 +39,7 @@ export const CampaignsList = () => {
   }
 
   if (campaigns.length === 0) {
+    console.log('CampaignsList: showing empty state');
     return (
       <Card>
         <CardContent className="flex flex-col items-center justify-center py-12">
@@ -49,6 +53,7 @@ export const CampaignsList = () => {
     );
   }
 
+  console.log('CampaignsList: rendering campaigns list');
   return (
     <div className="space-y-4">
       {campaigns.map((campaign) => (
