@@ -46,6 +46,7 @@ const DomainRouter = () => {
       <Route path="/dashboard" element={<Index />} />
       <Route path="/landing" element={<LandingPage />} />
       <Route path="/advanced-stats" element={<AdvancedStatsPage />} />
+      <Route path="/advanced-stats/:campaignId" element={<AdvancedStatsPage />} />
       
       {/* Route pour servir le fichier tracking.js */}
       <Route path="/tracking.js" element={<TrackingJsRoute />} />

@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { collection, query, where, getDocs, orderBy } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
@@ -35,7 +34,7 @@ interface AdvancedStatsData {
   averageROAS: number;
 }
 
-export const useAdvancedStats = () => {
+export const useAdvancedStats = (campaignId?: string) => {
   const [stats, setStats] = useState<AdvancedStatsData>({
     dailyStats: [],
     topAffiliates: [],
@@ -61,15 +60,22 @@ export const useAdvancedStats = () => {
       setLoading(true);
       
       try {
-        console.log('📊 ADVANCED STATS - Chargement des stats avancées pour user:', user.uid);
+        console.log('📊 ADVANCED STATS - Chargement des stats avancées pour user:', user.uid, 'campaignId:', campaignId);
         
-        // 1. Récupérer toutes les campagnes de l'utilisateur
-        const campaignsQuery = query(
-          collection(db, 'campaigns'),
-          where('userId', '==', user.uid)
-        );
-        const campaignsSnapshot = await getDocs(campaignsQuery);
-        const campaignIds = campaignsSnapshot.docs.map(doc => doc.id);
+        let campaignIds: string[] = [];
+
+        if (campaignId) {
+          // Stats pour une campagne spécifique
+          campaignIds = [campaignId];
+        } else {
+          // Stats pour toutes les campagnes de l'utilisateur
+          const campaignsQuery = query(
+            collection(db, 'campaigns'),
+            where('userId', '==', user.uid)
+          );
+          const campaignsSnapshot = await getDocs(campaignsQuery);
+          campaignIds = campaignsSnapshot.docs.map(doc => doc.id);
+        }
 
         if (campaignIds.length === 0) {
           setLoading(false);
@@ -78,10 +84,10 @@ export const useAdvancedStats = () => {
 
         // 2. Récupérer tous les clics avec dates
         let allClicks: any[] = [];
-        for (const campaignId of campaignIds) {
+        for (const cId of campaignIds) {
           const clicksQuery = query(
             collection(db, 'clicks'),
-            where('campaignId', '==', campaignId),
+            where('campaignId', '==', cId),
             orderBy('timestamp', 'desc')
           );
           const clicksSnapshot = await getDocs(clicksQuery);
@@ -90,10 +96,10 @@ export const useAdvancedStats = () => {
 
         // 3. Récupérer toutes les conversions avec dates
         let allConversions: any[] = [];
-        for (const campaignId of campaignIds) {
+        for (const cId of campaignIds) {
           const conversionsQuery = query(
             collection(db, 'conversions'),
-            where('campaignId', '==', campaignId),
+            where('campaignId', '==', cId),
             orderBy('timestamp', 'desc')
           );
           const conversionsSnapshot = await getDocs(conversionsQuery);
@@ -102,10 +108,10 @@ export const useAdvancedStats = () => {
 
         // 4. Récupérer tous les affiliés
         let allAffiliates: any[] = [];
-        for (const campaignId of campaignIds) {
+        for (const cId of campaignIds) {
           const affiliatesQuery = query(
             collection(db, 'affiliates'),
-            where('campaignId', '==', campaignId)
+            where('campaignId', '==', cId)
           );
           const affiliatesSnapshot = await getDocs(affiliatesQuery);
           allAffiliates = [...allAffiliates, ...affiliatesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))];
@@ -190,7 +196,7 @@ export const useAdvancedStats = () => {
     };
 
     loadAdvancedStats();
-  }, [user]);
+  }, [user, campaignId]);
 
   return { stats, loading };
 };
