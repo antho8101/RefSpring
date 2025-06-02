@@ -25,6 +25,7 @@ interface CampaignCardProps {
 export const CampaignCard = ({ campaign, onCopyUrl }: CampaignCardProps) => {
   const { affiliates } = useAffiliates(campaign.id);
   const [isAffiliatesOpen, setIsAffiliatesOpen] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(true);
   const { toast } = useToast();
   const { generateTrackingLink } = useTrackingLinkGenerator();
 
@@ -63,58 +64,75 @@ export const CampaignCard = ({ campaign, onCopyUrl }: CampaignCardProps) => {
 
   return (
     <Card className="bg-gradient-to-br from-white to-slate-50/50 border-slate-200/50 shadow-md hover:shadow-lg transition-all hover:scale-[1.01] backdrop-blur-sm group">
-      <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
-          <div className="flex-1">
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <div className="flex items-center gap-2">
-                {campaign.name}
-                <Badge 
-                  variant={campaign.isActive ? "default" : "secondary"}
-                  className={campaign.isActive 
-                    ? "bg-gradient-to-r from-green-500 to-green-600 text-white border-0 text-xs px-2 py-0.5" 
-                    : "bg-slate-200 text-slate-600 text-xs px-2 py-0.5"
-                  }
-                >
-                  {campaign.isActive ? "Active" : "En pause"}
-                </Badge>
+      <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
+        <CollapsibleTrigger asChild>
+          <CardHeader className="pb-3 cursor-pointer hover:bg-slate-50/50 transition-colors">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3 flex-1">
+                {isExpanded ? 
+                  <ChevronDown className="h-5 w-5 text-slate-500" /> : 
+                  <ChevronRight className="h-5 w-5 text-slate-500" />
+                }
+                <div className="flex-1">
+                  <CardTitle className="flex items-center gap-2 text-lg">
+                    <div className="flex items-center gap-2">
+                      {campaign.name}
+                      <Badge 
+                        variant={campaign.isActive ? "default" : "secondary"}
+                        className={campaign.isActive 
+                          ? "bg-gradient-to-r from-green-500 to-green-600 text-white border-0 text-xs px-2 py-0.5" 
+                          : "bg-slate-200 text-slate-600 text-xs px-2 py-0.5"
+                        }
+                      >
+                        {campaign.isActive ? "Active" : "En pause"}
+                      </Badge>
+                    </div>
+                  </CardTitle>
+                  {isExpanded && (
+                    <CardDescription className="text-slate-600 mt-1 text-sm leading-relaxed line-clamp-2">
+                      {campaign.description}
+                    </CardDescription>
+                  )}
+                </div>
               </div>
-            </CardTitle>
-            <CardDescription className="text-slate-600 mt-1 text-sm leading-relaxed line-clamp-2">
-              {campaign.description}
-            </CardDescription>
-          </div>
-          <CampaignActions campaign={campaign} onCopyUrl={onCopyUrl} />
-        </div>
-      </CardHeader>
-      <CardContent className="pt-0">
-        <CampaignStats campaign={campaign} affiliatesCount={affiliates.length} />
+              <div className="ml-4" onClick={(e) => e.stopPropagation()}>
+                <CampaignActions campaign={campaign} onCopyUrl={onCopyUrl} />
+              </div>
+            </div>
+          </CardHeader>
+        </CollapsibleTrigger>
+        
+        <CollapsibleContent>
+          <CardContent className="pt-0">
+            <CampaignStats campaign={campaign} affiliatesCount={affiliates.length} />
 
-        {/* Section des affiliés */}
-        <Collapsible open={isAffiliatesOpen} onOpenChange={setIsAffiliatesOpen}>
-          <CollapsibleTrigger asChild>
-            <Button 
-              variant="ghost" 
-              className="w-full flex items-center justify-between p-2 hover:bg-slate-100/50 rounded-lg mt-3"
-            >
-              <div className="flex items-center gap-2">
-                <Users className="h-4 w-4" />
-                <span className="font-medium text-sm">Affiliés ({affiliates.length})</span>
-              </div>
-              {isAffiliatesOpen ? 
-                <ChevronDown className="h-4 w-4" /> : 
-                <ChevronRight className="h-4 w-4" />
-              }
-            </Button>
-          </CollapsibleTrigger>
-          <CollapsibleContent className="mt-2">
-            <AffiliatesList 
-              campaignId={campaign.id}
-              onCopyTrackingLink={handleCopyTrackingLink}
-            />
-          </CollapsibleContent>
-        </Collapsible>
-      </CardContent>
+            {/* Section des affiliés */}
+            <Collapsible open={isAffiliatesOpen} onOpenChange={setIsAffiliatesOpen}>
+              <CollapsibleTrigger asChild>
+                <Button 
+                  variant="ghost" 
+                  className="w-full flex items-center justify-between p-2 hover:bg-slate-100/50 rounded-lg mt-3"
+                >
+                  <div className="flex items-center gap-2">
+                    <Users className="h-4 w-4" />
+                    <span className="font-medium text-sm">Affiliés ({affiliates.length})</span>
+                  </div>
+                  {isAffiliatesOpen ? 
+                    <ChevronDown className="h-4 w-4" /> : 
+                    <ChevronRight className="h-4 w-4" />
+                  }
+                </Button>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="mt-2">
+                <AffiliatesList 
+                  campaignId={campaign.id}
+                  onCopyTrackingLink={handleCopyTrackingLink}
+                />
+              </CollapsibleContent>
+            </Collapsible>
+          </CardContent>
+        </CollapsibleContent>
+      </Collapsible>
     </Card>
   );
 };
