@@ -19,6 +19,7 @@ export const useAffiliateStats = (affiliateId: string | null) => {
 
   useEffect(() => {
     if (!affiliateId) {
+      console.log('📊 STATS - Pas d\'affiliateId fourni');
       setStats({ clicks: 0, conversions: 0, commissions: 0 });
       return;
     }
@@ -27,31 +28,38 @@ export const useAffiliateStats = (affiliateId: string | null) => {
       setLoading(true);
       
       try {
-        console.log('📊 Chargement des stats pour affilié:', affiliateId);
+        console.log('📊 STATS - Chargement des stats pour affilié:', affiliateId);
         
         // Compter les clics
+        console.log('📊 STATS - Recherche des clics...');
         const clicksQuery = query(
           collection(db, 'clicks'),
           where('affiliateId', '==', affiliateId)
         );
         const clicksSnapshot = await getDocs(clicksQuery);
         const clicksCount = clicksSnapshot.size;
-        console.log('📊 Clics trouvés:', clicksCount);
+        console.log('📊 STATS - Clics trouvés:', clicksCount);
+        console.log('📊 STATS - Documents clics:', clicksSnapshot.docs.map(doc => ({ id: doc.id, data: doc.data() })));
 
         // Compter les conversions et calculer les commissions
+        console.log('📊 STATS - Recherche des conversions...');
         const conversionsQuery = query(
           collection(db, 'conversions'),
           where('affiliateId', '==', affiliateId)
         );
         const conversionsSnapshot = await getDocs(conversionsQuery);
         const conversionsCount = conversionsSnapshot.size;
+        console.log('📊 STATS - Conversions trouvées:', conversionsCount);
+        console.log('📊 STATS - Documents conversions:', conversionsSnapshot.docs.map(doc => ({ id: doc.id, data: doc.data() })));
         
         const totalCommissions = conversionsSnapshot.docs.reduce((total, doc) => {
           const data = doc.data();
-          return total + (data.commission || 0);
+          const commission = data.commission || 0;
+          console.log('📊 STATS - Commission doc:', doc.id, commission);
+          return total + commission;
         }, 0);
 
-        console.log('📊 Stats finales:', {
+        console.log('📊 STATS - Stats finales calculées:', {
           clicks: clicksCount,
           conversions: conversionsCount,
           commissions: totalCommissions
@@ -63,7 +71,8 @@ export const useAffiliateStats = (affiliateId: string | null) => {
           commissions: totalCommissions,
         });
       } catch (error) {
-        console.error('❌ Erreur lors du chargement des stats (permissions manquantes pour dashboard public):', error);
+        console.error('❌ STATS - Erreur lors du chargement des stats:', error);
+        console.log('❌ STATS - Détails erreur:', error);
         // En cas d'erreur (permissions), on garde les stats à 0 au lieu de faire planter
         setStats({ clicks: 0, conversions: 0, commissions: 0 });
       }
