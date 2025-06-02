@@ -1,5 +1,4 @@
 
-import { TooltipProvider } from '@/components/ui/tooltip';
 import { Campaign } from '@/types';
 import { useCampaignStats } from '@/hooks/useCampaignStats';
 import { CampaignInfoCards } from '@/components/CampaignInfoCards';
@@ -14,14 +13,12 @@ export const CampaignStats = ({ campaign, affiliatesCount }: CampaignStatsProps)
   const { stats, loading } = useCampaignStats(campaign.id);
 
   return (
-    <TooltipProvider>
-      <div className="space-y-6 mb-6">
-        {/* URL Cible, Date de création et Dashboard public */}
-        <CampaignInfoCards campaign={campaign} />
+    <div className="space-y-6 mb-6">
+      {/* URL Cible, Date de création et Dashboard public */}
+      <CampaignInfoCards campaign={campaign} />
 
-        {/* Statistiques détaillées */}
-        <CampaignMetricsCards stats={stats} loading={loading} />
-      </div>
-    </TooltipProvider>
+      {/* Statistiques détaillées */}
+      <CampaignMetricsCards stats={stats} loading={loading} />
+    </div>
   );
 };
