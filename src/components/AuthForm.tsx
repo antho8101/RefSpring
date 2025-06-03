@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { RefSpringLogo } from '@/components/RefSpringLogo';
 
 export const AuthForm = () => {
-  const [isLogin, setIsLogin] = useState(true);
+  const [isLogin, setIsLogin] = useState(isLogin);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -87,7 +87,7 @@ export const AuthForm = () => {
       <Card className="w-full max-w-md bg-white/80 backdrop-blur-sm border-slate-200/50 shadow-xl">
         <CardHeader className="text-center pb-6">
           {/* Logo RefSpring */}
-          <div className="flex items-center justify-center gap-3 mb-4">
+          <div className="flex items-center justify-center gap-2 mb-4">
             <RefSpringLogo width="40" height="40" />
             <div>
               <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
