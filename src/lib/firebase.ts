@@ -1,9 +1,9 @@
 
 import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider, connectAuthEmulator } from "firebase/auth";
-import { getFirestore, connectFirestoreEmulator } from "firebase/firestore";
+import { getAuth, GoogleAuthProvider } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 
-// Configuration Firebase avec gestion d'erreur réseau améliorée
+// Configuration Firebase simplifiée
 const firebaseConfig = {
   apiKey: "AIzaSyAlHsC-w7Sx18XKJ6dIcxvqj-AUdqkjqSE",
   authDomain: "refspring-8c3ac.firebaseapp.com",
@@ -15,28 +15,19 @@ const firebaseConfig = {
   measurementId: "G-QNK35Y7EE4"
 };
 
-console.log('🔥 Firebase config DIRECT:', firebaseConfig);
+console.log('🔥 Firebase config:', firebaseConfig);
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-// Initialize Firebase services avec configuration réseau améliorée
+// Initialize Firebase services
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 
-// FORCER les bonnes URLs pour éviter les erreurs réseau
-auth.settings = {
-  appVerificationDisabledForTesting: false
-};
-
-// Configuration Google Auth ULTRA SIMPLE
+// Configuration Google Auth
 export const googleProvider = new GoogleAuthProvider();
 googleProvider.setCustomParameters({
   prompt: 'select_account'
 });
-
-// Hack pour forcer la bonne connexion réseau
-console.log('🔥 Auth URL:', auth.config?.apiHost);
-console.log('🔥 Firestore URL:', db._delegate._databaseId);
 
 export default app;
