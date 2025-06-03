@@ -2,7 +2,6 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
-import { getAnalytics, isSupported } from "firebase/analytics";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyAlHsC-w7Sx18XKJ6dIcxvqj-AUdqkjqSE",
@@ -37,30 +36,9 @@ googleProvider.setCustomParameters({
   prompt: 'select_account'
 });
 
-// Analytics avec gestion asynchrone sans top-level await
-let analyticsInstance: any = null;
+// Analytics DÉSACTIVÉ TEMPORAIREMENT pour éviter le délai
+console.log('⚠️ Firebase Analytics désactivé pour éviter les délais de chargement');
 
-const initializeAnalytics = async () => {
-  try {
-    if (typeof window !== 'undefined' && firebaseConfig.measurementId) {
-      const supported = await isSupported();
-      if (supported) {
-        analyticsInstance = getAnalytics(app);
-        console.log('✅ Firebase Analytics initialisé');
-      } else {
-        console.warn('⚠️ Firebase Analytics non supporté dans cet environnement');
-      }
-    }
-  } catch (error) {
-    console.warn('⚠️ Erreur lors de l\'initialisation d\'Analytics:', error);
-  }
-};
-
-// Initialiser Analytics de manière asynchrone
-if (typeof window !== 'undefined') {
-  initializeAnalytics();
-}
-
-export const getAnalyticsInstance = () => analyticsInstance;
+export const getAnalyticsInstance = () => null;
 
 export default app;
