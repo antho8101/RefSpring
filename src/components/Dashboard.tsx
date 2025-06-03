@@ -9,6 +9,7 @@ import { DashboardStats } from '@/components/DashboardStats';
 import { DashboardContent } from '@/components/DashboardContent';
 import { NetworkStatus } from '@/components/NetworkStatus';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { Helmet } from 'react-helmet-async';
 import { memo, useCallback, useMemo } from 'react';
 
 export const Dashboard = memo(() => {
@@ -38,6 +39,12 @@ export const Dashboard = memo(() => {
 
   return (
     <>
+      <Helmet>
+        <title>RefSpring - Dashboard</title>
+        <meta name="description" content="Gérez vos campagnes d'affiliation, suivez vos performances et optimisez vos revenus avec RefSpring." />
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
+
       <NetworkStatus />
       <div className="min-h-screen bg-gradient-to-br from-blue-50/50 via-white to-purple-50/50 relative overflow-hidden">
         <DashboardBackground />
