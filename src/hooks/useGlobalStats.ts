@@ -7,10 +7,10 @@ import { useAuth } from '@/hooks/useAuth';
 interface GlobalStats {
   totalClicks: number;
   totalConversions: number;
-  totalRevenue: number; // CA brut total (montant des ventes)
-  totalCommissions: number; // Total des commissions à verser aux affiliés
-  netRevenue: number; // CA net (après déduction des commissions)
-  conversionRate: number; // Taux de conversion global
+  totalRevenue: number;
+  totalCommissions: number;
+  netRevenue: number;
+  conversionRate: number;
 }
 
 export const useGlobalStats = () => {
@@ -43,10 +43,9 @@ export const useGlobalStats = () => {
       setLoading(true);
       
       try {
-        console.log('📊 GLOBAL STATS - Chargement des stats globales pour user:', user.uid);
+        console.log('📊 GLOBAL STATS - Chargement OPTIMISÉ des stats globales pour user:', user.uid);
         
         // 1. Récupérer toutes les campagnes de l'utilisateur
-        console.log('📊 GLOBAL STATS - Recherche des campagnes...');
         const campaignsQuery = query(
           collection(db, 'campaigns'),
           where('userId', '==', user.uid)
@@ -69,33 +68,34 @@ export const useGlobalStats = () => {
           return;
         }
 
-        // 2. Compter tous les clics pour toutes les campagnes
-        console.log('📊 GLOBAL STATS - Recherche des clics...');
-        let totalClicks = 0;
-        for (const campaignId of campaignIds) {
-          const clicksQuery = query(
-            collection(db, 'clicks'),
-            where('campaignId', '==', campaignId)
-          );
-          const clicksSnapshot = await getDocs(clicksQuery);
-          totalClicks += clicksSnapshot.size;
-        }
-        console.log('📊 GLOBAL STATS - Clics totaux:', totalClicks);
+        // 2. OPTIMISATION : Requêtes en parallèle au lieu de séquentielles
+        console.log('📊 GLOBAL STATS - Lancement des requêtes EN PARALLÈLE...');
+        
+        const [clicksResults, conversionsResults] = await Promise.all([
+          // Tous les clics en parallèle
+          Promise.all(campaignIds.map(campaignId => 
+            getDocs(query(collection(db, 'clicks'), where('campaignId', '==', campaignId)))
+          )),
+          // Toutes les conversions en parallèle
+          Promise.all(campaignIds.map(campaignId => 
+            getDocs(query(collection(db, 'conversions'), where('campaignId', '==', campaignId)))
+          ))
+        ]);
 
-        // 3. Récupérer toutes les conversions pour toutes les campagnes
-        console.log('📊 GLOBAL STATS - Recherche des conversions...');
+        // 3. Compter les résultats
+        let totalClicks = 0;
         let totalConversions = 0;
         let totalRevenue = 0;
         let totalCommissions = 0;
 
-        for (const campaignId of campaignIds) {
-          const conversionsQuery = query(
-            collection(db, 'conversions'),
-            where('campaignId', '==', campaignId)
-          );
-          const conversionsSnapshot = await getDocs(conversionsQuery);
-          
-          conversionsSnapshot.docs.forEach(doc => {
+        // Compter les clics
+        clicksResults.forEach(snapshot => {
+          totalClicks += snapshot.size;
+        });
+
+        // Compter les conversions et calculer revenus
+        conversionsResults.forEach(snapshot => {
+          snapshot.docs.forEach(doc => {
             const data = doc.data();
             const amount = data.amount || 0;
             const commission = data.commission || 0;
@@ -103,21 +103,13 @@ export const useGlobalStats = () => {
             totalConversions++;
             totalRevenue += amount;
             totalCommissions += commission;
-            
-            console.log('📊 GLOBAL STATS - Conversion:', {
-              id: doc.id,
-              amount,
-              commission,
-              campaignId
-            });
           });
-        }
+        });
 
-        // 4. Calculer le CA net et le taux de conversion
         const netRevenue = totalRevenue - totalCommissions;
         const conversionRate = totalClicks > 0 ? (totalConversions / totalClicks) * 100 : 0;
 
-        console.log('📊 GLOBAL STATS - Stats finales calculées:', {
+        console.log('📊 GLOBAL STATS - Stats calculées RAPIDEMENT:', {
           totalClicks,
           totalConversions,
           totalRevenue,
