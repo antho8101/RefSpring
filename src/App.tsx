@@ -17,6 +17,7 @@ const AffiliatePage = lazy(() => import("./pages/AffiliatePage"));
 const TrackingPage = lazy(() => import("./pages/TrackingPage"));
 const ShortLinkPage = lazy(() => import("./pages/ShortLinkPage"));
 const LandingPage = lazy(() => import("./pages/LandingPage"));
+const PricingPage = lazy(() => import("./pages/PricingPage"));
 const TrackingJsRoute = lazy(() => import("./pages/TrackingJsRoute"));
 const TestProductsPage = lazy(() => import("./pages/TestProductsPage"));
 const TestThankYouPage = lazy(() => import("./pages/TestThankYouPage"));
@@ -60,6 +61,7 @@ const DomainRouter = () => {
               : <LandingPage />
           } />
           
+          <Route path="/pricing" element={<PricingPage />} />
           <Route path="/dashboard" element={<Index />} />
           <Route path="/advanced-stats" element={<AdvancedStatsPage />} />
           <Route path="/advanced-stats/:campaignId" element={<AdvancedStatsPage />} />

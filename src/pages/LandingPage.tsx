@@ -128,6 +128,9 @@ const LandingPage = () => {
                 <a href="#features" className="text-slate-600 hover:text-slate-900 font-medium transition-all hover:scale-105">
                   Fonctionnalités
                 </a>
+                <a href="/pricing" className="text-slate-600 hover:text-slate-900 font-medium transition-all hover:scale-105">
+                  Tarifs
+                </a>
                 <a href="#dashboard" className="text-slate-600 hover:text-slate-900 font-medium transition-all hover:scale-105">
                   Dashboard
                 </a>
