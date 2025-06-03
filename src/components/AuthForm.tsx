@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -71,8 +70,8 @@ export const AuthForm = () => {
     }
   };
 
-  const handleBackToLanding = () => {
-    navigate('/');
+  const handleBackToDashboard = () => {
+    navigate('/dashboard');
   };
 
   return (
@@ -80,7 +79,7 @@ export const AuthForm = () => {
       {/* Bouton retour */}
       <Button
         variant="ghost"
-        onClick={handleBackToLanding}
+        onClick={handleBackToDashboard}
         className="absolute top-6 left-6 text-slate-600 hover:text-slate-900"
       >
         <ArrowLeft className="mr-2 h-4 w-4" />
