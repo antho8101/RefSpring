@@ -14,31 +14,43 @@ import { useRetry } from './useRetry';
 
 export const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false); // Changé de true à false pour affichage immédiat
+  const [initialized, setInitialized] = useState(false);
   const { handleError } = useErrorHandler();
   const { executeWithRetry } = useRetry({ maxRetries: 2 });
 
   useEffect(() => {
     console.log('🔐 Initialisation de l\'authentification...');
     
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      console.log('🔐 État d\'authentification changé:', user ? 'Connecté' : 'Déconnecté');
-      setUser(user);
-      setLoading(false);
-    }, (error) => {
-      console.error('🚨 Erreur d\'authentification:', error);
-      handleError(error, { 
-        showToast: true,
-        logError: true 
+    // Délai très court pour permettre l'affichage de l'UI
+    const initTimer = setTimeout(() => {
+      const unsubscribe = onAuthStateChanged(auth, (user) => {
+        console.log('🔐 État d\'authentification changé:', user ? 'Connecté' : 'Déconnecté');
+        setUser(user);
+        setLoading(false);
+        setInitialized(true);
+      }, (error) => {
+        console.error('🚨 Erreur d\'authentification:', error);
+        handleError(error, { 
+          showToast: true,
+          logError: true 
+        });
+        setLoading(false);
+        setInitialized(true);
       });
-      setLoading(false);
-    });
 
-    return unsubscribe;
+      return () => {
+        clearTimeout(initTimer);
+        unsubscribe();
+      };
+    }, 100); // Délai minimal pour l'affichage
+
+    return () => clearTimeout(initTimer);
   }, [handleError]);
 
   const signInWithEmail = async (email: string, password: string) => {
     console.log('🔐 Tentative de connexion avec email:', email);
+    setLoading(true);
     try {
       const result = await executeWithRetry(
         () => signInWithEmailAndPassword(auth, email, password),
@@ -48,11 +60,14 @@ export const useAuth = () => {
     } catch (error) {
       console.error('❌ Erreur de connexion:', error);
       throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
   const signUpWithEmail = async (email: string, password: string) => {
     console.log('🔐 Tentative de création de compte avec email:', email);
+    setLoading(true);
     try {
       const result = await executeWithRetry(
         () => createUserWithEmailAndPassword(auth, email, password),
@@ -62,11 +77,14 @@ export const useAuth = () => {
     } catch (error) {
       console.error('❌ Erreur de création de compte:', error);
       throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
   const signInWithGoogle = async () => {
     console.log('🔐 Tentative de connexion avec Google');
+    setLoading(true);
     try {
       const result = await executeWithRetry(
         () => signInWithPopup(auth, googleProvider),
@@ -76,11 +94,14 @@ export const useAuth = () => {
     } catch (error) {
       console.error('❌ Erreur de connexion Google:', error);
       throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
   const logout = async () => {
     console.log('🔐 Tentative de déconnexion');
+    setLoading(true);
     try {
       await executeWithRetry(
         () => signOut(auth),
@@ -90,12 +111,15 @@ export const useAuth = () => {
     } catch (error) {
       console.error('❌ Erreur de déconnexion:', error);
       throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
   return {
     user,
     loading,
+    initialized,
     signInWithEmail,
     signUpWithEmail,
     signInWithGoogle,

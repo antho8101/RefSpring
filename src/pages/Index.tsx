@@ -5,8 +5,13 @@ import { Dashboard } from '@/components/Dashboard';
 import { useTranslation } from 'react-i18next';
 
 const Index = () => {
-  const { user, loading } = useAuth();
+  const { user, loading, initialized } = useAuth();
   const { t } = useTranslation();
+
+  // Affichage immédiat du formulaire pendant l'initialisation
+  if (!initialized) {
+    return <AuthForm />;
+  }
 
   if (loading) {
     return (
