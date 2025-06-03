@@ -1,8 +1,7 @@
-
 import { useEffect, useState } from 'react';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { useAuth } from '@/hooks/useAuth';
+import { useOptimizedAuth } from '@/hooks/useOptimizedAuth';
 
 interface GlobalStats {
   totalClicks: number;
@@ -23,7 +22,7 @@ export const useGlobalStats = () => {
     conversionRate: 0,
   });
   const [loading, setLoading] = useState(false);
-  const { user } = useAuth();
+  const { user } = useOptimizedAuth();
 
   useEffect(() => {
     if (!user) {

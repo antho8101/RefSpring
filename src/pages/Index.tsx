@@ -1,11 +1,11 @@
 
-import { useAuth } from '@/hooks/useAuth';
+import { useOptimizedAuth } from '@/hooks/useOptimizedAuth';
 import { AuthForm } from '@/components/AuthForm';
 import { Dashboard } from '@/components/Dashboard';
 import { useTranslation } from 'react-i18next';
 
 const Index = () => {
-  const { user, loading } = useAuth();
+  const { user, loading } = useOptimizedAuth();
   const { t } = useTranslation();
 
   console.log('🔍 Index render - user:', !!user, 'loading:', loading);

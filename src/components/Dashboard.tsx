@@ -1,5 +1,4 @@
-
-import { useAuth } from '@/hooks/useAuth';
+import { useOptimizedAuth } from '@/hooks/useOptimizedAuth';
 import { useCampaigns } from '@/hooks/useCampaigns';
 import { useAffiliates } from '@/hooks/useAffiliates';
 import { useGlobalStats } from '@/hooks/useGlobalStats';
@@ -13,7 +12,7 @@ import { Helmet } from 'react-helmet-async';
 import { memo, useCallback, useMemo } from 'react';
 
 export const Dashboard = memo(() => {
-  const { user, logout } = useAuth();
+  const { user, logout } = useOptimizedAuth();
   const { campaigns } = useCampaigns();
   const { affiliates } = useAffiliates();
   const { stats: globalStats, loading: globalStatsLoading } = useGlobalStats();
