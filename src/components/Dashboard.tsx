@@ -8,9 +8,10 @@ import { DashboardContent } from '@/components/DashboardContent';
 import { NetworkStatus } from '@/components/NetworkStatus';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { Helmet } from 'react-helmet-async';
-import { memo, useCallback, useMemo, useState } from 'react';
+import { memo, useCallback, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BarChart3, Users, DollarSign, Percent } from 'lucide-react';
+import { auth } from '@/lib/firebase';
 
 // Composant de stats simplifié SANS requêtes Firebase lourdes
 const SimpleDashboardStats = ({ activeCampaigns, totalCampaigns, totalAffiliates }) => {
