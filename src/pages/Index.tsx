@@ -8,8 +8,6 @@ const Index = () => {
   const { user, loading } = useAuth();
   const { t } = useTranslation();
 
-  console.log('🚀 INDEX SIMPLE - user:', !!user, 'loading:', loading);
-
   if (loading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
