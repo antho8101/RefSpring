@@ -1,4 +1,5 @@
 
+
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, connectAuthEmulator } from "firebase/auth";
 import { getFirestore, connectFirestoreEmulator } from "firebase/firestore";
@@ -28,11 +29,6 @@ googleProvider.setCustomParameters({
   hd: undefined // Pas de restriction de domaine pour plus de rapidité
 });
 
-// Configuration Auth optimisée pour la vitesse
-auth.settings = {
-  appVerificationDisabledForTesting: false
-};
-
 // Log optimisé en dev seulement
 if (import.meta.env.DEV) {
   console.log('🔥 Firebase config OPTIMISÉ pour la vitesse:', {
@@ -48,3 +44,4 @@ console.log('⚡ Firebase optimisé pour vitesse maximale - Analytics désactiv�
 export const getAnalyticsInstance = () => null;
 
 export default app;
+
