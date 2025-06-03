@@ -2,7 +2,7 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
-import { getAnalytics } from "firebase/analytics";
+import { getAnalytics, isSupported } from "firebase/analytics";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyAlHsC-w7Sx18XKJ6dIcxvqj-AUdqkjqSE",
@@ -37,10 +37,17 @@ googleProvider.setCustomParameters({
   prompt: 'select_account'
 });
 
-// Analytics (optional, only if in browser and measurement ID provided)
-export const analytics = 
-  typeof window !== 'undefined' && firebaseConfig.measurementId 
-    ? getAnalytics(app) 
-    : null;
+// Analytics avec vérification de support
+export const analytics = await (async () => {
+  try {
+    if (typeof window !== 'undefined' && firebaseConfig.measurementId && await isSupported()) {
+      return getAnalytics(app);
+    }
+    return null;
+  } catch (error) {
+    console.warn('Analytics non disponible dans cet environnement');
+    return null;
+  }
+})();
 
 export default app;

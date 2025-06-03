@@ -19,10 +19,14 @@ export const useAuth = () => {
   const { executeWithRetry } = useRetry({ maxRetries: 2 });
 
   useEffect(() => {
+    console.log('🔐 Initialisation de l\'authentification...');
+    
     const unsubscribe = onAuthStateChanged(auth, (user) => {
+      console.log('🔐 État d\'authentification changé:', user ? 'Connecté' : 'Déconnecté');
       setUser(user);
       setLoading(false);
     }, (error) => {
+      console.error('🚨 Erreur d\'authentification:', error);
       handleError(error, { 
         showToast: true,
         logError: true 
@@ -34,45 +38,57 @@ export const useAuth = () => {
   }, [handleError]);
 
   const signInWithEmail = async (email: string, password: string) => {
+    console.log('🔐 Tentative de connexion avec email:', email);
     try {
-      await executeWithRetry(
+      const result = await executeWithRetry(
         () => signInWithEmailAndPassword(auth, email, password),
         { component: 'useAuth', action: 'signInWithEmail' }
       );
+      console.log('✅ Connexion réussie:', result.user.uid);
     } catch (error) {
-      throw error; // L'erreur a déjà été gérée par executeWithRetry
+      console.error('❌ Erreur de connexion:', error);
+      throw error;
     }
   };
 
   const signUpWithEmail = async (email: string, password: string) => {
+    console.log('🔐 Tentative de création de compte avec email:', email);
     try {
-      await executeWithRetry(
+      const result = await executeWithRetry(
         () => createUserWithEmailAndPassword(auth, email, password),
         { component: 'useAuth', action: 'signUpWithEmail' }
       );
+      console.log('✅ Compte créé:', result.user.uid);
     } catch (error) {
+      console.error('❌ Erreur de création de compte:', error);
       throw error;
     }
   };
 
   const signInWithGoogle = async () => {
+    console.log('🔐 Tentative de connexion avec Google');
     try {
-      await executeWithRetry(
+      const result = await executeWithRetry(
         () => signInWithPopup(auth, googleProvider),
         { component: 'useAuth', action: 'signInWithGoogle' }
       );
+      console.log('✅ Connexion Google réussie:', result.user.uid);
     } catch (error) {
+      console.error('❌ Erreur de connexion Google:', error);
       throw error;
     }
   };
 
   const logout = async () => {
+    console.log('🔐 Tentative de déconnexion');
     try {
       await executeWithRetry(
         () => signOut(auth),
         { component: 'useAuth', action: 'logout' }
       );
+      console.log('✅ Déconnexion réussie');
     } catch (error) {
+      console.error('❌ Erreur de déconnexion:', error);
       throw error;
     }
   };
