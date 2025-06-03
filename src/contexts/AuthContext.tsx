@@ -24,57 +24,62 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log('🔐 AuthProvider - Initialisation ULTRA-RAPIDE optimisée');
+    console.log('🔐 AuthProvider - Initialisation SIMPLE');
     
-    // Vérifier d'abord le cache local pour un affichage immédiat
-    const cachedAuthState = localStorage.getItem('firebase_auth_cache');
-    if (cachedAuthState) {
-      console.log('🔐 Cache auth trouvé - affichage immédiat');
-      setLoading(false);
-    }
-    
-    // Timeout encore plus court : 500ms maximum
-    const ultraQuickTimeoutId = setTimeout(() => {
-      console.log('🔐 Timeout 500ms atteint - FORCER l\'affichage');
-      setLoading(false);
-    }, 500);
-
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       console.log('🔐 Firebase Auth state changed:', user ? 'CONNECTÉ' : 'DÉCONNECTÉ');
       setUser(user);
       setLoading(false);
-      clearTimeout(ultraQuickTimeoutId);
-      
-      // Mettre en cache l'état d'authentification
-      localStorage.setItem('firebase_auth_cache', user ? 'authenticated' : 'anonymous');
       
       if (user) {
         console.log('🔐 Utilisateur authentifié:', user.uid);
       } else {
         console.log('🔐 Utilisateur déconnecté');
-        localStorage.removeItem('firebase_auth_cache');
       }
+    }, (error) => {
+      console.error('🚨 Erreur Auth State Changed:', error);
+      setLoading(false);
     });
 
     return () => {
       unsubscribe();
-      clearTimeout(ultraQuickTimeoutId);
     };
   }, []);
 
   const signInWithEmail = async (email: string, password: string) => {
     console.log('🔐 Tentative connexion email...');
-    return signInWithEmailAndPassword(auth, email, password);
+    try {
+      const result = await signInWithEmailAndPassword(auth, email, password);
+      console.log('✅ Connexion email réussie');
+      return result;
+    } catch (error) {
+      console.error('❌ Erreur connexion email:', error);
+      throw error;
+    }
   };
 
   const signUpWithEmail = async (email: string, password: string) => {
     console.log('🔐 Tentative création compte...');
-    return createUserWithEmailAndPassword(auth, email, password);
+    try {
+      const result = await createUserWithEmailAndPassword(auth, email, password);
+      console.log('✅ Création compte réussie');
+      return result;
+    } catch (error) {
+      console.error('❌ Erreur création compte:', error);
+      throw error;
+    }
   };
 
   const signInWithGoogle = async () => {
     console.log('🔐 Tentative connexion Google...');
-    return signInWithPopup(auth, googleProvider);
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      console.log('✅ Connexion Google réussie');
+      return result;
+    } catch (error) {
+      console.error('❌ Erreur connexion Google:', error);
+      throw error;
+    }
   };
 
   return (
