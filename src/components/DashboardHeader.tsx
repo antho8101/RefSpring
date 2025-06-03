@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { LogOut, Menu } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
+import { RefSpringLogo } from '@/components/RefSpringLogo';
 
 interface DashboardHeaderProps {
   user: any;
@@ -18,10 +19,15 @@ export const DashboardHeader = ({ user, onLogout }: DashboardHeaderProps) => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link to="/landing" className="animate-fade-in hover:opacity-80 transition-opacity flex-shrink-0">
-            <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              RefSpring
-            </h1>
-            <p className="text-xs sm:text-sm text-slate-600 font-medium">Dashboard</p>
+            <div className="flex items-center gap-3">
+              <RefSpringLogo width="32" height="32" />
+              <div>
+                <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  RefSpring
+                </h1>
+                <p className="text-xs sm:text-sm text-slate-600 font-medium">Dashboard</p>
+              </div>
+            </div>
           </Link>
 
           {/* Desktop Navigation */}
