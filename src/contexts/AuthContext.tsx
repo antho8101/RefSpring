@@ -24,24 +24,28 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log('🔐 AuthProvider - Initialisation SIMPLE');
+    console.log('🔐 AuthProvider - TIMEOUT COURT de 2 secondes');
     
+    // TIMEOUT AGRESSIF : Si pas de réponse en 2 secondes, on force l'affichage
+    const forceTimeout = setTimeout(() => {
+      console.log('🔐 TIMEOUT 2s atteint - FORCER l\'affichage immédiatement');
+      setLoading(false);
+    }, 2000); // 2 secondes seulement !
+
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      console.log('🔐 Firebase Auth state changed:', user ? 'CONNECTÉ' : 'DÉCONNECTÉ');
+      console.log('🔐 Firebase Auth réponse reçue:', user ? 'CONNECTÉ' : 'DÉCONNECTÉ');
+      clearTimeout(forceTimeout); // Annuler le timeout si on a une réponse
       setUser(user);
       setLoading(false);
-      
-      if (user) {
-        console.log('🔐 Utilisateur authentifié:', user.uid);
-      } else {
-        console.log('🔐 Utilisateur déconnecté');
-      }
     }, (error) => {
-      console.error('🚨 Erreur Auth State Changed:', error);
+      console.error('🚨 Erreur Auth:', error);
+      clearTimeout(forceTimeout); // Annuler le timeout même en cas d'erreur
       setLoading(false);
     });
 
+    // Cleanup
     return () => {
+      clearTimeout(forceTimeout);
       unsubscribe();
     };
   }, []);
