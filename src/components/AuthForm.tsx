@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,6 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Chrome, Mail, Lock, ArrowLeft } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { RefSpringLogo } from '@/components/RefSpringLogo';
+import { useNavigate } from 'react-router-dom';
 
 export const AuthForm = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -19,6 +21,7 @@ export const AuthForm = () => {
   const { signInWithEmail, signUpWithEmail, signInWithGoogle } = useAuth();
   const { toast } = useToast();
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -69,7 +72,7 @@ export const AuthForm = () => {
   };
 
   const handleBackToLanding = () => {
-    window.location.href = '/';
+    navigate('/');
   };
 
   return (
