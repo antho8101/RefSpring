@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -97,9 +96,6 @@ export const AuthForm = () => {
             </div>
           </div>
           
-          <CardTitle className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            {t('auth.title')}
-          </CardTitle>
           <CardDescription className="text-slate-600">
             {isLogin ? t('auth.loginDescription') : t('auth.signupDescription')}
           </CardDescription>
