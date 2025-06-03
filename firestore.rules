@@ -5,56 +5,64 @@ service cloud.firestore {
   match /databases/{database}/documents {
     
     // ======================================
-    // RÈGLES SIMPLIFIÉES ET PERMISSIVES
+    // RÈGLES FIRESTORE CORRIGÉES ET OPTIMISÉES
     // ======================================
     
-    // Règle générale : utilisateur authentifié peut accéder à SES données
-    match /{collection}/{document} {
-      // Lecture/écriture : utilisateur authentifié ET c'est ses propres données
-      allow read, write: if request.auth != null && 
-                            (request.auth.uid == resource.data.userId || 
-                             request.auth.uid == request.resource.data.userId);
-    }
-    
     // ======================================
-    // RÈGLES SPÉCIFIQUES POUR LES CAMPAGNES
+    // CAMPAGNES - Accès utilisateur seulement
     // ======================================
     match /campaigns/{campaignId} {
-      allow read, write: if request.auth != null && 
-                            (request.auth.uid == resource.data.userId || 
-                             request.auth.uid == request.resource.data.userId);
+      // Lecture : utilisateur authentifié ET propriétaire
+      allow read: if request.auth != null && 
+                     request.auth.uid == resource.data.userId;
+      
+      // Création : utilisateur authentifié ET défini comme propriétaire
+      allow create: if request.auth != null && 
+                       request.auth.uid == request.resource.data.userId;
+      
+      // Mise à jour : utilisateur authentifié ET propriétaire existant
+      allow update: if request.auth != null && 
+                       request.auth.uid == resource.data.userId;
+      
+      // Suppression : utilisateur authentifié ET propriétaire
+      allow delete: if request.auth != null && 
+                       request.auth.uid == resource.data.userId;
     }
     
     // ======================================
-    // RÈGLES POUR LES AFFILIÉS
+    // AFFILIÉS - Accès utilisateur seulement
     // ======================================
     match /affiliates/{affiliateId} {
-      allow read, write: if request.auth != null && 
-                            (request.auth.uid == resource.data.userId || 
-                             request.auth.uid == request.resource.data.userId);
+      // Lecture : utilisateur authentifié ET propriétaire
+      allow read: if request.auth != null && 
+                     request.auth.uid == resource.data.userId;
+      
+      // Création : utilisateur authentifié ET défini comme propriétaire
+      allow create: if request.auth != null && 
+                       request.auth.uid == request.resource.data.userId;
+      
+      // Mise à jour : utilisateur authentifié ET propriétaire existant
+      allow update: if request.auth != null && 
+                       request.auth.uid == resource.data.userId;
+      
+      // Suppression : utilisateur authentifié ET propriétaire
+      allow delete: if request.auth != null && 
+                       request.auth.uid == resource.data.userId;
     }
     
     // ======================================
-    // RÈGLES PERMISSIVES POUR LES CLICS ET CONVERSIONS
+    // CLICS - Plus permissif pour le tracking
     // ======================================
     match /clicks/{clickId} {
-      // Lecture : propriétaire de la campagne
+      // Lecture : tous les utilisateurs authentifiés
       allow read: if request.auth != null;
       
-      // Création/mise à jour : plus permissif pour le tracking
-      allow create, update: if request.auth != null;
+      // Création : tous les utilisateurs authentifiés (pour tracking public)
+      allow create: if request.auth != null;
       
-      // Suppression : propriétaire seulement
-      allow delete: if request.auth != null && 
+      // Mise à jour : propriétaire seulement
+      allow update: if request.auth != null && 
                        request.auth.uid == resource.data.userId;
-    }
-    
-    match /conversions/{conversionId} {
-      // Lecture : propriétaire de la campagne
-      allow read: if request.auth != null;
-      
-      // Création/mise à jour : plus permissif pour le tracking
-      allow create, update: if request.auth != null;
       
       // Suppression : propriétaire seulement
       allow delete: if request.auth != null && 
@@ -62,14 +70,37 @@ service cloud.firestore {
     }
     
     // ======================================
-    // RÈGLES PERMISSIVES POUR LES LIENS COURTS
+    // CONVERSIONS - Plus permissif pour le tracking
+    // ======================================
+    match /conversions/{conversionId} {
+      // Lecture : tous les utilisateurs authentifiés
+      allow read: if request.auth != null;
+      
+      // Création : tous les utilisateurs authentifiés (pour tracking public)
+      allow create: if request.auth != null;
+      
+      // Mise à jour : propriétaire seulement
+      allow update: if request.auth != null && 
+                       request.auth.uid == resource.data.userId;
+      
+      // Suppression : propriétaire seulement
+      allow delete: if request.auth != null && 
+                       request.auth.uid == resource.data.userId;
+    }
+    
+    // ======================================
+    // LIENS COURTS - Lecture publique nécessaire
     // ======================================
     match /shortLinks/{linkId} {
-      // Lecture publique (nécessaire pour redirection)
+      // Lecture publique (pour redirection)
       allow read: if true;
       
-      // Création/mise à jour : utilisateur authentifié
-      allow create, update: if request.auth != null;
+      // Création : utilisateur authentifié
+      allow create: if request.auth != null;
+      
+      // Mise à jour : propriétaire seulement
+      allow update: if request.auth != null && 
+                       request.auth.uid == resource.data.userId;
       
       // Suppression : propriétaire seulement
       allow delete: if request.auth != null && 
@@ -77,12 +108,12 @@ service cloud.firestore {
     }
     
     // ======================================
-    // RÈGLE DE SÉCURITÉ DE BASE
+    // SÉCURITÉ PAR DÉFAUT
     // ======================================
     
-    // Bloquer l'accès non authentifié par défaut
+    // Bloquer tout le reste
     match /{document=**} {
-      allow read, write: if request.auth != null;
+      allow read, write: if false;
     }
   }
 }
