@@ -54,37 +54,43 @@ service cloud.firestore {
     }
     
     // ======================================
-    // RÈGLES POUR LES CLICS (Lecture seule pour les propriétaires)
+    // RÈGLES POUR LES CLICS (Temporairement permissives)
     // ======================================
     match /clicks/{clickId} {
       // Lecture : propriétaire de la campagne associée
       allow read: if request.auth != null && 
                      isOwnerOfCampaign(resource.data.campaignId);
       
-      // Création : limitée aux fonctions serveur (via service account)
-      allow create: if false; // Sera géré par Cloud Functions
+      // Création : propriétaire de la campagne (temporaire avant Cloud Functions)
+      allow create: if request.auth != null && 
+                       isOwnerOfCampaign(request.resource.data.campaignId);
       
-      // Pas de mise à jour ou suppression directe
-      allow update, delete: if false;
+      // Mise à jour : propriétaire (pour compteurs)
+      allow update: if request.auth != null && 
+                       isOwnerOfCampaign(resource.data.campaignId);
+      
+      // Suppression : propriétaire (pour suppression en cascade)
+      allow delete: if request.auth != null && 
+                       isOwnerOfCampaign(resource.data.campaignId);
     }
     
     // ======================================
-    // RÈGLES POUR LES CONVERSIONS (Très restrictives)
+    // RÈGLES POUR LES CONVERSIONS (Permissives temporairement)
     // ======================================
     match /conversions/{conversionId} {
       // Lecture : propriétaire de la campagne
       allow read: if request.auth != null && 
                      isOwnerOfCampaign(resource.data.campaignId);
       
-      // Création : uniquement via Cloud Functions
-      allow create: if false; // Sera géré par Cloud Functions sécurisées
+      // Création : propriétaire de la campagne (temporaire avant Cloud Functions)
+      allow create: if request.auth != null && 
+                       isOwnerOfCampaign(request.resource.data.campaignId);
       
-      // Mise à jour : uniquement pour vérification (propriétaire)
+      // Mise à jour : propriétaire (pour vérification)
       allow update: if request.auth != null && 
-                       isOwnerOfCampaign(resource.data.campaignId) &&
-                       onlyUpdatingVerificationStatus(request.resource.data, resource.data);
+                       isOwnerOfCampaign(resource.data.campaignId);
       
-      // Suppression : propriétaire seulement
+      // Suppression : propriétaire (pour suppression en cascade)
       allow delete: if request.auth != null && 
                        isOwnerOfCampaign(resource.data.campaignId);
     }
@@ -107,10 +113,9 @@ service cloud.firestore {
       
       // Mise à jour : propriétaire (pour compteur de clics)
       allow update: if request.auth != null && 
-                       isOwnerOfCampaign(resource.data.campaignId) &&
-                       onlyUpdatingClickCount(request.resource.data, resource.data);
+                       isOwnerOfCampaign(resource.data.campaignId);
       
-      // Suppression : propriétaire
+      // Suppression : propriétaire (pour suppression en cascade)
       allow delete: if request.auth != null && 
                        isOwnerOfCampaign(resource.data.campaignId);
     }
