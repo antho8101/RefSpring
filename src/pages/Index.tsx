@@ -5,13 +5,13 @@ import { Dashboard } from '@/components/Dashboard';
 import { useTranslation } from 'react-i18next';
 
 const Index = () => {
-  const { user, loading, initialized } = useAuth();
+  const { user, loading } = useAuth();
   const { t } = useTranslation();
 
-  console.log('🔍 Index render - user:', !!user, 'loading:', loading, 'initialized:', initialized);
+  console.log('🔍 Index render - user:', !!user, 'loading:', loading);
 
-  // Pendant l'initialisation de Firebase
-  if (!initialized || loading) {
+  // Affichage immédiat - pas d'attente d'initialisation
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50/50 via-white to-purple-50/50">
         <div className="text-center">

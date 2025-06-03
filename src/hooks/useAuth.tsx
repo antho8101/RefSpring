@@ -14,7 +14,7 @@ import { useRetry } from './useRetry';
 
 export const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [initialized, setInitialized] = useState(false);
   const { handleError } = useErrorHandler();
   const { executeWithRetry } = useRetry({ maxRetries: 2 });
@@ -22,11 +22,13 @@ export const useAuth = () => {
   useEffect(() => {
     console.log('🔐 Initialisation de l\'authentification...');
     
+    // Marquer comme initialisé immédiatement pour éviter les blocages
+    setInitialized(true);
+    
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       console.log('🔐 État d\'authentification changé:', user ? 'Connecté' : 'Déconnecté');
       setUser(user);
       setLoading(false);
-      setInitialized(true);
     }, (error) => {
       console.error('🚨 Erreur d\'authentification:', error);
       handleError(error, { 
@@ -34,7 +36,6 @@ export const useAuth = () => {
         logError: true 
       });
       setLoading(false);
-      setInitialized(true);
     });
 
     return unsubscribe;
