@@ -14,7 +14,7 @@ import { useRetry } from './useRetry';
 
 export const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(false); // Changé de true à false pour affichage immédiat
+  const [loading, setLoading] = useState(true);
   const [initialized, setInitialized] = useState(false);
   const { handleError } = useErrorHandler();
   const { executeWithRetry } = useRetry({ maxRetries: 2 });
@@ -22,30 +22,22 @@ export const useAuth = () => {
   useEffect(() => {
     console.log('🔐 Initialisation de l\'authentification...');
     
-    // Délai très court pour permettre l'affichage de l'UI
-    const initTimer = setTimeout(() => {
-      const unsubscribe = onAuthStateChanged(auth, (user) => {
-        console.log('🔐 État d\'authentification changé:', user ? 'Connecté' : 'Déconnecté');
-        setUser(user);
-        setLoading(false);
-        setInitialized(true);
-      }, (error) => {
-        console.error('🚨 Erreur d\'authentification:', error);
-        handleError(error, { 
-          showToast: true,
-          logError: true 
-        });
-        setLoading(false);
-        setInitialized(true);
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      console.log('🔐 État d\'authentification changé:', user ? 'Connecté' : 'Déconnecté');
+      setUser(user);
+      setLoading(false);
+      setInitialized(true);
+    }, (error) => {
+      console.error('🚨 Erreur d\'authentification:', error);
+      handleError(error, { 
+        showToast: true,
+        logError: true 
       });
+      setLoading(false);
+      setInitialized(true);
+    });
 
-      return () => {
-        clearTimeout(initTimer);
-        unsubscribe();
-      };
-    }, 100); // Délai minimal pour l'affichage
-
-    return () => clearTimeout(initTimer);
+    return unsubscribe;
   }, [handleError]);
 
   const signInWithEmail = async (email: string, password: string) => {
