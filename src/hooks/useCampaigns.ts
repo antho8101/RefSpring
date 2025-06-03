@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { 
   collection, 
@@ -18,33 +17,38 @@ import { Campaign } from '@/types';
 export const useCampaigns = () => {
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [loading, setLoading] = useState(true);
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
 
   useEffect(() => {
-    console.log('useCampaigns effect triggered, user:', user?.uid);
+    console.log('🎯 useCampaigns - Effect triggered');
+    console.log('🎯 authLoading:', authLoading, 'user:', !!user);
+    
+    // PROTECTION STRICTE : Aucune requête avant auth complète
+    if (authLoading) {
+      console.log('🎯 Auth encore en cours, pas de requête Firebase');
+      return;
+    }
     
     if (!user) {
-      console.log('No user, clearing campaigns');
+      console.log('🎯 Pas d\'utilisateur, nettoyage des campagnes');
       setCampaigns([]);
       setLoading(false);
       return;
     }
 
+    console.log('🎯 Auth OK, démarrage requête Firestore pour user:', user.uid);
+    
     const campaignsRef = collection(db, 'campaigns');
-    // Requête temporaire sans orderBy pour éviter l'erreur d'index
     const q = query(
       campaignsRef, 
       where('userId', '==', user.uid)
     );
 
-    console.log('Setting up Firestore listener for user:', user.uid);
-
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      console.log('Firestore snapshot received, docs count:', snapshot.docs.length);
+      console.log('🎯 Firestore snapshot reçu, docs:', snapshot.docs.length);
       
       const campaignsData = snapshot.docs.map(doc => {
         const data = doc.data();
-        console.log('Campaign doc data:', data);
         return {
           id: doc.id,
           ...data,
@@ -53,22 +57,22 @@ export const useCampaigns = () => {
         };
       }) as Campaign[];
       
-      // Tri côté client en attendant l'index Firestore
+      // Tri côté client
       campaignsData.sort((a, b) => {
         if (!a.createdAt || !b.createdAt) return 0;
         return b.createdAt.getTime() - a.createdAt.getTime();
       });
       
-      console.log('Processed campaigns data:', campaignsData);
+      console.log('🎯 Campagnes chargées:', campaignsData.length);
       setCampaigns(campaignsData);
       setLoading(false);
     }, (error) => {
-      console.error('Firestore listener error:', error);
+      console.error('🎯 Erreur Firestore:', error);
       setLoading(false);
     });
 
     return unsubscribe;
-  }, [user]);
+  }, [user, authLoading]); // Dépendance sur authLoading aussi
 
   const createCampaign = async (campaignData: Omit<Campaign, 'id' | 'createdAt' | 'updatedAt' | 'userId'>) => {
     if (!user) throw new Error('User not authenticated');

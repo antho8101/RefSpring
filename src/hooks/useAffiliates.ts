@@ -18,25 +18,32 @@ import { Affiliate } from '@/types';
 export const useAffiliates = (campaignId?: string) => {
   const [affiliates, setAffiliates] = useState<Affiliate[]>([]);
   const [loading, setLoading] = useState(true);
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
 
   useEffect(() => {
-    console.log('🔄 useAffiliates effect triggered');
-    console.log('👤 User:', user?.uid);
-    console.log('📋 CampaignId:', campaignId);
+    console.log('👥 useAffiliates - Effect triggered');
+    console.log('👥 authLoading:', authLoading, 'user:', !!user, 'campaignId:', campaignId);
+    
+    // PROTECTION STRICTE : Aucune requête avant auth complète
+    if (authLoading) {
+      console.log('👥 Auth encore en cours, pas de requête Firebase');
+      return;
+    }
     
     if (!user) {
-      console.log('❌ No user, clearing affiliates');
+      console.log('👥 Pas d\'utilisateur, nettoyage des affiliés');
       setAffiliates([]);
       setLoading(false);
       return;
     }
 
+    console.log('👥 Auth OK, démarrage requête Firestore pour user:', user.uid);
+
     const affiliatesRef = collection(db, 'affiliates');
     let q;
     
     if (campaignId) {
-      console.log('🎯 Querying affiliates for specific campaign:', campaignId);
+      console.log('👥 Requête pour campagne spécifique:', campaignId);
       q = query(
         affiliatesRef, 
         where('campaignId', '==', campaignId), 
@@ -44,7 +51,7 @@ export const useAffiliates = (campaignId?: string) => {
         orderBy('createdAt', 'desc')
       );
     } else {
-      console.log('🎯 Querying all affiliates for user:', user.uid);
+      console.log('👥 Requête tous affiliés pour user:', user.uid);
       q = query(
         affiliatesRef, 
         where('userId', '==', user.uid), 
@@ -52,14 +59,11 @@ export const useAffiliates = (campaignId?: string) => {
       );
     }
 
-    console.log('🔗 Setting up Firestore listener...');
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      console.log('📊 Firestore snapshot received');
-      console.log('📄 Documents count:', snapshot.docs.length);
+      console.log('👥 Firestore snapshot reçu, docs:', snapshot.docs.length);
       
       const affiliatesData = snapshot.docs.map(doc => {
         const data = doc.data();
-        console.log('📋 Affiliate doc:', { id: doc.id, data });
         return {
           id: doc.id,
           ...data,
@@ -67,18 +71,16 @@ export const useAffiliates = (campaignId?: string) => {
         };
       }) as Affiliate[];
       
-      console.log('✅ Processed affiliates:', affiliatesData);
+      console.log('👥 Affiliés chargés:', affiliatesData.length);
       setAffiliates(affiliatesData);
       setLoading(false);
     }, (error) => {
-      console.error('❌ Firestore listener error:', error);
-      console.error('❌ Error code:', error.code);
-      console.error('❌ Error message:', error.message);
+      console.error('👥 Erreur Firestore:', error);
       setLoading(false);
     });
 
     return unsubscribe;
-  }, [user, campaignId]);
+  }, [user, authLoading, campaignId]); // Dépendance sur authLoading aussi
 
   const generateTrackingCode = () => {
     return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);

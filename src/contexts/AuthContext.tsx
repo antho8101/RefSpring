@@ -24,23 +24,27 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Vérifier le cache localStorage d'abord
+    console.log('🔐 AuthProvider - Initialisation');
+    
+    // Vérifier le cache localStorage pour un chargement quasi-instantané
     const cachedUser = localStorage.getItem('auth_user');
     if (cachedUser) {
-      console.log('🔥 Cache utilisateur trouvé, chargement instantané');
-      setLoading(false);
+      console.log('🔐 Cache utilisateur trouvé, chargement ultra-rapide');
+      // Gardons loading=true pour attendre la confirmation Firebase
     }
 
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      console.log('🔥 Auth state changed:', user ? 'Connected' : 'Disconnected');
+      console.log('🔐 Firebase Auth state changed:', user ? 'CONNECTÉ' : 'DÉCONNECTÉ');
       setUser(user);
-      setLoading(false);
+      setLoading(false); // AUTH COMPLÈTE ICI
       
       // Cache simple
       if (user) {
         localStorage.setItem('auth_user', 'true');
+        console.log('🔐 Utilisateur authentifié:', user.uid);
       } else {
         localStorage.removeItem('auth_user');
+        console.log('🔐 Utilisateur déconnecté');
       }
     });
 
