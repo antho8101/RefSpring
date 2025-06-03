@@ -24,32 +24,43 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log('🔐 AuthProvider - Démarrage simple');
+    console.log('🔐 AuthProvider - Démarrage ULTRA-RAPIDE');
+    
+    // Timeout de 500ms maximum pour éviter les blocages
+    const quickTimeout = setTimeout(() => {
+      console.log('🔐 TIMEOUT 500ms - affichage immédiat');
+      setLoading(false);
+    }, 500);
     
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      console.log('🔐 Auth state:', user ? 'CONNECTÉ' : 'DÉCONNECTÉ');
+      console.log('🔐 Auth state reçu:', user ? 'CONNECTÉ' : 'DÉCONNECTÉ');
+      clearTimeout(quickTimeout);
       setUser(user);
       setLoading(false);
     }, (error) => {
       console.error('🚨 Erreur Auth:', error);
+      clearTimeout(quickTimeout);
       setLoading(false);
     });
 
-    return unsubscribe;
+    return () => {
+      clearTimeout(quickTimeout);
+      unsubscribe();
+    };
   }, []);
 
   const signInWithEmail = async (email: string, password: string) => {
-    console.log('🔐 Connexion email simple...');
+    console.log('🔐 Connexion email...');
     return await signInWithEmailAndPassword(auth, email, password);
   };
 
   const signUpWithEmail = async (email: string, password: string) => {
-    console.log('🔐 Création compte simple...');
+    console.log('🔐 Création compte...');
     return await createUserWithEmailAndPassword(auth, email, password);
   };
 
   const signInWithGoogle = async () => {
-    console.log('🔐 Connexion Google simple...');
+    console.log('🔐 Connexion Google...');
     return await signInWithPopup(auth, googleProvider);
   };
 
