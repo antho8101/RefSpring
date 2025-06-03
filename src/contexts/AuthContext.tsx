@@ -24,14 +24,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log('🔐 AuthProvider - Initialisation directe sans timeout');
-    
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      console.log('🔐 Auth state reçu:', user ? 'CONNECTÉ' : 'DÉCONNECTÉ');
       setUser(user);
-      setLoading(false);
-    }, (error) => {
-      console.error('🚨 Erreur Auth:', error);
       setLoading(false);
     });
 
@@ -39,17 +33,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const signInWithEmail = async (email: string, password: string) => {
-    console.log('🔐 Connexion email...');
     return await signInWithEmailAndPassword(auth, email, password);
   };
 
   const signUpWithEmail = async (email: string, password: string) => {
-    console.log('🔐 Création compte...');
     return await createUserWithEmailAndPassword(auth, email, password);
   };
 
   const signInWithGoogle = async () => {
-    console.log('🔐 Connexion Google...');
     return await signInWithPopup(auth, googleProvider);
   };
 
