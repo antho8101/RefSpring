@@ -95,14 +95,20 @@ export const useCampaigns = () => {
   };
 
   const deleteCampaign = async (id: string) => {
+    if (!user) {
+      throw new Error('User not authenticated');
+    }
+
     console.log('🗑️ Début suppression campagne:', id);
+    console.log('🗑️ User connecté:', user.uid);
     
     try {
       // 1. Supprimer tous les affiliés de cette campagne
       console.log('🗑️ Suppression des affiliés...');
       const affiliatesQuery = query(
         collection(db, 'affiliates'),
-        where('campaignId', '==', id)
+        where('campaignId', '==', id),
+        where('userId', '==', user.uid) // Ajout de l'userId pour respecter les règles
       );
       const affiliatesSnapshot = await getDocs(affiliatesQuery);
       console.log('🗑️ Affiliés trouvés:', affiliatesSnapshot.size);
@@ -112,6 +118,7 @@ export const useCampaigns = () => {
         return deleteDoc(doc.ref);
       });
       await Promise.all(deleteAffiliatesPromises);
+      console.log('✅ Affiliés supprimés avec succès');
 
       // 2. Supprimer tous les clics de cette campagne
       console.log('🗑️ Suppression des clics...');
@@ -127,6 +134,7 @@ export const useCampaigns = () => {
         return deleteDoc(doc.ref);
       });
       await Promise.all(deleteClicksPromises);
+      console.log('✅ Clics supprimés avec succès');
 
       // 3. Supprimer tous les liens courts de cette campagne
       console.log('🗑️ Suppression des liens courts...');
@@ -142,6 +150,7 @@ export const useCampaigns = () => {
         return deleteDoc(doc.ref);
       });
       await Promise.all(deleteShortLinksPromises);
+      console.log('✅ Liens courts supprimés avec succès');
 
       // 4. Supprimer toutes les conversions de cette campagne
       console.log('🗑️ Suppression des conversions...');
@@ -157,6 +166,7 @@ export const useCampaigns = () => {
         return deleteDoc(doc.ref);
       });
       await Promise.all(deleteConversionsPromises);
+      console.log('✅ Conversions supprimées avec succès');
 
       // 5. Finalement, supprimer la campagne elle-même
       console.log('🗑️ Suppression de la campagne...');
@@ -167,6 +177,11 @@ export const useCampaigns = () => {
       
     } catch (error) {
       console.error('❌ Erreur lors de la suppression en cascade:', error);
+      console.error('❌ Détails de l\'erreur:', {
+        message: error.message,
+        code: error.code,
+        stack: error.stack
+      });
       throw error;
     }
   };
