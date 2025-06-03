@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { 
   collection, 
@@ -22,29 +21,59 @@ export const useAffiliates = (campaignId?: string) => {
   const { user } = useAuth();
 
   useEffect(() => {
+    console.log('🔄 useAffiliates effect triggered');
+    console.log('👤 User:', user?.uid);
+    console.log('📋 CampaignId:', campaignId);
+    
     if (!user) {
+      console.log('❌ No user, clearing affiliates');
       setAffiliates([]);
       setLoading(false);
       return;
     }
 
     const affiliatesRef = collection(db, 'affiliates');
-    // Maintenant que l'index est créé, on peut utiliser orderBy
-    let q = query(affiliatesRef, where('userId', '==', user.uid), orderBy('createdAt', 'desc'));
+    let q;
     
     if (campaignId) {
-      q = query(affiliatesRef, where('campaignId', '==', campaignId), orderBy('createdAt', 'desc'));
+      console.log('🎯 Querying affiliates for specific campaign:', campaignId);
+      q = query(
+        affiliatesRef, 
+        where('campaignId', '==', campaignId), 
+        where('userId', '==', user.uid),
+        orderBy('createdAt', 'desc')
+      );
+    } else {
+      console.log('🎯 Querying all affiliates for user:', user.uid);
+      q = query(
+        affiliatesRef, 
+        where('userId', '==', user.uid), 
+        orderBy('createdAt', 'desc')
+      );
     }
 
+    console.log('🔗 Setting up Firestore listener...');
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const affiliatesData = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-        createdAt: doc.data().createdAt?.toDate(),
-      })) as Affiliate[];
+      console.log('📊 Firestore snapshot received');
+      console.log('📄 Documents count:', snapshot.docs.length);
       
-      // Plus besoin de tri côté client maintenant que l'index est en place
+      const affiliatesData = snapshot.docs.map(doc => {
+        const data = doc.data();
+        console.log('📋 Affiliate doc:', { id: doc.id, data });
+        return {
+          id: doc.id,
+          ...data,
+          createdAt: data.createdAt?.toDate(),
+        };
+      }) as Affiliate[];
+      
+      console.log('✅ Processed affiliates:', affiliatesData);
       setAffiliates(affiliatesData);
+      setLoading(false);
+    }, (error) => {
+      console.error('❌ Firestore listener error:', error);
+      console.error('❌ Error code:', error.code);
+      console.error('❌ Error message:', error.message);
       setLoading(false);
     });
 
