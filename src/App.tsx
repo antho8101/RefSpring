@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -54,13 +53,9 @@ const DomainRouter = () => {
     const hostname = window.location.hostname;
     const currentPath = window.location.pathname;
     
-    // Redirection basée sur le domaine, mais on évite de rediriger les routes fonctionnelles
-    if (hostname === 'refspring.com' && currentPath === '/') {
-      window.location.replace('/landing');
-    } else if (hostname === 'dashboard.refspring.com' && currentPath === '/') {
+    // Redirection simple basée sur le domaine
+    if (hostname === 'dashboard.refspring.com' && currentPath === '/') {
       window.location.replace('/dashboard');
-    } else if (hostname === 'refspring.com' && currentPath === '/dashboard') {
-      window.location.replace('/landing');
     }
   }, []);
 
@@ -68,16 +63,15 @@ const DomainRouter = () => {
     <ErrorBoundary>
       <Suspense fallback={<PageSkeleton />}>
         <Routes>
-          {/* Route principale - comportement par défaut selon le domaine */}
+          {/* Route principale - Landing page sur refspring.com, Dashboard sur dashboard.refspring.com */}
           <Route path="/" element={
             window.location.hostname === 'dashboard.refspring.com' 
               ? <Navigate to="/dashboard" replace />
-              : <Navigate to="/landing" replace />
+              : <LandingPage />
           } />
           
-          {/* Pages principales */}
+          {/* Dashboard accessible uniquement via /dashboard */}
           <Route path="/dashboard" element={<Index />} />
-          <Route path="/landing" element={<LandingPage />} />
           <Route path="/advanced-stats" element={<AdvancedStatsPage />} />
           <Route path="/advanced-stats/:campaignId" element={<AdvancedStatsPage />} />
           
