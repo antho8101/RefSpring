@@ -1,0 +1,12 @@
+
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 Discord Community
+    url: https://discord.gg/refspring
+    about: Ask questions and engage with the RefSpring community
+  - name: 📧 Email Support
+    url: mailto:support@refspring.com
+    about: Contact support directly for urgent issues
+  - name: 📚 Documentation
+    url: https://github.com/your-username/refspring/wiki
+    about: Check out our documentation for guides and FAQs

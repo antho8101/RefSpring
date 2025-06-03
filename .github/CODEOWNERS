@@ -1,0 +1,15 @@
+
+# This file defines individuals or teams that are responsible for code in the repository.
+# See: https://help.github.com/articles/about-codeowners/
+
+# These owners will be the default owners for everything in the repo
+*       @your-username
+
+# Specific ownership for critical components
+/src/lib/firebase.ts    @your-username
+/src/hooks/useAuth.tsx  @your-username
+/src/components/ErrorBoundary.tsx  @your-username
+
+# Documentation
+*.md    @your-username
+docs/   @your-username

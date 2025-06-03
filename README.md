@@ -8,6 +8,11 @@
   <img src="https://img.shields.io/badge/TypeScript-5.0-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
   <img src="https://img.shields.io/badge/Tailwind_CSS-3.0-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind" />
   <img src="https://img.shields.io/badge/Firebase-10.0-FFCA28?style=for-the-badge&logo=firebase&logoColor=black" alt="Firebase" />
+  <br />
+  <img src="https://img.shields.io/github/license/your-username/refspring" alt="License" />
+  <img src="https://img.shields.io/github/stars/your-username/refspring" alt="Stars" />
+  <img src="https://img.shields.io/github/issues/your-username/refspring" alt="Issues" />
+  <img src="https://img.shields.io/github/last-commit/your-username/refspring" alt="Last Commit" />
 </div>
 
 ---
@@ -57,11 +62,9 @@ cd refspring
 npm install
 
 # Configure Firebase
-# Create a .env file with your Firebase keys:
-# VITE_FIREBASE_API_KEY=your_api_key
-# VITE_FIREBASE_AUTH_DOMAIN=your_auth_domain
-# VITE_FIREBASE_PROJECT_ID=your_project_id
-# etc...
+# Create a .env file with your Firebase keys based on .env.example:
+cp .env.example .env
+# Then edit .env with your values
 
 # Start development server
 npm run dev
@@ -186,16 +189,19 @@ npm run build
 
 ## 📝 License
 
-This project is licensed under the MIT License. See the `LICENSE` file for more details.
+This project is licensed under the MIT License. See the [`LICENSE`](LICENSE) file for more details.
 
 ---
 
 ## 👨‍💻 Contributing
 
-Contributions are welcome! Feel free to:
-- Open an issue to report a bug
-- Suggest new features
-- Submit a pull request
+Contributions are welcome! Please see our [`CONTRIBUTING.md`](CONTRIBUTING.md) guide.
+
+---
+
+## 🔒 Security
+
+For information about reporting vulnerabilities, see [`SECURITY.md`](SECURITY.md).
 
 ---
 

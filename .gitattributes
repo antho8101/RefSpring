@@ -1,0 +1,39 @@
+
+* text=auto eol=lf
+
+# Graphics
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.svg text
+
+# Archives
+*.zip binary
+*.gz binary
+*.tar binary
+
+# Documentation
+*.md text
+*.txt text
+*.pdf binary
+
+# Configs
+*.json text
+*.yml text
+*.yaml text
+*.toml text
+
+# Source code
+*.js text
+*.ts text
+*.tsx text
+*.jsx text
+*.css text
+*.scss text
+*.html text
+
+# Lock files
+package-lock.json linguist-generated=true
+yarn.lock linguist-generated=true
