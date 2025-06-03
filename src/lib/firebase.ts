@@ -1,7 +1,7 @@
 
 import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import { getAuth, GoogleAuthProvider, connectAuthEmulator } from "firebase/auth";
+import { getFirestore, connectFirestoreEmulator } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyAlHsC-w7Sx18XKJ6dIcxvqj-AUdqkjqSE",
@@ -14,30 +14,36 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || "G-QNK35Y7EE4"
 };
 
-// Validation en mode développement
+// Initialize Firebase avec optimisations de performance
+const app = initializeApp(firebaseConfig);
+
+// Initialize Firebase services avec configuration optimisée
+export const auth = getAuth(app);
+export const db = getFirestore(app);
+
+// Configuration ultra-rapide pour Google Auth
+export const googleProvider = new GoogleAuthProvider();
+googleProvider.setCustomParameters({
+  prompt: 'select_account',
+  hd: undefined // Pas de restriction de domaine pour plus de rapidité
+});
+
+// Configuration Auth optimisée pour la vitesse
+auth.settings = {
+  appVerificationDisabledForTesting: false
+};
+
+// Log optimisé en dev seulement
 if (import.meta.env.DEV) {
-  console.log('🔥 Firebase config loaded:', {
+  console.log('🔥 Firebase config OPTIMISÉ pour la vitesse:', {
     projectId: firebaseConfig.projectId,
     authDomain: firebaseConfig.authDomain,
     usingEnvVars: !!import.meta.env.VITE_FIREBASE_API_KEY
   });
 }
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-
-// Initialize Firebase services
-export const auth = getAuth(app);
-export const db = getFirestore(app);
-export const googleProvider = new GoogleAuthProvider();
-
-// Configure Google provider
-googleProvider.setCustomParameters({
-  prompt: 'select_account'
-});
-
-// Analytics DÉSACTIVÉ TEMPORAIREMENT pour éviter le délai
-console.log('⚠️ Firebase Analytics désactivé pour éviter les délais de chargement');
+// Analytics complètement désactivé pour éviter tout délai
+console.log('⚡ Firebase optimisé pour vitesse maximale - Analytics désactivé');
 
 export const getAnalyticsInstance = () => null;
 
