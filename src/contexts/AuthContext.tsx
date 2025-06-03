@@ -24,29 +24,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log('🔐 AuthProvider - Démarrage ULTRA-RAPIDE');
-    
-    // Timeout de 500ms maximum pour éviter les blocages
-    const quickTimeout = setTimeout(() => {
-      console.log('🔐 TIMEOUT 500ms - affichage immédiat');
-      setLoading(false);
-    }, 500);
+    console.log('🔐 AuthProvider - Initialisation stable');
     
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       console.log('🔐 Auth state reçu:', user ? 'CONNECTÉ' : 'DÉCONNECTÉ');
-      clearTimeout(quickTimeout);
       setUser(user);
       setLoading(false);
     }, (error) => {
       console.error('🚨 Erreur Auth:', error);
-      clearTimeout(quickTimeout);
       setLoading(false);
     });
 
-    return () => {
-      clearTimeout(quickTimeout);
-      unsubscribe();
-    };
+    return unsubscribe;
   }, []);
 
   const signInWithEmail = async (email: string, password: string) => {
