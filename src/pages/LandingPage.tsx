@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Zap, Users, BarChart3, Shield, CheckCircle, Star, TrendingUp, DollarSign, Clock, Globe, Award } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -121,10 +120,10 @@ const LandingPage = () => {
         <header className="fixed top-0 w-full border-b border-slate-200/80 bg-white/90 backdrop-blur-xl z-50 transition-all">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-16">
-              <div className="flex items-center gap-3 animate-fade-in">
+              <a href="/" className="flex items-center gap-2 animate-fade-in hover:opacity-80 transition-opacity">
                 <RefSpringLogo width="32" height="32" />
                 <div className="font-bold text-2xl text-slate-900">RefSpring</div>
-              </div>
+              </a>
               <nav className="hidden md:flex space-x-8" role="navigation" aria-label="Navigation principale">
                 <a href="#features" className="text-slate-600 hover:text-slate-900 font-medium transition-all hover:scale-105">
                   Fonctionnalités
