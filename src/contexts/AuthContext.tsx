@@ -24,26 +24,25 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log('🔐 AuthProvider - TIMEOUT COURT de 2 secondes');
+    console.log('🔐 AuthProvider - DÉMARRAGE avec timeout de 1.5 secondes');
     
-    // TIMEOUT AGRESSIF : Si pas de réponse en 2 secondes, on force l'affichage
+    // TIMEOUT ULTRA COURT : 1.5 secondes max
     const forceTimeout = setTimeout(() => {
-      console.log('🔐 TIMEOUT 2s atteint - FORCER l\'affichage immédiatement');
+      console.log('🔐 TIMEOUT 1.5s atteint - FORCER l\'affichage immédiatement');
       setLoading(false);
-    }, 2000); // 2 secondes seulement !
+    }, 1500); // 1.5 secondes seulement !
 
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       console.log('🔐 Firebase Auth réponse reçue:', user ? 'CONNECTÉ' : 'DÉCONNECTÉ');
-      clearTimeout(forceTimeout); // Annuler le timeout si on a une réponse
+      clearTimeout(forceTimeout);
       setUser(user);
       setLoading(false);
     }, (error) => {
       console.error('🚨 Erreur Auth:', error);
-      clearTimeout(forceTimeout); // Annuler le timeout même en cas d'erreur
+      clearTimeout(forceTimeout);
       setLoading(false);
     });
 
-    // Cleanup
     return () => {
       clearTimeout(forceTimeout);
       unsubscribe();
@@ -51,38 +50,77 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const signInWithEmail = async (email: string, password: string) => {
-    console.log('🔐 Tentative connexion email...');
-    try {
-      const result = await signInWithEmailAndPassword(auth, email, password);
-      console.log('✅ Connexion email réussie');
-      return result;
-    } catch (error) {
-      console.error('❌ Erreur connexion email:', error);
-      throw error;
+    console.log('🔐 Tentative connexion email AVEC RETRY...');
+    
+    // RETRY automatique en cas d'erreur réseau
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        console.log(`🔐 Tentative ${attempt}/3...`);
+        const result = await signInWithEmailAndPassword(auth, email, password);
+        console.log('✅ Connexion email réussie');
+        return result;
+      } catch (error: any) {
+        console.error(`❌ Erreur tentative ${attempt}:`, error.code, error.message);
+        
+        if (attempt === 3) {
+          // Si c'est une erreur réseau, message plus clair
+          if (error.code === 'auth/network-request-failed') {
+            throw new Error('Problème de connexion réseau. Vérifiez votre connexion internet.');
+          }
+          throw error;
+        }
+        
+        // Attendre avant retry
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
     }
   };
 
   const signUpWithEmail = async (email: string, password: string) => {
-    console.log('🔐 Tentative création compte...');
-    try {
-      const result = await createUserWithEmailAndPassword(auth, email, password);
-      console.log('✅ Création compte réussie');
-      return result;
-    } catch (error) {
-      console.error('❌ Erreur création compte:', error);
-      throw error;
+    console.log('🔐 Tentative création compte AVEC RETRY...');
+    
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        console.log(`🔐 Création tentative ${attempt}/3...`);
+        const result = await createUserWithEmailAndPassword(auth, email, password);
+        console.log('✅ Création compte réussie');
+        return result;
+      } catch (error: any) {
+        console.error(`❌ Erreur création tentative ${attempt}:`, error.code, error.message);
+        
+        if (attempt === 3) {
+          if (error.code === 'auth/network-request-failed') {
+            throw new Error('Problème de connexion réseau. Vérifiez votre connexion internet.');
+          }
+          throw error;
+        }
+        
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
     }
   };
 
   const signInWithGoogle = async () => {
-    console.log('🔐 Tentative connexion Google...');
-    try {
-      const result = await signInWithPopup(auth, googleProvider);
-      console.log('✅ Connexion Google réussie');
-      return result;
-    } catch (error) {
-      console.error('❌ Erreur connexion Google:', error);
-      throw error;
+    console.log('🔐 Tentative connexion Google AVEC RETRY...');
+    
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        console.log(`🔐 Google tentative ${attempt}/3...`);
+        const result = await signInWithPopup(auth, googleProvider);
+        console.log('✅ Connexion Google réussie');
+        return result;
+      } catch (error: any) {
+        console.error(`❌ Erreur Google tentative ${attempt}:`, error.code, error.message);
+        
+        if (attempt === 3) {
+          if (error.code === 'auth/network-request-failed') {
+            throw new Error('Problème de connexion réseau. Vérifiez votre connexion internet.');
+          }
+          throw error;
+        }
+        
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
     }
   };
 
