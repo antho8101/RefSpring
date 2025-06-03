@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,7 +9,6 @@ import { useToast } from '@/hooks/use-toast';
 import { Chrome, Mail, Lock, ArrowLeft } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { RefSpringLogo } from '@/components/RefSpringLogo';
-import { useNavigate } from 'react-router-dom';
 
 export const AuthForm = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -21,7 +19,6 @@ export const AuthForm = () => {
   const { signInWithEmail, signUpWithEmail, signInWithGoogle } = useAuth();
   const { toast } = useToast();
   const { t } = useTranslation();
-  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,21 +68,16 @@ export const AuthForm = () => {
     }
   };
 
-  const handleBackToLanding = () => {
-    navigate('/');
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50/50 via-white to-purple-50/50 flex items-center justify-center p-4 relative">
-      {/* Bouton retour */}
-      <Button
-        variant="ghost"
-        onClick={handleBackToLanding}
-        className="absolute top-6 left-6 text-slate-600 hover:text-slate-900"
+      {/* Bouton retour transformé en lien externe */}
+      <a
+        href="https://refspring.com"
+        className="absolute top-6 left-6 inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 text-slate-600 hover:text-slate-900"
       >
         <ArrowLeft className="mr-2 h-4 w-4" />
         Retour
-      </Button>
+      </a>
 
       <Card className="w-full max-w-md bg-white/80 backdrop-blur-sm border-slate-200/50 shadow-xl">
         <CardHeader className="text-center pb-6">
