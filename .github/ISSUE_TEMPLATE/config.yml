@@ -8,5 +8,9 @@ contact_links:
     url: mailto:support@refspring.com
     about: Contact support directly for urgent issues
   - name: 📚 Documentation
-    url: https://github.com/your-username/refspring/wiki
+    url: https://github.com/refspring-team/refspring/wiki
     about: Check out our documentation for guides and FAQs
+  - name: 🌐 Live Demo
+    url: https://dashboard.refspring.com
+    about: Try out RefSpring with our live demo
+

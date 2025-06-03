@@ -1,41 +1,97 @@
 
-name: CI
+name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, develop, staging ]
   pull_request:
     branches: [ main, develop ]
 
 jobs:
-  build:
+  lint-and-type-check:
     runs-on: ubuntu-latest
+    name: Lint & Type Check
     
-    strategy:
-      matrix:
-        node-version: [18.x]
-
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
       with:
-        node-version: ${{ matrix.node-version }}
+        node-version: '18'
         cache: 'npm'
         
     - name: Install dependencies
       run: npm ci
     
-    - name: Check linting
-      run: npm run lint || echo "Linting not configured yet"
+    - name: Run ESLint
+      run: npm run lint || echo "Linting will be configured soon"
       
     - name: Type checking
-      run: npm run typecheck || npm run type-check || echo "Type checking not configured yet"
+      run: npm run type-check || npm run typecheck || echo "Type checking will be configured soon"
+
+  build:
+    runs-on: ubuntu-latest
+    name: Build Application
+    needs: lint-and-type-check
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
       
-    - name: Build
+    - name: Build application
       run: npm run build
       
-    # Uncomment when tests are implemented
-    # - name: Run tests
-    #  run: npm test
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-files
+        path: dist/
+
+  security-audit:
+    runs-on: ubuntu-latest
+    name: Security Audit
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Run security audit
+      run: npm audit --audit-level=high
+
+  # Uncomment when tests are implemented
+  # test:
+  #   runs-on: ubuntu-latest
+  #   name: Run Tests
+  #   
+  #   steps:
+  #   - uses: actions/checkout@v4
+  #   
+  #   - name: Setup Node.js
+  #     uses: actions/setup-node@v4
+  #     with:
+  #       node-version: '18'
+  #       cache: 'npm'
+  #       
+  #   - name: Install dependencies
+  #     run: npm ci
+  #     
+  #   - name: Run tests
+  #     run: npm test
+

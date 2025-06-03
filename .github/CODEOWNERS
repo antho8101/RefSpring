@@ -3,13 +3,30 @@
 # See: https://help.github.com/articles/about-codeowners/
 
 # These owners will be the default owners for everything in the repo
-*       @your-username
+*       @refspring-team
 
-# Specific ownership for critical components
-/src/lib/firebase.ts    @your-username
-/src/hooks/useAuth.tsx  @your-username
-/src/components/ErrorBoundary.tsx  @your-username
+# Core application files
+/src/App.tsx                    @refspring-team
+/src/main.tsx                   @refspring-team
+
+# Firebase and security critical files
+/src/lib/firebase.ts            @refspring-team
+/src/hooks/useAuth.tsx          @refspring-team
+/src/components/ErrorBoundary.tsx  @refspring-team
+
+# Configuration files
+/.env.example                   @refspring-team
+/vite.config.ts                 @refspring-team
+/tailwind.config.ts             @refspring-team
+
+# GitHub workflows and templates
+/.github/                       @refspring-team
 
 # Documentation
-*.md    @your-username
-docs/   @your-username
+*.md                           @refspring-team
+/docs/                         @refspring-team
+
+# Package management
+/package.json                  @refspring-team
+/package-lock.json             @refspring-team
+

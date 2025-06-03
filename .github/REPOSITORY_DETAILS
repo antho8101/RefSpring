@@ -5,10 +5,25 @@
 Next-generation affiliate platform with real-time analytics, smart tracking, and fraud protection
 
 ## 🏷️ Topics
-affiliate-marketing react typescript firebase analytics tracking tailwindcss shadcn-ui react-query internationalization error-handling responsive-design
+affiliate-marketing react typescript firebase analytics tracking tailwindcss shadcn-ui react-query internationalization error-handling responsive-design performance-optimization security fraud-detection real-time-analytics
 
 ## 🌐 Website
 https://refspring.com
 
 ## 🛠️ Development Status
-Active development
+Active development - Production ready
+
+## 📊 Project Stats
+- Language: TypeScript
+- Framework: React + Vite
+- UI: Tailwind CSS + shadcn/ui
+- Backend: Firebase
+- State Management: TanStack Query
+- Testing: Planned
+- CI/CD: GitHub Actions
+
+## 🚀 Live Demo
+- Main App: https://dashboard.refspring.com
+- Landing Page: https://refspring.com
+- Test Environment: Available
+
