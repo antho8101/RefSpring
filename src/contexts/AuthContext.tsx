@@ -24,7 +24,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log('🔐 AuthProvider - Initialisation stable');
+    console.log('🔐 AuthProvider - Initialisation directe sans timeout');
     
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       console.log('🔐 Auth state reçu:', user ? 'CONNECTÉ' : 'DÉCONNECTÉ');
