@@ -3,7 +3,6 @@ import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
-// Configuration Firebase simplifiée
 const firebaseConfig = {
   apiKey: "AIzaSyAlHsC-w7Sx18XKJ6dIcxvqj-AUdqkjqSE",
   authDomain: "refspring-8c3ac.firebaseapp.com",
@@ -15,19 +14,10 @@ const firebaseConfig = {
   measurementId: "G-QNK35Y7EE4"
 };
 
-console.log('🔥 Firebase config:', firebaseConfig);
-
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-// Initialize Firebase services
 export const auth = getAuth(app);
 export const db = getFirestore(app);
-
-// Configuration Google Auth
 export const googleProvider = new GoogleAuthProvider();
-googleProvider.setCustomParameters({
-  prompt: 'select_account'
-});
 
 export default app;
