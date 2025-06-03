@@ -4,6 +4,7 @@ import { LogOut, Menu } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import { RefSpringLogo } from '@/components/RefSpringLogo';
+import { AccountSettingsDialog } from '@/components/AccountSettingsDialog';
 
 interface DashboardHeaderProps {
   user: any;
@@ -32,9 +33,10 @@ export const DashboardHeader = ({ user, onLogout }: DashboardHeaderProps) => {
 
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center space-x-4">
-            <div className="text-sm text-slate-700 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full border border-slate-200 max-w-[200px] truncate">
+            <div className="text-sm text-slate-700 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full border border-slate-200">
               Bonjour, <span className="font-semibold">{user?.displayName || user?.email}</span>
             </div>
+            <AccountSettingsDialog />
             <Button 
               variant="outline" 
               size="sm" 
@@ -64,15 +66,18 @@ export const DashboardHeader = ({ user, onLogout }: DashboardHeaderProps) => {
               <div className="text-sm text-slate-700 px-4 py-2 bg-slate-50 rounded-lg">
                 Bonjour, <span className="font-semibold">{user?.displayName || user?.email}</span>
               </div>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={onLogout}
-                className="w-full justify-start rounded-lg"
-              >
-                <LogOut className="h-4 w-4 mr-2" />
-                Déconnexion
-              </Button>
+              <div className="flex gap-2 px-4">
+                <AccountSettingsDialog />
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={onLogout}
+                  className="flex-1 justify-start rounded-lg"
+                >
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Déconnexion
+                </Button>
+              </div>
             </div>
           </div>
         )}
