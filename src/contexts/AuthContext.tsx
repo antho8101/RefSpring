@@ -24,31 +24,31 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log('🔐 AuthProvider - Initialisation');
+    console.log('🔐 AuthProvider - Initialisation RAPIDE');
     
-    // Vérifier le cache localStorage pour un chargement quasi-instantané
-    const cachedUser = localStorage.getItem('auth_user');
-    if (cachedUser) {
-      console.log('🔐 Cache utilisateur trouvé, chargement ultra-rapide');
-      // Gardons loading=true pour attendre la confirmation Firebase
-    }
-
+    // Pas de cache localStorage qui ralentit - Firebase est assez rapide
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       console.log('🔐 Firebase Auth state changed:', user ? 'CONNECTÉ' : 'DÉCONNECTÉ');
       setUser(user);
-      setLoading(false); // AUTH COMPLÈTE ICI
+      setLoading(false); // AUTH TERMINÉE - Interface peut s'afficher
       
-      // Cache simple
       if (user) {
-        localStorage.setItem('auth_user', 'true');
         console.log('🔐 Utilisateur authentifié:', user.uid);
       } else {
-        localStorage.removeItem('auth_user');
         console.log('🔐 Utilisateur déconnecté');
       }
     });
 
-    return unsubscribe;
+    // Timeout de sécurité : si Firebase met plus de 3 secondes, on affiche quand même l'interface
+    const timeoutId = setTimeout(() => {
+      console.log('🔐 Timeout atteint - affichage forcé de l\'interface');
+      setLoading(false);
+    }, 3000);
+
+    return () => {
+      unsubscribe();
+      clearTimeout(timeoutId);
+    };
   }, []);
 
   const signInWithEmail = async (email: string, password: string) => {
