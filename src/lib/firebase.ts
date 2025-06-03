@@ -37,17 +37,30 @@ googleProvider.setCustomParameters({
   prompt: 'select_account'
 });
 
-// Analytics avec vérification de support
-export const analytics = await (async () => {
+// Analytics avec gestion asynchrone sans top-level await
+let analyticsInstance: any = null;
+
+const initializeAnalytics = async () => {
   try {
-    if (typeof window !== 'undefined' && firebaseConfig.measurementId && await isSupported()) {
-      return getAnalytics(app);
+    if (typeof window !== 'undefined' && firebaseConfig.measurementId) {
+      const supported = await isSupported();
+      if (supported) {
+        analyticsInstance = getAnalytics(app);
+        console.log('✅ Firebase Analytics initialisé');
+      } else {
+        console.warn('⚠️ Firebase Analytics non supporté dans cet environnement');
+      }
     }
-    return null;
   } catch (error) {
-    console.warn('Analytics non disponible dans cet environnement');
-    return null;
+    console.warn('⚠️ Erreur lors de l\'initialisation d\'Analytics:', error);
   }
-})();
+};
+
+// Initialiser Analytics de manière asynchrone
+if (typeof window !== 'undefined') {
+  initializeAnalytics();
+}
+
+export const getAnalyticsInstance = () => analyticsInstance;
 
 export default app;
