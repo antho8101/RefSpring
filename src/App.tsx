@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -49,23 +50,23 @@ const PageSkeleton = () => (
 );
 
 const DomainRouter = () => {
+  const hostname = window.location.hostname;
+  const currentPath = window.location.pathname;
+
+  // Redirection uniquement pour dashboard.refspring.com
   useEffect(() => {
-    const hostname = window.location.hostname;
-    const currentPath = window.location.pathname;
-    
-    // Redirection simple basée sur le domaine
     if (hostname === 'dashboard.refspring.com' && currentPath === '/') {
       window.location.replace('/dashboard');
     }
-  }, []);
+  }, [hostname, currentPath]);
 
   return (
     <ErrorBoundary>
       <Suspense fallback={<PageSkeleton />}>
         <Routes>
-          {/* Route principale - Landing page sur refspring.com, Dashboard sur dashboard.refspring.com */}
+          {/* Route principale */}
           <Route path="/" element={
-            window.location.hostname === 'dashboard.refspring.com' 
+            hostname === 'dashboard.refspring.com' 
               ? <Navigate to="/dashboard" replace />
               : <LandingPage />
           } />
