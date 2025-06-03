@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { 
   User, 
   signInWithEmailAndPassword, 
@@ -12,25 +12,47 @@ import { auth, googleProvider } from '@/lib/firebase';
 
 export const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true); // Commence à true pour éviter les flickers
   const [initialized, setInitialized] = useState(false);
+  const unsubscribeRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
+    // Éviter les initialisations multiples
+    if (initialized) {
+      return;
+    }
+
     console.log('🔐 Initialisation de l\'authentification...');
     
-    setInitialized(true);
+    // S'assurer qu'on n'a qu'un seul listener
+    if (unsubscribeRef.current) {
+      unsubscribeRef.current();
+    }
     
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       console.log('🔐 État d\'authentification changé:', user ? 'Connecté' : 'Déconnecté');
       setUser(user);
       setLoading(false);
+      if (!initialized) {
+        setInitialized(true);
+      }
     }, (error) => {
       console.error('🚨 Erreur d\'authentification:', error);
       setLoading(false);
+      if (!initialized) {
+        setInitialized(true);
+      }
     });
 
-    return unsubscribe;
-  }, []); // Dépendances vides pour éviter les boucles
+    unsubscribeRef.current = unsubscribe;
+
+    return () => {
+      if (unsubscribeRef.current) {
+        unsubscribeRef.current();
+        unsubscribeRef.current = null;
+      }
+    };
+  }, [initialized]); // Dépendance sur initialized pour éviter les boucles
 
   const signInWithEmail = async (email: string, password: string) => {
     console.log('🔐 Tentative de connexion avec email:', email);
