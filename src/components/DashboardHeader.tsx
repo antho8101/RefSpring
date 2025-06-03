@@ -33,12 +33,6 @@ export const DashboardHeader = ({ user, onLogout }: DashboardHeaderProps) => {
 
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center space-x-4">
-            <a 
-              href="/pricing" 
-              className="text-sm text-slate-700 hover:text-slate-900 px-3 py-2 rounded-md transition-colors"
-            >
-              Tarifs
-            </a>
             <div className="text-sm text-slate-700 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full border border-slate-200">
               Bonjour, <span className="font-semibold">{user?.displayName || user?.email}</span>
             </div>
@@ -69,12 +63,6 @@ export const DashboardHeader = ({ user, onLogout }: DashboardHeaderProps) => {
         {isMobileMenuOpen && (
           <div className="lg:hidden border-t border-slate-200/80 bg-white/95 backdrop-blur-xl rounded-b-lg">
             <div className="py-4 space-y-3">
-              <a 
-                href="/pricing" 
-                className="block text-sm text-slate-700 hover:text-slate-900 px-4 py-2 rounded-lg transition-colors"
-              >
-                Tarifs
-              </a>
               <div className="text-sm text-slate-700 px-4 py-2 bg-slate-50 rounded-lg">
                 Bonjour, <span className="font-semibold">{user?.displayName || user?.email}</span>
               </div>
