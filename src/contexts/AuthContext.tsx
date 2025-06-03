@@ -24,13 +24,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log('🔐 AuthProvider - Initialisation RAPIDE');
+    console.log('🔐 AuthProvider - Initialisation ULTRA-RAPIDE');
     
-    // Pas de cache localStorage qui ralentit - Firebase est assez rapide
+    // Timeout très court : si Firebase met plus d'1 seconde, on affiche l'interface
+    const quickTimeoutId = setTimeout(() => {
+      console.log('🔐 Timeout 1s atteint - affichage immédiat de l\'interface');
+      setLoading(false);
+    }, 1000);
+
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       console.log('🔐 Firebase Auth state changed:', user ? 'CONNECTÉ' : 'DÉCONNECTÉ');
       setUser(user);
-      setLoading(false); // AUTH TERMINÉE - Interface peut s'afficher
+      setLoading(false);
+      clearTimeout(quickTimeoutId); // On annule le timeout si Firebase répond
       
       if (user) {
         console.log('🔐 Utilisateur authentifié:', user.uid);
@@ -39,15 +45,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       }
     });
 
-    // Timeout de sécurité : si Firebase met plus de 3 secondes, on affiche quand même l'interface
-    const timeoutId = setTimeout(() => {
-      console.log('🔐 Timeout atteint - affichage forcé de l\'interface');
-      setLoading(false);
-    }, 3000);
-
     return () => {
       unsubscribe();
-      clearTimeout(timeoutId);
+      clearTimeout(quickTimeoutId);
     };
   }, []);
 
