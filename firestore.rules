@@ -5,113 +5,141 @@ service cloud.firestore {
   match /databases/{database}/documents {
     
     // ======================================
-    // RÈGLES FIRESTORE CORRIGÉES ET OPTIMISÉES
+    // RÈGLES FIRESTORE SÉCURISÉES ET RAPIDES
     // ======================================
     
     // ======================================
-    // CAMPAGNES - Accès utilisateur seulement
+    // CAMPAGNES - Propriétaire seulement
     // ======================================
     match /campaigns/{campaignId} {
-      // Lecture : utilisateur authentifié ET propriétaire
-      allow read: if request.auth != null && 
-                     request.auth.uid == resource.data.userId;
+      // Lecture/écriture : utilisateur authentifié ET propriétaire
+      allow read, write: if request.auth != null && 
+                            request.auth.uid == resource.data.userId;
       
       // Création : utilisateur authentifié ET défini comme propriétaire
       allow create: if request.auth != null && 
-                       request.auth.uid == request.resource.data.userId;
-      
-      // Mise à jour : utilisateur authentifié ET propriétaire existant
-      allow update: if request.auth != null && 
-                       request.auth.uid == resource.data.userId;
-      
-      // Suppression : utilisateur authentifié ET propriétaire
-      allow delete: if request.auth != null && 
-                       request.auth.uid == resource.data.userId;
+                       request.auth.uid == request.resource.data.userId &&
+                       request.resource.data.keys().hasAll(['name', 'description', 'userId']) &&
+                       request.resource.data.userId is string;
     }
     
     // ======================================
-    // AFFILIÉS - Accès utilisateur seulement
+    // AFFILIÉS - Propriétaire seulement
     // ======================================
     match /affiliates/{affiliateId} {
-      // Lecture : utilisateur authentifié ET propriétaire
-      allow read: if request.auth != null && 
-                     request.auth.uid == resource.data.userId;
+      // Lecture/écriture : utilisateur authentifié ET propriétaire
+      allow read, write: if request.auth != null && 
+                            request.auth.uid == resource.data.userId;
       
       // Création : utilisateur authentifié ET défini comme propriétaire
       allow create: if request.auth != null && 
-                       request.auth.uid == request.resource.data.userId;
-      
-      // Mise à jour : utilisateur authentifié ET propriétaire existant
-      allow update: if request.auth != null && 
-                       request.auth.uid == resource.data.userId;
-      
-      // Suppression : utilisateur authentifié ET propriétaire
-      allow delete: if request.auth != null && 
-                       request.auth.uid == resource.data.userId;
+                       request.auth.uid == request.resource.data.userId &&
+                       request.resource.data.keys().hasAll(['name', 'email', 'campaignId', 'userId']) &&
+                       request.resource.data.userId is string &&
+                       request.resource.data.campaignId is string;
     }
     
     // ======================================
-    // CLICS - Plus permissif pour le tracking
+    // CLICS - Protection anti-falsification
     // ======================================
     match /clicks/{clickId} {
-      // Lecture : tous les utilisateurs authentifiés
-      allow read: if request.auth != null;
+      // Lecture : utilisateur authentifié ET (propriétaire OU propriétaire de la campagne)
+      allow read: if request.auth != null && (
+        request.auth.uid == resource.data.userId ||
+        exists(/databases/$(database)/documents/campaigns/$(resource.data.campaignId)) &&
+        get(/databases/$(database)/documents/campaigns/$(resource.data.campaignId)).data.userId == request.auth.uid
+      );
       
-      // Création : tous les utilisateurs authentifiés (pour tracking public)
-      allow create: if request.auth != null;
+      // Création : validation stricte des données
+      allow create: if request.auth != null &&
+                       request.resource.data.keys().hasAll(['affiliateId', 'campaignId', 'timestamp', 'targetUrl']) &&
+                       request.resource.data.affiliateId is string &&
+                       request.resource.data.campaignId is string &&
+                       request.resource.data.timestamp is timestamp &&
+                       request.resource.data.targetUrl is string &&
+                       // Vérifier que l'affilié existe et appartient à la bonne campagne
+                       exists(/databases/$(database)/documents/affiliates/$(request.resource.data.affiliateId)) &&
+                       get(/databases/$(database)/documents/affiliates/$(request.resource.data.affiliateId)).data.campaignId == request.resource.data.campaignId;
       
-      // Mise à jour : propriétaire seulement
-      allow update: if request.auth != null && 
-                       request.auth.uid == resource.data.userId;
+      // Mise à jour : interdite pour éviter la falsification
+      allow update: if false;
       
-      // Suppression : propriétaire seulement
-      allow delete: if request.auth != null && 
-                       request.auth.uid == resource.data.userId;
+      // Suppression : propriétaire de la campagne seulement
+      allow delete: if request.auth != null &&
+                       exists(/databases/$(database)/documents/campaigns/$(resource.data.campaignId)) &&
+                       get(/databases/$(database)/documents/campaigns/$(resource.data.campaignId)).data.userId == request.auth.uid;
     }
     
     // ======================================
-    // CONVERSIONS - Plus permissif pour le tracking
+    // CONVERSIONS - Protection anti-falsification renforcée
     // ======================================
     match /conversions/{conversionId} {
-      // Lecture : tous les utilisateurs authentifiés
-      allow read: if request.auth != null;
+      // Lecture : utilisateur authentifié ET propriétaire de la campagne
+      allow read: if request.auth != null &&
+                     exists(/databases/$(database)/documents/campaigns/$(resource.data.campaignId)) &&
+                     get(/databases/$(database)/documents/campaigns/$(resource.data.campaignId)).data.userId == request.auth.uid;
       
-      // Création : tous les utilisateurs authentifiés (pour tracking public)
-      allow create: if request.auth != null;
+      // Création : validation ultra-stricte
+      allow create: if request.auth != null &&
+                       request.resource.data.keys().hasAll(['affiliateId', 'campaignId', 'amount', 'commission', 'timestamp']) &&
+                       request.resource.data.affiliateId is string &&
+                       request.resource.data.campaignId is string &&
+                       request.resource.data.amount is number &&
+                       request.resource.data.commission is number &&
+                       request.resource.data.timestamp is timestamp &&
+                       request.resource.data.amount >= 0 &&
+                       request.resource.data.commission >= 0 &&
+                       // Vérifier que l'affilié existe et appartient à la bonne campagne
+                       exists(/databases/$(database)/documents/affiliates/$(request.resource.data.affiliateId)) &&
+                       get(/databases/$(database)/documents/affiliates/$(request.resource.data.affiliateId)).data.campaignId == request.resource.data.campaignId &&
+                       // Vérifier que l'utilisateur possède la campagne
+                       exists(/databases/$(database)/documents/campaigns/$(request.resource.data.campaignId)) &&
+                       get(/databases/$(database)/documents/campaigns/$(request.resource.data.campaignId)).data.userId == request.auth.uid;
       
-      // Mise à jour : propriétaire seulement
-      allow update: if request.auth != null && 
-                       request.auth.uid == resource.data.userId;
+      // Mise à jour : seulement pour le statut de vérification par le propriétaire
+      allow update: if request.auth != null &&
+                       request.resource.data.diff(resource.data).affectedKeys().hasOnly(['verified']) &&
+                       exists(/databases/$(database)/documents/campaigns/$(resource.data.campaignId)) &&
+                       get(/databases/$(database)/documents/campaigns/$(resource.data.campaignId)).data.userId == request.auth.uid;
       
-      // Suppression : propriétaire seulement
-      allow delete: if request.auth != null && 
-                       request.auth.uid == resource.data.userId;
+      // Suppression : propriétaire de la campagne seulement
+      allow delete: if request.auth != null &&
+                       exists(/databases/$(database)/documents/campaigns/$(resource.data.campaignId)) &&
+                       get(/databases/$(database)/documents/campaigns/$(resource.data.campaignId)).data.userId == request.auth.uid;
     }
     
     // ======================================
     // LIENS COURTS - Lecture publique nécessaire
     // ======================================
     match /shortLinks/{linkId} {
-      // Lecture publique (pour redirection)
+      // Lecture publique (nécessaire pour redirection)
       allow read: if true;
       
-      // Création : utilisateur authentifié
-      allow create: if request.auth != null;
+      // Création : utilisateur authentifié avec validation
+      allow create: if request.auth != null &&
+                       request.resource.data.keys().hasAll(['shortCode', 'campaignId', 'affiliateId', 'targetUrl']) &&
+                       request.resource.data.shortCode is string &&
+                       request.resource.data.campaignId is string &&
+                       request.resource.data.affiliateId is string &&
+                       request.resource.data.targetUrl is string &&
+                       // Vérifier que l'utilisateur possède la campagne
+                       exists(/databases/$(database)/documents/campaigns/$(request.resource.data.campaignId)) &&
+                       get(/databases/$(database)/documents/campaigns/$(request.resource.data.campaignId)).data.userId == request.auth.uid;
       
-      // Mise à jour : propriétaire seulement
-      allow update: if request.auth != null && 
-                       request.auth.uid == resource.data.userId;
+      // Mise à jour : propriétaire de la campagne seulement
+      allow update: if request.auth != null &&
+                       exists(/databases/$(database)/documents/campaigns/$(resource.data.campaignId)) &&
+                       get(/databases/$(database)/documents/campaigns/$(resource.data.campaignId)).data.userId == request.auth.uid;
       
-      // Suppression : propriétaire seulement
-      allow delete: if request.auth != null && 
-                       request.auth.uid == resource.data.userId;
+      // Suppression : propriétaire de la campagne seulement
+      allow delete: if request.auth != null &&
+                       exists(/databases/$(database)/documents/campaigns/$(resource.data.campaignId)) &&
+                       get(/databases/$(database)/documents/campaigns/$(resource.data.campaignId)).data.userId == request.auth.uid;
     }
     
     // ======================================
-    // SÉCURITÉ PAR DÉFAUT
+    // SÉCURITÉ PAR DÉFAUT - Bloquer tout le reste
     // ======================================
-    
-    // Bloquer tout le reste
     match /{document=**} {
       allow read, write: if false;
     }
