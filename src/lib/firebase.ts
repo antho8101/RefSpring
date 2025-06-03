@@ -15,7 +15,7 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || "G-QNK35Y7EE4"
 };
 
-console.log('🔥 Firebase config loaded');
+console.log('🔥 Firebase config loaded with fallback values');
 
 // Éviter la double initialisation de Firebase
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
