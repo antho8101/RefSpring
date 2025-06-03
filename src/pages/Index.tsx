@@ -1,21 +1,20 @@
 
-import { useOptimizedAuth } from '@/hooks/useOptimizedAuth';
+import { useAuth } from '@/hooks/useAuth';
 import { AuthForm } from '@/components/AuthForm';
 import { Dashboard } from '@/components/Dashboard';
 import { useTranslation } from 'react-i18next';
 
 const Index = () => {
-  const { user, loading } = useOptimizedAuth();
+  const { user, loading } = useAuth();
   const { t } = useTranslation();
 
-  console.log('🔍 Index render - user:', !!user, 'loading:', loading);
+  console.log('🚀 INDEX SIMPLE - user:', !!user, 'loading:', loading);
 
-  // Affichage immédiat - pas d'attente d'initialisation
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50/50 via-white to-purple-50/50">
+      <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-gray-600">{t('loading')}</p>
         </div>
       </div>
