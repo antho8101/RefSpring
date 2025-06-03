@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { RefSpringLogo } from '@/components/RefSpringLogo';
 
 export const AuthForm = () => {
-  const [isLogin, setIsLogin] = useState(isLogin);
+  const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
