@@ -31,15 +31,13 @@ export const useAuth = () => {
       setLoading(false);
     }, (error) => {
       console.error('🚨 Erreur d\'authentification:', error);
-      handleError(error, { 
-        showToast: true,
-        logError: true 
-      });
+      // Pas besoin d'utiliser handleError ici pour éviter les dépendances
+      console.error('Details:', error.message);
       setLoading(false);
     });
 
     return unsubscribe;
-  }, [handleError]);
+  }, []); // Tableau de dépendances vide pour éviter la boucle infinie
 
   const signInWithEmail = async (email: string, password: string) => {
     console.log('🔐 Tentative de connexion avec email:', email);
