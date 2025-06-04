@@ -42,7 +42,7 @@ const AdvancedStatsPage = () => {
         <div className="text-center space-y-6 max-w-md w-full">
           <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">Campagne introuvable</h1>
           <p className="text-slate-600">Cette campagne n'existe pas ou vous n'y avez pas accès.</p>
-          <Button onClick={() => navigate('/dashboard')} size="lg" className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto">
+          <Button onClick={() => navigate('/dashboard')} size="lg" className="bg-blue-600 hover:bg-blue-700 text-white w-full sm:w-auto">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Retour au dashboard
           </Button>
