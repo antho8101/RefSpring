@@ -171,11 +171,6 @@ clicks/
 
 ## 🚀 Deployment
 
-### With Lovable (recommended)
-1. Connect your project to GitHub
-2. Click "Publish" in the Lovable interface
-3. Your app is live! 🎉
-
 ### Manual Deployment
 ```bash
 # Production build
