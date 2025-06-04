@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useCampaigns } from '@/hooks/useCampaigns';
@@ -15,6 +16,7 @@ export const PaymentSuccessPage = () => {
   const { toast } = useToast();
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [message, setMessage] = useState('');
+  const [countdown, setCountdown] = useState(3);
 
   const setupIntentId = searchParams.get('setup_intent');
   const campaignId = searchParams.get('campaign_id');
@@ -82,6 +84,23 @@ export const PaymentSuccessPage = () => {
     processPaymentSuccess();
   }, [setupIntentId, campaignId, isSimulation]);
 
+  // Effet pour le countdown et redirection automatique
+  useEffect(() => {
+    if (status === 'success') {
+      const timer = setInterval(() => {
+        setCountdown((prev) => {
+          if (prev <= 1) {
+            navigate('/dashboard');
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+
+      return () => clearInterval(timer);
+    }
+  }, [status, navigate]);
+
   const handleBackToDashboard = () => {
     navigate('/dashboard');
   };
@@ -115,6 +134,12 @@ export const PaymentSuccessPage = () => {
         <CardContent className="text-center space-y-4">
           <p className="text-gray-600">{message}</p>
           
+          {status === 'success' && (
+            <p className="text-sm text-blue-600">
+              Redirection automatique dans {countdown} seconde{countdown > 1 ? 's' : ''}...
+            </p>
+          )}
+          
           {isSimulation && status === 'success' && (
             <div className="bg-orange-50 border border-orange-200 rounded-lg p-3">
               <div className="flex items-center justify-center space-x-2 text-orange-700">
@@ -131,8 +156,9 @@ export const PaymentSuccessPage = () => {
             <Button 
               onClick={handleBackToDashboard}
               className="w-full"
+              variant="outline"
             >
-              Retour au dashboard
+              Retour immédiat au dashboard
             </Button>
           )}
         </CardContent>
