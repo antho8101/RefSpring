@@ -1,10 +1,9 @@
-
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useCampaigns } from '@/hooks/useCampaigns';
 import { useStripePayment } from '@/hooks/useStripePayment';
 import { useToast } from '@/hooks/use-toast';
-import { CheckCircle, AlertCircle, Loader2, Flask } from 'lucide-react';
+import { CheckCircle, AlertCircle, Loader2, TestTube } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
@@ -99,7 +98,7 @@ export const PaymentSuccessPage = () => {
               <div className="relative">
                 <CheckCircle className="w-16 h-16 text-green-600" />
                 {isSimulation && (
-                  <Flask className="w-6 h-6 text-orange-500 absolute -top-1 -right-1" />
+                  <TestTube className="w-6 h-6 text-orange-500 absolute -top-1 -right-1" />
                 )}
               </div>
             )}
@@ -119,7 +118,7 @@ export const PaymentSuccessPage = () => {
           {isSimulation && status === 'success' && (
             <div className="bg-orange-50 border border-orange-200 rounded-lg p-3">
               <div className="flex items-center justify-center space-x-2 text-orange-700">
-                <Flask className="w-4 h-4" />
+                <TestTube className="w-4 h-4" />
                 <span className="text-sm font-medium">Mode simulation</span>
               </div>
               <p className="text-xs text-orange-600 mt-1">
