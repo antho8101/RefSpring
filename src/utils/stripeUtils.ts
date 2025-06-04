@@ -15,8 +15,34 @@ export interface CreatePaymentSetupResponse {
   checkoutUrl: string;
 }
 
+// Variable pour activer/désactiver la simulation (mettre à false quand Firebase Functions sera prêt)
+const USE_SIMULATION = true;
+
 // Fonction pour créer un SetupIntent Stripe (sera appelée via HTTP)
 export const createPaymentSetup = async (data: CreatePaymentSetupRequest): Promise<CreatePaymentSetupResponse> => {
+  if (USE_SIMULATION) {
+    console.log('🧪 SIMULATION: Création du setup de paiement pour', data.campaignName);
+    
+    // Simuler un délai réseau
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    // Générer des IDs temporaires
+    const setupIntentId = `seti_sim_${Date.now()}`;
+    const customerId = `cus_sim_${Date.now()}`;
+    
+    // Construire l'URL de simulation
+    const simulationUrl = `${window.location.origin}/payment-success?setup_intent=${setupIntentId}&campaign_id=${data.campaignId}&simulation=true`;
+    
+    console.log('🧪 SIMULATION: Redirection vers', simulationUrl);
+    
+    return {
+      setupIntentId,
+      stripeCustomerId: customerId,
+      checkoutUrl: simulationUrl,
+    };
+  }
+
+  // Code original pour les vraies Firebase Functions
   const response = await fetch('/api/createPaymentSetup', {
     method: 'POST',
     headers: {
@@ -34,6 +60,20 @@ export const createPaymentSetup = async (data: CreatePaymentSetupRequest): Promi
 
 // Fonction pour vérifier le statut d'un SetupIntent
 export const checkPaymentSetupStatus = async (setupIntentId: string): Promise<{ status: string; paymentMethod?: string }> => {
+  if (USE_SIMULATION) {
+    console.log('🧪 SIMULATION: Vérification du statut pour', setupIntentId);
+    
+    // Simuler un délai
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    // Simuler un succès
+    return {
+      status: 'succeeded',
+      paymentMethod: 'pm_simulation_123',
+    };
+  }
+
+  // Code original pour les vraies Firebase Functions
   const response = await fetch(`/api/checkPaymentSetup/${setupIntentId}`);
   
   if (!response.ok) {

@@ -4,7 +4,7 @@ import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useCampaigns } from '@/hooks/useCampaigns';
 import { useStripePayment } from '@/hooks/useStripePayment';
 import { useToast } from '@/hooks/use-toast';
-import { CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
+import { CheckCircle, AlertCircle, Loader2, Flask } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
@@ -19,6 +19,7 @@ export const PaymentSuccessPage = () => {
 
   const setupIntentId = searchParams.get('setup_intent');
   const campaignId = searchParams.get('campaign_id');
+  const isSimulation = searchParams.get('simulation') === 'true';
 
   useEffect(() => {
     const processPaymentSuccess = async () => {
@@ -29,9 +30,15 @@ export const PaymentSuccessPage = () => {
       }
 
       try {
-        console.log('🔄 Vérification du statut de paiement...');
+        if (isSimulation) {
+          console.log('🧪 SIMULATION: Traitement du succès de paiement simulé');
+          setMessage('Configuration du paiement simulée...');
+        } else {
+          console.log('🔄 Vérification du statut de paiement...');
+          setMessage('Vérification du paiement...');
+        }
         
-        // Vérifier le statut du SetupIntent
+        // Vérifier le statut du SetupIntent (réel ou simulé)
         const setupStatus = await verifyPaymentSetup(setupIntentId);
         
         if (setupStatus.status === 'succeeded') {
@@ -39,16 +46,21 @@ export const PaymentSuccessPage = () => {
           
           // Finaliser la campagne
           await finalizeCampaign(campaignId, {
-            customerId: 'cus_placeholder', // Sera récupéré via l'API
+            customerId: isSimulation ? 'cus_simulation' : 'cus_placeholder',
             setupIntentId: setupIntentId,
           });
           
           setStatus('success');
-          setMessage('Votre campagne a été créée avec succès !');
+          setMessage(isSimulation 
+            ? 'Votre campagne a été créée avec succès (mode simulation) !'
+            : 'Votre campagne a été créée avec succès !'
+          );
           
           toast({
             title: "Campagne créée !",
-            description: "Votre mode de paiement a été configuré et votre campagne est maintenant active.",
+            description: isSimulation 
+              ? "Mode simulation: Votre campagne est maintenant active."
+              : "Votre mode de paiement a été configuré et votre campagne est maintenant active.",
           });
           
         } else {
@@ -69,7 +81,7 @@ export const PaymentSuccessPage = () => {
     };
 
     processPaymentSuccess();
-  }, [setupIntentId, campaignId]);
+  }, [setupIntentId, campaignId, isSimulation]);
 
   const handleBackToDashboard = () => {
     navigate('/dashboard');
@@ -84,7 +96,12 @@ export const PaymentSuccessPage = () => {
               <Loader2 className="w-16 h-16 text-blue-600 animate-spin" />
             )}
             {status === 'success' && (
-              <CheckCircle className="w-16 h-16 text-green-600" />
+              <div className="relative">
+                <CheckCircle className="w-16 h-16 text-green-600" />
+                {isSimulation && (
+                  <Flask className="w-6 h-6 text-orange-500 absolute -top-1 -right-1" />
+                )}
+              </div>
             )}
             {status === 'error' && (
               <AlertCircle className="w-16 h-16 text-red-600" />
@@ -92,12 +109,24 @@ export const PaymentSuccessPage = () => {
           </div>
           <CardTitle>
             {status === 'loading' && 'Finalisation en cours...'}
-            {status === 'success' && 'Campagne créée !'}
+            {status === 'success' && (isSimulation ? 'Campagne créée (simulation) !' : 'Campagne créée !')}
             {status === 'error' && 'Erreur'}
           </CardTitle>
         </CardHeader>
         <CardContent className="text-center space-y-4">
           <p className="text-gray-600">{message}</p>
+          
+          {isSimulation && status === 'success' && (
+            <div className="bg-orange-50 border border-orange-200 rounded-lg p-3">
+              <div className="flex items-center justify-center space-x-2 text-orange-700">
+                <Flask className="w-4 h-4" />
+                <span className="text-sm font-medium">Mode simulation</span>
+              </div>
+              <p className="text-xs text-orange-600 mt-1">
+                Les Firebase Functions seront nécessaires pour le vrai processus Stripe
+              </p>
+            </div>
+          )}
           
           {status !== 'loading' && (
             <Button 
