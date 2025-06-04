@@ -3,7 +3,48 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Règles ultra-simples pour que tout fonctionne
+    
+    // Règles pour les campagnes
+    match /campaigns/{campaignId} {
+      // Lecture publique autorisée pour les dashboards publics
+      allow read: if true;
+      // Écriture uniquement pour le propriétaire authentifié
+      allow write: if request.auth != null && request.auth.uid == resource.data.userId;
+      // Création uniquement pour utilisateur authentifié
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
+    }
+    
+    // Règles pour les affiliés
+    match /affiliates/{affiliateId} {
+      // Lecture publique autorisée pour les dashboards publics
+      allow read: if true;
+      // Écriture uniquement pour le propriétaire de la campagne
+      allow write: if request.auth != null && 
+        request.auth.uid == get(/databases/$(database)/documents/campaigns/$(resource.data.campaignId)).data.userId;
+      // Création uniquement pour utilisateur authentifié
+      allow create: if request.auth != null && 
+        request.auth.uid == get(/databases/$(database)/documents/campaigns/$(request.resource.data.campaignId)).data.userId;
+    }
+    
+    // Règles pour les clics (lecture publique pour stats, écriture libre pour tracking)
+    match /clicks/{clickId} {
+      allow read: if true;
+      allow write: if true; // Nécessaire pour le tracking public
+    }
+    
+    // Règles pour les conversions (lecture publique pour stats, écriture libre pour tracking)
+    match /conversions/{conversionId} {
+      allow read: if true;
+      allow write: if true; // Nécessaire pour le tracking public
+    }
+    
+    // Règles pour les liens courts
+    match /shortLinks/{shortLinkId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    
+    // Toutes les autres collections nécessitent une authentification
     match /{document=**} {
       allow read, write: if request.auth != null;
     }
