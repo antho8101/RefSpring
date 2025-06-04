@@ -22,6 +22,7 @@ const TrackingJsRoute = lazy(() => import("./pages/TrackingJsRoute"));
 const TestProductsPage = lazy(() => import("./pages/TestProductsPage"));
 const TestThankYouPage = lazy(() => import("./pages/TestThankYouPage"));
 const AdvancedStatsPage = lazy(() => import("./pages/AdvancedStatsPage"));
+const PaymentSuccessPage = lazy(() => import("./pages/PaymentSuccessPage"));
 
 // QueryClient simplifié
 const queryClient = new QueryClient({
@@ -65,6 +66,8 @@ const DomainRouter = () => {
           <Route path="/dashboard" element={<Index />} />
           <Route path="/advanced-stats" element={<AdvancedStatsPage />} />
           <Route path="/advanced-stats/:campaignId" element={<AdvancedStatsPage />} />
+          
+          <Route path="/payment-success" element={<PaymentSuccessPage />} />
           
           <Route path="/tracking.js" element={<TrackingJsRoute />} />
           

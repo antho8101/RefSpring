@@ -9,6 +9,11 @@ export interface Campaign {
   updatedAt: Date;
   userId: string;
   isActive: boolean;
+  // Nouveaux champs Stripe
+  stripeCustomerId?: string;
+  stripeSetupIntentId?: string;
+  paymentConfigured: boolean;
+  isDraft: boolean; // Pour gérer l'état avant validation Stripe
 }
 
 export interface Affiliate {
@@ -40,4 +45,19 @@ export interface Click {
   timestamp: Date;
   userAgent?: string;
   referrer?: string;
+}
+
+// Nouvelles interfaces pour la facturation
+export interface BillingRecord {
+  id: string;
+  userId: string;
+  campaignId: string;
+  period: string; // YYYY-MM format
+  totalRevenue: number;
+  commissionAmount: number;
+  feeAmount: number; // 2.5% du CA
+  status: 'pending' | 'paid' | 'failed';
+  stripeChargeId?: string;
+  createdAt: Date;
+  processedAt?: Date;
 }

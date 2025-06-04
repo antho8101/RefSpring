@@ -54,17 +54,22 @@ export const useCampaigns = () => {
           ...data,
           createdAt: data.createdAt?.toDate(),
           updatedAt: data.updatedAt?.toDate(),
+          // Valeurs par défaut pour les nouveaux champs Stripe
+          paymentConfigured: data.paymentConfigured || false,
+          isDraft: data.isDraft || false,
         };
       }) as Campaign[];
       
-      // Tri côté client
-      campaignsData.sort((a, b) => {
-        if (!a.createdAt || !b.createdAt) return 0;
-        return b.createdAt.getTime() - a.createdAt.getTime();
-      });
+      // Tri côté client - Ne montrer que les campagnes finalisées (non-draft)
+      const finalizedCampaigns = campaignsData
+        .filter(campaign => !campaign.isDraft)
+        .sort((a, b) => {
+          if (!a.createdAt || !b.createdAt) return 0;
+          return b.createdAt.getTime() - a.createdAt.getTime();
+        });
       
-      console.log('🎯 Campagnes chargées:', campaignsData.length);
-      setCampaigns(campaignsData);
+      console.log('🎯 Campagnes chargées:', finalizedCampaigns.length);
+      setCampaigns(finalizedCampaigns);
       setLoading(false);
     }, (error) => {
       console.error('🎯 Erreur Firestore:', error);
@@ -72,7 +77,7 @@ export const useCampaigns = () => {
     });
 
     return unsubscribe;
-  }, [user, authLoading]); // Dépendance sur authLoading aussi
+  }, [user, authLoading]);
 
   const createCampaign = async (campaignData: Omit<Campaign, 'id' | 'createdAt' | 'updatedAt' | 'userId'>) => {
     if (!user) throw new Error('User not authenticated');
@@ -82,6 +87,9 @@ export const useCampaigns = () => {
       userId: user.uid,
       createdAt: new Date(),
       updatedAt: new Date(),
+      // Valeurs par défaut pour Stripe
+      paymentConfigured: campaignData.paymentConfigured || false,
+      isDraft: campaignData.isDraft || false,
     };
 
     console.log('Creating campaign:', newCampaign);
@@ -96,6 +104,18 @@ export const useCampaigns = () => {
       ...updates,
       updatedAt: new Date(),
     });
+  };
+
+  const finalizeCampaign = async (id: string, stripeData: { customerId: string; setupIntentId: string }) => {
+    const campaignRef = doc(db, 'campaigns', id);
+    await updateDoc(campaignRef, {
+      isDraft: false,
+      paymentConfigured: true,
+      stripeCustomerId: stripeData.customerId,
+      stripeSetupIntentId: stripeData.setupIntentId,
+      updatedAt: new Date(),
+    });
+    console.log('✅ Campagne finalisée avec succès:', id);
   };
 
   const deleteCampaign = async (id: string) => {
@@ -195,6 +215,7 @@ export const useCampaigns = () => {
     loading,
     createCampaign,
     updateCampaign,
+    finalizeCampaign,
     deleteCampaign,
   };
 };
