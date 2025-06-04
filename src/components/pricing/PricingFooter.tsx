@@ -1,6 +1,5 @@
-
 import { Link } from "react-router-dom";
-import { Globe, TrendingUp } from "lucide-react";
+import { Globe, TrendingUp, Github } from "lucide-react";
 
 export const PricingFooter = () => {
   return (
@@ -20,6 +19,14 @@ export const PricingFooter = () => {
               <div className="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center hover:bg-slate-700 transition-colors cursor-pointer">
                 <TrendingUp className="w-5 h-5 text-slate-400" />
               </div>
+              <a 
+                href="https://github.com/antho8101/RefSpring" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center hover:bg-slate-700 transition-colors cursor-pointer"
+              >
+                <Github className="w-5 h-5 text-slate-400" />
+              </a>
             </div>
           </div>
           <div>
