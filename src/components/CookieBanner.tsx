@@ -15,8 +15,8 @@ export const CookieBanner = () => {
 
   return (
     <>
-      <div className="fixed bottom-0 left-0 right-0 z-50 p-4 bg-black/50 backdrop-blur-sm">
-        <Card className="max-w-4xl mx-auto p-6 bg-white shadow-xl border border-slate-200 rounded-2xl">
+      <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-slate-200 shadow-lg">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center">
             <div className="flex items-start gap-3 flex-1">
               <Cookie className="h-6 w-6 text-blue-600 flex-shrink-0 mt-1" />
@@ -67,7 +67,7 @@ export const CookieBanner = () => {
               </Button>
             </div>
           </div>
-        </Card>
+        </div>
       </div>
 
       <CookiePreferencesDialog 
