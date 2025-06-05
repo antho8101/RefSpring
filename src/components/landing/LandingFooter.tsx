@@ -1,8 +1,12 @@
 
 import { Globe, TrendingUp, Github } from "lucide-react";
 import { Link } from "react-router-dom";
+import { LanguageSelector } from "@/components/LanguageSelector";
+import { useTranslation } from 'react-i18next';
 
 export const LandingFooter = () => {
+  const { t } = useTranslation();
+
   return (
     <footer className="py-16 px-4 sm:px-6 lg:px-8 bg-slate-900 border-t border-slate-800">
       <div className="max-w-7xl mx-auto">
@@ -10,8 +14,7 @@ export const LandingFooter = () => {
           <div className="md:col-span-2">
             <div className="font-bold text-3xl text-white mb-4">RefSpring</div>
             <p className="text-slate-400 mb-6 leading-relaxed">
-              La plateforme d'affiliation qui paie pour elle-même. 
-              Join the future of affiliate marketing.
+              {t('hero.subtitle.normal')}
             </p>
             <div className="flex gap-4">
               <div className="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center hover:bg-slate-700 transition-colors cursor-pointer">
@@ -55,12 +58,15 @@ export const LandingFooter = () => {
             </ul>
           </div>
         </div>
-        <div className="border-t border-slate-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
+        <div className="border-t border-slate-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-slate-400">&copy; 2024 RefSpring. All rights reserved.</p>
-          <div className="flex gap-6 mt-4 md:mt-0">
-            <Link to="/privacy" className="text-slate-400 hover:text-white transition-colors">Privacy</Link>
-            <Link to="/terms" className="text-slate-400 hover:text-white transition-colors">Terms</Link>
-            <Link to="/security" className="text-slate-400 hover:text-white transition-colors">Security</Link>
+          <div className="flex flex-col sm:flex-row items-center gap-4">
+            <LanguageSelector />
+            <div className="flex gap-6">
+              <Link to="/privacy" className="text-slate-400 hover:text-white transition-colors">Privacy</Link>
+              <Link to="/terms" className="text-slate-400 hover:text-white transition-colors">Terms</Link>
+              <Link to="/security" className="text-slate-400 hover:text-white transition-colors">Security</Link>
+            </div>
           </div>
         </div>
       </div>
