@@ -41,9 +41,7 @@ export const LandingFooter = () => {
             <h3 className="font-semibold text-white mb-4">Company</h3>
             <ul className="space-y-3 text-slate-400">
               <li><a href="#" className="hover:text-white transition-colors">About</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Blog</a></li>
               <li><a href="#" className="hover:text-white transition-colors">Careers</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Press</a></li>
             </ul>
           </div>
           <div>
@@ -52,7 +50,6 @@ export const LandingFooter = () => {
               <li><a href="#" className="hover:text-white transition-colors">Help Center</a></li>
               <li><a href="#" className="hover:text-white transition-colors">Contact</a></li>
               <li><a href="#" className="hover:text-white transition-colors">Status</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Community</a></li>
             </ul>
           </div>
         </div>
