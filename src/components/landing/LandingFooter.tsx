@@ -1,4 +1,5 @@
 
+
 import { Globe, TrendingUp, Github } from "lucide-react";
 import { Link } from "react-router-dom";
 import { LanguageSelector } from "@/components/LanguageSelector";
@@ -10,7 +11,7 @@ export const LandingFooter = () => {
   return (
     <footer className="py-16 px-4 sm:px-6 lg:px-8 bg-slate-900 border-t border-slate-800">
       
-      <div className="max-w-7xl mx-auto">
+      <div className="mx-auto">
         <div className="grid md:grid-cols-5 gap-8">
           <div className="md:col-span-2">
             <div className="font-bold text-3xl text-white mb-4">RefSpring</div>
@@ -76,3 +77,4 @@ export const LandingFooter = () => {
     </footer>
   );
 };
+
