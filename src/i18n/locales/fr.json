@@ -60,6 +60,90 @@
     "actionsPerformed": "Actions réalisées",
     "grossRevenue": "Chiffre d'affaires brut",
     "costPerAcquisition": "Coût par acquisition",
-    "returnOnAdSpend": "Retour sur investissement publicitaire"
+    "returnOnAdSpend": "Retour sur investissement publicitaire",
+    "title": "Des chiffres qui parlent plus fort que les mots",
+    "subtitle": "Rejoignez la révolution du marketing d'affiliation basé sur la performance.",
+    "activeCampaigns": "Campagnes Actives",
+    "revenueGenerated": "Revenus Générés",
+    "uptime": "Disponibilité",
+    "upfrontCosts": "Coûts d'Avance"
+  },
+  "hero": {
+    "badge": "0€ de frais mensuels • Rémunération sur performance uniquement",
+    "title": {
+      "part1": "Enfin une plateforme",
+      "part2": "qui paie pour elle-même"
+    },
+    "subtitle": {
+      "bold": "Modèle basé sur les revenus :",
+      "normal": "Accès gratuit, nous gagnons seulement quand vous gagnez."
+    },
+    "features": {
+      "noSetupFee": "0€ de frais d'installation",
+      "noMonthlyFee": "0€ d'abonnement mensuel",
+      "fullAccess": "Accès complet à la plateforme"
+    },
+    "cta": {
+      "primary": "Commencer à gagner dès aujourd'hui",
+      "secondary": "Voir comment ça marche"
+    },
+    "socialProof": {
+      "text": "Adopté par les entreprises qui veulent des résultats, pas des factures récurrentes",
+      "revenue": "50M€+",
+      "generated": "Générés",
+      "upfront": "0€",
+      "advance": "D'avance"
+    }
+  },
+  "story": {
+    "title": "L'histoire qui change tout",
+    "subtitle": {
+      "part1": "Pendant que d'autres plateformes demandent 299€/mois d'avance avant que vous gagniez un seul euro, nous croyons en une approche différente :",
+      "bold": "votre succès est notre succès."
+    },
+    "steps": {
+      "traditional": {
+        "title": "Plateformes traditionnelles",
+        "description": "Payez 99-299€/mois, espérez le meilleur, priez pour couvrir vos coûts"
+      },
+      "refspring": {
+        "title": "La méthode RefSpring",
+        "description": "Commencez immédiatement, accès complet, nous gagnons seulement quand vous gagnez. Zéro risque."
+      },
+      "result": {
+        "title": "Votre résultat",
+        "description": "Concentrez-vous sur votre croissance, pas sur les factures mensuelles. Chaque euro gagné est du profit pur."
+      }
+    }
+  },
+  "features": {
+    "title": "Tout ce dont vous avez besoin pour dominer",
+    "subtitle": "Des outils puissants conçus pour vous aider à créer et gérer des programmes d'affiliation réussis à grande échelle.",
+    "lightningFast": {
+      "title": "Ultra Rapide",
+      "description": "Configurez votre programme d'affiliation en quelques minutes, pas des semaines. Déploiement en un clic.",
+      "metric": "Config en 3 min"
+    },
+    "smartRecruitment": {
+      "title": "Recrutement Intelligent",
+      "description": "Matching d'affiliés alimenté par l'IA. Trouvez et intégrez automatiquement les meilleurs performeurs.",
+      "metric": "847 affiliés"
+    },
+    "realTimeAnalytics": {
+      "title": "Analytics en Temps Réel",
+      "description": "Suivez les performances avec des insights cristallins. Sachez ce qui fonctionne instantanément.",
+      "metric": "Suivi en live"
+    },
+    "fraudProtection": {
+      "title": "Protection Anti-Fraude",
+      "description": "Sécurité IA avancée pour protéger contre les activités frauduleuses et le trafic factice.",
+      "metric": "99,9% de précision"
+    }
+  },
+  "cta": {
+    "title": "Votre concurrence est déjà là",
+    "subtitle": "Pendant que d'autres paient des frais mensuels pour des résultats incertains, les entreprises intelligentes gagnent déjà avec le modèle basé sur la performance de RefSpring. Ne les laissez pas prendre de l'avance.",
+    "startEarning": "Commencer à gagner maintenant",
+    "seeDemo": "Voir une démo live"
   }
 }

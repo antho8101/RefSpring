@@ -1,31 +1,34 @@
 
 import { Zap, Users, BarChart3, Shield } from "lucide-react";
+import { useTranslation } from 'react-i18next';
 
 export const FeaturesSection = () => {
+  const { t } = useTranslation();
+
   const features = [
     {
       icon: <Zap className="h-10 w-10 text-blue-600" />,
-      title: "Lightning Fast",
-      description: "Set up your affiliate program in minutes, not weeks. One-click deployment.",
-      metric: "3 min setup"
+      title: t('features.lightningFast.title'),
+      description: t('features.lightningFast.description'),
+      metric: t('features.lightningFast.metric')
     },
     {
       icon: <Users className="h-10 w-10 text-green-600" />,
-      title: "Smart Recruitment",
-      description: "AI-powered affiliate matching. Find and onboard top performers automatically.",
-      metric: "847 affiliates"
+      title: t('features.smartRecruitment.title'),
+      description: t('features.smartRecruitment.description'),
+      metric: t('features.smartRecruitment.metric')
     },
     {
       icon: <BarChart3 className="h-10 w-10 text-purple-600" />,
-      title: "Real-time Analytics",
-      description: "Track performance with crystal-clear insights. Know what's working instantly.",
-      metric: "Live tracking"
+      title: t('features.realTimeAnalytics.title'),
+      description: t('features.realTimeAnalytics.description'),
+      metric: t('features.realTimeAnalytics.metric')
     },
     {
       icon: <Shield className="h-10 w-10 text-orange-600" />,
-      title: "Fraud Protection",
-      description: "Advanced AI security to protect against fraudulent activities and fake traffic.",
-      metric: "99.9% accuracy"
+      title: t('features.fraudProtection.title'),
+      description: t('features.fraudProtection.description'),
+      metric: t('features.fraudProtection.metric')
     }
   ];
 
@@ -34,10 +37,10 @@ export const FeaturesSection = () => {
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6">
-            Everything you need to dominate
+            {t('features.title')}
           </h2>
           <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-            Powerful tools designed to help you build and manage successful affiliate programs at scale.
+            {t('features.subtitle')}
           </p>
         </div>
         

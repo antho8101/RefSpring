@@ -1,12 +1,15 @@
 
 import { Globe, TrendingUp, Shield, Award } from "lucide-react";
+import { useTranslation } from 'react-i18next';
 
 export const StatsSection = () => {
+  const { t } = useTranslation();
+
   const stats = [
-    { number: "10K+", label: "Active Campaigns", icon: <Globe className="w-8 h-8" /> },
-    { number: "€50M+", label: "Revenue Generated", icon: <TrendingUp className="w-8 h-8" /> },
-    { number: "99.9%", label: "Uptime", icon: <Shield className="w-8 h-8" /> },
-    { number: "€0", label: "Upfront Costs", icon: <Award className="w-8 h-8" /> }
+    { number: "10K+", label: t('stats.activeCampaigns'), icon: <Globe className="w-8 h-8" /> },
+    { number: "€50M+", label: t('stats.revenueGenerated'), icon: <TrendingUp className="w-8 h-8" /> },
+    { number: "99.9%", label: t('stats.uptime'), icon: <Shield className="w-8 h-8" /> },
+    { number: "€0", label: t('stats.upfrontCosts'), icon: <Award className="w-8 h-8" /> }
   ];
 
   return (
@@ -14,10 +17,10 @@ export const StatsSection = () => {
       <div className="absolute inset-0 bg-gradient-to-r from-blue-900/20 to-purple-900/20"></div>
       <div className="max-w-7xl mx-auto text-center relative z-10">
         <h2 className="text-4xl font-bold text-white mb-4">
-          Numbers that speak louder than words
+          {t('stats.title')}
         </h2>
         <p className="text-xl text-slate-300 mb-16 max-w-2xl mx-auto">
-          Join the revolution of performance-based affiliate marketing.
+          {t('stats.subtitle')}
         </p>
         <div className="grid md:grid-cols-4 gap-8">
           {stats.map((stat, index) => (

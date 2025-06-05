@@ -60,6 +60,90 @@
     "actionsPerformed": "执行的操作",
     "grossRevenue": "总收入",
     "costPerAcquisition": "获客成本",
-    "returnOnAdSpend": "广告支出回报"
+    "returnOnAdSpend": "广告支出回报",
+    "title": "数字比言语更有说服力",
+    "subtitle": "加入基于绩效的联盟营销革命。",
+    "activeCampaigns": "活跃营销活动",
+    "revenueGenerated": "产生的收入",
+    "uptime": "正常运行时间",
+    "upfrontCosts": "预付费用"
+  },
+  "hero": {
+    "badge": "€0月费 • 仅基于绩效的补偿",
+    "title": {
+      "part1": "终于有了一个",
+      "part2": "自我支付的平台"
+    },
+    "subtitle": {
+      "bold": "基于收入的模式：",
+      "normal": "免费访问，我们只有在您赚钱时才赚钱。"
+    },
+    "features": {
+      "noSetupFee": "€0设置费",
+      "noMonthlyFee": "€0月度订阅",
+      "fullAccess": "平台完全访问权限"
+    },
+    "cta": {
+      "primary": "今天开始赚钱",
+      "secondary": "看看它是如何工作的"
+    },
+    "socialProof": {
+      "text": "被需要结果而非循环账单的公司采用",
+      "revenue": "50M€+",
+      "generated": "已产生",
+      "upfront": "€0",
+      "advance": "预付"
+    }
+  },
+  "story": {
+    "title": "改变一切的故事",
+    "subtitle": {
+      "part1": "当其他平台在您赚到第一欧元之前就要求€299/月的预付费时，我们相信不同的方法：",
+      "bold": "您的成功就是我们的成功。"
+    },
+    "steps": {
+      "traditional": {
+        "title": "传统平台",
+        "description": "支付€99-299/月，寄希望于最好的结果，祈祷能够覆盖成本"
+      },
+      "refspring": {
+        "title": "RefSpring方法",
+        "description": "立即开始，完全访问，我们只有在您赚钱时才赚钱。零风险。"
+      },
+      "result": {
+        "title": "您的结果",
+        "description": "专注于您的增长，而不是月度账单。每赚到的欧元都是纯利润。"
+      }
+    }
+  },
+  "features": {
+    "title": "主导所需的一切",
+    "subtitle": "强大的工具，旨在帮助您大规模构建和管理成功的联盟计划。",
+    "lightningFast": {
+      "title": "闪电般快速",
+      "description": "在几分钟内设置您的联盟计划，而不是几周。一键部署。",
+      "metric": "3分钟设置"
+    },
+    "smartRecruitment": {
+      "title": "智能招募",
+      "description": "AI驱动的联盟匹配。自动找到并加入顶级表现者。",
+      "metric": "847个联盟伙伴"
+    },
+    "realTimeAnalytics": {
+      "title": "实时分析",
+      "description": "通过水晶般清晰的洞察跟踪绩效。立即了解什么有效。",
+      "metric": "实时跟踪"
+    },
+    "fraudProtection": {
+      "title": "防欺诈保护",
+      "description": "先进的AI安全性，保护免受欺诈活动和虚假流量的侵害。",
+      "metric": "99.9%准确率"
+    }
+  },
+  "cta": {
+    "title": "您的竞争对手已经在这里了",
+    "subtitle": "当其他人为不确定的结果支付月费时，聪明的公司已经在用RefSpring基于绩效的模式赚钱了。不要让他们领先。",
+    "startEarning": "立即开始赚钱",
+    "seeDemo": "查看实时演示"
   }
 }

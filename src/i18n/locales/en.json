@@ -60,6 +60,90 @@
     "actionsPerformed": "Actions performed",
     "grossRevenue": "Gross revenue",
     "costPerAcquisition": "Cost per acquisition",
-    "returnOnAdSpend": "Return on ad spend"
+    "returnOnAdSpend": "Return on ad spend",
+    "title": "Numbers that speak louder than words",
+    "subtitle": "Join the revolution of performance-based affiliate marketing.",
+    "activeCampaigns": "Active Campaigns",
+    "revenueGenerated": "Revenue Generated",
+    "uptime": "Uptime",
+    "upfrontCosts": "Upfront Costs"
+  },
+  "hero": {
+    "badge": "€0 monthly fees • Performance-based compensation only",
+    "title": {
+      "part1": "Finally a platform",
+      "part2": "that pays for itself"
+    },
+    "subtitle": {
+      "bold": "Revenue-based model:",
+      "normal": "Free access, we only earn when you earn."
+    },
+    "features": {
+      "noSetupFee": "€0 setup fee",
+      "noMonthlyFee": "€0 monthly subscription",
+      "fullAccess": "Full platform access"
+    },
+    "cta": {
+      "primary": "Start earning today",
+      "secondary": "See how it works"
+    },
+    "socialProof": {
+      "text": "Adopted by companies that want results, not recurring bills",
+      "revenue": "50M€+",
+      "generated": "Generated",
+      "upfront": "€0",
+      "advance": "Upfront"
+    }
+  },
+  "story": {
+    "title": "The story that changes everything",
+    "subtitle": {
+      "part1": "While other platforms ask for €299/month upfront before you earn a single euro, we believe in a different approach:",
+      "bold": "your success is our success."
+    },
+    "steps": {
+      "traditional": {
+        "title": "Traditional platforms",
+        "description": "Pay €99-299/month, hope for the best, pray to cover your costs"
+      },
+      "refspring": {
+        "title": "The RefSpring method",
+        "description": "Start immediately, full access, we only earn when you earn. Zero risk."
+      },
+      "result": {
+        "title": "Your result",
+        "description": "Focus on your growth, not on monthly bills. Every euro earned is pure profit."
+      }
+    }
+  },
+  "features": {
+    "title": "Everything you need to dominate",
+    "subtitle": "Powerful tools designed to help you build and manage successful affiliate programs at scale.",
+    "lightningFast": {
+      "title": "Lightning Fast",
+      "description": "Set up your affiliate program in minutes, not weeks. One-click deployment.",
+      "metric": "3 min setup"
+    },
+    "smartRecruitment": {
+      "title": "Smart Recruitment",
+      "description": "AI-powered affiliate matching. Find and onboard top performers automatically.",
+      "metric": "847 affiliates"
+    },
+    "realTimeAnalytics": {
+      "title": "Real-time Analytics",
+      "description": "Track performance with crystal-clear insights. Know what's working instantly.",
+      "metric": "Live tracking"
+    },
+    "fraudProtection": {
+      "title": "Fraud Protection",
+      "description": "Advanced AI security to protect against fraudulent activities and fake traffic.",
+      "metric": "99.9% accuracy"
+    }
+  },
+  "cta": {
+    "title": "Your competition is already here",
+    "subtitle": "While others pay monthly fees for uncertain results, smart companies are already earning with RefSpring's performance-based model. Don't let them get ahead.",
+    "startEarning": "Start earning now",
+    "seeDemo": "See live demo"
   }
 }

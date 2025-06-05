@@ -60,6 +60,90 @@
     "actionsPerformed": "Acciones realizadas",
     "grossRevenue": "Ingresos brutos",
     "costPerAcquisition": "Costo por adquisición",
-    "returnOnAdSpend": "Retorno de la inversión publicitaria"
+    "returnOnAdSpend": "Retorno de la inversión publicitaria",
+    "title": "Números que hablan más fuerte que las palabras",
+    "subtitle": "Únete a la revolución del marketing de afiliados basado en el rendimiento.",
+    "activeCampaigns": "Campañas Activas",
+    "revenueGenerated": "Ingresos Generados",
+    "uptime": "Tiempo de Actividad",
+    "upfrontCosts": "Costos Iniciales"
+  },
+  "hero": {
+    "badge": "€0 de tarifas mensuales • Compensación basada solo en rendimiento",
+    "title": {
+      "part1": "Finalmente una plataforma",
+      "part2": "que se paga a sí misma"
+    },
+    "subtitle": {
+      "bold": "Modelo basado en ingresos:",
+      "normal": "Acceso gratuito, solo ganamos cuando tú ganas."
+    },
+    "features": {
+      "noSetupFee": "€0 de tarifa de instalación",
+      "noMonthlyFee": "€0 de suscripción mensual",
+      "fullAccess": "Acceso completo a la plataforma"
+    },
+    "cta": {
+      "primary": "Empezar a ganar hoy",
+      "secondary": "Ver cómo funciona"
+    },
+    "socialProof": {
+      "text": "Adoptado por empresas que quieren resultados, no facturas recurrentes",
+      "revenue": "50M€+",
+      "generated": "Generados",
+      "upfront": "€0",
+      "advance": "Por adelantado"
+    }
+  },
+  "story": {
+    "title": "La historia que lo cambia todo",
+    "subtitle": {
+      "part1": "Mientras otras plataformas piden €299/mes por adelantado antes de que ganes un solo euro, creemos en un enfoque diferente:",
+      "bold": "tu éxito es nuestro éxito."
+    },
+    "steps": {
+      "traditional": {
+        "title": "Plataformas tradicionales",
+        "description": "Paga €99-299/mes, espera lo mejor, reza para cubrir tus costos"
+      },
+      "refspring": {
+        "title": "El método RefSpring",
+        "description": "Comienza inmediatamente, acceso completo, solo ganamos cuando tú ganas. Riesgo cero."
+      },
+      "result": {
+        "title": "Tu resultado",
+        "description": "Enfócate en tu crecimiento, no en facturas mensuales. Cada euro ganado es beneficio puro."
+      }
+    }
+  },
+  "features": {
+    "title": "Todo lo que necesitas para dominar",
+    "subtitle": "Herramientas poderosas diseñadas para ayudarte a construir y gestionar programas de afiliados exitosos a escala.",
+    "lightningFast": {
+      "title": "Súper Rápido",
+      "description": "Configura tu programa de afiliados en minutos, no semanas. Implementación con un clic.",
+      "metric": "Config en 3 min"
+    },
+    "smartRecruitment": {
+      "title": "Reclutamiento Inteligente",
+      "description": "Emparejamiento de afiliados impulsado por IA. Encuentra e incorpora automáticamente a los mejores.",
+      "metric": "847 afiliados"
+    },
+    "realTimeAnalytics": {
+      "title": "Analytics en Tiempo Real",
+      "description": "Rastrea el rendimiento con insights cristalinos. Sabe qué funciona al instante.",
+      "metric": "Seguimiento en vivo"
+    },
+    "fraudProtection": {
+      "title": "Protección contra Fraude",
+      "description": "Seguridad IA avanzada para proteger contra actividades fraudulentas y tráfico falso.",
+      "metric": "99.9% de precisión"
+    }
+  },
+  "cta": {
+    "title": "Tu competencia ya está aquí",
+    "subtitle": "Mientras otros pagan tarifas mensuales por resultados inciertos, las empresas inteligentes ya están ganando con el modelo basado en rendimiento de RefSpring. No las dejes tomar ventaja.",
+    "startEarning": "Empezar a ganar ahora",
+    "seeDemo": "Ver demo en vivo"
   }
 }
