@@ -4,7 +4,6 @@ import { LandingHeader } from "@/components/landing/LandingHeader";
 import { HeroSection } from "@/components/landing/HeroSection";
 import { StorySection } from "@/components/landing/StorySection";
 import { TransparencySection } from "@/components/shared/TransparencySection";
-import { Calculator } from "@/components/shared/Calculator";
 import { DashboardPreview } from "@/components/landing/DashboardPreview";
 import { TestimonialsSection } from "@/components/landing/TestimonialsSection";
 import { FeaturesSection } from "@/components/landing/FeaturesSection";
@@ -118,7 +117,6 @@ const LandingPage = () => {
         <HeroSection scrollY={scrollY} onRedirectToDashboard={redirectToDashboard} />
         <StorySection />
         <TransparencySection variant="landing" />
-        <Calculator variant="landing" />
         <DashboardPreview />
         <TestimonialsSection />
         <FeaturesSection />
