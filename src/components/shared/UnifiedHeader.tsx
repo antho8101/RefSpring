@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 
 interface UnifiedHeaderProps {
   onRedirectToDashboard: () => void;
-  currentPage?: 'landing' | 'pricing';
+  currentPage?: 'landing' | 'pricing' | 'status';
 }
 
 export const UnifiedHeader = ({ onRedirectToDashboard, currentPage = 'landing' }: UnifiedHeaderProps) => {
