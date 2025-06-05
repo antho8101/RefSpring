@@ -1,6 +1,13 @@
 
 import { useState, useEffect } from 'react';
 
+// Type declaration for gtag function
+declare global {
+  interface Window {
+    gtag: (command: string, action: string, parameters?: any) => void;
+  }
+}
+
 export interface CookiePreferences {
   necessary: boolean;
   analytics: boolean;
@@ -8,36 +15,54 @@ export interface CookiePreferences {
   personalization: boolean;
 }
 
+export interface CookieOptions {
+  strictMode: boolean;
+  autoExpiry: boolean;
+  trackingOptOut: boolean;
+}
+
 const COOKIE_CONSENT_KEY = 'refspring_cookie_consent';
 const COOKIE_PREFERENCES_KEY = 'refspring_cookie_preferences';
 const COOKIE_TIMESTAMP_KEY = 'refspring_cookie_timestamp';
+const COOKIE_OPTIONS_KEY = 'refspring_cookie_options';
 
-// Les cookies expirent après 1 an
+// Les cookies expirent après 1 an par défaut
 const COOKIE_EXPIRY_DAYS = 365;
 
 export const useCookieConsent = () => {
   const [hasConsented, setHasConsented] = useState<boolean | null>(null);
   const [preferences, setPreferences] = useState<CookiePreferences>({
-    necessary: true, // Toujours vrai, non modifiable
+    necessary: true,
     analytics: false,
     marketing: false,
     personalization: false,
+  });
+  const [options, setOptions] = useState<CookieOptions>({
+    strictMode: false,
+    autoExpiry: true,
+    trackingOptOut: false,
   });
   const [showBanner, setShowBanner] = useState(false);
 
   useEffect(() => {
     const consent = localStorage.getItem(COOKIE_CONSENT_KEY);
     const savedPreferences = localStorage.getItem(COOKIE_PREFERENCES_KEY);
+    const savedOptions = localStorage.getItem(COOKIE_OPTIONS_KEY);
     const timestamp = localStorage.getItem(COOKIE_TIMESTAMP_KEY);
     
+    // Charger les options sauvegardées
+    if (savedOptions) {
+      const parsedOptions = JSON.parse(savedOptions);
+      setOptions(parsedOptions);
+    }
+    
     // Vérifier si le consentement a expiré
-    if (timestamp) {
+    if (timestamp && options.autoExpiry) {
       const consentDate = new Date(timestamp);
       const now = new Date();
       const daysSinceConsent = (now.getTime() - consentDate.getTime()) / (1000 * 3600 * 24);
       
       if (daysSinceConsent > COOKIE_EXPIRY_DAYS) {
-        // Le consentement a expiré, demander à nouveau
         resetConsent();
         return;
       }
@@ -48,23 +73,28 @@ export const useCookieConsent = () => {
       if (savedPreferences) {
         const parsed = JSON.parse(savedPreferences);
         setPreferences(parsed);
-        // Appliquer les préférences sauvegardées
         applyPreferences(parsed);
       }
     } else {
       setShowBanner(true);
     }
-  }, []);
+  }, [options.autoExpiry]);
 
-  const saveConsent = (newPreferences: CookiePreferences) => {
+  const saveConsent = (newPreferences: CookiePreferences, newOptions?: CookieOptions) => {
     setHasConsented(true);
     setPreferences(newPreferences);
+    if (newOptions) {
+      setOptions(newOptions);
+    }
     setShowBanner(false);
     
     const timestamp = new Date().toISOString();
     localStorage.setItem(COOKIE_CONSENT_KEY, 'true');
     localStorage.setItem(COOKIE_PREFERENCES_KEY, JSON.stringify(newPreferences));
     localStorage.setItem(COOKIE_TIMESTAMP_KEY, timestamp);
+    if (newOptions) {
+      localStorage.setItem(COOKIE_OPTIONS_KEY, JSON.stringify(newOptions));
+    }
     
     applyPreferences(newPreferences);
   };
@@ -91,11 +121,18 @@ export const useCookieConsent = () => {
     saveConsent(newPreferences);
   };
 
-  const updatePreferences = (newPreferences: CookiePreferences) => {
+  const updatePreferences = (newPreferences: CookiePreferences, newOptions?: CookieOptions) => {
     setPreferences(newPreferences);
+    if (newOptions) {
+      setOptions(newOptions);
+    }
+    
     const timestamp = new Date().toISOString();
     localStorage.setItem(COOKIE_PREFERENCES_KEY, JSON.stringify(newPreferences));
     localStorage.setItem(COOKIE_TIMESTAMP_KEY, timestamp);
+    if (newOptions) {
+      localStorage.setItem(COOKIE_OPTIONS_KEY, JSON.stringify(newOptions));
+    }
     
     applyPreferences(newPreferences);
   };
@@ -104,10 +141,10 @@ export const useCookieConsent = () => {
     localStorage.removeItem(COOKIE_CONSENT_KEY);
     localStorage.removeItem(COOKIE_PREFERENCES_KEY);
     localStorage.removeItem(COOKIE_TIMESTAMP_KEY);
+    localStorage.removeItem(COOKIE_OPTIONS_KEY);
     setHasConsented(null);
     setShowBanner(true);
     
-    // Désactiver tous les services
     disableAllServices();
   };
 
@@ -136,24 +173,35 @@ export const useCookieConsent = () => {
     return timestamp ? new Date(timestamp) : null;
   };
 
+  const getExpiryDate = () => {
+    const timestamp = getConsentTimestamp();
+    if (timestamp) {
+      const expiryDate = new Date(timestamp);
+      expiryDate.setDate(expiryDate.getDate() + COOKIE_EXPIRY_DAYS);
+      return expiryDate;
+    }
+    return null;
+  };
+
   return {
     hasConsented,
     preferences,
+    options,
     showBanner,
     acceptAll,
     acceptNecessaryOnly,
     updatePreferences,
     resetConsent,
     getConsentTimestamp,
+    getExpiryDate,
   };
 };
 
 // Fonctions pour gérer les services externes
 const enableAnalytics = () => {
   console.log('Analytics activé - Google Analytics, Hotjar, etc.');
-  // Activer Google Analytics
-  if (typeof gtag !== 'undefined') {
-    gtag('consent', 'update', {
+  if (typeof window !== 'undefined' && window.gtag) {
+    window.gtag('consent', 'update', {
       'analytics_storage': 'granted'
     });
   }
@@ -161,8 +209,8 @@ const enableAnalytics = () => {
 
 const disableAnalytics = () => {
   console.log('Analytics désactivé');
-  if (typeof gtag !== 'undefined') {
-    gtag('consent', 'update', {
+  if (typeof window !== 'undefined' && window.gtag) {
+    window.gtag('consent', 'update', {
       'analytics_storage': 'denied'
     });
   }
@@ -170,8 +218,8 @@ const disableAnalytics = () => {
 
 const enableMarketing = () => {
   console.log('Marketing activé - Facebook Pixel, Google Ads, etc.');
-  if (typeof gtag !== 'undefined') {
-    gtag('consent', 'update', {
+  if (typeof window !== 'undefined' && window.gtag) {
+    window.gtag('consent', 'update', {
       'ad_storage': 'granted'
     });
   }
@@ -179,8 +227,8 @@ const enableMarketing = () => {
 
 const disableMarketing = () => {
   console.log('Marketing désactivé');
-  if (typeof gtag !== 'undefined') {
-    gtag('consent', 'update', {
+  if (typeof window !== 'undefined' && window.gtag) {
+    window.gtag('consent', 'update', {
       'ad_storage': 'denied'
     });
   }
