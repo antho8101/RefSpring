@@ -1,4 +1,3 @@
-
 import { Globe, TrendingUp, Github } from "lucide-react";
 import { Link } from "react-router-dom";
 import { LanguageSelector } from "@/components/LanguageSelector";
@@ -9,6 +8,7 @@ export const LandingFooter = () => {
 
   return (
     <footer className="py-16 px-4 sm:px-6 lg:px-8 bg-slate-900 border-t border-slate-800">
+      
       <div className="max-w-7xl mx-auto">
         <div className="grid md:grid-cols-5 gap-8">
           <div className="md:col-span-2">
@@ -61,7 +61,7 @@ export const LandingFooter = () => {
         <div className="border-t border-slate-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-slate-400">&copy; 2024 RefSpring. All rights reserved.</p>
           <div className="flex flex-col sm:flex-row items-center gap-4">
-            <div className="bg-white rounded-lg p-2">
+            <div className="bg-white rounded-xl p-3 shadow-lg">
               <LanguageSelector />
             </div>
             <div className="flex gap-6">
