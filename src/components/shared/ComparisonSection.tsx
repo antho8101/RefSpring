@@ -62,40 +62,40 @@ export const ComparisonSection = ({ onGetStarted, variant = 'landing' }: Compari
           </div>
 
           {/* RefSpring */}
-          <div className="bg-gradient-to-br from-green-50 to-blue-50 border-4 border-green-500 p-8 rounded-2xl shadow-2xl transform scale-105">
+          <div className="bg-gradient-to-br from-blue-50 to-purple-50 border-4 border-blue-500 p-8 rounded-2xl shadow-2xl transform scale-105">
             <div className="text-center mb-6">
-              <div className="bg-green-500 text-white px-4 py-2 rounded-full text-sm font-medium mb-4">
+              <div className="bg-blue-500 text-white px-4 py-2 rounded-full text-sm font-medium mb-4">
                 RefSpring
               </div>
-              <div className="text-4xl font-bold text-green-600 mb-2">
+              <div className="text-4xl font-bold text-blue-600 mb-2">
                 0€<span className="text-lg text-slate-500">/mois</span>
               </div>
               <p className="text-slate-600">2,5% sur vos gains uniquement</p>
             </div>
             <ul className="space-y-3 mb-6">
               <li className="flex items-center gap-3">
-                <Check className="w-5 h-5 text-green-500" />
+                <Check className="w-5 h-5 text-blue-500" />
                 <span className="font-semibold">Aucun frais fixe</span>
               </li>
               <li className="flex items-center gap-3">
-                <Check className="w-5 h-5 text-green-500" />
+                <Check className="w-5 h-5 text-blue-500" />
                 <span className="font-semibold">Aucun engagement</span>
               </li>
               <li className="flex items-center gap-3">
-                <Check className="w-5 h-5 text-green-500" />
+                <Check className="w-5 h-5 text-blue-500" />
                 <span className="font-semibold">Payez seulement si vous gagnez</span>
               </li>
               <li className="flex items-center gap-3">
-                <Check className="w-5 h-5 text-green-500" />
+                <Check className="w-5 h-5 text-blue-500" />
                 <span className="font-semibold">Risque zéro</span>
               </li>
               <li className="flex items-center gap-3">
-                <Check className="w-5 h-5 text-green-500" />
+                <Check className="w-5 h-5 text-blue-500" />
                 <span className="font-semibold">Toutes les fonctionnalités incluses</span>
               </li>
             </ul>
             <Button 
-              className="w-full bg-green-600 hover:bg-green-700 hover:scale-105 transition-all text-lg py-3" 
+              className="w-full bg-blue-600 hover:bg-blue-700 hover:scale-105 transition-all text-lg py-3" 
               onClick={onGetStarted}
             >
               {isLanding ? 'Commencer sans risque' : 'Commencer maintenant'}
