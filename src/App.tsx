@@ -1,3 +1,4 @@
+
 import { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from '@/contexts/AuthContext';
@@ -9,12 +10,11 @@ import { ErrorBoundary } from '@/components/ErrorBoundary';
 import '@/i18n';
 import PrivacyPage from '@/pages/PrivacyPage';
 import LegalPage from '@/pages/LegalPage';
+import { Dashboard } from '@/components/Dashboard';
 
 const Index = lazy(() => import('@/pages/Index'));
-const Dashboard = lazy(() => import('@/components/Dashboard'));
 const AdvancedStatsPage = lazy(() => import('@/pages/AdvancedStatsPage'));
 const AffiliatePage = lazy(() => import('@/pages/AffiliatePage'));
-const ShortLinkTrackingPage = lazy(() => import('@/pages/ShortLinkTrackingPage'));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -46,7 +46,6 @@ function App() {
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/campaign/:campaignId" element={<AdvancedStatsPage />} />
                     <Route path="/affiliate/:affiliateId" element={<AffiliatePage />} />
-                    <Route path="/s/:shortCode" element={<ShortLinkTrackingPage />} />
                     <Route path="/privacy" element={<PrivacyPage />} />
                     <Route path="/legal" element={<LegalPage />} />
                   </Routes>
