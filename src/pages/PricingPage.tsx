@@ -5,10 +5,10 @@ import { Helmet } from "react-helmet-async";
 import { RefSpringLogo } from "@/components/RefSpringLogo";
 import { Link } from "react-router-dom";
 import { PricingHeader } from "@/components/pricing/PricingHeader";
-import { ComparisonTable } from "@/components/pricing/ComparisonTable";
-import { InteractiveCalculator } from "@/components/pricing/InteractiveCalculator";
-import { TransparencySection } from "@/components/pricing/TransparencySection";
-import { PricingFAQ } from "@/components/pricing/PricingFAQ";
+import { ComparisonSection } from "@/components/shared/ComparisonSection";
+import { Calculator } from "@/components/shared/Calculator";
+import { TransparencySection } from "@/components/shared/TransparencySection";
+import { FAQ } from "@/components/shared/FAQ";
 import { PricingCTA } from "@/components/pricing/PricingCTA";
 import { PricingFooter } from "@/components/pricing/PricingFooter";
 
@@ -82,10 +82,10 @@ const PricingPage = () => {
         {/* Main Content starts right after header */}
         <div className="pt-16">
           <PricingHeader />
-          <ComparisonTable onGetStarted={redirectToDashboard} />
-          <InteractiveCalculator />
-          <TransparencySection />
-          <PricingFAQ />
+          <ComparisonSection onGetStarted={redirectToDashboard} variant="pricing" />
+          <Calculator variant="pricing" />
+          <TransparencySection variant="pricing" />
+          <FAQ variant="pricing" />
           <PricingCTA onGetStarted={redirectToDashboard} />
           <PricingFooter />
         </div>

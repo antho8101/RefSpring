@@ -1,16 +1,25 @@
 
 import { Check } from "lucide-react";
 
-export const TransparencySection = () => {
+interface TransparencySectionProps {
+  variant?: 'landing' | 'pricing';
+}
+
+export const TransparencySection = ({ variant = 'landing' }: TransparencySectionProps) => {
+  const isLanding = variant === 'landing';
+  
   return (
-    <section className="py-24 px-4 sm:px-6 lg:px-8 bg-white">
+    <section className={`py-24 px-4 sm:px-6 lg:px-8 ${isLanding ? 'bg-white' : 'bg-gradient-to-b from-white to-slate-50'}`}>
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6">
             Comment fonctionnent nos 2,5% ?
           </h2>
           <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
-            Transparence totale : vous ne payez que si vous gagnez plus de 20€
+            {isLanding 
+              ? 'Transparence totale : vous ne payez que si vous gagnez plus de 20€'
+              : 'Transparence totale sur notre modèle de facturation'
+            }
           </p>
         </div>
 
@@ -22,8 +31,15 @@ export const TransparencySection = () => {
                   <span className="text-blue-600 font-bold text-sm">1</span>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-slate-900 mb-2">Vos affiliés génèrent des ventes</h3>
-                  <p className="text-slate-600">Ils font des ventes, vous gagnez de l'argent grâce à vos commissions.</p>
+                  <h3 className="font-semibold text-slate-900 mb-2">
+                    {isLanding ? 'Vos affiliés génèrent des ventes' : 'Vous générez des commissions'}
+                  </h3>
+                  <p className="text-slate-600">
+                    {isLanding 
+                      ? 'Ils font des ventes, vous gagnez de l\'argent grâce à vos commissions.'
+                      : 'Vos affiliés font des ventes, vous gagnez de l\'argent.'
+                    }
+                  </p>
                 </div>
               </div>
 
@@ -33,7 +49,12 @@ export const TransparencySection = () => {
                 </div>
                 <div>
                   <h3 className="font-semibold text-slate-900 mb-2">Seuil de 20€ atteint ?</h3>
-                  <p className="text-slate-600">Si vous gagnez moins de 20€ dans le mois, nous ne facturons rien.</p>
+                  <p className="text-slate-600">
+                    {isLanding
+                      ? 'Si vous gagnez moins de 20€ dans le mois, nous ne facturons rien.'
+                      : 'Nous facturons seulement si vous avez gagné plus de 20€ dans le mois.'
+                    }
+                  </p>
                 </div>
               </div>
 
@@ -42,8 +63,15 @@ export const TransparencySection = () => {
                   <span className="text-blue-600 font-bold text-sm">3</span>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-slate-900 mb-2">Facturation automatique</h3>
-                  <p className="text-slate-600">Le 5 du mois suivant, facture de 2,5% sur vos gains du mois précédent.</p>
+                  <h3 className="font-semibold text-slate-900 mb-2">
+                    {isLanding ? 'Facturation automatique' : 'Facturation le 5 du mois'}
+                  </h3>
+                  <p className="text-slate-600">
+                    {isLanding
+                      ? 'Le 5 du mois suivant, facture de 2,5% sur vos gains du mois précédent.'
+                      : 'Facture automatique de 2,5% sur vos gains du mois précédent.'
+                    }
+                  </p>
                 </div>
               </div>
 
@@ -53,7 +81,12 @@ export const TransparencySection = () => {
                 </div>
                 <div>
                   <h3 className="font-semibold text-slate-900 mb-2">Vous gardez 97,5%</h3>
-                  <p className="text-slate-600">Le reste est entièrement pour vous. Aucun frais caché, jamais.</p>
+                  <p className="text-slate-600">
+                    {isLanding
+                      ? 'Le reste est entièrement pour vous. Aucun frais caché, jamais.'
+                      : 'Le reste est entièrement pour vous. Aucun frais caché.'
+                    }
+                  </p>
                 </div>
               </div>
             </div>
