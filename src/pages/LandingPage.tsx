@@ -1,12 +1,10 @@
-
 import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { LandingHeader } from "@/components/landing/LandingHeader";
 import { HeroSection } from "@/components/landing/HeroSection";
-import { ComparisonSection } from "@/components/shared/ComparisonSection";
+import { StorySection } from "@/components/landing/StorySection";
 import { TransparencySection } from "@/components/shared/TransparencySection";
 import { Calculator } from "@/components/shared/Calculator";
-import { StorySection } from "@/components/landing/StorySection";
 import { DashboardPreview } from "@/components/landing/DashboardPreview";
 import { TestimonialsSection } from "@/components/landing/TestimonialsSection";
 import { FeaturesSection } from "@/components/landing/FeaturesSection";
@@ -58,19 +56,15 @@ const LandingPage = () => {
   return (
     <>
       <Helmet>
-        {/* Title et Description */}
         <title>RefSpring - Plateforme d'Affiliation Sans Frais Mensuels | Modèle Basé sur les Revenus</title>
         <meta name="description" content="RefSpring révolutionne l'affiliation : 0€ de frais mensuels, accès complet gratuit. Nous gagnons seulement quand vous gagnez. +50M€ générés, 0€ d'avance." />
         
-        {/* Mots-clés */}
         <meta name="keywords" content="affiliation, plateforme affiliation, marketing affiliation, commission affiliation, programme affiliation, revenus passifs, SaaS affiliation, tracking affiliation" />
         
-        {/* Données structurées */}
         <script type="application/ld+json">
           {JSON.stringify(structuredData)}
         </script>
         
-        {/* Open Graph optimisé */}
         <meta property="og:title" content="RefSpring - La Plateforme d'Affiliation qui Paie pour Elle-Même" />
         <meta property="og:description" content="Contrairement aux plateformes à 99-299€/mois, RefSpring utilise un modèle basé sur les revenus : 100% gratuit, nous gagnons seulement quand vous gagnez." />
         <meta property="og:type" content="website" />
@@ -81,7 +75,6 @@ const LandingPage = () => {
         <meta property="og:site_name" content="RefSpring" />
         <meta property="og:locale" content="fr_FR" />
         
-        {/* Twitter Cards */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content="@refspring" />
         <meta name="twitter:creator" content="@refspring" />
@@ -89,29 +82,23 @@ const LandingPage = () => {
         <meta name="twitter:description" content="0€ de frais mensuels, 100% gratuit. Nous gagnons seulement quand vous gagnez. +50M€ générés." />
         <meta name="twitter:image" content="https://refspring.com/og-image.jpg" />
         
-        {/* Canonical et liens */}
         <link rel="canonical" href="https://refspring.com" />
         <link rel="alternate" hrefLang="fr" href="https://refspring.com" />
         <link rel="alternate" hrefLang="en" href="https://refspring.com/en" />
         
-        {/* Robots et indexation */}
         <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
         <meta name="googlebot" content="index, follow" />
         
-        {/* Performance et cache */}
         <meta httpEquiv="Cache-Control" content="public, max-age=31536000" />
         
-        {/* Favicon et icons */}
         <link rel="icon" type="image/x-icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
         
-        {/* Preconnect pour performance */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </Helmet>
 
       <div className="min-h-screen bg-white overflow-hidden">
-        {/* Floating Background Elements */}
         <div className="fixed inset-0 pointer-events-none">
           <div 
             className="absolute top-20 right-10 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl animate-pulse"
@@ -129,10 +116,9 @@ const LandingPage = () => {
 
         <LandingHeader onRedirectToDashboard={redirectToDashboard} />
         <HeroSection scrollY={scrollY} onRedirectToDashboard={redirectToDashboard} />
-        <ComparisonSection onGetStarted={redirectToDashboard} variant="landing" />
+        <StorySection />
         <TransparencySection variant="landing" />
         <Calculator variant="landing" />
-        <StorySection />
         <DashboardPreview />
         <TestimonialsSection />
         <FeaturesSection />
