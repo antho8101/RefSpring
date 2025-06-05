@@ -1,13 +1,16 @@
-
 import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { LandingHeader } from "@/components/landing/LandingHeader";
 import { HeroSection } from "@/components/landing/HeroSection";
+import { ComparisonSection } from "@/components/landing/ComparisonSection";
+import { TransparencySection } from "@/components/landing/TransparencySection";
+import { SimpleCalculator } from "@/components/landing/SimpleCalculator";
 import { StorySection } from "@/components/landing/StorySection";
 import { DashboardPreview } from "@/components/landing/DashboardPreview";
 import { TestimonialsSection } from "@/components/landing/TestimonialsSection";
 import { FeaturesSection } from "@/components/landing/FeaturesSection";
 import { StatsSection } from "@/components/landing/StatsSection";
+import { LandingFAQ } from "@/components/landing/LandingFAQ";
 import { CTASection } from "@/components/landing/CTASection";
 import { LandingFooter } from "@/components/landing/LandingFooter";
 
@@ -125,11 +128,15 @@ const LandingPage = () => {
 
         <LandingHeader onRedirectToDashboard={redirectToDashboard} />
         <HeroSection scrollY={scrollY} onRedirectToDashboard={redirectToDashboard} />
+        <ComparisonSection onGetStarted={redirectToDashboard} />
+        <TransparencySection />
+        <SimpleCalculator />
         <StorySection />
         <DashboardPreview />
         <TestimonialsSection />
         <FeaturesSection />
         <StatsSection />
+        <LandingFAQ />
         <CTASection onRedirectToDashboard={redirectToDashboard} />
         <LandingFooter />
       </div>

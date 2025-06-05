@@ -6,22 +6,22 @@ export const TestimonialsSection = () => {
     {
       name: "Marie Laurent",
       company: "TechFlow SaaS",
-      revenue: "€45K",
-      quote: "We went from €0 to €45K in affiliate revenue in 6 months. The fact that RefSpring only earns when we earn made the decision so easy.",
+      revenue: "€12K",
+      quote: "En 4 mois, je suis passée de 0€ à 12K€ de revenus d'affiliation. Le fait que RefSpring ne gagne que quand je gagne m'a convaincue immédiatement.",
       avatar: "ML"
     },
     {
       name: "Thomas Dubois", 
       company: "EcoCommerce",
-      revenue: "€78K",
-      quote: "No monthly fees means we could test and scale without fear. Our affiliate program now generates more revenue than our direct sales.",
+      revenue: "€28K",
+      quote: "Fini les 299€/mois à payer sans savoir si ça va marcher. Mon programme d'affiliation génère maintenant plus que mes ventes directes.",
       avatar: "TD"
     },
     {
       name: "Sophie Chen",
       company: "FinanceApp",
-      revenue: "€120K",
-      quote: "RefSpring's transparent model aligned perfectly with our startup mindset. We only pay for actual results, not promises.",
+      revenue: "€45K",
+      quote: "Le modèle transparent de RefSpring correspond parfaitement à ma mentalité d'entrepreneur. Je paie seulement pour les résultats, pas pour des promesses.",
       avatar: "SC"
     }
   ];
@@ -31,10 +31,10 @@ export const TestimonialsSection = () => {
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6">
-            Success stories that inspire
+            Des entrepreneurs qui réussissent
           </h2>
           <p className="text-xl text-slate-600 max-w-3xl mx-auto">
-            Real companies, real results, real revenue growth.
+            Découvrez comment d'autres solo-preneurs et petites équipes développent leurs revenus avec RefSpring
           </p>
         </div>
         
@@ -59,6 +59,12 @@ export const TestimonialsSection = () => {
               <p className="text-slate-600 leading-relaxed italic">"{testimonial.quote}"</p>
             </div>
           ))}
+        </div>
+        
+        <div className="text-center mt-12 p-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl border border-blue-100">
+          <p className="text-slate-600 text-lg">
+            <strong>Rejoignez plus de 2 400+ entrepreneurs</strong> qui ont choisi un modèle équitable pour développer leurs revenus d'affiliation.
+          </p>
         </div>
       </div>
     </section>
