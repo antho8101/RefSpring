@@ -9,7 +9,7 @@ interface HeroSectionProps {
 
 export const HeroSection = ({ scrollY, onRedirectToDashboard }: HeroSectionProps) => {
   return (
-    <section className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50/50 via-white to-purple-50/50 relative">
+    <section className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50/50 via-white to-purple-50/50 relative py-12">
       {/* Animated Grid Background */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px] animate-pulse"></div>
       
@@ -34,7 +34,7 @@ export const HeroSection = ({ scrollY, onRedirectToDashboard }: HeroSectionProps
       </div>
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-        <div className="animate-fade-in space-y-8">
+        <div className="animate-fade-in space-y-12">
           {/* Badge */}
           <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-100 to-purple-100 text-blue-800 px-6 py-3 rounded-full text-sm font-medium border border-blue-200/50 backdrop-blur-sm animate-scale-in">
             <CheckCircle className="w-4 h-4" />
