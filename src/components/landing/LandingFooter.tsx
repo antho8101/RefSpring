@@ -1,3 +1,4 @@
+
 import { Globe, TrendingUp, Github } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -32,22 +33,24 @@ export const LandingFooter = () => {
           <div>
             <h3 className="font-semibold text-white mb-4">Product</h3>
             <ul className="space-y-3 text-slate-400">
-              <li><a href="#features" className="hover:text-white transition-colors">Fonctionnalités</a></li>
-              <li><a href="#dashboard" className="hover:text-white transition-colors">Dashboard</a></li>
+              <li><Link to="/#features" className="hover:text-white transition-colors">Fonctionnalités</Link></li>
+              <li><Link to="/pricing" className="hover:text-white transition-colors">Tarifs</Link></li>
+              <li><Link to="/#dashboard" className="hover:text-white transition-colors">Dashboard</Link></li>
             </ul>
           </div>
           <div>
             <h3 className="font-semibold text-white mb-4">Company</h3>
             <ul className="space-y-3 text-slate-400">
-              <li><a href="#" className="hover:text-white transition-colors">About</a></li>
+              <li><Link to="/about" className="hover:text-white transition-colors">À propos</Link></li>
+              <li><Link to="/contact" className="hover:text-white transition-colors">Contact</Link></li>
               <li><a href="#" className="hover:text-white transition-colors">Careers</a></li>
             </ul>
           </div>
           <div>
             <h3 className="font-semibold text-white mb-4">Support</h3>
             <ul className="space-y-3 text-slate-400">
-              <li><a href="#" className="hover:text-white transition-colors">Help Center</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Contact</a></li>
+              <li><Link to="/contact" className="hover:text-white transition-colors">Help Center</Link></li>
+              <li><Link to="/contact" className="hover:text-white transition-colors">Contact</Link></li>
               <li><Link to="/status" className="hover:text-white transition-colors">Status</Link></li>
             </ul>
           </div>

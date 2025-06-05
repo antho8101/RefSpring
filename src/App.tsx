@@ -15,6 +15,8 @@ import SecurityPage from '@/pages/SecurityPage';
 import StatusPage from '@/pages/StatusPage';
 import LandingPage from '@/pages/LandingPage';
 import PricingPage from '@/pages/PricingPage';
+import AboutPage from '@/pages/AboutPage';
+import ContactPage from '@/pages/ContactPage';
 import { Dashboard } from '@/components/Dashboard';
 
 const Index = lazy(() => import('@/pages/Index'));
@@ -49,6 +51,8 @@ function App() {
                   <Routes>
                     <Route path="/" element={<LandingPage />} />
                     <Route path="/pricing" element={<PricingPage />} />
+                    <Route path="/about" element={<AboutPage />} />
+                    <Route path="/contact" element={<ContactPage />} />
                     <Route path="/app" element={<Index />} />
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/campaign/:campaignId" element={<AdvancedStatsPage />} />

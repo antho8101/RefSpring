@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { UnifiedHeader } from "@/components/shared/UnifiedHeader";
+import { LandingHeader } from "@/components/landing/LandingHeader";
 import { HeroSection } from "@/components/landing/HeroSection";
 import { StorySection } from "@/components/landing/StorySection";
 import { DashboardPreview } from "@/components/landing/DashboardPreview";
@@ -111,7 +111,7 @@ const LandingPage = () => {
           ></div>
         </div>
 
-        <UnifiedHeader onRedirectToDashboard={redirectToDashboard} currentPage="landing" />
+        <LandingHeader onRedirectToDashboard={redirectToDashboard} />
         <HeroSection scrollY={scrollY} onRedirectToDashboard={redirectToDashboard} />
         <StorySection />
         <DashboardPreview />

@@ -8,7 +8,7 @@ import { Calculator } from "@/components/shared/Calculator";
 import { TransparencySection } from "@/components/shared/TransparencySection";
 import { FAQ } from "@/components/shared/FAQ";
 import { PricingCTA } from "@/components/pricing/PricingCTA";
-import { PricingFooter } from "@/components/pricing/PricingFooter";
+import { LandingFooter } from "@/components/landing/LandingFooter";
 
 const PricingPage = () => {
   const [scrollY, setScrollY] = useState(0);
@@ -57,7 +57,7 @@ const PricingPage = () => {
           <TransparencySection variant="pricing" />
           <FAQ variant="pricing" />
           <PricingCTA onGetStarted={redirectToDashboard} />
-          <PricingFooter />
+          <LandingFooter />
         </div>
       </div>
     </>
