@@ -3,12 +3,10 @@ import { Helmet } from "react-helmet-async";
 import { LandingHeader } from "@/components/landing/LandingHeader";
 import { HeroSection } from "@/components/landing/HeroSection";
 import { StorySection } from "@/components/landing/StorySection";
-import { TransparencySection } from "@/components/shared/TransparencySection";
 import { DashboardPreview } from "@/components/landing/DashboardPreview";
 import { TestimonialsSection } from "@/components/landing/TestimonialsSection";
 import { FeaturesSection } from "@/components/landing/FeaturesSection";
 import { StatsSection } from "@/components/landing/StatsSection";
-import { FAQ } from "@/components/shared/FAQ";
 import { CTASection } from "@/components/landing/CTASection";
 import { LandingFooter } from "@/components/landing/LandingFooter";
 
@@ -116,12 +114,10 @@ const LandingPage = () => {
         <LandingHeader onRedirectToDashboard={redirectToDashboard} />
         <HeroSection scrollY={scrollY} onRedirectToDashboard={redirectToDashboard} />
         <StorySection />
-        <TransparencySection variant="landing" />
         <DashboardPreview />
         <TestimonialsSection />
         <FeaturesSection />
         <StatsSection />
-        <FAQ variant="landing" />
         <CTASection onRedirectToDashboard={redirectToDashboard} />
         <LandingFooter />
       </div>
