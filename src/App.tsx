@@ -1,106 +1,66 @@
-
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { useEffect, lazy, Suspense } from "react";
-import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { HelmetProvider } from 'react-helmet-async';
+import { Suspense, lazy } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from '@/contexts/AuthContext';
-import './i18n';
+import { Toaster } from '@/components/ui/toaster';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Helmet, HelmetProvider } from 'react-helmet-async';
+import { CookieBanner } from '@/components/CookieBanner';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
+import '@/i18n';
+import PrivacyPage from '@/pages/PrivacyPage';
+import LegalPage from '@/pages/LegalPage';
 
-// Lazy loading des composants de page
-const Index = lazy(() => import("./pages/Index"));
-const NotFound = lazy(() => import("./pages/NotFound"));
-const AffiliatePage = lazy(() => import("./pages/AffiliatePage"));
-const TrackingPage = lazy(() => import("./pages/TrackingPage"));
-const ShortLinkPage = lazy(() => import("./pages/ShortLinkPage"));
-const LandingPage = lazy(() => import("./pages/LandingPage"));
-const PricingPage = lazy(() => import("./pages/PricingPage"));
-const TrackingJsRoute = lazy(() => import("./pages/TrackingJsRoute"));
-const TestProductsPage = lazy(() => import("./pages/TestProductsPage"));
-const TestThankYouPage = lazy(() => import("./pages/TestThankYouPage"));
-const AdvancedStatsPage = lazy(() => import("./pages/AdvancedStatsPage"));
-const PaymentSuccessPage = lazy(() => import("./pages/PaymentSuccessPage"));
+const Index = lazy(() => import('@/pages/Index'));
+const Dashboard = lazy(() => import('@/components/Dashboard'));
+const AdvancedStatsPage = lazy(() => import('@/pages/AdvancedStatsPage'));
+const AffiliatePage = lazy(() => import('@/pages/AffiliatePage'));
+const ShortLinkTrackingPage = lazy(() => import('@/pages/ShortLinkTrackingPage'));
 
-// QueryClient simplifié
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 30 * 1000, // 30 secondes seulement
-      retry: 1, // Moins de retry
+      retry: 1,
       refetchOnWindowFocus: false,
     },
   },
 });
 
-// Composant de loading ultra-simple
-const FastLoader = () => (
-  <div className="min-h-screen bg-white flex items-center justify-center">
-    <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-  </div>
-);
-
-const DomainRouter = () => {
-  const hostname = window.location.hostname;
-  const currentPath = window.location.pathname;
-
-  useEffect(() => {
-    if (hostname === 'dashboard.refspring.com' && currentPath === '/') {
-      window.location.replace('/dashboard');
-    }
-  }, [hostname, currentPath]);
-
+function App() {
   return (
     <ErrorBoundary>
-      <Suspense fallback={<FastLoader />}>
-        <Routes>
-          <Route path="/" element={
-            hostname === 'dashboard.refspring.com' 
-              ? <Navigate to="/dashboard" replace />
-              : <LandingPage />
-          } />
-          
-          <Route path="/pricing" element={<PricingPage />} />
-          <Route path="/dashboard" element={<Index />} />
-          <Route path="/advanced-stats" element={<AdvancedStatsPage />} />
-          <Route path="/advanced-stats/:campaignId" element={<AdvancedStatsPage />} />
-          
-          <Route path="/payment-success" element={<PaymentSuccessPage />} />
-          
-          <Route path="/tracking.js" element={<TrackingJsRoute />} />
-          
-          <Route path="/test-products" element={<TestProductsPage />} />
-          <Route path="/test-thankyou" element={<TestThankYouPage />} />
-          
-          <Route path="/r/:campaignId" element={<AffiliatePage />} />
-          <Route path="/track/:campaignId/:affiliateId" element={<TrackingPage />} />
-          <Route path="/s/:shortCode" element={<ShortLinkPage />} />
-          
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </Suspense>
+      <HelmetProvider>
+        <QueryClientProvider client={queryClient}>
+          <AuthProvider>
+            <Router>
+              <Helmet>
+                <title>RefSpring - Plateforme d'affiliation</title>
+                <meta name="description" content="Gérez vos programmes d'affiliation avec RefSpring" />
+              </Helmet>
+              
+              <div className="App">
+                <Suspense fallback={<div className="min-h-screen bg-white flex items-center justify-center">
+                  <div className="animate-spin rounded-full h-8 w-8 border-2 border-blue-600 border-t-transparent"></div>
+                </div>}>
+                  <Routes>
+                    <Route path="/" element={<Index />} />
+                    <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/campaign/:campaignId" element={<AdvancedStatsPage />} />
+                    <Route path="/affiliate/:affiliateId" element={<AffiliatePage />} />
+                    <Route path="/s/:shortCode" element={<ShortLinkTrackingPage />} />
+                    <Route path="/privacy" element={<PrivacyPage />} />
+                    <Route path="/legal" element={<LegalPage />} />
+                  </Routes>
+                </Suspense>
+                
+                <CookieBanner />
+                <Toaster />
+              </div>
+            </Router>
+          </AuthProvider>
+        </QueryClientProvider>
+      </HelmetProvider>
     </ErrorBoundary>
   );
-};
-
-const App = () => (
-  <ErrorBoundary>
-    <HelmetProvider>
-      <AuthProvider>
-        <QueryClientProvider client={queryClient}>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
-              <DomainRouter />
-            </BrowserRouter>
-          </TooltipProvider>
-        </QueryClientProvider>
-      </AuthProvider>
-    </HelmetProvider>
-  </ErrorBoundary>
-);
+}
 
 export default App;
