@@ -15,22 +15,22 @@ export const ComparisonSection = ({ onGetStarted, variant = 'landing' }: Compari
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6">
-            {isLanding ? 'Pourquoi payer avant de gagner ?' : 'Comparez les approches'}
+            {isLanding ? 'Pourquoi payer avant de gagner ?' : 'RefSpring vs les autres plateformes'}
           </h2>
           <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
             {isLanding 
               ? 'Comparez les modèles : nous sommes les seuls à ne facturer que sur vos réussites'
-              : 'Découvrez les différences entre les modèles du marché'
+              : 'Il y a RefSpring et il y a les autres, c\'est tout'
             }
           </p>
         </div>
 
-        <div className={`grid ${isLanding ? 'md:grid-cols-2' : 'md:grid-cols-3'} gap-8 max-w-4xl mx-auto`}>
-          {/* Traditional Model */}
+        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          {/* Traditional Model - All Others */}
           <div className="bg-white border-2 border-slate-200 p-8 rounded-2xl shadow-lg">
             <div className="text-center mb-6">
               <div className="bg-slate-100 text-slate-600 px-4 py-2 rounded-full text-sm font-medium mb-4">
-                Modèle traditionnel
+                Toutes les autres plateformes
               </div>
               <div className="text-4xl font-bold text-slate-600 mb-2">
                 99-299€<span className="text-lg text-slate-500">/mois</span>
@@ -53,6 +53,10 @@ export const ComparisonSection = ({ onGetStarted, variant = 'landing' }: Compari
               <li className="flex items-center gap-3">
                 <X className="w-5 h-5 text-red-500" />
                 <span>Risque financier élevé</span>
+              </li>
+              <li className="flex items-center gap-3">
+                <X className="w-5 h-5 text-red-500" />
+                <span>Fonctionnalités bridées en freemium</span>
               </li>
             </ul>
           </div>
@@ -85,6 +89,10 @@ export const ComparisonSection = ({ onGetStarted, variant = 'landing' }: Compari
                 <Check className="w-5 h-5 text-green-500" />
                 <span className="font-semibold">Risque zéro</span>
               </li>
+              <li className="flex items-center gap-3">
+                <Check className="w-5 h-5 text-green-500" />
+                <span className="font-semibold">Toutes les fonctionnalités incluses</span>
+              </li>
             </ul>
             <Button 
               className="w-full bg-green-600 hover:bg-green-700 hover:scale-105 transition-all text-lg py-3" 
@@ -93,39 +101,6 @@ export const ComparisonSection = ({ onGetStarted, variant = 'landing' }: Compari
               {isLanding ? 'Commencer sans risque' : 'Commencer maintenant'}
             </Button>
           </div>
-
-          {/* Freemium - only for pricing page */}
-          {!isLanding && (
-            <div className="bg-white border-2 border-blue-200 p-8 rounded-2xl shadow-lg">
-              <div className="text-center mb-6">
-                <div className="bg-blue-500 text-white px-4 py-2 rounded-full text-sm font-medium mb-4">
-                  Modèle freemium
-                </div>
-                <div className="text-4xl font-bold text-blue-600 mb-2">
-                  0€<span className="text-lg text-slate-500">/mois</span>
-                </div>
-                <p className="text-slate-500">Limites importantes</p>
-              </div>
-              <ul className="space-y-3 mb-6">
-                <li className="flex items-center gap-3">
-                  <X className="w-5 h-5 text-blue-500" />
-                  <span>Fonctionnalités limitées</span>
-                </li>
-                <li className="flex items-center gap-3">
-                  <X className="w-5 h-5 text-blue-500" />
-                  <span>Support restreint</span>
-                </li>
-                <li className="flex items-center gap-3">
-                  <X className="w-5 h-5 text-blue-500" />
-                  <span>Branding de la plateforme</span>
-                </li>
-                <li className="flex items-center gap-3">
-                  <X className="w-5 h-5 text-blue-500" />
-                  <span>Limites de volume</span>
-                </li>
-              </ul>
-            </div>
-          )}
         </div>
       </div>
     </section>
