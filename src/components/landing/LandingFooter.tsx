@@ -1,4 +1,3 @@
-
 import { Globe, TrendingUp, Github } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -49,7 +48,7 @@ export const LandingFooter = () => {
             <ul className="space-y-3 text-slate-400">
               <li><a href="#" className="hover:text-white transition-colors">Help Center</a></li>
               <li><a href="#" className="hover:text-white transition-colors">Contact</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Status</a></li>
+              <li><Link to="/status" className="hover:text-white transition-colors">Status</Link></li>
             </ul>
           </div>
         </div>
