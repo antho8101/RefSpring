@@ -33,8 +33,8 @@ export const CookieBanner = () => {
                   <Link to="/privacy" className="text-blue-600 hover:underline">
                     Politique de confidentialité
                   </Link>
-                  <Link to="/legal" className="text-blue-600 hover:underline">
-                    Mentions légales
+                  <Link to="/terms" className="text-blue-600 hover:underline">
+                    Conditions d'utilisation
                   </Link>
                 </div>
               </div>

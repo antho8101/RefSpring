@@ -21,8 +21,11 @@ export const GDPRFooter = () => {
               <Link to="/privacy" className="hover:text-slate-900">
                 Politique de confidentialité
               </Link>
-              <Link to="/legal" className="hover:text-slate-900">
-                Mentions légales
+              <Link to="/terms" className="hover:text-slate-900">
+                Conditions d'utilisation
+              </Link>
+              <Link to="/security" className="hover:text-slate-900">
+                Sécurité
               </Link>
               <button 
                 onClick={() => setShowPreferences(true)}

@@ -10,6 +10,8 @@ import { ErrorBoundary } from '@/components/ErrorBoundary';
 import '@/i18n';
 import PrivacyPage from '@/pages/PrivacyPage';
 import LegalPage from '@/pages/LegalPage';
+import TermsPage from '@/pages/TermsPage';
+import SecurityPage from '@/pages/SecurityPage';
 import LandingPage from '@/pages/LandingPage';
 import PricingPage from '@/pages/PricingPage';
 import { Dashboard } from '@/components/Dashboard';
@@ -51,6 +53,8 @@ function App() {
                     <Route path="/campaign/:campaignId" element={<AdvancedStatsPage />} />
                     <Route path="/affiliate/:affiliateId" element={<AffiliatePage />} />
                     <Route path="/privacy" element={<PrivacyPage />} />
+                    <Route path="/terms" element={<TermsPage />} />
+                    <Route path="/security" element={<SecurityPage />} />
                     <Route path="/legal" element={<LegalPage />} />
                   </Routes>
                 </Suspense>

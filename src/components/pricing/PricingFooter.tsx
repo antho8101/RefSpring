@@ -1,3 +1,4 @@
+
 import { Link } from "react-router-dom";
 import { Globe, TrendingUp, Github } from "lucide-react";
 
@@ -58,9 +59,9 @@ export const PricingFooter = () => {
         <div className="border-t border-slate-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
           <p className="text-slate-400">&copy; 2024 RefSpring. All rights reserved.</p>
           <div className="flex gap-6 mt-4 md:mt-0">
-            <a href="#" className="text-slate-400 hover:text-white transition-colors">Privacy</a>
-            <a href="#" className="text-slate-400 hover:text-white transition-colors">Terms</a>
-            <a href="#" className="text-slate-400 hover:text-white transition-colors">Security</a>
+            <Link to="/privacy" className="text-slate-400 hover:text-white transition-colors">Privacy</Link>
+            <Link to="/terms" className="text-slate-400 hover:text-white transition-colors">Terms</Link>
+            <Link to="/security" className="text-slate-400 hover:text-white transition-colors">Security</Link>
           </div>
         </div>
       </div>
