@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Zap, Users, BarChart3, Shield, CheckCircle, Star, TrendingUp, DollarSign, Clock, Globe, Award } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -197,9 +198,9 @@ const LandingPage = () => {
               </h1>
               
               <p className="text-xl md:text-2xl text-slate-600 mb-12 max-w-4xl mx-auto leading-relaxed animate-fade-in" style={{ animationDelay: '0.2s' }}>
-                Contrairement aux autres plateformes facturant 99-299€/mois, RefSpring utilise un <strong>modèle basé sur les revenus</strong> : 
+                <strong>Modèle basé sur les revenus :</strong> 
                 <br />
-                <span className="text-slate-900 font-semibold">100% d'accès gratuit, nous gagnons seulement quand vous gagnez.</span>
+                <span className="text-slate-900 font-semibold">Accès gratuit, nous gagnons seulement quand vous gagnez.</span>
               </p>
 
               {/* Value props with animations */}
