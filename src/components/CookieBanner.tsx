@@ -16,7 +16,7 @@ export const CookieBanner = () => {
   return (
     <>
       <div className="fixed bottom-0 left-0 right-0 z-50 p-4 bg-black/50 backdrop-blur-sm">
-        <Card className="max-w-4xl mx-auto p-6 bg-white shadow-xl border border-slate-200">
+        <Card className="max-w-4xl mx-auto p-6 bg-white shadow-xl border border-slate-200 rounded-2xl">
           <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center">
             <div className="flex items-start gap-3 flex-1">
               <Cookie className="h-6 w-6 text-blue-600 flex-shrink-0 mt-1" />
@@ -45,7 +45,7 @@ export const CookieBanner = () => {
                 variant="outline"
                 size="sm"
                 onClick={() => setShowPreferences(true)}
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 rounded-xl"
               >
                 <Settings className="h-4 w-4" />
                 Personnaliser
@@ -54,13 +54,14 @@ export const CookieBanner = () => {
                 variant="outline"
                 size="sm"
                 onClick={acceptNecessaryOnly}
+                className="rounded-xl"
               >
                 Nécessaires uniquement
               </Button>
               <Button
                 size="sm"
                 onClick={acceptAll}
-                className="bg-blue-600 hover:bg-blue-700 text-white"
+                className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl"
               >
                 Accepter tout
               </Button>
