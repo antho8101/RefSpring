@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import { UnifiedHeader } from "@/components/shared/UnifiedHeader";
 import { PricingHeader } from "@/components/pricing/PricingHeader";
-import { ComparisonSection } from "@/components/shared/ComparisonSection";
 import { Calculator } from "@/components/shared/Calculator";
 import { TransparencySection } from "@/components/shared/TransparencySection";
 import { FAQ } from "@/components/shared/FAQ";
@@ -53,8 +52,7 @@ const PricingPage = () => {
 
         {/* Main Content starts right after header */}
         <div className="pt-16">
-          <PricingHeader />
-          <ComparisonSection onGetStarted={redirectToDashboard} variant="pricing" />
+          <PricingHeader onGetStarted={redirectToDashboard} />
           <Calculator variant="pricing" />
           <TransparencySection variant="pricing" />
           <FAQ variant="pricing" />
