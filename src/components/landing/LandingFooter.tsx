@@ -1,3 +1,4 @@
+
 import { Globe, TrendingUp, Github } from "lucide-react";
 import { Link } from "react-router-dom";
 import { LanguageSelector } from "@/components/LanguageSelector";
@@ -61,8 +62,8 @@ export const LandingFooter = () => {
         <div className="border-t border-slate-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-slate-400">&copy; 2024 RefSpring. All rights reserved.</p>
           <div className="flex flex-col sm:flex-row items-center gap-4">
-            <div className="bg-white rounded-xl p-3 shadow-lg">
-              <LanguageSelector />
+            <div className="bg-slate-800 rounded-xl p-3 shadow-lg border border-slate-700">
+              <LanguageSelector variant="dark" />
             </div>
             <div className="flex gap-6">
               <Link to="/privacy" className="text-slate-400 hover:text-white transition-colors">Privacy</Link>

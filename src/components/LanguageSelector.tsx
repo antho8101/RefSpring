@@ -3,7 +3,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useTranslation } from 'react-i18next';
 import { Globe } from 'lucide-react';
 
-export const LanguageSelector = () => {
+interface LanguageSelectorProps {
+  variant?: 'default' | 'dark';
+}
+
+export const LanguageSelector = ({ variant = 'default' }: LanguageSelectorProps) => {
   const { i18n } = useTranslation();
 
   const languages = [
@@ -16,11 +20,13 @@ export const LanguageSelector = () => {
 
   const currentLanguage = languages.find(lang => lang.code === i18n.language) || languages[0];
 
+  const isDark = variant === 'dark';
+
   return (
     <div className="flex items-center gap-2">
-      <Globe className="h-4 w-4 text-slate-600" />
+      <Globe className={`h-4 w-4 ${isDark ? 'text-white' : 'text-slate-600'}`} />
       <Select value={i18n.language} onValueChange={(value) => i18n.changeLanguage(value)}>
-        <SelectTrigger className="w-[140px] border-slate-200">
+        <SelectTrigger className={`w-[140px] ${isDark ? 'border-slate-600 bg-slate-800 text-white' : 'border-slate-200'}`}>
           <SelectValue>
             <div className="flex items-center gap-2">
               <span>{currentLanguage.flag}</span>
