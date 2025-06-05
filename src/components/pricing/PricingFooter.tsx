@@ -34,8 +34,6 @@ export const PricingFooter = () => {
             <ul className="space-y-3 text-slate-400">
               <li><Link to="/#features" className="hover:text-white transition-colors">Fonctionnalités</Link></li>
               <li><Link to="/#dashboard" className="hover:text-white transition-colors">Dashboard</Link></li>
-              <li><a href="#" className="hover:text-white transition-colors">API</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Integrations</a></li>
             </ul>
           </div>
           <div>
