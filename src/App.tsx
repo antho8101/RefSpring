@@ -10,6 +10,7 @@ import { ErrorBoundary } from '@/components/ErrorBoundary';
 import '@/i18n';
 import PrivacyPage from '@/pages/PrivacyPage';
 import LegalPage from '@/pages/LegalPage';
+import LandingPage from '@/pages/LandingPage';
 import { Dashboard } from '@/components/Dashboard';
 
 const Index = lazy(() => import('@/pages/Index'));
@@ -42,7 +43,8 @@ function App() {
                   <div className="animate-spin rounded-full h-8 w-8 border-2 border-blue-600 border-t-transparent"></div>
                 </div>}>
                   <Routes>
-                    <Route path="/" element={<Index />} />
+                    <Route path="/" element={<LandingPage />} />
+                    <Route path="/app" element={<Index />} />
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/campaign/:campaignId" element={<AdvancedStatsPage />} />
                     <Route path="/affiliate/:affiliateId" element={<AffiliatePage />} />

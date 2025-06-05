@@ -14,7 +14,7 @@ const LandingPage = () => {
   }, []);
 
   const redirectToDashboard = () => {
-    window.location.href = 'https://dashboard.refspring.com';
+    window.location.href = '/app';
   };
 
   const structuredData = {
