@@ -1,4 +1,3 @@
-
 import { Globe, TrendingUp } from "lucide-react";
 
 export const LandingFooter = () => {
@@ -26,8 +25,6 @@ export const LandingFooter = () => {
             <ul className="space-y-3 text-slate-400">
               <li><a href="#features" className="hover:text-white transition-colors">Fonctionnalités</a></li>
               <li><a href="#dashboard" className="hover:text-white transition-colors">Dashboard</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">API</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Integrations</a></li>
             </ul>
           </div>
           <div>
