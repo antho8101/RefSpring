@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { LandingHeader } from "@/components/landing/LandingHeader";
+import { UnifiedHeader } from "@/components/shared/UnifiedHeader";
 import { HeroSection } from "@/components/landing/HeroSection";
 import { StorySection } from "@/components/landing/StorySection";
 import { DashboardPreview } from "@/components/landing/DashboardPreview";
@@ -12,7 +12,7 @@ import { LandingFooter } from "@/components/landing/LandingFooter";
 
 const LandingPage = () => {
   const [scrollY, setScrollY] = useState(0);
-
+  
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY);
     window.addEventListener('scroll', handleScroll);
@@ -111,7 +111,7 @@ const LandingPage = () => {
           ></div>
         </div>
 
-        <LandingHeader onRedirectToDashboard={redirectToDashboard} />
+        <UnifiedHeader onRedirectToDashboard={redirectToDashboard} currentPage="landing" />
         <HeroSection scrollY={scrollY} onRedirectToDashboard={redirectToDashboard} />
         <StorySection />
         <DashboardPreview />

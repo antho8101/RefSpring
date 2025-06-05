@@ -2,8 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
-import { RefSpringLogo } from "@/components/RefSpringLogo";
-import { Link } from "react-router-dom";
+import { UnifiedHeader } from "@/components/shared/UnifiedHeader";
 import { PricingHeader } from "@/components/pricing/PricingHeader";
 import { ComparisonSection } from "@/components/shared/ComparisonSection";
 import { Calculator } from "@/components/shared/Calculator";
@@ -50,34 +49,7 @@ const PricingPage = () => {
           ></div>
         </div>
 
-        {/* Header */}
-        <header className="fixed top-0 w-full border-b border-slate-200/80 bg-white/90 backdrop-blur-xl z-50 transition-all">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between items-center h-16">
-              <Link to="/" className="flex items-center gap-2 animate-fade-in hover:opacity-80 transition-opacity">
-                <RefSpringLogo width="32" height="32" />
-                <div className="font-bold text-2xl text-slate-900">RefSpring</div>
-              </Link>
-              <nav className="hidden md:flex space-x-8" role="navigation" aria-label="Navigation principale">
-                <Link to="/#features" className="text-slate-600 hover:text-slate-900 font-medium transition-all hover:scale-105">
-                  Fonctionnalités
-                </Link>
-                <Link to="/pricing" className="text-slate-900 font-semibold transition-all hover:scale-105">
-                  Tarifs
-                </Link>
-                <Link to="/#dashboard" className="text-slate-600 hover:text-slate-900 font-medium transition-all hover:scale-105">
-                  Dashboard
-                </Link>
-                <Link to="/#testimonials" className="text-slate-600 hover:text-slate-900 font-medium transition-all hover:scale-105">
-                  Témoignages
-                </Link>
-              </nav>
-              <Button variant="outline" className="hidden md:flex hover:scale-105 transition-transform" onClick={redirectToDashboard}>
-                Se connecter
-              </Button>
-            </div>
-          </div>
-        </header>
+        <UnifiedHeader onRedirectToDashboard={redirectToDashboard} currentPage="pricing" />
 
         {/* Main Content starts right after header */}
         <div className="pt-16">
