@@ -205,10 +205,10 @@ export const HeroSection = ({ scrollY, onRedirectToDashboard }: HeroSectionProps
         </div>
       </div>
 
-      {/* Enhanced social proof with glow effects */}
+      {/* Enhanced social proof without background and shadow */}
       <div className="absolute bottom-8 left-0 right-0 z-10">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="pt-6 lg:pt-8 border-t border-slate-200/50 opacity-0 animate-fade-in backdrop-blur-sm bg-white/30 rounded-2xl" style={{ animationDelay: '1.6s', boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)' }}>
+          <div className="pt-6 lg:pt-8 border-t border-slate-200/50 opacity-0 animate-fade-in" style={{ animationDelay: '1.6s' }}>
             <p className="text-slate-500 text-sm mb-4 lg:mb-6 text-center">{t('hero.socialProof.text')}</p>
             <div className="flex justify-center items-center gap-4 lg:gap-6 opacity-70">
               <div 
