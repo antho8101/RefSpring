@@ -1,7 +1,6 @@
-
 import { useState, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
-import { UnifiedHeader } from "@/components/shared/UnifiedHeader";
+import { LandingHeader } from "@/components/landing/LandingHeader";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -93,7 +92,7 @@ const StatusPage = () => {
       </Helmet>
 
       <div className="min-h-screen bg-gray-50">
-        <UnifiedHeader onRedirectToDashboard={redirectToDashboard} currentPage="status" />
+        <LandingHeader onRedirectToDashboard={redirectToDashboard} currentPage="status" />
         
         <div className="pt-20 pb-16 px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto">

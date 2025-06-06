@@ -3,14 +3,24 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { RefSpringLogo } from "@/components/RefSpringLogo";
 import { Link } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 
 interface LandingHeaderProps {
   onRedirectToDashboard: () => void;
+  currentPage?: 'landing' | 'pricing' | 'status';
 }
 
-export const LandingHeader = ({ onRedirectToDashboard }: LandingHeaderProps) => {
+export const LandingHeader = ({ onRedirectToDashboard, currentPage = 'landing' }: LandingHeaderProps) => {
+  const { user } = useAuth();
+  
   const handleLoginClick = () => {
-    window.location.href = '/app'; // Sans le paramètre signup pour afficher la connexion
+    if (user) {
+      // Si l'utilisateur est connecté, rediriger vers le dashboard
+      onRedirectToDashboard();
+    } else {
+      // Si pas connecté, rediriger vers la page de connexion
+      window.location.href = '/app';
+    }
   };
 
   return (
@@ -25,7 +35,12 @@ export const LandingHeader = ({ onRedirectToDashboard }: LandingHeaderProps) => 
             <Link to="/#features" className="text-slate-600 hover:text-slate-900 font-medium transition-all hover:scale-105">
               Fonctionnalités
             </Link>
-            <Link to="/pricing" className="text-slate-600 hover:text-slate-900 font-medium transition-all hover:scale-105">
+            <Link 
+              to="/pricing" 
+              className={`font-medium transition-all hover:scale-105 ${
+                currentPage === 'pricing' ? 'text-slate-900 font-semibold' : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
               Tarifs
             </Link>
             <Link to="/about" className="text-slate-600 hover:text-slate-900 font-medium transition-all hover:scale-105">
@@ -37,7 +52,7 @@ export const LandingHeader = ({ onRedirectToDashboard }: LandingHeaderProps) => 
           </nav>
           <div className="flex items-center gap-3">
             <Button variant="outline" className="hidden md:flex hover:scale-105 transition-transform" onClick={handleLoginClick}>
-              Se connecter
+              {user ? "My Dashboard" : "Se connecter"}
             </Button>
             <Button 
               className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold px-6 py-2 shadow-lg hover:shadow-xl hover:scale-105 transition-all animate-pulse"
