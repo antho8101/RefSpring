@@ -63,7 +63,7 @@ export const OnboardingCarousel = ({ onComplete }: OnboardingCarouselProps) => {
   }, [api]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50/50 via-white to-purple-50/50 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50/50 via-white to-purple-50/50 relative overflow-visible">
       <DashboardBackground />
       
       <div className="relative z-10 min-h-screen flex items-center justify-center px-4">
