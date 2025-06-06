@@ -10,13 +10,105 @@ import { NetworkStatus } from '@/components/NetworkStatus';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { Helmet } from 'react-helmet-async';
-import { memo, useCallback, useMemo } from 'react';
+import { memo, useCallback, useMemo, useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BarChart3, Users, DollarSign, Percent } from 'lucide-react';
 import { auth } from '@/lib/firebase';
+import { collection, query, where, getDocs } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 
-// Composant de stats simplifié SANS requêtes Firebase lourdes
-const SimpleDashboardStats = ({ activeCampaigns, totalCampaigns, totalAffiliates }) => {
+interface GlobalStats {
+  totalRevenue: number;
+  totalCommissions: number;
+  totalClicks: number;
+  totalConversions: number;
+  conversionRate: number;
+}
+
+// Composant de stats avec vraies données Firebase
+const DashboardStats = ({ activeCampaigns, totalCampaigns, totalAffiliates, userId }) => {
+  const [globalStats, setGlobalStats] = useState<GlobalStats>({
+    totalRevenue: 0,
+    totalCommissions: 0,
+    totalClicks: 0,
+    totalConversions: 0,
+    conversionRate: 0,
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadGlobalStats = async () => {
+      if (!userId) return;
+      
+      try {
+        console.log('📊 DASHBOARD - Chargement des stats globales pour:', userId);
+        
+        // Récupérer les campagnes de l'utilisateur
+        const campaignsQuery = query(collection(db, 'campaigns'), where('userId', '==', userId));
+        const campaignsSnapshot = await getDocs(campaignsQuery);
+        const campaignIds = campaignsSnapshot.docs.map(doc => doc.id);
+        
+        if (campaignIds.length === 0) {
+          setLoading(false);
+          return;
+        }
+
+        // Récupérer tous les clics et conversions en parallèle
+        const [clicksSnapshot, conversionsSnapshot] = await Promise.all([
+          getDocs(query(collection(db, 'clicks'), where('campaignId', 'in', campaignIds))),
+          getDocs(query(collection(db, 'conversions'), where('campaignId', 'in', campaignIds)))
+        ]);
+
+        const totalClicks = clicksSnapshot.size;
+        let totalRevenue = 0;
+        let totalCommissions = 0;
+        let totalConversions = 0;
+
+        conversionsSnapshot.docs.forEach(doc => {
+          const data = doc.data();
+          const amount = parseFloat(data.amount) || 0;
+          const commission = parseFloat(data.commission) || 0;
+          
+          totalConversions++;
+          totalRevenue += amount;
+          totalCommissions += commission;
+        });
+
+        const conversionRate = totalClicks > 0 ? (totalConversions / totalClicks) * 100 : 0;
+
+        console.log('📊 DASHBOARD - Stats calculées:', {
+          totalClicks,
+          totalConversions,
+          totalRevenue,
+          totalCommissions,
+          conversionRate
+        });
+
+        setGlobalStats({
+          totalRevenue,
+          totalCommissions,
+          totalClicks,
+          totalConversions,
+          conversionRate,
+        });
+      } catch (error) {
+        console.error('❌ DASHBOARD - Erreur chargement stats:', error);
+      }
+      
+      setLoading(false);
+    };
+
+    loadGlobalStats();
+  }, [userId]);
+
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('fr-FR', {
+      style: 'currency',
+      currency: 'EUR',
+      minimumFractionDigits: 2,
+    }).format(value);
+  };
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
       <Card className="bg-gradient-to-br from-white to-blue-50/50 border-slate-200/50 shadow-xl transition-all duration-300 hover:shadow-2xl hover:scale-105 hover:bg-gradient-to-br hover:from-white hover:to-blue-100/70">
@@ -53,8 +145,12 @@ const SimpleDashboardStats = ({ activeCampaigns, totalCampaigns, totalAffiliates
           </div>
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold text-slate-900">0.00€</div>
-          <p className="text-xs text-slate-500">En attente de conversions</p>
+          <div className="text-2xl font-bold text-slate-900">
+            {loading ? '...' : formatCurrency(globalStats.totalRevenue)}
+          </div>
+          <p className="text-xs text-slate-500">
+            {loading ? 'Calcul...' : `${globalStats.totalConversions} conversion${globalStats.totalConversions > 1 ? 's' : ''}`}
+          </p>
         </CardContent>
       </Card>
 
@@ -66,8 +162,12 @@ const SimpleDashboardStats = ({ activeCampaigns, totalCampaigns, totalAffiliates
           </div>
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold text-slate-900">0.0%</div>
-          <p className="text-xs text-slate-500">Aucun clic pour le moment</p>
+          <div className="text-2xl font-bold text-slate-900">
+            {loading ? '...' : `${globalStats.conversionRate.toFixed(1)}%`}
+          </div>
+          <p className="text-xs text-slate-500">
+            {loading ? 'Calcul...' : `${globalStats.totalClicks} clic${globalStats.totalClicks > 1 ? 's' : ''} total`}
+          </p>
         </CardContent>
       </Card>
     </div>
@@ -81,7 +181,6 @@ export const Dashboard = memo(() => {
 
   const handleLogout = useCallback(async () => {
     try {
-      // Simple logout Firebase
       await auth.signOut();
       localStorage.removeItem('auth_user');
     } catch (error) {
@@ -98,7 +197,6 @@ export const Dashboard = memo(() => {
     };
   }, [campaigns, affiliates]);
 
-  // Chargement ultra-rapide
   if (campaignsLoading || affiliatesLoading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
@@ -120,10 +218,11 @@ export const Dashboard = memo(() => {
 
         <main className="relative z-10 max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 flex-1">
           <ErrorBoundary fallback={<div>Erreur stats</div>}>
-            <SimpleDashboardStats 
+            <DashboardStats 
               activeCampaigns={dashboardMetrics.activeCampaigns}
               totalCampaigns={dashboardMetrics.totalCampaigns}
               totalAffiliates={dashboardMetrics.totalAffiliates}
+              userId={user?.uid}
             />
           </ErrorBoundary>
 

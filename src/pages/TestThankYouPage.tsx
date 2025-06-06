@@ -10,6 +10,7 @@ const TestThankYouPage = () => {
   const [searchParams] = useSearchParams();
   const { recordConversion } = useTracking();
   const [conversionRecorded, setConversionRecorded] = useState(false);
+  const [conversionId, setConversionId] = useState<string | null>(null);
   
   const product = searchParams.get('product');
   const price = searchParams.get('price');
@@ -35,15 +36,16 @@ const TestThankYouPage = () => {
       
       try {
         const amount = parseFloat(price);
-        const commission = amount * 0.1; // 10% de commission
         
-        console.log('💰 Calcul commission:', { amount, commission });
+        console.log('💰 Enregistrement conversion avec montant:', amount);
         
-        const conversionId = await recordConversion(ref, campaign, amount, commission);
+        // Le hook recordConversion va maintenant calculer automatiquement la commission
+        const newConversionId = await recordConversion(ref, campaign, amount);
         
-        if (conversionId) {
-          console.log('✅ Conversion enregistrée avec succès:', conversionId);
+        if (newConversionId) {
+          console.log('✅ Conversion enregistrée avec succès:', newConversionId);
           setConversionRecorded(true);
+          setConversionId(newConversionId);
         } else {
           console.log('❌ Échec enregistrement conversion');
         }
@@ -110,15 +112,10 @@ const TestThankYouPage = () => {
                       <span className="font-medium">{campaign}</span>
                     </div>
                   )}
-                  <div className="flex justify-between">
-                    <span>Commission (10%):</span>
-                    <span className="font-medium">
-                      {price ? `${(parseFloat(price) * 0.1).toFixed(2)}€` : 'N/A'}
-                    </span>
-                  </div>
-                  {conversionRecorded && (
+                  {conversionRecorded && conversionId && (
                     <div className="mt-2 p-2 bg-green-100 border border-green-300 rounded text-green-700 text-xs">
-                      ✅ Conversion enregistrée dans le système !
+                      ✅ Conversion enregistrée dans le système !<br/>
+                      ID: {conversionId}
                     </div>
                   )}
                 </div>
@@ -164,6 +161,7 @@ const TestThankYouPage = () => {
                 <p><strong>Ref:</strong> {ref || 'Non détecté'}</p>
                 <p><strong>Campaign:</strong> {campaign || 'Non détecté'}</p>
                 <p><strong>Conversion enregistrée:</strong> {conversionRecorded ? 'Oui' : 'Non'}</p>
+                <p><strong>ID Conversion:</strong> {conversionId || 'Non disponible'}</p>
               </div>
             </div>
           </CardContent>
