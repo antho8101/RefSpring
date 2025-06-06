@@ -1,114 +1,75 @@
 
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import React from 'react';
+import { CampaignCard } from './CampaignCard';
 import { useCampaigns } from '@/hooks/useCampaigns';
-import { Eye, TrendingUp, LayoutGrid, List } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
-import { CampaignCard } from '@/components/CampaignCard';
-import { CompactCampaignCard } from '@/components/CompactCampaignCard';
-import { useState, useCallback, memo } from 'react';
+import { Skeleton } from './ui/skeleton';
+import { useTranslation } from 'react-i18next';
+import { CreateCampaignDialog } from './CreateCampaignDialog';
+import { Button } from './ui/button';
+import { Plus } from 'lucide-react';
 
-export const CampaignsList = memo(() => {
+export const CampaignsList = () => {
   const { campaigns, loading } = useCampaigns();
-  const { toast } = useToast();
-  const [viewMode, setViewMode] = useState<'normal' | 'compact'>('normal');
-
-  console.log('CampaignsList render - campaigns:', campaigns, 'loading:', loading);
-
-  const copyTrackingUrl = useCallback((campaignId: string) => {
-    const trackingUrl = `https://refspring.com/r/${campaignId}`;
-    navigator.clipboard.writeText(trackingUrl);
-    toast({
-      title: "URL de tracking copiée",
-      description: "Partagez cette URL avec vos affiliés pour qu'ils puissent tracker leurs conversions",
-    });
-  }, [toast]);
-
-  const handleViewModeChange = useCallback((value: string | undefined) => {
-    if (value) setViewMode(value as 'normal' | 'compact');
-  }, []);
-
+  const { t } = useTranslation();
+  
+  // Show loading state
   if (loading) {
-    console.log('CampaignsList: showing loading state');
     return (
-      <div className="space-y-6">
-        {[1, 2, 3].map((i) => (
-          <Card key={i} className="animate-pulse bg-gradient-to-br from-white to-slate-50/50 border-slate-200/50 shadow-lg">
-            <CardHeader>
-              <div className="h-6 bg-gray-200 rounded w-1/4"></div>
-              <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-            </CardHeader>
-            <CardContent>
-              <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    );
-  }
-
-  if (campaigns.length === 0) {
-    console.log('CampaignsList: showing empty state');
-    return (
-      <Card className="bg-gradient-to-br from-white to-slate-50/50 border-slate-200/50 shadow-xl backdrop-blur-sm">
-        <CardContent className="flex flex-col items-center justify-center py-16">
-          <div className="p-4 bg-blue-100 rounded-full mb-6">
-            <Eye className="h-12 w-12 text-blue-600" />
-          </div>
-          <h3 className="text-xl font-bold text-slate-900 mb-3">Aucune campagne</h3>
-          <p className="text-slate-600 text-center max-w-md leading-relaxed">
-            Créez votre première campagne pour commencer à gérer vos affiliés et générer des revenus.
-          </p>
-          <div className="mt-6 flex items-center gap-2 text-sm text-slate-500">
-            <TrendingUp className="h-4 w-4" />
-            <span>Prêt à transformer votre business</span>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  console.log('CampaignsList: rendering campaigns list');
-  return (
-    <div className="space-y-6">
-      {/* Sélecteur de mode d'affichage */}
-      {campaigns.length > 3 && (
-        <div className="flex justify-end">
-          <ToggleGroup 
-            type="single" 
-            value={viewMode} 
-            onValueChange={handleViewModeChange}
-            className="bg-white border border-slate-200 rounded-lg p-1"
-          >
-            <ToggleGroupItem value="normal" aria-label="Vue normale" className="data-[state=on]:bg-blue-100 data-[state=on]:text-blue-700">
-              <LayoutGrid className="h-4 w-4" />
-            </ToggleGroupItem>
-            <ToggleGroupItem value="compact" aria-label="Vue compacte" className="data-[state=on]:bg-blue-100 data-[state=on]:text-blue-700">
-              <List className="h-4 w-4" />
-            </ToggleGroupItem>
-          </ToggleGroup>
-        </div>
-      )}
-
-      {/* Liste des campagnes */}
       <div className="space-y-4">
-        {campaigns.map((campaign, index) => (
-          <div 
-            key={campaign.id} 
-            className="animate-fade-in" 
-            style={{ animationDelay: `${index * 0.1}s` }}
-          >
-            {viewMode === 'compact' ? (
-              <CompactCampaignCard campaign={campaign} onCopyUrl={copyTrackingUrl} />
-            ) : (
-              <CampaignCard campaign={campaign} onCopyUrl={copyTrackingUrl} />
-            )}
+        {[...Array(3)].map((_, i) => (
+          <div key={i} className="bg-white/50 backdrop-blur-sm rounded-xl border border-slate-200/70 shadow-sm p-5">
+            <Skeleton className="h-8 w-3/4 mb-4" />
+            <Skeleton className="h-4 w-1/2 mb-2" />
+            <div className="flex gap-2 mt-4">
+              <Skeleton className="h-8 w-20" />
+              <Skeleton className="h-8 w-20" />
+            </div>
           </div>
         ))}
       </div>
+    );
+  }
+
+  if (!campaigns || campaigns.length === 0) {
+    return (
+      <div className="bg-white/50 backdrop-blur-sm rounded-xl border border-slate-200/70 shadow-sm p-6 text-center">
+        <h3 className="text-lg font-semibold text-slate-800 mb-2">{t('dashboard.noCampaigns')}</h3>
+        <p className="text-slate-500 mb-6">{t('dashboard.createFirstCampaign')}</p>
+        
+        <CreateCampaignDialog>
+          <Button className="mx-auto bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+            <Plus className="mr-2 h-4 w-4" />
+            {t('dashboard.createCampaign')}
+          </Button>
+        </CreateCampaignDialog>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-semibold text-slate-800">{t('dashboard.yourCampaigns')}</h2>
+        <CreateCampaignDialog>
+          <Button size="sm" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+            <Plus className="mr-1 h-4 w-4" />
+            {t('dashboard.new')}
+          </Button>
+        </CreateCampaignDialog>
+      </div>
+      
+      <div className="space-y-4">
+        {campaigns.map((campaign) => (
+          <CampaignCard key={campaign.id} campaign={campaign} />
+        ))}
+      </div>
+
+      <Button 
+        className="w-full mt-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg"
+      >
+        <Plus className="mr-2 h-4 w-4" />
+        {t('dashboard.createFirstCampaign')}
+      </Button>
     </div>
   );
-});
-
-CampaignsList.displayName = 'CampaignsList';
+};
