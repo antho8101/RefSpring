@@ -3,11 +3,12 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { useCampaigns } from '@/hooks/useCampaigns';
-import { Eye, TrendingUp, LayoutGrid, List } from 'lucide-react';
+import { Eye, TrendingUp, LayoutGrid, List, Plus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { CampaignCard } from '@/components/CampaignCard';
 import { CompactCampaignCard } from '@/components/CompactCampaignCard';
 import { useState, useCallback, memo } from 'react';
+import { CreateCampaignDialog } from '@/components/CreateCampaignDialog';
 
 export const CampaignsList = memo(() => {
   const { campaigns, loading } = useCampaigns();
@@ -60,9 +61,13 @@ export const CampaignsList = memo(() => {
           <p className="text-slate-600 text-center max-w-md leading-relaxed">
             Créez votre première campagne pour commencer à gérer vos affiliés et générer des revenus.
           </p>
-          <div className="mt-6 flex items-center gap-2 text-sm text-slate-500">
-            <TrendingUp className="h-4 w-4" />
-            <span>Prêt à transformer votre business</span>
+          <div className="mt-6">
+            <CreateCampaignDialog>
+              <Button variant="default" className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800">
+                <Plus className="h-4 w-4 mr-2" />
+                Lancer ma première campagne
+              </Button>
+            </CreateCampaignDialog>
           </div>
         </CardContent>
       </Card>
