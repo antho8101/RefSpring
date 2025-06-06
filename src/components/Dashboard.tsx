@@ -1,3 +1,4 @@
+
 import { useAuth } from '@/hooks/useAuth';
 import { useCampaigns } from '@/hooks/useCampaigns';
 import { useAffiliates } from '@/hooks/useAffiliates';
@@ -17,7 +18,7 @@ import { auth } from '@/lib/firebase';
 const SimpleDashboardStats = ({ activeCampaigns, totalCampaigns, totalAffiliates }) => {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
-      <Card className="bg-gradient-to-br from-white to-blue-50/50 border-slate-200/50 shadow-xl">
+      <Card className="bg-gradient-to-br from-white to-blue-50/50 border-slate-200/50 shadow-xl transition-all duration-300 hover:shadow-2xl hover:scale-105 hover:bg-gradient-to-br hover:from-white hover:to-blue-100/70">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium text-slate-700">Campagnes Actives</CardTitle>
           <div className="p-2 bg-blue-100 rounded-full">
@@ -30,7 +31,7 @@ const SimpleDashboardStats = ({ activeCampaigns, totalCampaigns, totalAffiliates
         </CardContent>
       </Card>
 
-      <Card className="bg-gradient-to-br from-white to-green-50/50 border-slate-200/50 shadow-xl">
+      <Card className="bg-gradient-to-br from-white to-green-50/50 border-slate-200/50 shadow-xl transition-all duration-300 hover:shadow-2xl hover:scale-105 hover:bg-gradient-to-br hover:from-white hover:to-green-100/70">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium text-slate-700">Total Affiliés</CardTitle>
           <div className="p-2 bg-green-100 rounded-full">
@@ -43,7 +44,7 @@ const SimpleDashboardStats = ({ activeCampaigns, totalCampaigns, totalAffiliates
         </CardContent>
       </Card>
 
-      <Card className="bg-gradient-to-br from-white to-purple-50/50 border-slate-200/50 shadow-xl">
+      <Card className="bg-gradient-to-br from-white to-purple-50/50 border-slate-200/50 shadow-xl transition-all duration-300 hover:shadow-2xl hover:scale-105 hover:bg-gradient-to-br hover:from-white hover:to-purple-100/70">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium text-slate-700">Chiffre d'affaires</CardTitle>
           <div className="p-2 bg-purple-100 rounded-full">
@@ -56,7 +57,7 @@ const SimpleDashboardStats = ({ activeCampaigns, totalCampaigns, totalAffiliates
         </CardContent>
       </Card>
 
-      <Card className="bg-gradient-to-br from-white to-orange-50/50 border-slate-200/50 shadow-xl">
+      <Card className="bg-gradient-to-br from-white to-orange-50/50 border-slate-200/50 shadow-xl transition-all duration-300 hover:shadow-2xl hover:scale-105 hover:bg-gradient-to-br hover:from-white hover:to-orange-100/70">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium text-slate-700">Taux Conversion</CardTitle>
           <div className="p-2 bg-orange-100 rounded-full">
