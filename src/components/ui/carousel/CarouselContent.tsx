@@ -13,7 +13,7 @@ export const CarouselContent = React.forwardRef<
     <div
       ref={ref}
       className={cn(
-        "relative min-h-[600px] w-full overflow-hidden",
+        "relative min-h-[600px] w-full overflow-hidden rounded-lg",
         className
       )}
       {...props}
