@@ -1,3 +1,4 @@
+
 import { useAuth } from '@/hooks/useAuth';
 import { useCampaigns } from '@/hooks/useCampaigns';
 import { useAffiliates } from '@/hooks/useAffiliates';
@@ -117,7 +118,7 @@ export const Dashboard = memo(() => {
         <DashboardBackground />
         <DashboardHeader user={user} onLogout={handleLogout} />
 
-        <main className="relative z-10 max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 flex-1">
+        <main className="relative z-10 max-w-full w-full mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 flex-1">
           <ErrorBoundary fallback={<div>Erreur stats</div>}>
             <SimpleDashboardStats 
               activeCampaigns={dashboardMetrics.activeCampaigns}
