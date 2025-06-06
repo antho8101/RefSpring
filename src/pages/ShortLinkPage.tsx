@@ -1,6 +1,5 @@
-
 import { useParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useShortLinks } from '@/hooks/useShortLinks';
 import { useTracking } from '@/hooks/useTracking';
 import { doc, getDoc } from 'firebase/firestore';
@@ -17,91 +16,93 @@ const ShortLinkPage = () => {
   const [debugInfo, setDebugInfo] = useState<string[]>([]);
 
   // Fonction pour ajouter des logs visibles
-  const addDebugLog = (message: string) => {
+  const addDebugLog = useCallback((message: string) => {
     console.log(message);
     setDebugInfo(prev => [...prev, `${new Date().toLocaleTimeString()}: ${message}`]);
-  };
+  }, []);
 
-  useEffect(() => {
-    const handleShortLink = async () => {
-      addDebugLog('🚀 DÉBUT ShortLinkPage - Chargement...');
-      addDebugLog(`📋 Code court: ${shortCode}`);
+  // CORRECTION CRITIQUE : useCallback pour mémoriser la fonction et éviter la boucle infinie
+  const handleShortLink = useCallback(async () => {
+    addDebugLog('🚀 DÉBUT ShortLinkPage - Chargement...');
+    addDebugLog(`📋 Code court: ${shortCode}`);
 
-      if (!shortCode) {
-        addDebugLog('❌ Code de lien manquant');
-        setError('Code de lien manquant');
+    if (!shortCode) {
+      addDebugLog('❌ Code de lien manquant');
+      setError('Code de lien manquant');
+      setLoading(false);
+      return;
+    }
+
+    try {
+      addDebugLog('🔍 Récupération des données du lien court...');
+      
+      const shortLinkData = await getShortLinkData(shortCode);
+      
+      if (!shortLinkData) {
+        addDebugLog('❌ Aucune donnée trouvée pour le code');
+        setError('Lien court non trouvé');
         setLoading(false);
         return;
       }
 
-      try {
-        addDebugLog('🔍 Récupération des données du lien court...');
-        
-        const shortLinkData = await getShortLinkData(shortCode);
-        
-        if (!shortLinkData) {
-          addDebugLog('❌ Aucune donnée trouvée pour le code');
-          setError('Lien court non trouvé');
-          setLoading(false);
-          return;
-        }
+      addDebugLog(`✅ Données du lien court trouvées: ${JSON.stringify(shortLinkData)}`);
 
-        addDebugLog(`✅ Données du lien court trouvées: ${JSON.stringify(shortLinkData)}`);
-
-        // Récupérer les informations de la campagne
-        addDebugLog('🔍 Récupération des données de la campagne...');
-        const campaignDoc = await getDoc(doc(db, 'campaigns', shortLinkData.campaignId));
-        
-        if (!campaignDoc.exists()) {
-          addDebugLog('❌ Campagne introuvable');
-          setError('Campagne introuvable');
-          setLoading(false);
-          return;
-        }
-
-        const campaignData = {
-          id: campaignDoc.id,
-          ...campaignDoc.data(),
-          createdAt: campaignDoc.data().createdAt?.toDate(),
-          updatedAt: campaignDoc.data().updatedAt?.toDate(),
-        } as Campaign;
-
-        setCampaign(campaignData);
-        addDebugLog(`✅ Campagne trouvée: ${campaignData.name}`);
-
-        // APPEL UNIQUE de recordClick - regarder attentivement les logs
-        addDebugLog('🔥 APPEL UNIQUE de recordClick - ATTENTION AUX LOGS !');
-        addDebugLog(`📊 Paramètres: affiliate=${shortLinkData.affiliateId}, campaign=${shortLinkData.campaignId}, url=${shortLinkData.targetUrl}`);
-        
-        const clickId = await recordClick(shortLinkData.affiliateId, shortLinkData.campaignId, shortLinkData.targetUrl);
-        addDebugLog(`✅ recordClick terminé, retour: ${clickId}`);
-        
-        // Vérifier si la campagne est active
-        if (!campaignData.isActive) {
-          addDebugLog('⏸️ Campagne en pause, pas de redirection');
-          setLoading(false);
-          return;
-        }
-
-        addDebugLog(`🎯 URL de redirection: ${shortLinkData.targetUrl}`);
-        addDebugLog('⏳ Attente 5 secondes avant redirection...');
-        
-        // Rediriger vers l'URL de destination avec délai pour voir les logs
-        setTimeout(() => {
-          addDebugLog('🚀 REDIRECTION MAINTENANT !');
-          window.location.href = shortLinkData.targetUrl;
-        }, 5000); // 5 secondes pour voir les logs
-        
-      } catch (error) {
-        addDebugLog(`❌ Erreur: ${error}`);
-        console.error('❌ Erreur lors du traitement du lien court:', error);
-        setError('Erreur lors du traitement du lien');
+      // Récupérer les informations de la campagne
+      addDebugLog('🔍 Récupération des données de la campagne...');
+      const campaignDoc = await getDoc(doc(db, 'campaigns', shortLinkData.campaignId));
+      
+      if (!campaignDoc.exists()) {
+        addDebugLog('❌ Campagne introuvable');
+        setError('Campagne introuvable');
         setLoading(false);
+        return;
       }
-    };
 
+      const campaignData = {
+        id: campaignDoc.id,
+        ...campaignDoc.data(),
+        createdAt: campaignDoc.data().createdAt?.toDate(),
+        updatedAt: campaignDoc.data().updatedAt?.toDate(),
+      } as Campaign;
+
+      setCampaign(campaignData);
+      addDebugLog(`✅ Campagne trouvée: ${campaignData.name}`);
+
+      // APPEL UNIQUE de recordClick - regarder attentivement les logs
+      addDebugLog('🔥 APPEL UNIQUE de recordClick - ATTENTION AUX LOGS !');
+      addDebugLog(`📊 Paramètres: affiliate=${shortLinkData.affiliateId}, campaign=${shortLinkData.campaignId}, url=${shortLinkData.targetUrl}`);
+      
+      const clickId = await recordClick(shortLinkData.affiliateId, shortLinkData.campaignId, shortLinkData.targetUrl);
+      addDebugLog(`✅ recordClick terminé, retour: ${clickId}`);
+      
+      // Vérifier si la campagne est active
+      if (!campaignData.isActive) {
+        addDebugLog('⏸️ Campagne en pause, pas de redirection');
+        setLoading(false);
+        return;
+      }
+
+      addDebugLog(`🎯 URL de redirection: ${shortLinkData.targetUrl}`);
+      addDebugLog('⏳ Attente 2 secondes avant redirection...');
+      
+      // Rediriger vers l'URL de destination
+      setTimeout(() => {
+        addDebugLog('🚀 REDIRECTION MAINTENANT !');
+        window.location.href = shortLinkData.targetUrl;
+      }, 2000); // 2 secondes pour voir les logs
+      
+    } catch (error) {
+      addDebugLog(`❌ Erreur: ${error}`);
+      console.error('❌ Erreur lors du traitement du lien court:', error);
+      setError('Erreur lors du traitement du lien');
+      setLoading(false);
+    }
+  }, [shortCode, getShortLinkData, recordClick, addDebugLog]);
+
+  // CORRECTION CRITIQUE : Dépendances correctes pour éviter la boucle infinie
+  useEffect(() => {
     handleShortLink();
-  }, [shortCode, getShortLinkData, recordClick]);
+  }, [handleShortLink]);
 
   if (loading) {
     return (

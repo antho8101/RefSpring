@@ -1,6 +1,5 @@
-
 import { useParams, useSearchParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useTracking } from '@/hooks/useTracking';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
@@ -16,80 +15,81 @@ const TrackingPage = () => {
   const { recordClick } = useTracking();
 
   // Fonction pour ajouter des logs visibles
-  const addDebugLog = (message: string) => {
+  const addDebugLog = useCallback((message: string) => {
     console.log(message);
     setDebugInfo(prev => [...prev, `${new Date().toLocaleTimeString()}: ${message}`]);
-  };
+  }, []);
 
-  useEffect(() => {
-    const handleTracking = async () => {
-      addDebugLog('🚀 DÉBUT TrackingPage - Chargement...');
-      addDebugLog(`📋 Paramètres: campaign=${campaignId}, affiliate=${affiliateId}`);
+  // CORRECTION CRITIQUE : useCallback pour mémoriser la fonction et éviter la boucle infinie
+  const handleTracking = useCallback(async () => {
+    addDebugLog('🚀 DÉBUT TrackingPage - Chargement...');
+    addDebugLog(`📋 Paramètres: campaign=${campaignId}, affiliate=${affiliateId}`);
 
-      if (!campaignId || !affiliateId) {
-        addDebugLog('❌ Paramètres manquants');
-        setError('Paramètres manquants');
+    if (!campaignId || !affiliateId) {
+      addDebugLog('❌ Paramètres manquants');
+      setError('Paramètres manquants');
+      setIsTracking(false);
+      return;
+    }
+
+    try {
+      addDebugLog('🔍 Récupération des données de la campagne...');
+      
+      // Récupérer les informations de la campagne
+      const campaignDoc = await getDoc(doc(db, 'campaigns', campaignId));
+      
+      if (!campaignDoc.exists()) {
+        addDebugLog('❌ Campagne introuvable');
+        setError('Campagne introuvable');
         setIsTracking(false);
         return;
       }
 
-      try {
-        addDebugLog('🔍 Récupération des données de la campagne...');
-        
-        // Récupérer les informations de la campagne
-        const campaignDoc = await getDoc(doc(db, 'campaigns', campaignId));
-        
-        if (!campaignDoc.exists()) {
-          addDebugLog('❌ Campagne introuvable');
-          setError('Campagne introuvable');
-          setIsTracking(false);
-          return;
-        }
+      const campaignData = {
+        id: campaignDoc.id,
+        ...campaignDoc.data(),
+        createdAt: campaignDoc.data().createdAt?.toDate(),
+        updatedAt: campaignDoc.data().updatedAt?.toDate(),
+      } as Campaign;
 
-        const campaignData = {
-          id: campaignDoc.id,
-          ...campaignDoc.data(),
-          createdAt: campaignDoc.data().createdAt?.toDate(),
-          updatedAt: campaignDoc.data().updatedAt?.toDate(),
-        } as Campaign;
+      setCampaign(campaignData);
+      addDebugLog(`✅ Campagne trouvée: ${campaignData.name}`);
 
-        setCampaign(campaignData);
-        addDebugLog(`✅ Campagne trouvée: ${campaignData.name}`);
+      const targetUrl = searchParams.get('url') || campaignData.targetUrl || 'https://example.com';
+      
+      addDebugLog(`🎯 URL de destination: ${targetUrl}`);
+      addDebugLog(`📊 Campagne active: ${campaignData.isActive}`);
 
-        const targetUrl = searchParams.get('url') || campaignData.targetUrl || 'https://example.com';
-        
-        addDebugLog(`🎯 URL de destination: ${targetUrl}`);
-        addDebugLog(`📊 Campagne active: ${campaignData.isActive}`);
-
-        // APPEL UNIQUE de recordClick - regarder attentivement les logs
-        addDebugLog('🔥 APPEL UNIQUE de recordClick - ATTENTION AUX LOGS !');
-        const clickId = await recordClick(affiliateId, campaignId, targetUrl);
-        addDebugLog(`✅ recordClick terminé, retour: ${clickId}`);
-        
-        // Si la campagne est en pause, ne pas rediriger
-        if (!campaignData.isActive) {
-          addDebugLog('⏸️ Campagne en pause, pas de redirection');
-          setIsTracking(false);
-          return;
-        }
-        
-        // DÉLAI PLUS LONG pour voir les logs
-        addDebugLog('⏳ Attente 5 secondes avant redirection...');
-        setTimeout(() => {
-          addDebugLog('🚀 REDIRECTION MAINTENANT !');
-          window.location.href = targetUrl;
-        }, 5000); // 5 secondes au lieu de 0.5
-        
-      } catch (error) {
-        addDebugLog(`❌ Erreur: ${error}`);
-        console.error('Error during tracking:', error);
-        setError('Erreur lors du traitement');
+      // APPEL UNIQUE de recordClick
+      addDebugLog('🔥 APPEL UNIQUE de recordClick - ATTENTION AUX LOGS !');
+      const clickId = await recordClick(affiliateId, campaignId, targetUrl);
+      addDebugLog(`✅ recordClick terminé, retour: ${clickId}`);
+      
+      // Si la campagne est en pause, ne pas rediriger
+      if (!campaignData.isActive) {
+        addDebugLog('⏸️ Campagne en pause, pas de redirection');
         setIsTracking(false);
+        return;
       }
-    };
+      
+      addDebugLog('⏳ Attente 2 secondes avant redirection...');
+      setTimeout(() => {
+        addDebugLog('🚀 REDIRECTION MAINTENANT !');
+        window.location.href = targetUrl;
+      }, 2000);
+      
+    } catch (error) {
+      addDebugLog(`❌ Erreur: ${error}`);
+      console.error('Error during tracking:', error);
+      setError('Erreur lors du traitement');
+      setIsTracking(false);
+    }
+  }, [campaignId, affiliateId, searchParams, recordClick, addDebugLog]);
 
+  // CORRECTION CRITIQUE : Dépendances correctes pour éviter la boucle infinie
+  useEffect(() => {
     handleTracking();
-  }, [campaignId, affiliateId, searchParams, recordClick]);
+  }, [handleTracking]);
 
   if (error) {
     return (
