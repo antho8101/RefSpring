@@ -31,7 +31,6 @@ export const useAffiliateStats = (affiliateId: string | null) => {
         console.log('📊 AFFILIATE STATS - Chargement des stats pour affilié:', affiliateId);
         
         // Compter les clics
-        console.log('📊 AFFILIATE STATS - Recherche des clics...');
         const clicksQuery = query(
           collection(db, 'clicks'),
           where('affiliateId', '==', affiliateId)
@@ -40,8 +39,7 @@ export const useAffiliateStats = (affiliateId: string | null) => {
         const clicksCount = clicksSnapshot.size;
         console.log('📊 AFFILIATE STATS - Clics trouvés:', clicksCount);
 
-        // Compter les conversions et UTILISER les commissions stockées
-        console.log('📊 AFFILIATE STATS - Recherche des conversions...');
+        // Compter les conversions et utiliser DIRECTEMENT les commissions stockées
         const conversionsQuery = query(
           collection(db, 'conversions'),
           where('affiliateId', '==', affiliateId)
@@ -50,26 +48,20 @@ export const useAffiliateStats = (affiliateId: string | null) => {
         const conversionsCount = conversionsSnapshot.size;
         console.log('📊 AFFILIATE STATS - Conversions trouvées:', conversionsCount);
         
-        // CORRECTION MAJEURE : Utiliser directement les commissions stockées dans Firebase
+        // UTILISER DIRECTEMENT les commissions stockées - PAS DE RECALCUL
         const totalCommissions = conversionsSnapshot.docs.reduce((total, doc) => {
           const data = doc.data();
-          const storedCommission = parseFloat(data.commission) || 0;
+          const commission = parseFloat(data.commission) || 0;
           
-          console.log('📊 AFFILIATE STATS - Conversion détail:', {
+          console.log('📊 AFFILIATE STATS - Commission:', {
             docId: doc.id,
-            amount: data.amount,
-            commissionRate: data.commissionRate,
-            storedCommission: storedCommission
+            commission: commission
           });
           
-          return total + storedCommission;
+          return total + commission;
         }, 0);
 
-        console.log('📊 AFFILIATE STATS - Stats finales calculées:', {
-          clicks: clicksCount,
-          conversions: conversionsCount,
-          commissions: totalCommissions
-        });
+        console.log('📊 AFFILIATE STATS - TOTAL FINAL:', totalCommissions);
 
         setStats({
           clicks: clicksCount,
@@ -77,7 +69,7 @@ export const useAffiliateStats = (affiliateId: string | null) => {
           commissions: totalCommissions,
         });
       } catch (error) {
-        console.error('❌ AFFILIATE STATS - Erreur lors du chargement des stats:', error);
+        console.error('❌ AFFILIATE STATS - Erreur:', error);
         setStats({ clicks: 0, conversions: 0, commissions: 0 });
       }
       
