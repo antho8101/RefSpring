@@ -31,7 +31,7 @@ export const Carousel = React.forwardRef<
     }, [children])
 
     const canScrollPrev = currentSlide > 0
-    const canScrollNext = currentSlide < totalSlides - 1
+    const canScrollNext = totalSlides > 0 && currentSlide < totalSlides - 1
 
     console.log('Current slide:', currentSlide, 'Total slides:', totalSlides, 'Can scroll next:', canScrollNext)
 
