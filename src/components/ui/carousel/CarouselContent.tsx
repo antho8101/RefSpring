@@ -10,11 +10,11 @@ export const CarouselContent = React.forwardRef<
   const { carouselRef, orientation } = useCarousel()
 
   return (
-    <div ref={carouselRef} className="overflow-visible">
+    <div ref={carouselRef} className="overflow-visible w-full">
       <div
         ref={ref}
         className={cn(
-          "flex min-h-[600px] overflow-visible",
+          "flex min-h-[600px] overflow-visible w-full",
           orientation === "vertical" ? "flex-col" : "flex-row",
           className
         )}
