@@ -1,12 +1,16 @@
 
-import { useState } from 'react';
+import { useState, ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Plus, CreditCard } from 'lucide-react';
 import { useCampaignForm } from '@/hooks/useCampaignForm';
 import { CampaignFormFields } from '@/components/CampaignFormFields';
 
-export const CreateCampaignDialog = () => {
+interface CreateCampaignDialogProps {
+  children?: ReactNode;
+}
+
+export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) => {
   const [open, setOpen] = useState(false);
   const {
     formData,
@@ -28,10 +32,12 @@ export const CreateCampaignDialog = () => {
       else setOpen(true);
     }}>
       <DialogTrigger asChild>
-        <Button>
-          <Plus className="h-4 w-4 mr-2" />
-          Nouvelle Campagne
-        </Button>
+        {children || (
+          <Button>
+            <Plus className="h-4 w-4 mr-2" />
+            Nouvelle Campagne
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
