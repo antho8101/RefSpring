@@ -23,15 +23,35 @@ export const Carousel = React.forwardRef<
     const [currentSlide, setCurrentSlide] = React.useState(0)
     const [totalSlides, setTotalSlides] = React.useState(0)
 
-    // Compter le nombre de slides
+    // Compter le nombre de slides en regardant dans CarouselContent
     React.useEffect(() => {
-      const slideCount = React.Children.count(children)
+      const findCarouselContent = (element: React.ReactNode): number => {
+        if (React.isValidElement(element)) {
+          if (element.type && (element.type as any).displayName === 'CarouselContent') {
+            const contentChildren = React.Children.toArray(element.props.children)
+            console.log('CarouselContent children found:', contentChildren.length)
+            return contentChildren.length
+          }
+          if (element.props && element.props.children) {
+            return findCarouselContent(element.props.children)
+          }
+        }
+        if (Array.isArray(element)) {
+          for (const child of element) {
+            const count = findCarouselContent(child)
+            if (count > 0) return count
+          }
+        }
+        return 0
+      }
+
+      const slideCount = findCarouselContent(children)
       setTotalSlides(slideCount)
-      console.log('Total slides:', slideCount)
+      console.log('Total slides detected:', slideCount)
     }, [children])
 
     const canScrollPrev = currentSlide > 0
-    const canScrollNext = totalSlides > 0 && currentSlide < totalSlides - 1
+    const canScrollNext = currentSlide < totalSlides - 1
 
     console.log('Current slide:', currentSlide, 'Total slides:', totalSlides, 'Can scroll next:', canScrollNext)
 
