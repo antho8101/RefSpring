@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from 'react';
-import { collection, query, where, getDocs, orderBy } from 'firebase/firestore';
+import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 
 interface AffiliateStats {
@@ -19,7 +19,7 @@ export const useAffiliateStats = (affiliateId: string | null) => {
 
   useEffect(() => {
     if (!affiliateId) {
-      console.log('📊 STATS - Pas d\'affiliateId fourni');
+      console.log('📊 AFFILIATE STATS - Pas d\'affiliateId fourni');
       setStats({ clicks: 0, conversions: 0, commissions: 0 });
       return;
     }
@@ -28,51 +28,44 @@ export const useAffiliateStats = (affiliateId: string | null) => {
       setLoading(true);
       
       try {
-        console.log('📊 STATS - Chargement des stats pour affilié:', affiliateId);
+        console.log('📊 AFFILIATE STATS - Chargement des stats pour affilié:', affiliateId);
         
         // Compter les clics
-        console.log('📊 STATS - Recherche des clics...');
+        console.log('📊 AFFILIATE STATS - Recherche des clics...');
         const clicksQuery = query(
           collection(db, 'clicks'),
           where('affiliateId', '==', affiliateId)
         );
         const clicksSnapshot = await getDocs(clicksQuery);
         const clicksCount = clicksSnapshot.size;
-        console.log('📊 STATS - Clics trouvés:', clicksCount);
-        console.log('📊 STATS - Documents clics:', clicksSnapshot.docs.map(doc => ({ id: doc.id, data: doc.data() })));
+        console.log('📊 AFFILIATE STATS - Clics trouvés:', clicksCount);
 
-        // Compter les conversions et calculer les commissions
-        console.log('📊 STATS - Recherche des conversions...');
+        // Compter les conversions et UTILISER les commissions stockées
+        console.log('📊 AFFILIATE STATS - Recherche des conversions...');
         const conversionsQuery = query(
           collection(db, 'conversions'),
           where('affiliateId', '==', affiliateId)
         );
         const conversionsSnapshot = await getDocs(conversionsQuery);
         const conversionsCount = conversionsSnapshot.size;
-        console.log('📊 STATS - Conversions trouvées:', conversionsCount);
-        console.log('📊 STATS - Documents conversions:', conversionsSnapshot.docs.map(doc => ({ id: doc.id, data: doc.data() })));
+        console.log('📊 AFFILIATE STATS - Conversions trouvées:', conversionsCount);
         
-        // CORRECTION : Calculer correctement les commissions totales
+        // CORRECTION MAJEURE : Utiliser directement les commissions stockées dans Firebase
         const totalCommissions = conversionsSnapshot.docs.reduce((total, doc) => {
           const data = doc.data();
-          const amount = parseFloat(data.amount) || 0;
-          const commissionRate = parseFloat(data.commissionRate) || 0;
+          const storedCommission = parseFloat(data.commission) || 0;
           
-          // Calcul correct : montant × taux de commission / 100
-          const commission = (amount * commissionRate) / 100;
-          
-          console.log('📊 STATS - Conversion détail:', {
+          console.log('📊 AFFILIATE STATS - Conversion détail:', {
             docId: doc.id,
-            amount,
-            commissionRate,
-            calculatedCommission: commission,
-            storedCommission: data.commission
+            amount: data.amount,
+            commissionRate: data.commissionRate,
+            storedCommission: storedCommission
           });
           
-          return total + commission;
+          return total + storedCommission;
         }, 0);
 
-        console.log('📊 STATS - Stats finales calculées:', {
+        console.log('📊 AFFILIATE STATS - Stats finales calculées:', {
           clicks: clicksCount,
           conversions: conversionsCount,
           commissions: totalCommissions
@@ -84,9 +77,7 @@ export const useAffiliateStats = (affiliateId: string | null) => {
           commissions: totalCommissions,
         });
       } catch (error) {
-        console.error('❌ STATS - Erreur lors du chargement des stats:', error);
-        console.log('❌ STATS - Détails erreur:', error);
-        // En cas d'erreur (permissions), on garde les stats à 0 au lieu de faire planter
+        console.error('❌ AFFILIATE STATS - Erreur lors du chargement des stats:', error);
         setStats({ clicks: 0, conversions: 0, commissions: 0 });
       }
       
