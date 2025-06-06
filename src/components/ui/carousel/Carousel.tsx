@@ -1,4 +1,3 @@
-
 import * as React from "react"
 import useEmblaCarousel from "embla-carousel-react"
 import { cn } from "@/lib/utils"
@@ -26,7 +25,6 @@ export const Carousel = React.forwardRef<
         ...opts,
         axis: orientation === "horizontal" ? "x" : "y",
         dragFree: false,
-        draggable: false,
         duration: 30, // Transition plus rapide pour le fade
       },
       plugins
