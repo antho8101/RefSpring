@@ -39,14 +39,33 @@ export const useTracking = () => {
         const affiliateDoc = await getDoc(doc(db, 'affiliates', affiliateId));
         if (affiliateDoc.exists()) {
           const affiliateData = affiliateDoc.data();
-          commissionRate = parseFloat(affiliateData.commissionRate) || 10;
-          calculatedCommission = (amount * commissionRate) / 100;
+          const rawCommissionRate = affiliateData.commissionRate;
           
-          console.log('💰 TRACKING - Affiliate found:', {
+          console.log('💰 TRACKING - RAW COMMISSION RATE FROM DB:', rawCommissionRate, typeof rawCommissionRate);
+          
+          // CORRECTION CRITIQUE : Gérer les différents formats possibles
+          if (typeof rawCommissionRate === 'string') {
+            commissionRate = parseFloat(rawCommissionRate);
+          } else if (typeof rawCommissionRate === 'number') {
+            commissionRate = rawCommissionRate;
+          }
+          
+          // Si le taux est > 1, c'est probablement un pourcentage (99 au lieu de 0.99)
+          if (commissionRate > 1) {
+            console.log('💰 TRACKING - Commission rate is > 1, treating as percentage');
+            calculatedCommission = (amount * commissionRate) / 100;
+          } else {
+            console.log('💰 TRACKING - Commission rate is <= 1, treating as decimal');
+            calculatedCommission = amount * commissionRate;
+          }
+          
+          console.log('💰 TRACKING - COMMISSION CALCULATION DEBUG:', {
             affiliateId,
-            commissionRate,
+            rawCommissionRate,
+            parsedCommissionRate: commissionRate,
             amount,
-            calculatedCommission
+            calculatedCommission,
+            isPercentage: commissionRate > 1
           });
         } else {
           console.log('⚠️ TRACKING - Affiliate not found, using default 10%');
@@ -62,10 +81,10 @@ export const useTracking = () => {
         commissionRate: commissionRate,
         commission: calculatedCommission,
         timestamp: new Date(),
-        verified: true, // Auto-vérifié pour les tests
+        verified: true,
       };
 
-      console.log('💰 TRACKING - Final conversion data:', conversionData);
+      console.log('💰 TRACKING - FINAL CONVERSION DATA TO SAVE:', conversionData);
       
       const docRef = await addDoc(collection(db, 'conversions'), conversionData);
       console.log('✅ TRACKING - Conversion recorded with ID:', docRef.id);

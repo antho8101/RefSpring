@@ -53,15 +53,19 @@ export const useAffiliateStats = (affiliateId: string | null) => {
           const data = doc.data();
           const commission = parseFloat(data.commission) || 0;
           
-          console.log('📊 AFFILIATE STATS - Commission:', {
+          console.log('📊 AFFILIATE STATS - Commission DEBUG:', {
             docId: doc.id,
-            commission: commission
+            rawCommission: data.commission,
+            parsedCommission: commission,
+            amount: data.amount,
+            commissionRate: data.commissionRate,
+            type: typeof data.commission
           });
           
           return total + commission;
         }, 0);
 
-        console.log('📊 AFFILIATE STATS - TOTAL FINAL:', totalCommissions);
+        console.log('📊 AFFILIATE STATS - TOTAL COMMISSIONS CALCULATED:', totalCommissions);
 
         setStats({
           clicks: clicksCount,
