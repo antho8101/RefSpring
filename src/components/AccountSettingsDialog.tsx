@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -28,7 +27,11 @@ import { useAuth } from '@/hooks/useAuth';
 import { updateEmail, updatePassword, deleteUser, reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
 
-export const AccountSettingsDialog = () => {
+interface AccountSettingsDialogProps {
+  children?: React.ReactNode;
+}
+
+export const AccountSettingsDialog = ({ children }: AccountSettingsDialogProps) => {
   const { user } = useAuth();
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
@@ -140,9 +143,11 @@ export const AccountSettingsDialog = () => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="rounded-lg">
-          <Settings className="h-4 w-4" />
-        </Button>
+        {children || (
+          <Button variant="outline" size="sm" className="rounded-lg">
+            <Settings className="h-4 w-4" />
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
