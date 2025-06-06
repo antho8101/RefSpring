@@ -20,7 +20,7 @@ const LandingPage = () => {
   }, []);
 
   const redirectToDashboard = () => {
-    window.location.href = '/app';
+    window.location.href = '/app?signup=true';
   };
 
   const structuredData = {
