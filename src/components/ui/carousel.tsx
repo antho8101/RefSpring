@@ -8,4 +8,4 @@ export {
   CarouselNext,
   useCarousel,
   type CarouselApi,
-} from "./carousel"
+} from "./carousel/index"
