@@ -14,34 +14,46 @@ const ShortLinkPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [campaign, setCampaign] = useState<Campaign | null>(null);
+  const [debugInfo, setDebugInfo] = useState<string[]>([]);
+
+  // Fonction pour ajouter des logs visibles
+  const addDebugLog = (message: string) => {
+    console.log(message);
+    setDebugInfo(prev => [...prev, `${new Date().toLocaleTimeString()}: ${message}`]);
+  };
 
   useEffect(() => {
     const handleShortLink = async () => {
+      addDebugLog('🚀 DÉBUT ShortLinkPage - Chargement...');
+      addDebugLog(`📋 Code court: ${shortCode}`);
+
       if (!shortCode) {
-        console.log('❌ Code de lien manquant');
+        addDebugLog('❌ Code de lien manquant');
         setError('Code de lien manquant');
         setLoading(false);
         return;
       }
 
       try {
-        console.log('🚀 Début traitement lien court:', shortCode);
+        addDebugLog('🔍 Récupération des données du lien court...');
         
         const shortLinkData = await getShortLinkData(shortCode);
         
         if (!shortLinkData) {
-          console.log('❌ Aucune donnée trouvée pour le code:', shortCode);
+          addDebugLog('❌ Aucune donnée trouvée pour le code');
           setError('Lien court non trouvé');
           setLoading(false);
           return;
         }
 
-        console.log('✅ Données du lien court trouvées:', shortLinkData);
+        addDebugLog(`✅ Données du lien court trouvées: ${JSON.stringify(shortLinkData)}`);
 
         // Récupérer les informations de la campagne
+        addDebugLog('🔍 Récupération des données de la campagne...');
         const campaignDoc = await getDoc(doc(db, 'campaigns', shortLinkData.campaignId));
         
         if (!campaignDoc.exists()) {
+          addDebugLog('❌ Campagne introuvable');
           setError('Campagne introuvable');
           setLoading(false);
           return;
@@ -55,24 +67,33 @@ const ShortLinkPage = () => {
         } as Campaign;
 
         setCampaign(campaignData);
+        addDebugLog(`✅ Campagne trouvée: ${campaignData.name}`);
 
-        // Enregistrer le clic avec les 3 paramètres requis dans le bon ordre
-        console.log('📊 Enregistrement du clic...');
-        await recordClick(shortLinkData.affiliateId, shortLinkData.campaignId, shortLinkData.targetUrl);
+        // APPEL UNIQUE de recordClick - regarder attentivement les logs
+        addDebugLog('🔥 APPEL UNIQUE de recordClick - ATTENTION AUX LOGS !');
+        addDebugLog(`📊 Paramètres: affiliate=${shortLinkData.affiliateId}, campaign=${shortLinkData.campaignId}, url=${shortLinkData.targetUrl}`);
+        
+        const clickId = await recordClick(shortLinkData.affiliateId, shortLinkData.campaignId, shortLinkData.targetUrl);
+        addDebugLog(`✅ recordClick terminé, retour: ${clickId}`);
         
         // Vérifier si la campagne est active
         if (!campaignData.isActive) {
-          console.log('⏸️ Campagne en pause, pas de redirection');
+          addDebugLog('⏸️ Campagne en pause, pas de redirection');
           setLoading(false);
           return;
         }
 
-        console.log('🎯 Redirection vers:', shortLinkData.targetUrl);
+        addDebugLog(`🎯 URL de redirection: ${shortLinkData.targetUrl}`);
+        addDebugLog('⏳ Attente 5 secondes avant redirection...');
         
-        // Rediriger vers l'URL de destination
-        window.location.href = shortLinkData.targetUrl;
+        // Rediriger vers l'URL de destination avec délai pour voir les logs
+        setTimeout(() => {
+          addDebugLog('🚀 REDIRECTION MAINTENANT !');
+          window.location.href = shortLinkData.targetUrl;
+        }, 5000); // 5 secondes pour voir les logs
         
       } catch (error) {
+        addDebugLog(`❌ Erreur: ${error}`);
         console.error('❌ Erreur lors du traitement du lien court:', error);
         setError('Erreur lors du traitement du lien');
         setLoading(false);
@@ -85,10 +106,18 @@ const ShortLinkPage = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
+        <div className="text-center max-w-2xl">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
           <h2 className="text-lg font-medium text-gray-900 mb-2">Enregistrement du clic...</h2>
-          <p className="text-gray-600">Redirection en cours...</p>
+          <p className="text-gray-600 mb-6">Redirection en cours...</p>
+          
+          {/* LOGS VISIBLES EN TEMPS RÉEL */}
+          <div className="bg-black text-green-400 text-left p-4 rounded-lg font-mono text-sm max-h-96 overflow-y-auto">
+            <h3 className="text-white mb-2">🔍 Debug ShortLink en temps réel:</h3>
+            {debugInfo.map((log, index) => (
+              <div key={index} className="mb-1">{log}</div>
+            ))}
+          </div>
         </div>
       </div>
     );
@@ -102,6 +131,16 @@ const ShortLinkPage = () => {
           <h2 className="text-lg font-medium text-red-600 mb-2">Erreur</h2>
           <p className="text-gray-600">{error}</p>
           <p className="text-sm text-gray-400 mt-2">Code: {shortCode}</p>
+          
+          {/* Afficher les logs même en cas d'erreur */}
+          {debugInfo.length > 0 && (
+            <div className="bg-black text-green-400 text-left p-4 rounded-lg font-mono text-sm max-h-96 overflow-y-auto mt-4">
+              <h3 className="text-white mb-2">🔍 Logs d'erreur:</h3>
+              {debugInfo.map((log, index) => (
+                <div key={index} className="mb-1">{log}</div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     );
@@ -119,6 +158,16 @@ const ShortLinkPage = () => {
           <p className="text-sm text-gray-500">
             Votre clic a été enregistré. Veuillez réessayer plus tard.
           </p>
+          
+          {/* Afficher les logs même en pause */}
+          {debugInfo.length > 0 && (
+            <div className="bg-black text-green-400 text-left p-4 rounded-lg font-mono text-sm max-h-96 overflow-y-auto mt-4">
+              <h3 className="text-white mb-2">🔍 Logs debug:</h3>
+              {debugInfo.map((log, index) => (
+                <div key={index} className="mb-1">{log}</div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     );
