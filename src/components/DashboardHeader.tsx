@@ -53,7 +53,7 @@ export const DashboardHeader = ({ user, onLogout }: DashboardHeaderProps) => {
               variant="outline" 
               size="sm" 
               onClick={handleLogout}
-              className="hover:scale-105 transition-all shadow-lg backdrop-blur-sm rounded-lg"
+              className="rounded-full hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl backdrop-blur-sm border-slate-300 bg-white/90 hover:bg-white/95"
             >
               <LogOut className="h-4 w-4 mr-2" />
               Déconnexion
@@ -64,7 +64,7 @@ export const DashboardHeader = ({ user, onLogout }: DashboardHeaderProps) => {
           <Button
             variant="outline"
             size="sm"
-            className="lg:hidden rounded-lg"
+            className="lg:hidden rounded-full shadow-lg border-slate-300"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
             <Menu className="h-4 w-4" />
@@ -84,7 +84,7 @@ export const DashboardHeader = ({ user, onLogout }: DashboardHeaderProps) => {
                   variant="outline" 
                   size="sm" 
                   onClick={handleLogout}
-                  className="flex-1 justify-start rounded-lg"
+                  className="flex-1 justify-start rounded-full shadow-lg border-slate-300 hover:scale-105 transition-all duration-300"
                 >
                   <LogOut className="h-4 w-4 mr-2" />
                   Déconnexion
