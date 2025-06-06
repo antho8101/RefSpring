@@ -80,25 +80,40 @@ const TrackingJsRoute = () => {
     });
   }
   
-  // API publique pour tracker les conversions
+  // API publique pour tracker les conversions - NOUVELLE VERSION INTELLIGENTE
   window.RefSpring = window.RefSpring || {};
-  window.RefSpring.trackConversion = function(amount, commission) {
-    if (!affiliateId) {
+  window.RefSpring.trackConversion = function(amount, customCommission) {
+    // Récupérer automatiquement les données d'affiliation depuis localStorage
+    const storedAffiliateData = localStorage.getItem('refspring_affiliate');
+    
+    if (!storedAffiliateData) {
       console.warn('⚠️ RefSpring - Impossible de tracker conversion: pas d\\'affilié associé');
+      console.log('💡 RefSpring - Cette conversion ne sera pas attribuée à un affilié');
       return false;
     }
     
-    console.log('💰 RefSpring - Tracking conversion:', {
-      amount: amount,
-      commission: commission || (amount * 0.1), // 10% par défaut
-      affiliateId: affiliateId,
-      campaignId: campaignId,
-      url: window.location.href,
-      timestamp: new Date().toISOString()
-    });
-    
-    // Pour l'instant on log juste, l'API sera implémentée plus tard
-    return true;
+    try {
+      const affiliateData = JSON.parse(storedAffiliateData);
+      const currentAffiliateId = affiliateData.affiliateId;
+      const currentCampaignId = affiliateData.campaignId;
+      
+      console.log('💰 RefSpring - Tracking conversion:', {
+        amount: amount,
+        commission: customCommission || 'auto-calculated',
+        affiliateId: currentAffiliateId,
+        campaignId: currentCampaignId,
+        url: window.location.href,
+        timestamp: new Date().toISOString(),
+        source: 'localStorage'
+      });
+      
+      // Pour l'instant on log juste, l'API sera implémentée plus tard
+      return true;
+      
+    } catch (e) {
+      console.warn('⚠️ RefSpring - Erreur parsing localStorage pour conversion:', e);
+      return false;
+    }
   };
   
   // Tracker la page vue au chargement
@@ -109,7 +124,8 @@ const TrackingJsRoute = () => {
   }
   
   console.log('✅ RefSpring - Script initialisé avec succès');
-  console.log('💡 RefSpring - Utilisez RefSpring.trackConversion(amount, commission) pour tracker les ventes');
+  console.log('💡 RefSpring - Utilisez RefSpring.trackConversion(amount) pour tracker les ventes');
+  console.log('🔒 RefSpring - Les conversions seront automatiquement attribuées au bon affilié');
 })();`;
 
   return (

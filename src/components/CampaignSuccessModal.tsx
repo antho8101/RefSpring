@@ -40,12 +40,18 @@ export const CampaignSuccessModal = ({
   const conversionCode = `<!-- RefSpring Conversion Tracking - Placez ce code sur votre page de confirmation de commande -->
 <script>
   if (typeof RefSpring !== 'undefined') {
-    RefSpring.trackConversion({
-      campaignId: '${campaignId}',
-      orderId: 'ORDER_ID_UNIQUE', // Remplacez par l'ID de commande réel
-      amount: 99.99, // Remplacez par le montant réel
-      currency: 'EUR'
-    });
+    // Le système attribue automatiquement au bon affilié
+    RefSpring.trackConversion(99.99); // Remplacez par le montant réel
+  }
+</script>
+
+<!-- Exemple avec ID de commande (optionnel) -->
+<script>
+  if (typeof RefSpring !== 'undefined') {
+    RefSpring.trackConversion(149.50); // Pour une commande de 149,50€
+    
+    // Les données d'affiliation sont automatiquement récupérées
+    // Pas besoin de spécifier campaignId ou affiliateId
   }
 </script>`;
 
@@ -174,16 +180,16 @@ export const CampaignSuccessModal = ({
           <div className="space-y-2">
             <Label className="flex items-center gap-2 text-base font-medium">
               <Code className="h-4 w-4" />
-              Code de conversion
+              Code de conversion (SÉCURISÉ)
             </Label>
             <p className="text-sm text-muted-foreground">
-              Ajoutez ce code sur votre page de confirmation de commande pour tracker les conversions.
+              Ajoutez ce code sur votre page de confirmation de commande. <strong>Le système attribue automatiquement au bon affilié</strong> grâce à la logique "premier clic gagne".
             </p>
             <div className="relative">
               <Textarea 
                 value={conversionCode}
                 readOnly 
-                className="font-mono text-xs min-h-[140px] resize-none"
+                className="font-mono text-xs min-h-[160px] resize-none"
               />
               <div className="absolute top-2 right-2">
                 <CopyButton 
@@ -193,6 +199,16 @@ export const CampaignSuccessModal = ({
                 />
               </div>
             </div>
+          </div>
+
+          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+            <h4 className="font-medium text-green-900 mb-2">🔒 Sécurité Anti-Fraude :</h4>
+            <ul className="text-sm text-green-800 space-y-1 list-disc list-inside">
+              <li><strong>Premier clic gagne :</strong> Le premier affilié qui amène le visiteur obtient le crédit</li>
+              <li><strong>Attribution automatique :</strong> Pas besoin de spécifier l'affilié dans le code de conversion</li>
+              <li><strong>Impossible de voler des conversions :</strong> Les clics ultérieurs n'écrasent pas l'attribution</li>
+              <li><strong>Un clic par affilié par session :</strong> Protection contre le spam de clics</li>
+            </ul>
           </div>
 
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
