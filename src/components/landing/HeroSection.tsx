@@ -37,15 +37,9 @@ export const HeroSection = ({ scrollY, onRedirectToDashboard }: HeroSectionProps
       </div>
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-        <div className="space-y-8 lg:space-y-10">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-100 to-purple-100 text-blue-800 px-4 py-2 lg:px-6 lg:py-3 rounded-full text-sm font-medium border border-blue-200/50 backdrop-blur-sm opacity-0 animate-fade-in" style={{ animationDelay: '0.2s' }}>
-            <CheckCircle className="w-4 h-4" />
-            {t('hero.badge')}
-            <Star className="w-4 h-4 text-yellow-500" />
-          </div>
+        <div className="space-y-6 lg:space-y-8">
           
-          <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-slate-900 leading-tight opacity-0 animate-fade-in" style={{ animationDelay: '0.4s' }}>
+          <h1 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-slate-900 leading-tight opacity-0 animate-fade-in" style={{ animationDelay: '0.4s' }}>
             {t('hero.title.part1')}
             <br />
             <span className="relative inline-block">
@@ -59,7 +53,7 @@ export const HeroSection = ({ scrollY, onRedirectToDashboard }: HeroSectionProps
             </span>
           </h1>
           
-          <p className="text-base md:text-lg lg:text-xl xl:text-xl text-slate-600 max-w-4xl mx-auto leading-relaxed opacity-0 animate-fade-in" style={{ animationDelay: '0.6s' }}>
+          <p className="text-base md:text-lg lg:text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed opacity-0 animate-fade-in" style={{ animationDelay: '0.6s' }}>
             <strong>{t('hero.subtitle.bold')}</strong>
             <br />
             <span className="text-slate-900 font-semibold">{t('hero.subtitle.normal')}</span>
@@ -103,7 +97,7 @@ export const HeroSection = ({ scrollY, onRedirectToDashboard }: HeroSectionProps
           </div>
 
           {/* Social proof with delayed animation */}
-          <div className="pt-8 lg:pt-10 border-t border-slate-200/50 opacity-0 animate-fade-in" style={{ animationDelay: '1.6s' }}>
+          <div className="pt-6 lg:pt-8 border-t border-slate-200/50 opacity-0 animate-fade-in" style={{ animationDelay: '1.6s' }}>
             <p className="text-slate-500 text-sm mb-4 lg:mb-6">{t('hero.socialProof.text')}</p>
             <div className="flex justify-center items-center gap-4 lg:gap-6 opacity-70">
               <div className="text-xl lg:text-2xl font-bold text-slate-600 hover:text-blue-600 transition-colors">{t('hero.socialProof.revenue')}</div>
