@@ -89,7 +89,7 @@ const ShortLinkPage = () => {
       setTimeout(() => {
         addDebugLog('🚀 REDIRECTION MAINTENANT !');
         window.location.href = shortLinkData.targetUrl;
-      }, 2000); // 2 secondes pour voir les logs
+      }, 2000); // Retour à 2 secondes
       
     } catch (error) {
       addDebugLog(`❌ Erreur: ${error}`);
