@@ -60,6 +60,7 @@ function App() {
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/campaign/:campaignId" element={<AdvancedStatsPage />} />
                     <Route path="/affiliate/:affiliateId" element={<AffiliatePage />} />
+                    <Route path="/r/:campaignId" element={<AffiliatePage />} />
                     <Route path="/test-products" element={<TestProductsPage />} />
                     <Route path="/test-thankyou" element={<TestThankYouPage />} />
                     <Route path="/privacy" element={<PrivacyPage />} />
