@@ -1,4 +1,3 @@
-
 {
   "auth": {
     "title": "RefSpring",
@@ -20,7 +19,8 @@
     "accountCreated": "Cuenta creada",
     "accountCreatedDesc": "¡Tu cuenta ha sido creada exitosamente!",
     "error": "Error",
-    "genericError": "Ocurrió un error"
+    "genericError": "Ocurrió un error",
+    "myDashboard": "Mi Panel de Control"
   },
   "loading": "Cargando...",
   "dashboard": {

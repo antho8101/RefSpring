@@ -4,6 +4,7 @@ import { ArrowRight } from "lucide-react";
 import { RefSpringLogo } from "@/components/RefSpringLogo";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { useTranslation } from "react-i18next";
 
 interface LandingHeaderProps {
   onRedirectToDashboard: () => void;
@@ -12,6 +13,7 @@ interface LandingHeaderProps {
 
 export const LandingHeader = ({ onRedirectToDashboard, currentPage = 'landing' }: LandingHeaderProps) => {
   const { user } = useAuth();
+  const { t } = useTranslation();
   
   const handleLoginClick = () => {
     if (user) {
@@ -52,7 +54,7 @@ export const LandingHeader = ({ onRedirectToDashboard, currentPage = 'landing' }
           </nav>
           <div className="flex items-center gap-3">
             <Button variant="outline" className="hidden md:flex hover:scale-105 transition-transform" onClick={handleLoginClick}>
-              {user ? "My Dashboard" : "Se connecter"}
+              {user ? t("auth.myDashboard") : t("auth.signIn")}
             </Button>
             <Button 
               className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold px-6 py-2 shadow-lg hover:shadow-xl hover:scale-105 transition-all animate-pulse"

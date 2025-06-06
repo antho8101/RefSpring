@@ -1,4 +1,3 @@
-
 {
   "auth": {
     "title": "RefSpring",
@@ -20,7 +19,8 @@
     "accountCreated": "Аккаунт создан",
     "accountCreatedDesc": "Ваш аккаунт был успешно создан!",
     "error": "Ошибка",
-    "genericError": "Произошла ошибка"
+    "genericError": "Произошла ошибка",
+    "myDashboard": "Моя Панель"
   },
   "loading": "Загрузка...",
   "dashboard": {

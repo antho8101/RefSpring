@@ -1,4 +1,3 @@
-
 {
   "auth": {
     "title": "RefSpring",
@@ -20,7 +19,8 @@
     "accountCreated": "账户已创建",
     "accountCreatedDesc": "您的账户已成功创建！",
     "error": "错误",
-    "genericError": "发生了错误"
+    "genericError": "发生了错误",
+    "myDashboard": "我的仪表板"
   },
   "loading": "加载中...",
   "dashboard": {

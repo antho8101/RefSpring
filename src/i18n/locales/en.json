@@ -1,4 +1,3 @@
-
 {
   "auth": {
     "title": "RefSpring",
@@ -20,7 +19,8 @@
     "accountCreated": "Account created",
     "accountCreatedDesc": "Your account has been created successfully!",
     "error": "Error",
-    "genericError": "An error occurred"
+    "genericError": "An error occurred",
+    "myDashboard": "My Dashboard"
   },
   "loading": "Loading...",
   "dashboard": {
