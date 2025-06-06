@@ -12,22 +12,35 @@ const TrackingPage = () => {
   const [isTracking, setIsTracking] = useState(true);
   const [campaign, setCampaign] = useState<Campaign | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [debugInfo, setDebugInfo] = useState<string[]>([]);
   const { recordClick } = useTracking();
+
+  // Fonction pour ajouter des logs visibles
+  const addDebugLog = (message: string) => {
+    console.log(message);
+    setDebugInfo(prev => [...prev, `${new Date().toLocaleTimeString()}: ${message}`]);
+  };
 
   useEffect(() => {
     const handleTracking = async () => {
+      addDebugLog('🚀 DÉBUT TrackingPage - Chargement...');
+      addDebugLog(`📋 Paramètres: campaign=${campaignId}, affiliate=${affiliateId}`);
+
       if (!campaignId || !affiliateId) {
-        console.error('Missing campaignId or affiliateId');
+        addDebugLog('❌ Paramètres manquants');
         setError('Paramètres manquants');
         setIsTracking(false);
         return;
       }
 
       try {
+        addDebugLog('🔍 Récupération des données de la campagne...');
+        
         // Récupérer les informations de la campagne
         const campaignDoc = await getDoc(doc(db, 'campaigns', campaignId));
         
         if (!campaignDoc.exists()) {
+          addDebugLog('❌ Campagne introuvable');
           setError('Campagne introuvable');
           setIsTracking(false);
           return;
@@ -41,28 +54,34 @@ const TrackingPage = () => {
         } as Campaign;
 
         setCampaign(campaignData);
+        addDebugLog(`✅ Campagne trouvée: ${campaignData.name}`);
 
         const targetUrl = searchParams.get('url') || campaignData.targetUrl || 'https://example.com';
         
-        console.log('Tracking - Campaign:', campaignId, 'Affiliate:', affiliateId);
-        console.log('Campaign active:', campaignData.isActive);
-        console.log('Target URL:', targetUrl);
+        addDebugLog(`🎯 URL de destination: ${targetUrl}`);
+        addDebugLog(`📊 Campagne active: ${campaignData.isActive}`);
 
-        // Enregistrer le clic même si la campagne est en pause (pour les stats)
-        await recordClick(affiliateId, campaignId, targetUrl);
+        // APPEL UNIQUE de recordClick - regarder attentivement les logs
+        addDebugLog('🔥 APPEL UNIQUE de recordClick - ATTENTION AUX LOGS !');
+        const clickId = await recordClick(affiliateId, campaignId, targetUrl);
+        addDebugLog(`✅ recordClick terminé, retour: ${clickId}`);
         
         // Si la campagne est en pause, ne pas rediriger
         if (!campaignData.isActive) {
+          addDebugLog('⏸️ Campagne en pause, pas de redirection');
           setIsTracking(false);
           return;
         }
         
-        // Redirection après tracking pour les campagnes actives
+        // DÉLAI PLUS LONG pour voir les logs
+        addDebugLog('⏳ Attente 5 secondes avant redirection...');
         setTimeout(() => {
+          addDebugLog('🚀 REDIRECTION MAINTENANT !');
           window.location.href = targetUrl;
-        }, 500);
+        }, 5000); // 5 secondes au lieu de 0.5
         
       } catch (error) {
+        addDebugLog(`❌ Erreur: ${error}`);
         console.error('Error during tracking:', error);
         setError('Erreur lors du traitement');
         setIsTracking(false);
@@ -103,11 +122,19 @@ const TrackingPage = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
+      <div className="text-center max-w-2xl">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-        <p className="text-gray-600">
+        <p className="text-gray-600 mb-6">
           {isTracking ? 'Enregistrement du clic...' : 'Redirection en cours...'}
         </p>
+        
+        {/* LOGS VISIBLES EN TEMPS RÉEL */}
+        <div className="bg-black text-green-400 text-left p-4 rounded-lg font-mono text-sm max-h-96 overflow-y-auto">
+          <h3 className="text-white mb-2">🔍 Debug en temps réel:</h3>
+          {debugInfo.map((log, index) => (
+            <div key={index} className="mb-1">{log}</div>
+          ))}
+        </div>
       </div>
     </div>
   );
