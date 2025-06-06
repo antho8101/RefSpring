@@ -1,3 +1,4 @@
+
 import { useAuth } from '@/hooks/useAuth';
 import { useCampaigns } from '@/hooks/useCampaigns';
 import { useAffiliates } from '@/hooks/useAffiliates';
@@ -21,7 +22,7 @@ const SimpleDashboardStats = ({ activeCampaigns, totalCampaigns, totalAffiliates
       <Card className="bg-gradient-to-br from-white to-blue-50/50 border-slate-200/50 shadow-xl transition-all duration-300 hover:shadow-2xl hover:scale-105 hover:bg-gradient-to-br hover:from-white hover:to-blue-100/70">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium text-slate-700">Campagnes Actives</CardTitle>
-          <div className="p-2 bg-blue-100 rounded-full">
+          <div className="p-2 bg-blue-100 rounded-full ml-3">
             <BarChart3 className="h-4 w-4 text-blue-600" />
           </div>
         </CardHeader>
@@ -34,7 +35,7 @@ const SimpleDashboardStats = ({ activeCampaigns, totalCampaigns, totalAffiliates
       <Card className="bg-gradient-to-br from-white to-green-50/50 border-slate-200/50 shadow-xl transition-all duration-300 hover:shadow-2xl hover:scale-105 hover:bg-gradient-to-br hover:from-white hover:to-green-100/70">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium text-slate-700">Total Affiliés</CardTitle>
-          <div className="p-2 bg-green-100 rounded-full">
+          <div className="p-2 bg-green-100 rounded-full ml-3">
             <Users className="h-4 w-4 text-green-600" />
           </div>
         </CardHeader>
@@ -47,7 +48,7 @@ const SimpleDashboardStats = ({ activeCampaigns, totalCampaigns, totalAffiliates
       <Card className="bg-gradient-to-br from-white to-purple-50/50 border-slate-200/50 shadow-xl transition-all duration-300 hover:shadow-2xl hover:scale-105 hover:bg-gradient-to-br hover:from-white hover:to-purple-100/70">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium text-slate-700">Chiffre d'affaires</CardTitle>
-          <div className="p-2 bg-purple-100 rounded-full">
+          <div className="p-2 bg-purple-100 rounded-full ml-3">
             <DollarSign className="h-4 w-4 text-purple-600" />
           </div>
         </CardHeader>
@@ -60,7 +61,7 @@ const SimpleDashboardStats = ({ activeCampaigns, totalCampaigns, totalAffiliates
       <Card className="bg-gradient-to-br from-white to-orange-50/50 border-slate-200/50 shadow-xl transition-all duration-300 hover:shadow-2xl hover:scale-105 hover:bg-gradient-to-br hover:from-white hover:to-orange-100/70">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium text-slate-700">Taux Conversion</CardTitle>
-          <div className="p-2 bg-orange-100 rounded-full">
+          <div className="p-2 bg-orange-100 rounded-full ml-3">
             <Percent className="h-4 w-4 text-orange-600" />
           </div>
         </CardHeader>
