@@ -2,9 +2,10 @@
 import { useState, ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Plus, CreditCard } from 'lucide-react';
+import { Plus, CreditCard, Loader2 } from 'lucide-react';
 import { useCampaignForm } from '@/hooks/useCampaignForm';
 import { CampaignFormFields } from '@/components/CampaignFormFields';
+import { useToast } from '@/hooks/use-toast';
 
 interface CreateCampaignDialogProps {
   children?: ReactNode;
@@ -12,6 +13,8 @@ interface CreateCampaignDialogProps {
 
 export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) => {
   const [open, setOpen] = useState(false);
+  const { toast } = useToast();
+  
   const {
     formData,
     loading,
@@ -24,6 +27,22 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
   const resetDialog = () => {
     resetForm();
     setOpen(false);
+  };
+
+  const onSubmit = async (e: React.FormEvent) => {
+    try {
+      await handleSubmit(e);
+      toast({
+        title: "Redirection vers la page de paiement",
+        description: "Vous allez être redirigé vers la page de configuration du paiement.",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Erreur",
+        description: error.message || "Une erreur est survenue lors de la création de la campagne",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -47,7 +66,7 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={onSubmit}>
           <CampaignFormFields 
             formData={formData}
             onUpdateFormData={updateFormData}
@@ -67,8 +86,17 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
               disabled={loading || paymentLoading}
               className="flex items-center gap-2"
             >
-              <CreditCard className="h-4 w-4" />
-              {loading || paymentLoading ? 'Configuration...' : 'Mode de paiement'}
+              {loading || paymentLoading ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Configuration...
+                </>
+              ) : (
+                <>
+                  <CreditCard className="h-4 w-4" />
+                  Mode de paiement
+                </>
+              )}
             </Button>
           </DialogFooter>
         </form>

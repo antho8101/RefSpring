@@ -20,6 +20,7 @@ import ContactPage from '@/pages/ContactPage';
 import TestProductsPage from '@/pages/TestProductsPage';
 import TestThankYouPage from '@/pages/TestThankYouPage';
 import { Dashboard } from '@/components/Dashboard';
+import PaymentSuccessPage from '@/pages/PaymentSuccessPage';
 
 const Index = lazy(() => import('@/pages/Index'));
 const AdvancedStatsPage = lazy(() => import('@/pages/AdvancedStatsPage'));
@@ -66,6 +67,7 @@ function App() {
                     <Route path="/security" element={<SecurityPage />} />
                     <Route path="/status" element={<StatusPage />} />
                     <Route path="/legal" element={<LegalPage />} />
+                    <Route path="/payment-success" element={<PaymentSuccessPage />} />
                   </Routes>
                 </Suspense>
                 

@@ -39,6 +39,14 @@ export const useCampaignForm = () => {
     try {
       console.log('🎯 Création de la campagne en mode draft...');
       
+      if (!formData.name) {
+        throw new Error('Le nom de la campagne est requis');
+      }
+      
+      if (!formData.targetUrl) {
+        throw new Error('L\'URL de destination est requise');
+      }
+      
       // Créer la campagne en mode draft
       const campaignId = await createCampaign({
         ...formData,
@@ -48,9 +56,14 @@ export const useCampaignForm = () => {
       
       console.log('✅ Campagne draft créée:', campaignId);
       
-      // Rediriger directement vers Stripe pour la configuration de paiement
-      await setupPaymentForCampaign(campaignId, formData.name);
+      // Rediriger vers Stripe pour la configuration de paiement
+      const setupData = await setupPaymentForCampaign(campaignId, formData.name);
+      console.log('✅ Redirection vers la page de paiement:', setupData.checkoutUrl);
       
+      // Rediriger l'utilisateur vers la page de paiement
+      window.location.href = setupData.checkoutUrl;
+      
+      return setupData;
     } catch (error: any) {
       console.error('❌ Erreur création campagne:', error);
       toast({
@@ -58,6 +71,7 @@ export const useCampaignForm = () => {
         description: error.message || "Impossible de créer la campagne",
         variant: "destructive",
       });
+      throw error;
     } finally {
       setLoading(false);
     }
