@@ -41,7 +41,7 @@ export const CarouselItem = React.forwardRef<
       role="group"
       aria-roledescription="slide"
       className={cn(
-        "absolute inset-0 w-full transition-opacity duration-500",
+        "absolute inset-0 w-full h-full flex items-center justify-center transition-opacity duration-500",
         isActive ? "opacity-100 z-10" : "opacity-0 z-0",
         className
       )}
