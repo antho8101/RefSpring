@@ -1,12 +1,9 @@
-
 import { useAuth } from '@/hooks/useAuth';
-import { useOnboarding } from '@/hooks/useOnboarding';
 import { useCampaigns } from '@/hooks/useCampaigns';
 import { useAffiliates } from '@/hooks/useAffiliates';
 import { DashboardBackground } from '@/components/DashboardBackground';
 import { DashboardHeader } from '@/components/DashboardHeader';
 import { DashboardContent } from '@/components/DashboardContent';
-import { OnboardingCarousel } from '@/components/OnboardingCarousel';
 import { NetworkStatus } from '@/components/NetworkStatus';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { TooltipProvider } from '@/components/ui/tooltip';
@@ -77,7 +74,6 @@ const SimpleDashboardStats = ({ activeCampaigns, totalCampaigns, totalAffiliates
 
 export const Dashboard = memo(() => {
   const { user } = useAuth();
-  const { hasSeenOnboarding, markOnboardingCompleted, loading: onboardingLoading } = useOnboarding();
   const { campaigns, loading: campaignsLoading } = useCampaigns();
   const { affiliates, loading: affiliatesLoading } = useAffiliates();
 
@@ -100,13 +96,8 @@ export const Dashboard = memo(() => {
     };
   }, [campaigns, affiliates]);
 
-  // Si connecté mais n'a pas vu l'onboarding, afficher le carousel
-  if (user && !onboardingLoading && !hasSeenOnboarding) {
-    return <OnboardingCarousel onComplete={markOnboardingCompleted} />;
-  }
-
   // Chargement ultra-rapide
-  if (campaignsLoading || affiliatesLoading || onboardingLoading) {
+  if (campaignsLoading || affiliatesLoading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
