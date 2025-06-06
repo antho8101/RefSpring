@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from '@/components/ui/carousel';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, useCarousel } from '@/components/ui/carousel';
 import { DashboardBackground } from '@/components/DashboardBackground';
 import { RefSpringLogo } from '@/components/RefSpringLogo';
 import { CheckCircle, Shield, TrendingUp, Rocket } from 'lucide-react';
@@ -46,22 +46,48 @@ const slides = [
   }
 ];
 
+// Composant interne pour accéder au contexte du carousel
+const CarouselIndicators = ({ onComplete }: { onComplete: () => void }) => {
+  const { currentSlide, totalSlides } = useCarousel();
+
+  return (
+    <>
+      {/* Navigation */}
+      <div className="flex justify-center items-center gap-4 mt-8">
+        <CarouselPrevious className="static translate-y-0" />
+        
+        {/* Points indicateurs */}
+        <div className="flex gap-2">
+          {slides.map((_, index) => (
+            <div
+              key={index}
+              className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                index === currentSlide 
+                  ? 'bg-blue-600 w-8' 
+                  : 'bg-slate-300 hover:bg-slate-400'
+              }`}
+            />
+          ))}
+        </div>
+        
+        <CarouselNext className="static translate-y-0" />
+      </div>
+
+      {/* Bouton passer */}
+      <div className="text-center mt-6">
+        <Button 
+          variant="link" 
+          onClick={onComplete}
+          className="text-slate-500 hover:text-slate-700"
+        >
+          Passer l'introduction
+        </Button>
+      </div>
+    </>
+  );
+};
+
 export const OnboardingCarousel = ({ onComplete }: OnboardingCarouselProps) => {
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [api, setApi] = useState<CarouselApi>();
-
-  useEffect(() => {
-    if (!api) {
-      return;
-    }
-
-    setCurrentSlide(api.selectedScrollSnap());
-
-    api.on('select', () => {
-      setCurrentSlide(api.selectedScrollSnap());
-    });
-  }, [api]);
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50/50 via-white to-purple-50/50 relative overflow-visible">
       <DashboardBackground />
@@ -79,7 +105,7 @@ export const OnboardingCarousel = ({ onComplete }: OnboardingCarouselProps) => {
             <p className="text-slate-600">Découvrez comment fonctionne votre plateforme d'affiliation</p>
           </div>
 
-          <Carousel className="w-full overflow-visible" setApi={setApi}>
+          <Carousel className="w-full overflow-visible">
             <CarouselContent className="overflow-visible">
               {slides.map((slide, index) => {
                 const IconComponent = slide.icon;
@@ -128,38 +154,8 @@ export const OnboardingCarousel = ({ onComplete }: OnboardingCarouselProps) => {
               })}
             </CarouselContent>
             
-            {/* Navigation */}
-            <div className="flex justify-center items-center gap-4 mt-8">
-              <CarouselPrevious className="static translate-y-0" />
-              
-              {/* Points indicateurs */}
-              <div className="flex gap-2">
-                {slides.map((_, index) => (
-                  <div
-                    key={index}
-                    className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                      index === currentSlide 
-                        ? 'bg-blue-600 w-8' 
-                        : 'bg-slate-300 hover:bg-slate-400'
-                    }`}
-                  />
-                ))}
-              </div>
-              
-              <CarouselNext className="static translate-y-0" />
-            </div>
+            <CarouselIndicators onComplete={onComplete} />
           </Carousel>
-
-          {/* Bouton passer */}
-          <div className="text-center mt-6">
-            <Button 
-              variant="link" 
-              onClick={onComplete}
-              className="text-slate-500 hover:text-slate-700"
-            >
-              Passer l'introduction
-            </Button>
-          </div>
         </div>
       </div>
     </div>
