@@ -14,10 +14,12 @@ export type CarouselProps = {
 }
 
 export type CarouselContextProps = {
-  carouselRef: ReturnType<typeof import("embla-carousel-react").default>[0]
+  carouselRef: ReturnType<typeof import("embla-carousel-react").default>[0] | null
   api: ReturnType<typeof import("embla-carousel-react").default>[1]
   scrollPrev: () => void
   scrollNext: () => void
   canScrollPrev: boolean
   canScrollNext: boolean
+  currentSlide: number
+  totalSlides: number
 } & CarouselProps

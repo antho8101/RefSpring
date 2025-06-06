@@ -6,19 +6,28 @@ import { useCarousel } from "./context"
 export const CarouselContent = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => {
-  const { carouselRef, orientation } = useCarousel()
+>(({ className, children, ...props }, ref) => {
+  const { currentSlide } = useCarousel()
 
   return (
-    <div ref={carouselRef} className="relative w-full">
-      <div
-        ref={ref}
-        className={cn(
-          "relative min-h-[600px] w-full",
-          className
-        )}
-        {...props}
-      />
+    <div
+      ref={ref}
+      className={cn(
+        "relative min-h-[600px] w-full overflow-hidden",
+        className
+      )}
+      {...props}
+    >
+      {React.Children.map(children, (child, index) => {
+        if (React.isValidElement(child)) {
+          return React.cloneElement(child, {
+            ...child.props,
+            isActive: index === currentSlide,
+            slideIndex: index
+          })
+        }
+        return child
+      })}
     </div>
   )
 })

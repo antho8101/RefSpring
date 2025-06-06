@@ -1,8 +1,8 @@
+
 import * as React from "react"
-import useEmblaCarousel from "embla-carousel-react"
 import { cn } from "@/lib/utils"
 import { CarouselContext } from "./context"
-import { CarouselProps, CarouselApi } from "./types"
+import { CarouselProps } from "./types"
 
 export const Carousel = React.forwardRef<
   HTMLDivElement,
@@ -20,34 +20,46 @@ export const Carousel = React.forwardRef<
     },
     ref
   ) => {
-    const [carouselRef, api] = useEmblaCarousel(
-      {
-        ...opts,
-        axis: orientation === "horizontal" ? "x" : "y",
-        dragFree: false,
-        duration: 30, // Transition plus rapide pour le fade
-      },
-      plugins
-    )
-    const [canScrollPrev, setCanScrollPrev] = React.useState(false)
-    const [canScrollNext, setCanScrollNext] = React.useState(false)
+    const [currentSlide, setCurrentSlide] = React.useState(0)
+    const [totalSlides, setTotalSlides] = React.useState(0)
 
-    const onSelect = React.useCallback((api: CarouselApi) => {
-      if (!api) {
-        return
-      }
+    // Compter le nombre de slides
+    React.useEffect(() => {
+      const slideCount = React.Children.count(children)
+      setTotalSlides(slideCount)
+    }, [children])
 
-      setCanScrollPrev(api.canScrollPrev())
-      setCanScrollNext(api.canScrollNext())
-    }, [])
+    const canScrollPrev = currentSlide > 0
+    const canScrollNext = currentSlide < totalSlides - 1
 
     const scrollPrev = React.useCallback(() => {
-      api?.scrollPrev()
-    }, [api])
+      if (canScrollPrev) {
+        setCurrentSlide(prev => prev - 1)
+      }
+    }, [canScrollPrev])
 
     const scrollNext = React.useCallback(() => {
-      api?.scrollNext()
-    }, [api])
+      if (canScrollNext) {
+        setCurrentSlide(prev => prev + 1)
+      }
+    }, [canScrollNext])
+
+    // API compatible pour l'OnboardingCarousel
+    const api = React.useMemo(() => ({
+      selectedScrollSnap: () => currentSlide,
+      on: (event: string, callback: () => void) => {
+        // Simuler les événements d'Embla
+      },
+      off: (event: string, callback: () => void) => {
+        // Simuler les événements d'Embla
+      }
+    }), [currentSlide])
+
+    React.useEffect(() => {
+      if (setApi) {
+        setApi(api as any)
+      }
+    }, [api, setApi])
 
     const handleKeyDown = React.useCallback(
       (event: React.KeyboardEvent<HTMLDivElement>) => {
@@ -62,40 +74,19 @@ export const Carousel = React.forwardRef<
       [scrollPrev, scrollNext]
     )
 
-    React.useEffect(() => {
-      if (!api || !setApi) {
-        return
-      }
-
-      setApi(api)
-    }, [api, setApi])
-
-    React.useEffect(() => {
-      if (!api) {
-        return
-      }
-
-      onSelect(api)
-      api.on("reInit", onSelect)
-      api.on("select", onSelect)
-
-      return () => {
-        api?.off("select", onSelect)
-      }
-    }, [api, onSelect])
-
     return (
       <CarouselContext.Provider
         value={{
-          carouselRef,
-          api: api,
+          carouselRef: null,
+          api: api as any,
           opts,
-          orientation:
-            orientation || (opts?.axis === "y" ? "vertical" : "horizontal"),
+          orientation,
           scrollPrev,
           scrollNext,
           canScrollPrev,
           canScrollNext,
+          currentSlide,
+          totalSlides
         }}
       >
         <div
