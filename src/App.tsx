@@ -1,60 +1,91 @@
 
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { HelmetProvider } from "react-helmet-async";
-import { Toaster } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { AuthProvider } from "@/contexts/AuthContext";
-import { CookieBanner } from "@/components/CookieBanner";
-import { NetworkStatus } from "@/components/NetworkStatus";
-import Index from "./pages/Index";
-import LandingPage from "./pages/LandingPage";
-import PricingPage from "./pages/PricingPage";
-import StatusPage from "./pages/StatusPage";
-import BrandIdentityPage from "./pages/BrandIdentityPage";
-import NotFound from "./pages/NotFound";
-import "./index.css";
+import { Suspense, lazy } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from '@/contexts/AuthContext';
+import { Toaster } from '@/components/ui/toaster';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Helmet, HelmetProvider } from 'react-helmet-async';
+import { CookieBanner } from '@/components/CookieBanner';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
+import '@/i18n';
+import PrivacyPage from '@/pages/PrivacyPage';
+import LegalPage from '@/pages/LegalPage';
+import TermsPage from '@/pages/TermsPage';
+import SecurityPage from '@/pages/SecurityPage';
+import StatusPage from '@/pages/StatusPage';
+import LandingPage from '@/pages/LandingPage';
+import PricingPage from '@/pages/PricingPage';
+import AboutPage from '@/pages/AboutPage';
+import ContactPage from '@/pages/ContactPage';
+import TestProductsPage from '@/pages/TestProductsPage';
+import TestThankYouPage from '@/pages/TestThankYouPage';
+import { Dashboard } from '@/components/Dashboard';
+import PaymentSuccessPage from '@/pages/PaymentSuccessPage';
+import TrackingPage from '@/pages/TrackingPage';
+import ShortLinkPage from '@/pages/ShortLinkPage';
+import TrackingJsRoute from '@/pages/TrackingJsRoute';
+
+const Index = lazy(() => import('@/pages/Index'));
+const AdvancedStatsPage = lazy(() => import('@/pages/AdvancedStatsPage'));
+const AffiliatePage = lazy(() => import('@/pages/AffiliatePage'));
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 5 * 60 * 1000,
-      gcTime: 10 * 60 * 1000,
-      retry: (failureCount, error) => {
-        if (error instanceof Error && error.message.includes('Network')) {
-          return failureCount < 3;
-        }
-        return false;
-      },
+      retry: 1,
+      refetchOnWindowFocus: false,
     },
   },
 });
 
 function App() {
   return (
-    <HelmetProvider>
-      <AuthProvider>
+    <ErrorBoundary>
+      <HelmetProvider>
         <QueryClientProvider client={queryClient}>
-          <TooltipProvider>
-            <BrowserRouter>
-              <div className="min-h-screen bg-background">
-                <NetworkStatus />
-                <Routes>
-                  <Route path="/" element={<LandingPage />} />
-                  <Route path="/pricing" element={<PricingPage />} />
-                  <Route path="/status" element={<StatusPage />} />
-                  <Route path="/brand-identity" element={<BrandIdentityPage />} />
-                  <Route path="/app/*" element={<Index />} />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
+          <AuthProvider>
+            <Router>
+              <Helmet>
+                <title>RefSpring - Plateforme d'affiliation</title>
+                <meta name="description" content="Gérez vos programmes d'affiliation avec RefSpring" />
+              </Helmet>
+              
+              <div className="App">
+                <Suspense fallback={<div className="min-h-screen bg-white flex items-center justify-center">
+                  <div className="animate-spin rounded-full h-8 w-8 border-2 border-blue-600 border-t-transparent"></div>
+                </div>}>
+                  <Routes>
+                    <Route path="/" element={<LandingPage />} />
+                    <Route path="/pricing" element={<PricingPage />} />
+                    <Route path="/about" element={<AboutPage />} />
+                    <Route path="/contact" element={<ContactPage />} />
+                    <Route path="/app" element={<Index />} />
+                    <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/campaign/:campaignId" element={<AdvancedStatsPage />} />
+                    <Route path="/affiliate/:affiliateId" element={<AffiliatePage />} />
+                    <Route path="/r/:campaignId" element={<AffiliatePage />} />
+                    <Route path="/track/:campaignId/:affiliateId" element={<TrackingPage />} />
+                    <Route path="/s/:shortCode" element={<ShortLinkPage />} />
+                    <Route path="/tracking.js" element={<TrackingJsRoute />} />
+                    <Route path="/test-products" element={<TestProductsPage />} />
+                    <Route path="/test-thankyou" element={<TestThankYouPage />} />
+                    <Route path="/privacy" element={<PrivacyPage />} />
+                    <Route path="/terms" element={<TermsPage />} />
+                    <Route path="/security" element={<SecurityPage />} />
+                    <Route path="/status" element={<StatusPage />} />
+                    <Route path="/legal" element={<LegalPage />} />
+                    <Route path="/payment-success" element={<PaymentSuccessPage />} />
+                  </Routes>
+                </Suspense>
+                
                 <CookieBanner />
                 <Toaster />
               </div>
-            </BrowserRouter>
-          </TooltipProvider>
+            </Router>
+          </AuthProvider>
         </QueryClientProvider>
-      </AuthProvider>
-    </HelmetProvider>
+      </HelmetProvider>
+    </ErrorBoundary>
   );
 }
 
