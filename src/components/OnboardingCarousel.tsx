@@ -66,8 +66,8 @@ export const OnboardingCarousel = ({ onComplete }: OnboardingCarouselProps) => {
     <div className="min-h-screen bg-gradient-to-br from-blue-50/50 via-white to-purple-50/50 relative overflow-visible">
       <DashboardBackground />
       
-      <div className="relative z-10 min-h-screen flex items-center justify-center px-4">
-        <div className="w-full max-w-4xl">
+      <div className="relative z-10 min-h-screen flex items-center justify-center px-4 overflow-visible">
+        <div className="w-full max-w-4xl overflow-visible">
           {/* Header avec logo */}
           <div className="text-center mb-8">
             <div className="flex items-center justify-center gap-3 mb-4">
@@ -79,14 +79,14 @@ export const OnboardingCarousel = ({ onComplete }: OnboardingCarouselProps) => {
             <p className="text-slate-600">Découvrez comment fonctionne votre plateforme d'affiliation</p>
           </div>
 
-          <Carousel className="w-full" setApi={setApi}>
-            <CarouselContent>
+          <Carousel className="w-full overflow-visible" setApi={setApi}>
+            <CarouselContent className="overflow-visible">
               {slides.map((slide, index) => {
                 const IconComponent = slide.icon;
                 return (
-                  <CarouselItem key={slide.id}>
-                    <Card className="bg-white/80 backdrop-blur-sm border-slate-200/50 shadow-2xl">
-                      <CardContent className="p-12 text-center">
+                  <CarouselItem key={slide.id} className="overflow-visible">
+                    <Card className="bg-white/80 backdrop-blur-sm border-slate-200/50 shadow-2xl overflow-visible">
+                      <CardContent className="p-12 text-center overflow-visible">
                         {/* Icône avec gradient */}
                         <div className={`w-24 h-24 mx-auto mb-8 bg-gradient-to-r ${slide.color} rounded-full flex items-center justify-center shadow-xl`}>
                           <IconComponent className="w-12 h-12 text-white" />
