@@ -4,87 +4,30 @@ import { Helmet } from "react-helmet-async";
 import { UnifiedHeader } from "@/components/shared/UnifiedHeader";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, AlertTriangle, XCircle, Clock, Activity, Database, Shield, Zap } from "lucide-react";
-
-interface ServiceStatus {
-  name: string;
-  status: 'operational' | 'degraded' | 'outage' | 'maintenance';
-  description: string;
-  icon: any;
-  lastUpdated: string;
-}
-
-interface Incident {
-  id: string;
-  title: string;
-  status: 'investigating' | 'identified' | 'monitoring' | 'resolved';
-  severity: 'minor' | 'major' | 'critical';
-  description: string;
-  createdAt: string;
-  updates: {
-    time: string;
-    message: string;
-    status: string;
-  }[];
-}
+import { Button } from "@/components/ui/button";
+import { CheckCircle, AlertTriangle, XCircle, Clock, Activity, Database, Shield, Zap, RefreshCw } from "lucide-react";
+import { useServiceHealth } from "@/hooks/useServiceHealth";
+import { useIncidentMonitoring } from "@/hooks/useIncidentMonitoring";
 
 const StatusPage = () => {
-  const [services, setServices] = useState<ServiceStatus[]>([
-    {
-      name: "API RefSpring",
-      status: "operational",
-      description: "Toutes les fonctionnalités API fonctionnent normalement",
-      icon: Zap,
-      lastUpdated: new Date().toISOString()
-    },
-    {
-      name: "Dashboard Web",
-      status: "operational", 
-      description: "Interface utilisateur accessible et fonctionnelle",
-      icon: Activity,
-      lastUpdated: new Date().toISOString()
-    },
-    {
-      name: "Base de données",
-      status: "operational",
-      description: "Stockage et récupération des données opérationnels",
-      icon: Database,
-      lastUpdated: new Date().toISOString()
-    },
-    {
-      name: "Authentification",
-      status: "operational",
-      description: "Connexion et sécurité des comptes fonctionnelles",
-      icon: Shield,
-      lastUpdated: new Date().toISOString()
-    }
-  ]);
-
-  const [incidents, setIncidents] = useState<Incident[]>([]);
-
+  const { healthChecks, isChecking, lastUpdate, runHealthChecks } = useServiceHealth();
+  const { incidents, loading: incidentsLoading } = useIncidentMonitoring();
   const [overallStatus, setOverallStatus] = useState<'operational' | 'degraded' | 'outage'>('operational');
 
   useEffect(() => {
-    // Simuler une vérification périodique du statut
-    const checkStatus = () => {
-      // En production, ceci ferait des appels API réels
-      const hasOutage = services.some(s => s.status === 'outage');
-      const hasDegraded = services.some(s => s.status === 'degraded' || s.status === 'maintenance');
-      
-      if (hasOutage) {
-        setOverallStatus('outage');
-      } else if (hasDegraded) {
-        setOverallStatus('degraded');
-      } else {
-        setOverallStatus('operational');
-      }
-    };
-
-    checkStatus();
-    const interval = setInterval(checkStatus, 30000); // Vérifier toutes les 30 secondes
-
-    return () => clearInterval(interval);
-  }, [services]);
+    if (healthChecks.length === 0) return;
+    
+    const hasOutage = healthChecks.some(check => check.status === 'outage');
+    const hasDegraded = healthChecks.some(check => check.status === 'degraded' || check.status === 'maintenance');
+    
+    if (hasOutage) {
+      setOverallStatus('outage');
+    } else if (hasDegraded) {
+      setOverallStatus('degraded');
+    } else {
+      setOverallStatus('operational');
+    }
+  }, [healthChecks]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -128,6 +71,16 @@ const StatusPage = () => {
     );
   };
 
+  const getServiceIcon = (serviceName: string) => {
+    switch (serviceName) {
+      case 'API RefSpring': return Zap;
+      case 'Dashboard Web': return Activity;
+      case 'Base de données': return Database;
+      case 'Authentification': return Shield;
+      default: return Activity;
+    }
+  };
+
   const redirectToDashboard = () => {
     window.location.href = '/app';
   };
@@ -157,9 +110,21 @@ const StatusPage = () => {
                 {overallStatus === 'degraded' && 'Certains services connaissent des problèmes'}
                 {overallStatus === 'outage' && 'Des services sont actuellement indisponibles'}
               </p>
-              <p className="text-sm text-gray-500 mt-2">
-                Dernière mise à jour : {new Date().toLocaleString('fr-FR')}
-              </p>
+              <div className="flex items-center justify-center gap-4 mt-4">
+                <p className="text-sm text-gray-500">
+                  Dernière mise à jour : {lastUpdate.toLocaleString('fr-FR')}
+                </p>
+                <Button
+                  onClick={runHealthChecks}
+                  disabled={isChecking}
+                  variant="outline"
+                  size="sm"
+                  className="flex items-center gap-2"
+                >
+                  <RefreshCw className={`w-4 h-4 ${isChecking ? 'animate-spin' : ''}`} />
+                  {isChecking ? 'Vérification...' : 'Actualiser'}
+                </Button>
+              </div>
             </div>
 
             {/* Statut des services */}
@@ -172,20 +137,27 @@ const StatusPage = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {services.map((service, index) => {
-                    const IconComponent = service.icon;
+                  {healthChecks.map((check, index) => {
+                    const IconComponent = getServiceIcon(check.name);
                     return (
                       <div key={index} className="flex items-center justify-between p-4 bg-white rounded-lg border border-gray-200">
                         <div className="flex items-center space-x-3">
                           <IconComponent className="w-6 h-6 text-gray-600" />
                           <div>
-                            <h3 className="font-medium text-gray-900">{service.name}</h3>
-                            <p className="text-sm text-gray-500">{service.description}</p>
+                            <h3 className="font-medium text-gray-900">{check.name}</h3>
+                            <div className="flex items-center gap-2 text-sm text-gray-500">
+                              <span>Temps de réponse: {check.responseTime}ms</span>
+                              <span>•</span>
+                              <span>Vérifié: {check.lastChecked.toLocaleTimeString('fr-FR')}</span>
+                            </div>
+                            {check.errorMessage && (
+                              <p className="text-sm text-red-600 mt-1">{check.errorMessage}</p>
+                            )}
                           </div>
                         </div>
                         <div className="flex items-center space-x-3">
-                          {getStatusBadge(service.status)}
-                          {getStatusIcon(service.status)}
+                          {getStatusBadge(check.status)}
+                          {getStatusIcon(check.status)}
                         </div>
                       </div>
                     );
@@ -195,7 +167,7 @@ const StatusPage = () => {
             </Card>
 
             {/* Incidents récents */}
-            {incidents.length > 0 ? (
+            {!incidentsLoading && incidents.length > 0 ? (
               <Card className="mb-8">
                 <CardHeader>
                   <CardTitle className="flex items-center">
@@ -209,15 +181,20 @@ const StatusPage = () => {
                       <div key={incident.id} className="border-l-4 border-yellow-400 pl-4">
                         <div className="flex items-center justify-between mb-2">
                           <h3 className="font-medium text-gray-900">{incident.title}</h3>
-                          <Badge variant={incident.severity === 'critical' ? 'destructive' : 'secondary'}>
-                            {incident.severity}
-                          </Badge>
+                          <div className="flex gap-2">
+                            <Badge variant={incident.severity === 'critical' ? 'destructive' : 'secondary'}>
+                              {incident.severity}
+                            </Badge>
+                            <Badge variant="outline">
+                              {incident.status}
+                            </Badge>
+                          </div>
                         </div>
                         <p className="text-sm text-gray-600 mb-3">{incident.description}</p>
                         <div className="space-y-2">
                           {incident.updates.map((update, updateIndex) => (
                             <div key={updateIndex} className="text-xs text-gray-500">
-                              <span className="font-medium">{update.time}</span> - {update.message}
+                              <span className="font-medium">{update.timestamp.toLocaleString('fr-FR')}</span> - {update.message}
                             </div>
                           ))}
                         </div>
@@ -238,7 +215,7 @@ const StatusPage = () => {
 
             {/* Footer informatif */}
             <div className="mt-12 text-center text-sm text-gray-500">
-              <p>Cette page est mise à jour automatiquement toutes les 30 secondes.</p>
+              <p>Cette page vérifie automatiquement l'état des services toutes les 30 secondes.</p>
               <p className="mt-2">
                 Des questions ? Contactez notre équipe support à{" "}
                 <a href="mailto:support@refspring.com" className="text-blue-600 hover:underline">
