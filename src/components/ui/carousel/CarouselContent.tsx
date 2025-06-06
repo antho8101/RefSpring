@@ -14,7 +14,8 @@ export const CarouselContent = React.forwardRef<
       <div
         ref={ref}
         className={cn(
-          "relative w-full min-h-[600px] flex items-center justify-center",
+          "flex min-h-[600px]",
+          orientation === "vertical" ? "flex-col" : "flex-row",
           className
         )}
         {...props}
