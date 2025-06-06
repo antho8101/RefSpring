@@ -7,6 +7,10 @@ interface PricingHeaderProps {
 }
 
 export const PricingHeader = ({ onGetStarted }: PricingHeaderProps) => {
+  const handleGetStarted = () => {
+    window.location.href = '/app?signup=true';
+  };
+
   return (
     <section className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50/50 via-white to-purple-50/50 relative pt-8">
       {/* Grid Pattern Background */}
@@ -100,10 +104,10 @@ export const PricingHeader = ({ onGetStarted }: PricingHeaderProps) => {
               </li>
             </ul>
             <Button 
-              className="w-full bg-blue-600 hover:bg-blue-700 hover:scale-105 transition-all text-lg py-3" 
-              onClick={onGetStarted}
+              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold px-6 py-2 shadow-lg hover:shadow-xl hover:scale-105 transition-all text-lg"
+              onClick={handleGetStarted}
             >
-              Commencer maintenant
+              Commencer gratuitement
             </Button>
           </div>
         </div>
