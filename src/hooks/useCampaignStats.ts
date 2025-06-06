@@ -53,12 +53,29 @@ export const useCampaignStats = (campaignId: string) => {
 
         conversionsSnapshot.docs.forEach(doc => {
           const data = doc.data();
-          const amount = data.amount || 0;
-          const commission = data.commission || 0;
+          const amount = parseFloat(data.amount) || 0;
+          const commissionRate = parseFloat(data.commissionRate) || 0;
+          
+          // CORRECTION : Recalculer la commission si nécessaire
+          const calculatedCommission = (amount * commissionRate) / 100;
+          const storedCommission = parseFloat(data.commission) || 0;
+          
+          // Utiliser la commission calculée pour être sûr
+          const finalCommission = Math.abs(calculatedCommission - storedCommission) < 0.01 
+            ? storedCommission 
+            : calculatedCommission;
           
           totalConversions++;
           totalRevenue += amount;
-          totalCommissions += commission;
+          totalCommissions += finalCommission;
+          
+          console.log('📊 CAMPAIGN STATS - Conversion:', {
+            amount,
+            commissionRate,
+            storedCommission,
+            calculatedCommission,
+            finalCommission
+          });
         });
 
         const netRevenue = totalRevenue - totalCommissions;

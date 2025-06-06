@@ -52,10 +52,23 @@ export const useAffiliateStats = (affiliateId: string | null) => {
         console.log('📊 STATS - Conversions trouvées:', conversionsCount);
         console.log('📊 STATS - Documents conversions:', conversionsSnapshot.docs.map(doc => ({ id: doc.id, data: doc.data() })));
         
+        // CORRECTION : Calculer correctement les commissions totales
         const totalCommissions = conversionsSnapshot.docs.reduce((total, doc) => {
           const data = doc.data();
-          const commission = data.commission || 0;
-          console.log('📊 STATS - Commission doc:', doc.id, commission);
+          const amount = parseFloat(data.amount) || 0;
+          const commissionRate = parseFloat(data.commissionRate) || 0;
+          
+          // Calcul correct : montant × taux de commission / 100
+          const commission = (amount * commissionRate) / 100;
+          
+          console.log('📊 STATS - Conversion détail:', {
+            docId: doc.id,
+            amount,
+            commissionRate,
+            calculatedCommission: commission,
+            storedCommission: data.commission
+          });
+          
           return total + commission;
         }, 0);
 

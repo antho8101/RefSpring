@@ -50,7 +50,21 @@ export const calculateDailyStats = (clicks: any[], conversions: any[]): DailySta
     });
 
     const dayRevenue = dayConversions.reduce((sum, conv) => sum + (parseFloat(conv.amount) || 0), 0);
-    const dayCommissions = dayConversions.reduce((sum, conv) => sum + (parseFloat(conv.commission) || 0), 0);
+    
+    // CORRECTION : Calculer les commissions correctement
+    const dayCommissions = dayConversions.reduce((sum, conv) => {
+      const amount = parseFloat(conv.amount) || 0;
+      const commissionRate = parseFloat(conv.commissionRate) || 0;
+      const calculatedCommission = (amount * commissionRate) / 100;
+      const storedCommission = parseFloat(conv.commission) || 0;
+      
+      // Utiliser la commission calculée si différente de celle stockée
+      const finalCommission = Math.abs(calculatedCommission - storedCommission) < 0.01 
+        ? storedCommission 
+        : calculatedCommission;
+      
+      return sum + finalCommission;
+    }, 0);
 
     return {
       date,
@@ -66,7 +80,22 @@ export const calculateAffiliatePerformance = (affiliates: any[], clicks: any[], 
   return affiliates.map(affiliate => {
     const affiliateClicks = clicks.filter(click => click.affiliateId === affiliate.id);
     const affiliateConversions = conversions.filter(conv => conv.affiliateId === affiliate.id);
-    const affiliateCommissions = affiliateConversions.reduce((sum, conv) => sum + (parseFloat(conv.commission) || 0), 0);
+    
+    // CORRECTION : Calculer les commissions correctement pour chaque affilié
+    const affiliateCommissions = affiliateConversions.reduce((sum, conv) => {
+      const amount = parseFloat(conv.amount) || 0;
+      const commissionRate = parseFloat(conv.commissionRate) || 0;
+      const calculatedCommission = (amount * commissionRate) / 100;
+      const storedCommission = parseFloat(conv.commission) || 0;
+      
+      // Utiliser la commission calculée si différente de celle stockée
+      const finalCommission = Math.abs(calculatedCommission - storedCommission) < 0.01 
+        ? storedCommission 
+        : calculatedCommission;
+      
+      return sum + finalCommission;
+    }, 0);
+    
     const conversionRate = affiliateClicks.length > 0 ? (affiliateConversions.length / affiliateClicks.length) * 100 : 0;
 
     return {
@@ -85,13 +114,28 @@ export const calculateGlobalMetrics = (clicks: any[], conversions: any[]) => {
   const totalClicks = clicks.length;
   const totalConversions = conversions.length;
   const totalRevenue = conversions.reduce((sum, conv) => sum + (parseFloat(conv.amount) || 0), 0);
-  const totalCommissions = conversions.reduce((sum, conv) => sum + (parseFloat(conv.commission) || 0), 0);
+  
+  // CORRECTION : Calculer les commissions totales correctement
+  const totalCommissions = conversions.reduce((sum, conv) => {
+    const amount = parseFloat(conv.amount) || 0;
+    const commissionRate = parseFloat(conv.commissionRate) || 0;
+    const calculatedCommission = (amount * commissionRate) / 100;
+    const storedCommission = parseFloat(conv.commission) || 0;
+    
+    // Utiliser la commission calculée si différente de celle stockée
+    const finalCommission = Math.abs(calculatedCommission - storedCommission) < 0.01 
+      ? storedCommission 
+      : calculatedCommission;
+    
+    return sum + finalCommission;
+  }, 0);
+  
   const netRevenue = totalRevenue - totalCommissions;
   const conversionRate = totalClicks > 0 ? (totalConversions / totalClicks) * 100 : 0;
   const averageCPA = totalConversions > 0 ? totalCommissions / totalConversions : 0;
   const averageROAS = totalCommissions > 0 ? totalRevenue / totalCommissions : 0;
 
-  console.log('📊 MÉTRIQUES CALCULÉES:', {
+  console.log('📊 MÉTRIQUES CALCULÉES CORRIGÉES:', {
     totalClicks,
     totalConversions,
     totalRevenue,
