@@ -1,5 +1,5 @@
 import { useParams, useSearchParams } from 'react-router-dom';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useTracking } from '@/hooks/useTracking';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
@@ -14,14 +14,26 @@ const TrackingPage = () => {
   const [debugInfo, setDebugInfo] = useState<string[]>([]);
   const { recordClick } = useTracking();
 
+  // Protection contre les appels multiples
+  const hasProcessedRef = useRef(false);
+  const isProcessingRef = useRef(false);
+
   // Fonction pour ajouter des logs visibles
   const addDebugLog = useCallback((message: string) => {
     console.log(message);
     setDebugInfo(prev => [...prev, `${new Date().toLocaleTimeString()}: ${message}`]);
   }, []);
 
-  // CORRECTION CRITIQUE : useCallback pour mémoriser la fonction et éviter la boucle infinie
+  // PROTECTION ABSOLUE contre les appels multiples
   const handleTracking = useCallback(async () => {
+    // Si déjà traité ou en cours de traitement, ignorer
+    if (hasProcessedRef.current || isProcessingRef.current) {
+      addDebugLog('🚫 PROTECTION - Traitement déjà effectué ou en cours, ignoré');
+      return;
+    }
+
+    // Marquer comme en cours de traitement
+    isProcessingRef.current = true;
     addDebugLog('🚀 DÉBUT TrackingPage - Chargement...');
     addDebugLog(`📋 Paramètres: campaign=${campaignId}, affiliate=${affiliateId}`);
 
@@ -29,6 +41,7 @@ const TrackingPage = () => {
       addDebugLog('❌ Paramètres manquants');
       setError('Paramètres manquants');
       setIsTracking(false);
+      isProcessingRef.current = false;
       return;
     }
 
@@ -42,6 +55,7 @@ const TrackingPage = () => {
         addDebugLog('❌ Campagne introuvable');
         setError('Campagne introuvable');
         setIsTracking(false);
+        isProcessingRef.current = false;
         return;
       }
 
@@ -60,15 +74,19 @@ const TrackingPage = () => {
       addDebugLog(`🎯 URL de destination: ${targetUrl}`);
       addDebugLog(`📊 Campagne active: ${campaignData.isActive}`);
 
-      // APPEL UNIQUE de recordClick
-      addDebugLog('🔥 APPEL UNIQUE de recordClick - ATTENTION AUX LOGS !');
+      // APPEL UNIQUE et PROTÉGÉ de recordClick
+      addDebugLog('🔥 APPEL UNIQUE de recordClick - PROTECTION ACTIVÉE !');
       const clickId = await recordClick(affiliateId, campaignId, targetUrl);
       addDebugLog(`✅ recordClick terminé, retour: ${clickId}`);
+      
+      // Marquer comme traité APRÈS le recordClick
+      hasProcessedRef.current = true;
       
       // Si la campagne est en pause, ne pas rediriger
       if (!campaignData.isActive) {
         addDebugLog('⏸️ Campagne en pause, pas de redirection');
         setIsTracking(false);
+        isProcessingRef.current = false;
         return;
       }
       
@@ -83,13 +101,14 @@ const TrackingPage = () => {
       console.error('Error during tracking:', error);
       setError('Erreur lors du traitement');
       setIsTracking(false);
+      isProcessingRef.current = false;
     }
   }, [campaignId, affiliateId, searchParams, recordClick, addDebugLog]);
 
-  // CORRECTION CRITIQUE : Dépendances correctes pour éviter la boucle infinie
+  // Effet unique au montage
   useEffect(() => {
     handleTracking();
-  }, [handleTracking]);
+  }, []); // Dépendances vides pour n'exécuter qu'une fois
 
   if (error) {
     return (

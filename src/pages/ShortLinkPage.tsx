@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useShortLinks } from '@/hooks/useShortLinks';
 import { useTracking } from '@/hooks/useTracking';
 import { doc, getDoc } from 'firebase/firestore';
@@ -14,6 +14,10 @@ const ShortLinkPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [campaign, setCampaign] = useState<Campaign | null>(null);
   const [debugInfo, setDebugInfo] = useState<string[]>([]);
+  
+  // Protection contre les appels multiples
+  const hasProcessedRef = useRef(false);
+  const isProcessingRef = useRef(false);
 
   // Fonction pour ajouter des logs visibles
   const addDebugLog = useCallback((message: string) => {
@@ -21,8 +25,16 @@ const ShortLinkPage = () => {
     setDebugInfo(prev => [...prev, `${new Date().toLocaleTimeString()}: ${message}`]);
   }, []);
 
-  // CORRECTION CRITIQUE : useCallback pour mémoriser la fonction et éviter la boucle infinie
+  // PROTECTION ABSOLUE contre les appels multiples
   const handleShortLink = useCallback(async () => {
+    // Si déjà traité ou en cours de traitement, ignorer
+    if (hasProcessedRef.current || isProcessingRef.current) {
+      addDebugLog('🚫 PROTECTION - Traitement déjà effectué ou en cours, ignoré');
+      return;
+    }
+
+    // Marquer comme en cours de traitement
+    isProcessingRef.current = true;
     addDebugLog('🚀 DÉBUT ShortLinkPage - Chargement...');
     addDebugLog(`📋 Code court: ${shortCode}`);
 
@@ -30,6 +42,7 @@ const ShortLinkPage = () => {
       addDebugLog('❌ Code de lien manquant');
       setError('Code de lien manquant');
       setLoading(false);
+      isProcessingRef.current = false;
       return;
     }
 
@@ -42,6 +55,7 @@ const ShortLinkPage = () => {
         addDebugLog('❌ Aucune donnée trouvée pour le code');
         setError('Lien court non trouvé');
         setLoading(false);
+        isProcessingRef.current = false;
         return;
       }
 
@@ -55,6 +69,7 @@ const ShortLinkPage = () => {
         addDebugLog('❌ Campagne introuvable');
         setError('Campagne introuvable');
         setLoading(false);
+        isProcessingRef.current = false;
         return;
       }
 
@@ -68,17 +83,21 @@ const ShortLinkPage = () => {
       setCampaign(campaignData);
       addDebugLog(`✅ Campagne trouvée: ${campaignData.name}`);
 
-      // APPEL UNIQUE de recordClick - regarder attentivement les logs
-      addDebugLog('🔥 APPEL UNIQUE de recordClick - ATTENTION AUX LOGS !');
+      // APPEL UNIQUE et PROTÉGÉ de recordClick
+      addDebugLog('🔥 APPEL UNIQUE de recordClick - PROTECTION ACTIVÉE !');
       addDebugLog(`📊 Paramètres: affiliate=${shortLinkData.affiliateId}, campaign=${shortLinkData.campaignId}, url=${shortLinkData.targetUrl}`);
       
       const clickId = await recordClick(shortLinkData.affiliateId, shortLinkData.campaignId, shortLinkData.targetUrl);
       addDebugLog(`✅ recordClick terminé, retour: ${clickId}`);
       
+      // Marquer comme traité APRÈS le recordClick
+      hasProcessedRef.current = true;
+      
       // Vérifier si la campagne est active
       if (!campaignData.isActive) {
         addDebugLog('⏸️ Campagne en pause, pas de redirection');
         setLoading(false);
+        isProcessingRef.current = false;
         return;
       }
 
@@ -89,20 +108,21 @@ const ShortLinkPage = () => {
       setTimeout(() => {
         addDebugLog('🚀 REDIRECTION MAINTENANT !');
         window.location.href = shortLinkData.targetUrl;
-      }, 2000); // Retour à 2 secondes
+      }, 2000);
       
     } catch (error) {
       addDebugLog(`❌ Erreur: ${error}`);
       console.error('❌ Erreur lors du traitement du lien court:', error);
       setError('Erreur lors du traitement du lien');
       setLoading(false);
+      isProcessingRef.current = false;
     }
   }, [shortCode, getShortLinkData, recordClick, addDebugLog]);
 
-  // CORRECTION CRITIQUE : Dépendances correctes pour éviter la boucle infinie
+  // Effet unique au montage
   useEffect(() => {
     handleShortLink();
-  }, [handleShortLink]);
+  }, []); // Dépendances vides pour n'exécuter qu'une fois
 
   if (loading) {
     return (
