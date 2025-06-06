@@ -5,6 +5,8 @@ import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import { RefSpringLogo } from '@/components/RefSpringLogo';
 import { AccountSettingsDialog } from '@/components/AccountSettingsDialog';
+import { signOut } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
 
 interface DashboardHeaderProps {
   user: any;
@@ -13,6 +15,16 @@ interface DashboardHeaderProps {
 
 export const DashboardHeader = ({ user, onLogout }: DashboardHeaderProps) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      // Rediriger vers la landing page
+      window.location.href = '/';
+    } catch (error) {
+      console.error('Erreur lors de la déconnexion:', error);
+    }
+  };
 
   return (
     <header className="relative z-50 border-b border-slate-200/80 bg-white/90 backdrop-blur-xl shadow-lg">
@@ -40,7 +52,7 @@ export const DashboardHeader = ({ user, onLogout }: DashboardHeaderProps) => {
             <Button 
               variant="outline" 
               size="sm" 
-              onClick={onLogout}
+              onClick={handleLogout}
               className="hover:scale-105 transition-all shadow-lg backdrop-blur-sm rounded-lg"
             >
               <LogOut className="h-4 w-4 mr-2" />
@@ -71,7 +83,7 @@ export const DashboardHeader = ({ user, onLogout }: DashboardHeaderProps) => {
                 <Button 
                   variant="outline" 
                   size="sm" 
-                  onClick={onLogout}
+                  onClick={handleLogout}
                   className="flex-1 justify-start rounded-lg"
                 >
                   <LogOut className="h-4 w-4 mr-2" />
