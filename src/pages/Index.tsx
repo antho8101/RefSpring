@@ -1,12 +1,17 @@
 
 import { useAuth } from '@/hooks/useAuth';
+import { useOnboarding } from '@/hooks/useOnboarding';
 import { AuthForm } from '@/components/AuthForm';
 import { Dashboard } from '@/components/Dashboard';
+import { OnboardingCarousel } from '@/components/OnboardingCarousel';
 import { useTranslation } from 'react-i18next';
 
 const Index = () => {
-  const { user, loading } = useAuth();
+  const { user, loading: authLoading } = useAuth();
+  const { hasSeenOnboarding, markOnboardingCompleted, loading: onboardingLoading } = useOnboarding();
   const { t } = useTranslation();
+
+  const loading = authLoading || onboardingLoading;
 
   if (loading) {
     return (
@@ -19,7 +24,18 @@ const Index = () => {
     );
   }
 
-  return user ? <Dashboard /> : <AuthForm />;
+  // Si pas connecté, afficher le formulaire d'auth
+  if (!user) {
+    return <AuthForm />;
+  }
+
+  // Si connecté mais n'a pas vu l'onboarding, afficher le carousel
+  if (!hasSeenOnboarding) {
+    return <OnboardingCarousel onComplete={markOnboardingCompleted} />;
+  }
+
+  // Sinon afficher le dashboard
+  return <Dashboard />;
 };
 
 export default Index;
