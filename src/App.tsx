@@ -21,6 +21,9 @@ import TestProductsPage from '@/pages/TestProductsPage';
 import TestThankYouPage from '@/pages/TestThankYouPage';
 import { Dashboard } from '@/components/Dashboard';
 import PaymentSuccessPage from '@/pages/PaymentSuccessPage';
+import TrackingPage from '@/pages/TrackingPage';
+import ShortLinkPage from '@/pages/ShortLinkPage';
+import TrackingJsRoute from '@/pages/TrackingJsRoute';
 
 const Index = lazy(() => import('@/pages/Index'));
 const AdvancedStatsPage = lazy(() => import('@/pages/AdvancedStatsPage'));
@@ -61,6 +64,9 @@ function App() {
                     <Route path="/campaign/:campaignId" element={<AdvancedStatsPage />} />
                     <Route path="/affiliate/:affiliateId" element={<AffiliatePage />} />
                     <Route path="/r/:campaignId" element={<AffiliatePage />} />
+                    <Route path="/track/:campaignId/:affiliateId" element={<TrackingPage />} />
+                    <Route path="/s/:shortCode" element={<ShortLinkPage />} />
+                    <Route path="/tracking.js" element={<TrackingJsRoute />} />
                     <Route path="/test-products" element={<TestProductsPage />} />
                     <Route path="/test-thankyou" element={<TestThankYouPage />} />
                     <Route path="/privacy" element={<PrivacyPage />} />
