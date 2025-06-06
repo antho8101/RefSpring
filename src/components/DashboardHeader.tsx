@@ -1,6 +1,6 @@
 
 import { Button } from '@/components/ui/button';
-import { LogOut, Menu } from 'lucide-react';
+import { LogOut, Menu, Settings } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import { RefSpringLogo } from '@/components/RefSpringLogo';
@@ -15,6 +15,7 @@ interface DashboardHeaderProps {
 
 export const DashboardHeader = ({ user, onLogout }: DashboardHeaderProps) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   const handleLogout = async () => {
     try {
@@ -45,10 +46,13 @@ export const DashboardHeader = ({ user, onLogout }: DashboardHeaderProps) => {
 
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center space-x-4">
-            <div className="text-sm text-slate-700 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full border border-slate-200">
-              Bonjour, <span className="font-semibold">{user?.displayName || user?.email}</span>
-            </div>
-            <AccountSettingsDialog />
+            <button
+              onClick={() => setIsSettingsOpen(true)}
+              className="flex items-center gap-2 text-sm text-slate-700 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full border border-slate-200 hover:bg-white/95 hover:border-slate-300 transition-all duration-300 hover:scale-105 hover:shadow-lg"
+            >
+              <span>Bonjour, <span className="font-semibold">{user?.displayName || user?.email}</span></span>
+              <Settings className="h-4 w-4 text-slate-500" />
+            </button>
             <Button 
               variant="outline" 
               size="sm" 
@@ -75,16 +79,19 @@ export const DashboardHeader = ({ user, onLogout }: DashboardHeaderProps) => {
         {isMobileMenuOpen && (
           <div className="lg:hidden border-t border-slate-200/80 bg-white/95 backdrop-blur-xl rounded-b-lg">
             <div className="py-4 space-y-3">
-              <div className="text-sm text-slate-700 px-4 py-2 bg-slate-50 rounded-lg">
-                Bonjour, <span className="font-semibold">{user?.displayName || user?.email}</span>
-              </div>
-              <div className="flex gap-2 px-4">
-                <AccountSettingsDialog />
+              <button
+                onClick={() => setIsSettingsOpen(true)}
+                className="flex items-center gap-2 text-sm text-slate-700 px-4 py-2 bg-slate-50 rounded-lg w-full hover:bg-slate-100 transition-colors"
+              >
+                <span>Bonjour, <span className="font-semibold">{user?.displayName || user?.email}</span></span>
+                <Settings className="h-4 w-4 text-slate-500 ml-auto" />
+              </button>
+              <div className="px-4">
                 <Button 
                   variant="outline" 
                   size="sm" 
                   onClick={handleLogout}
-                  className="flex-1 justify-start rounded-full shadow-lg border-slate-300 hover:scale-105 transition-all duration-300"
+                  className="w-full justify-start rounded-full shadow-lg border-slate-300 hover:scale-105 transition-all duration-300"
                 >
                   <LogOut className="h-4 w-4 mr-2" />
                   Déconnexion
@@ -94,6 +101,9 @@ export const DashboardHeader = ({ user, onLogout }: DashboardHeaderProps) => {
           </div>
         )}
       </div>
+
+      {/* Dialog des paramètres */}
+      <AccountSettingsDialog />
     </header>
   );
 };
