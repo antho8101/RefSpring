@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { RefSpringLogo } from "@/components/RefSpringLogo";
 import { Link } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 
 interface UnifiedHeaderProps {
   onRedirectToDashboard: () => void;
@@ -10,8 +11,16 @@ interface UnifiedHeaderProps {
 }
 
 export const UnifiedHeader = ({ onRedirectToDashboard, currentPage = 'landing' }: UnifiedHeaderProps) => {
+  const { user } = useAuth();
+  
   const handleLoginClick = () => {
-    window.location.href = '/app'; // Sans le paramètre signup pour afficher la connexion
+    if (user) {
+      // Si l'utilisateur est connecté, rediriger vers le dashboard
+      onRedirectToDashboard();
+    } else {
+      // Si pas connecté, rediriger vers la page de connexion
+      window.location.href = '/app';
+    }
   };
 
   return (
@@ -43,7 +52,7 @@ export const UnifiedHeader = ({ onRedirectToDashboard, currentPage = 'landing' }
           </nav>
           <div className="flex items-center gap-3">
             <Button variant="outline" className="hidden md:flex hover:scale-105 transition-transform" onClick={handleLoginClick}>
-              Se connecter
+              {user ? "My Dashboard" : "Se connecter"}
             </Button>
             <Button 
               className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold px-6 py-2 shadow-lg hover:shadow-xl hover:scale-105 transition-all animate-pulse"
