@@ -27,22 +27,33 @@ export const Carousel = React.forwardRef<
     React.useEffect(() => {
       const slideCount = React.Children.count(children)
       setTotalSlides(slideCount)
+      console.log('Total slides:', slideCount)
     }, [children])
 
     const canScrollPrev = currentSlide > 0
     const canScrollNext = currentSlide < totalSlides - 1
 
+    console.log('Current slide:', currentSlide, 'Total slides:', totalSlides, 'Can scroll next:', canScrollNext)
+
     const scrollPrev = React.useCallback(() => {
+      console.log('Scroll prev called, canScrollPrev:', canScrollPrev)
       if (canScrollPrev) {
-        setCurrentSlide(prev => prev - 1)
+        setCurrentSlide(prev => {
+          console.log('Moving from slide', prev, 'to', prev - 1)
+          return prev - 1
+        })
       }
     }, [canScrollPrev])
 
     const scrollNext = React.useCallback(() => {
+      console.log('Scroll next called, canScrollNext:', canScrollNext, 'currentSlide:', currentSlide, 'totalSlides:', totalSlides)
       if (canScrollNext) {
-        setCurrentSlide(prev => prev + 1)
+        setCurrentSlide(prev => {
+          console.log('Moving from slide', prev, 'to', prev + 1)
+          return prev + 1
+        })
       }
-    }, [canScrollNext])
+    }, [canScrollNext, currentSlide, totalSlides])
 
     // API compatible pour l'OnboardingCarousel
     const api = React.useMemo(() => ({
