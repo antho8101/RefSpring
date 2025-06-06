@@ -10,6 +10,10 @@ interface UnifiedHeaderProps {
 }
 
 export const UnifiedHeader = ({ onRedirectToDashboard, currentPage = 'landing' }: UnifiedHeaderProps) => {
+  const handleLoginClick = () => {
+    window.location.href = '/app'; // Sans le paramètre signup pour afficher la connexion
+  };
+
   return (
     <header className="fixed top-0 w-full border-b border-slate-200/80 bg-white/90 backdrop-blur-xl z-50 transition-all">
       <div className="w-full px-4 sm:px-6 lg:px-8">
@@ -38,7 +42,7 @@ export const UnifiedHeader = ({ onRedirectToDashboard, currentPage = 'landing' }
             </Link>
           </nav>
           <div className="flex items-center gap-3">
-            <Button variant="outline" className="hidden md:flex hover:scale-105 transition-transform" onClick={onRedirectToDashboard}>
+            <Button variant="outline" className="hidden md:flex hover:scale-105 transition-transform" onClick={handleLoginClick}>
               Se connecter
             </Button>
             <Button 
