@@ -5,22 +5,22 @@ import { db } from '@/lib/firebase';
 export const useTracking = () => {
   const recordClick = async (affiliateId: string, campaignId: string, targetUrl: string) => {
     try {
-      // Créer une clé unique pour cette combinaison
-      const sessionKey = `click_recorded_${affiliateId}_${campaignId}`;
+      // Clé basée uniquement sur l'affilié pour cette session - PAS sur la campagne
+      // Un visiteur = un clic maximum par affilié, peu importe les navigations
+      const sessionKey = `first_click_recorded_${affiliateId}`;
       const alreadyRecorded = sessionStorage.getItem(sessionKey);
       
-      // DEBUG: Ajouter des logs détaillés
-      console.log('🔍 TRACKING - recordClick appelé:', {
+      console.log('🔍 TRACKING - Vérification premier clic:', {
         affiliateId,
         campaignId,
         targetUrl,
         sessionKey,
-        alreadyRecorded,
+        alreadyRecorded: !!alreadyRecorded,
         callStack: new Error().stack
       });
       
       if (alreadyRecorded) {
-        console.log('🚫 TRACKING - Clic déjà enregistré pour cette session, ignoré:', alreadyRecorded);
+        console.log('🚫 TRACKING - PREMIER clic déjà enregistré pour cet affilié dans cette session, ignoré');
         return alreadyRecorded;
       }
 
@@ -34,12 +34,12 @@ export const useTracking = () => {
         ip: null,
       };
 
-      console.log('📊 TRACKING - Recording click:', clickData);
+      console.log('📊 TRACKING - Enregistrement du PREMIER clic:', clickData);
       
       const docRef = await addDoc(collection(db, 'clicks'), clickData);
-      console.log('✅ TRACKING - Click recorded with ID:', docRef.id);
+      console.log('✅ TRACKING - PREMIER clic enregistré avec ID:', docRef.id);
       
-      // Marquer ce clic comme enregistré pour cette session
+      // Marquer ce PREMIER clic comme enregistré pour toute la session
       sessionStorage.setItem(sessionKey, docRef.id);
       
       return docRef.id;
