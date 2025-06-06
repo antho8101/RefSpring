@@ -1,8 +1,8 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from '@/components/ui/carousel';
 import { DashboardBackground } from '@/components/DashboardBackground';
 import { RefSpringLogo } from '@/components/RefSpringLogo';
 import { CheckCircle, Shield, TrendingUp, Rocket } from 'lucide-react';
@@ -48,6 +48,19 @@ const slides = [
 
 export const OnboardingCarousel = ({ onComplete }: OnboardingCarouselProps) => {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [api, setApi] = useState<CarouselApi>();
+
+  useEffect(() => {
+    if (!api) {
+      return;
+    }
+
+    setCurrentSlide(api.selectedScrollSnap());
+
+    api.on('select', () => {
+      setCurrentSlide(api.selectedScrollSnap());
+    });
+  }, [api]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50/50 via-white to-purple-50/50 relative overflow-hidden">
@@ -66,7 +79,7 @@ export const OnboardingCarousel = ({ onComplete }: OnboardingCarouselProps) => {
             <p className="text-slate-600">Découvrez comment fonctionne votre plateforme d'affiliation</p>
           </div>
 
-          <Carousel className="w-full" onSelect={(index) => setCurrentSlide(index || 0)}>
+          <Carousel className="w-full" setApi={setApi}>
             <CarouselContent>
               {slides.map((slide, index) => {
                 const IconComponent = slide.icon;
