@@ -48,8 +48,14 @@ export const HeroSection = ({ scrollY, onRedirectToDashboard }: HeroSectionProps
           <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold text-slate-900 leading-tight opacity-0 animate-fade-in" style={{ animationDelay: '0.4s' }}>
             {t('hero.title.part1')}
             <br />
-            <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 bg-clip-text text-transparent">
-              {t('hero.title.part2')}
+            <span className="relative inline-block">
+              {/* Glow background layers */}
+              <span className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 bg-clip-text text-transparent blur-xl opacity-50 animate-pulse"></span>
+              <span className="absolute inset-0 bg-gradient-to-r from-blue-400 via-purple-400 to-blue-600 bg-clip-text text-transparent blur-md opacity-30 animate-pulse" style={{ animationDelay: '0.5s' }}></span>
+              {/* Main text */}
+              <span className="relative bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 bg-clip-text text-transparent">
+                {t('hero.title.part2')}
+              </span>
             </span>
           </h1>
           
