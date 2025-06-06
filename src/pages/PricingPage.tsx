@@ -50,8 +50,8 @@ const PricingPage = () => {
 
         <UnifiedHeader onRedirectToDashboard={redirectToDashboard} currentPage="pricing" />
 
-        {/* Main Content starts right after header */}
-        <div className="pt-16">
+        {/* Main Content without padding */}
+        <div>
           <PricingHeader onGetStarted={redirectToDashboard} />
           <Calculator variant="pricing" />
           <TransparencySection variant="pricing" />
