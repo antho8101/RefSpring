@@ -7,6 +7,7 @@ import { DashboardHeader } from '@/components/DashboardHeader';
 import { DashboardContent } from '@/components/DashboardContent';
 import { NetworkStatus } from '@/components/NetworkStatus';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { TooltipProvider } from '@/components/ui/tooltip';
 import { Helmet } from 'react-helmet-async';
 import { memo, useCallback, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -106,7 +107,7 @@ export const Dashboard = memo(() => {
   }
 
   return (
-    <>
+    <TooltipProvider>
       <Helmet>
         <title>RefSpring - Dashboard</title>
       </Helmet>
@@ -130,7 +131,7 @@ export const Dashboard = memo(() => {
           </ErrorBoundary>
         </main>
       </div>
-    </>
+    </TooltipProvider>
   );
 });
 
