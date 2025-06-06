@@ -1,10 +1,18 @@
-
 import { collection, addDoc, doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 
 export const useTracking = () => {
   const recordClick = async (affiliateId: string, campaignId: string, targetUrl: string) => {
     try {
+      // Vérifier si on a déjà enregistré un clic pour cette session
+      const sessionKey = `click_recorded_${affiliateId}_${campaignId}`;
+      const alreadyRecorded = sessionStorage.getItem(sessionKey);
+      
+      if (alreadyRecorded) {
+        console.log('🚫 TRACKING - Clic déjà enregistré pour cette session, ignoré');
+        return alreadyRecorded;
+      }
+
       const clickData = {
         affiliateId,
         campaignId,
@@ -19,6 +27,9 @@ export const useTracking = () => {
       
       const docRef = await addDoc(collection(db, 'clicks'), clickData);
       console.log('✅ TRACKING - Click recorded with ID:', docRef.id);
+      
+      // Marquer ce clic comme enregistré pour cette session
+      sessionStorage.setItem(sessionKey, docRef.id);
       
       return docRef.id;
     } catch (error) {
