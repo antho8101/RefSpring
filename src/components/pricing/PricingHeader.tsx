@@ -34,91 +34,105 @@ export const PricingHeader = ({ onGetStarted }: PricingHeaderProps) => {
         </div>
 
         {/* Pricing Comparison */}
-        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          {/* Traditional Model - All Others */}
-          <div className="bg-white border-2 border-slate-200 p-8 rounded-2xl shadow-lg">
-            <div className="text-center mb-6">
-              <div className="bg-slate-100 text-slate-600 px-4 py-2 rounded-full text-sm font-medium mb-4">
+        <div className="grid md:grid-cols-2 gap-12 max-w-5xl mx-auto items-center">
+          {/* Traditional Model - All Others - Made smaller and duller */}
+          <div className="bg-gray-50/70 border border-gray-200/50 p-6 rounded-lg shadow-sm opacity-75 transform scale-90">
+            <div className="text-center mb-4">
+              <div className="bg-gray-200 text-gray-600 px-3 py-1.5 rounded-full text-xs font-medium mb-3">
                 Toutes les autres plateformes
               </div>
-              <div className="text-4xl font-bold text-slate-600 mb-2">
-                99-299€<span className="text-lg text-slate-500">/mois</span>
+              <div className="text-2xl font-semibold text-gray-600 mb-1">
+                99-299€<span className="text-sm text-gray-500">/mois</span>
               </div>
-              <p className="text-slate-500">+ commission variable</p>
+              <p className="text-gray-500 text-sm">+ commission variable</p>
             </div>
-            <ul className="space-y-3 mb-6">
-              <li className="flex items-center gap-3">
-                <X className="w-5 h-5 text-red-500" />
-                <span>Frais mensuels fixes</span>
+            <ul className="space-y-2 mb-4 text-sm">
+              <li className="flex items-center gap-2">
+                <X className="w-4 h-4 text-red-400" />
+                <span className="text-gray-600">Frais mensuels fixes</span>
               </li>
-              <li className="flex items-center gap-3">
-                <X className="w-5 h-5 text-red-500" />
-                <span>Engagement contractuel</span>
+              <li className="flex items-center gap-2">
+                <X className="w-4 h-4 text-red-400" />
+                <span className="text-gray-600">Engagement contractuel</span>
               </li>
-              <li className="flex items-center gap-3">
-                <X className="w-5 h-5 text-red-500" />
-                <span>Coûts même sans revenus</span>
+              <li className="flex items-center gap-2">
+                <X className="w-4 h-4 text-red-400" />
+                <span className="text-gray-600">Coûts même sans revenus</span>
               </li>
-              <li className="flex items-center gap-3">
-                <X className="w-5 h-5 text-red-500" />
-                <span>Risque financier élevé</span>
+              <li className="flex items-center gap-2">
+                <X className="w-4 h-4 text-red-400" />
+                <span className="text-gray-600">Risque financier élevé</span>
               </li>
-              <li className="flex items-center gap-3">
-                <X className="w-5 h-5 text-red-500" />
-                <span>Fonctionnalités bridées en freemium</span>
+              <li className="flex items-center gap-2">
+                <X className="w-4 h-4 text-red-400" />
+                <span className="text-gray-600">Fonctionnalités bridées</span>
               </li>
             </ul>
           </div>
 
-          {/* RefSpring with animated glow */}
-          <div className="relative group">
-            {/* Animated glow background */}
-            <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 via-purple-500 to-blue-500 rounded-2xl opacity-30 group-hover:opacity-50 blur-xl animate-pulse transition-opacity duration-300"></div>
-            <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-400 via-purple-400 to-blue-400 rounded-2xl opacity-50 animate-pulse blur-sm"></div>
+          {/* RefSpring - Made bigger and more attractive */}
+          <div className="relative group transform scale-110">
+            {/* Multiple animated glow layers */}
+            <div className="absolute -inset-3 bg-gradient-to-r from-blue-500 via-purple-500 to-green-500 rounded-3xl opacity-20 group-hover:opacity-40 blur-2xl animate-pulse transition-opacity duration-500"></div>
+            <div className="absolute -inset-2 bg-gradient-to-r from-blue-400 via-purple-400 to-green-400 rounded-3xl opacity-30 animate-pulse blur-xl" style={{ animationDelay: '0.5s' }}></div>
+            <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 via-purple-600 to-green-600 rounded-2xl opacity-40 animate-pulse blur-lg" style={{ animationDelay: '1s' }}></div>
             
-            {/* Main card */}
-            <div className="relative bg-gradient-to-br from-blue-50 to-purple-50 border-2 border-transparent bg-clip-padding p-8 rounded-2xl shadow-2xl transform scale-105 backdrop-blur-sm">
+            {/* Main card with enhanced styling */}
+            <div className="relative bg-gradient-to-br from-blue-50 via-white to-purple-50 border-4 border-transparent bg-clip-padding p-10 rounded-3xl shadow-2xl backdrop-blur-sm">
               {/* Animated border overlay */}
-              <div className="absolute inset-0 rounded-2xl border-2 border-gradient-to-r from-blue-500 via-purple-500 to-blue-500 animate-pulse opacity-40"></div>
+              <div className="absolute inset-0 rounded-3xl border-2 border-gradient-to-r from-blue-500 via-purple-500 to-green-500 animate-pulse opacity-50"></div>
               
               <div className="relative z-10">
-                <div className="text-center mb-6">
-                  <div className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-4 py-2 rounded-full text-sm font-medium mb-4 animate-pulse">
-                    RefSpring
+                <div className="text-center mb-8">
+                  <div className="bg-gradient-to-r from-blue-500 via-purple-500 to-green-500 text-white px-6 py-3 rounded-full text-base font-bold mb-6 animate-pulse shadow-lg">
+                    ⭐ RefSpring ⭐
                   </div>
-                  <div className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
-                    0€<span className="text-lg text-slate-500">/mois</span>
+                  <div className="text-6xl font-black bg-gradient-to-r from-blue-600 via-purple-600 to-green-600 bg-clip-text text-transparent mb-3 animate-pulse">
+                    0€<span className="text-2xl text-slate-500">/mois</span>
                   </div>
-                  <p className="text-slate-600">2,5% sur vos gains uniquement</p>
+                  <p className="text-slate-700 font-semibold text-lg">2,5% sur vos gains uniquement</p>
                 </div>
-                <ul className="space-y-3 mb-6">
+                <ul className="space-y-4 mb-8 text-base">
                   <li className="flex items-center gap-3">
-                    <Check className="w-5 h-5 text-blue-500" />
-                    <span className="font-semibold">Aucun frais fixe</span>
+                    <div className="bg-gradient-to-r from-green-400 to-green-600 rounded-full p-1">
+                      <Check className="w-5 h-5 text-white" />
+                    </div>
+                    <span className="font-bold text-slate-800">✨ Aucun frais fixe</span>
                   </li>
                   <li className="flex items-center gap-3">
-                    <Check className="w-5 h-5 text-blue-500" />
-                    <span className="font-semibold">Aucun engagement</span>
+                    <div className="bg-gradient-to-r from-green-400 to-green-600 rounded-full p-1">
+                      <Check className="w-5 h-5 text-white" />
+                    </div>
+                    <span className="font-bold text-slate-800">🚀 Aucun engagement</span>
                   </li>
                   <li className="flex items-center gap-3">
-                    <Check className="w-5 h-5 text-blue-500" />
-                    <span className="font-semibold">Payez seulement si vous gagnez</span>
+                    <div className="bg-gradient-to-r from-green-400 to-green-600 rounded-full p-1">
+                      <Check className="w-5 h-5 text-white" />
+                    </div>
+                    <span className="font-bold text-slate-800">💰 Payez seulement si vous gagnez</span>
                   </li>
                   <li className="flex items-center gap-3">
-                    <Check className="w-5 h-5 text-blue-500" />
-                    <span className="font-semibold">Risque zéro</span>
+                    <div className="bg-gradient-to-r from-green-400 to-green-600 rounded-full p-1">
+                      <Check className="w-5 h-5 text-white" />
+                    </div>
+                    <span className="font-bold text-slate-800">🛡️ Risque zéro</span>
                   </li>
                   <li className="flex items-center gap-3">
-                    <Check className="w-5 h-5 text-blue-500" />
-                    <span className="font-semibold">Toutes les fonctionnalités incluses</span>
+                    <div className="bg-gradient-to-r from-green-400 to-green-600 rounded-full p-1">
+                      <Check className="w-5 h-5 text-white" />
+                    </div>
+                    <span className="font-bold text-slate-800">🎯 Toutes les fonctionnalités incluses</span>
                   </li>
                 </ul>
                 <Button 
-                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold px-6 py-2 shadow-lg hover:shadow-xl hover:scale-105 transition-all text-lg"
+                  className="w-full bg-gradient-to-r from-blue-600 via-purple-600 to-green-600 hover:from-blue-700 hover:via-purple-700 hover:to-green-700 text-white font-bold px-8 py-4 shadow-2xl hover:shadow-3xl hover:scale-105 transition-all text-xl rounded-2xl border-2 border-white/50"
                   onClick={handleGetStarted}
                 >
-                  Commencer gratuitement
+                  🚀 Commencer gratuitement 🚀
                 </Button>
+                <p className="text-center text-slate-600 text-sm mt-4 font-medium">
+                  ✓ Aucune carte bancaire requise ✓ Accès immédiat
+                </p>
               </div>
             </div>
           </div>
