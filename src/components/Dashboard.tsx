@@ -5,6 +5,7 @@ import { useAffiliates } from '@/hooks/useAffiliates';
 import { DashboardBackground } from '@/components/DashboardBackground';
 import { DashboardHeader } from '@/components/DashboardHeader';
 import { DashboardContent } from '@/components/DashboardContent';
+import { DashboardFooter } from '@/components/DashboardFooter';
 import { NetworkStatus } from '@/components/NetworkStatus';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { TooltipProvider } from '@/components/ui/tooltip';
@@ -113,11 +114,11 @@ export const Dashboard = memo(() => {
       </Helmet>
 
       <NetworkStatus />
-      <div className="min-h-screen bg-gradient-to-br from-blue-50/50 via-white to-purple-50/50 relative overflow-hidden">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50/50 via-white to-purple-50/50 relative overflow-hidden flex flex-col">
         <DashboardBackground />
         <DashboardHeader user={user} onLogout={handleLogout} />
 
-        <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+        <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 flex-1">
           <ErrorBoundary fallback={<div>Erreur stats</div>}>
             <SimpleDashboardStats 
               activeCampaigns={dashboardMetrics.activeCampaigns}
@@ -130,6 +131,8 @@ export const Dashboard = memo(() => {
             <DashboardContent />
           </ErrorBoundary>
         </main>
+
+        <DashboardFooter />
       </div>
     </TooltipProvider>
   );
