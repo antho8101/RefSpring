@@ -2,6 +2,8 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { stripeBackendService } from '@/services/stripeBackendService';
+import { collection, query, where, getDocs } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 
 interface PaymentMethod {
   id: string;
@@ -33,7 +35,7 @@ export const usePaymentMethods = () => {
   }, [user]);
 
   const loadPaymentMethods = async () => {
-    if (!user?.email) return;
+    if (!user?.email || !user?.uid) return;
     
     setLoading(true);
     try {
@@ -55,23 +57,53 @@ export const usePaymentMethods = () => {
         brand: pm.card?.brand || 'unknown',
         exp_month: pm.card?.exp_month || 0,
         exp_year: pm.card?.exp_year || 0,
-        isDefault: false, // TODO: Gérer la carte par défaut
+        isDefault: false,
       }));
       
       setPaymentMethods(formattedPaymentMethods);
       
-      // 4. TODO: Récupérer les campagnes liées depuis Firebase/Supabase
-      // Pour l'instant, on utilise un tableau vide
-      setCampaigns([]);
+      // 4. Récupérer les vraies campagnes depuis Firebase
+      await loadCampaigns();
       
       console.log('✅ Cartes bancaires chargées avec succès');
     } catch (error) {
       console.error('❌ Erreur lors du chargement des cartes:', error);
-      // En cas d'erreur, on initialise avec des tableaux vides
       setPaymentMethods([]);
       setCampaigns([]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadCampaigns = async () => {
+    if (!user?.uid) return;
+    
+    try {
+      console.log('🔍 Chargement des campagnes depuis Firebase pour:', user.uid);
+      
+      const campaignsQuery = query(
+        collection(db, 'campaigns'),
+        where('userId', '==', user.uid)
+      );
+      
+      const campaignsSnapshot = await getDocs(campaignsQuery);
+      
+      const campaignsData = campaignsSnapshot.docs.map(doc => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          name: data.name || 'Campagne sans nom',
+          isActive: !data.isDraft && data.paymentConfigured,
+          paymentMethodId: data.stripePaymentMethodId, // Champ qui stocke l'ID de la carte
+        };
+      }) as Campaign[];
+      
+      console.log('✅ Campagnes chargées:', campaignsData.length);
+      setCampaigns(campaignsData);
+      
+    } catch (error) {
+      console.error('❌ Erreur chargement campagnes:', error);
+      setCampaigns([]);
     }
   };
 
@@ -88,7 +120,7 @@ export const usePaymentMethods = () => {
       await stripeBackendService.detachPaymentMethod(paymentMethodId);
       console.log('✅ Carte supprimée de Stripe');
       
-      // 2. Mettre en pause les campagnes liées
+      // 2. Mettre à jour l'état local des campagnes
       setCampaigns(prev => 
         prev.map(campaign => 
           campaign.paymentMethodId === paymentMethodId
@@ -102,7 +134,10 @@ export const usePaymentMethods = () => {
         prev.filter(pm => pm.id !== paymentMethodId)
       );
       
-      console.log(`✅ Carte ${paymentMethodId} supprimée et campagnes associées mises en pause`);
+      // 4. Recharger les données pour s'assurer de la cohérence
+      await loadCampaigns();
+      
+      console.log(`✅ Carte ${paymentMethodId} supprimée et campagnes associées mises à jour`);
     } catch (error) {
       console.error('❌ Erreur lors de la suppression:', error);
       throw error;
