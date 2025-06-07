@@ -87,7 +87,7 @@ export const CampaignSettingsDialog = ({ campaign }: CampaignSettingsDialogProps
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline" size="sm" className="hover:scale-105 transition-all shadow-lg backdrop-blur-sm border-slate-300">
-          <Settings className="h-4 w-4 mr-2" />
+          <Settings className="h-5 w-5 mr-2" />
           Paramètres
         </Button>
       </DialogTrigger>
