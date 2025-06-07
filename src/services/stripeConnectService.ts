@@ -1,4 +1,3 @@
-
 import { 
   collection, 
   query, 
@@ -65,25 +64,22 @@ export const calculateCommissionsSinceDate = async (
       
       // CORRECTION : Gérer correctement les différents types de timestamp
       let conversionDate: Date;
-      if (conversion.timestamp && typeof conversion.timestamp === 'object') {
-        // Si c'est un Timestamp Firestore
-        if ('toDate' in conversion.timestamp) {
-          conversionDate = conversion.timestamp.toDate();
-        } 
-        // Si c'est déjà un objet Date
-        else if (conversion.timestamp instanceof Date) {
-          conversionDate = conversion.timestamp;
-        }
-        // Si c'est un objet avec seconds/nanoseconds
-        else if ('seconds' in conversion.timestamp) {
-          conversionDate = new Date(conversion.timestamp.seconds * 1000);
-        }
-        else {
-          conversionDate = new Date(conversion.timestamp);
-        }
-      } else {
-        // Si c'est un string ou number
-        conversionDate = new Date(conversion.timestamp);
+      
+      // Vérifier si c'est un Timestamp Firestore avec une méthode toDate
+      if (conversion.timestamp && typeof conversion.timestamp === 'object' && 'toDate' in conversion.timestamp && typeof conversion.timestamp.toDate === 'function') {
+        conversionDate = (conversion.timestamp as any).toDate();
+      } 
+      // Vérifier si c'est déjà un objet Date
+      else if (conversion.timestamp instanceof Date) {
+        conversionDate = conversion.timestamp;
+      }
+      // Vérifier si c'est un objet avec une propriété seconds (Timestamp format)
+      else if (conversion.timestamp && typeof conversion.timestamp === 'object' && 'seconds' in conversion.timestamp) {
+        conversionDate = new Date((conversion.timestamp as any).seconds * 1000);
+      }
+      // Sinon, essayer de convertir directement
+      else {
+        conversionDate = new Date(conversion.timestamp as any);
       }
 
       console.log('🔍 DÉBOGAGE - Conversion:', {
