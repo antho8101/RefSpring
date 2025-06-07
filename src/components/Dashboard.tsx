@@ -249,7 +249,7 @@ export const Dashboard = memo(() => {
           onPeriodChange={setPeriod}
         />
 
-        <main className="relative z-10 max-w-[1800px] mx-auto w-full px-3 sm:px-4 lg:px-8 py-4 sm:py-6 lg:py-8 flex-1 min-w-0">
+        <main className="relative z-10 max-w-6xl mx-auto w-full px-3 sm:px-4 lg:px-8 py-4 sm:py-6 lg:py-8 flex-1 min-w-0">
           {/* Bandeau de notifications de paiement */}
           <ErrorBoundary fallback={<div>Erreur notifications</div>}>
             <PaymentNotificationBanner />
