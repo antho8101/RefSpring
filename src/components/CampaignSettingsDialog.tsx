@@ -154,7 +154,7 @@ export const CampaignSettingsDialog = ({ campaign }: CampaignSettingsDialogProps
             <Settings className="h-4 w-4" />
           </Button>
         </DialogTrigger>
-        <DialogContent className="fixed inset-[30px] max-w-none max-h-none h-auto w-auto p-0 bg-white">
+        <DialogContent className="w-[calc(100vw-60px)] h-[calc(100vh-60px)] max-w-none max-h-none p-0 bg-white">
           <div className="flex h-full">
             <CampaignSettingsNavigation 
               activeTab={activeTab} 
@@ -167,7 +167,7 @@ export const CampaignSettingsDialog = ({ campaign }: CampaignSettingsDialogProps
                 <p className="text-slate-600 mt-2">{getTabDescription()}</p>
               </div>
 
-              <div className="flex-1 p-8">
+              <div className="flex-1 p-8 overflow-auto">
                 {renderTabContent()}
               </div>
             </div>
