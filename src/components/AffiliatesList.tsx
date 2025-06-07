@@ -1,4 +1,3 @@
-
 import { useAffiliates } from '@/hooks/useAffiliates';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -133,10 +132,10 @@ export const AffiliatesList = ({ campaignId, onCopyTrackingLink }: AffiliatesLis
             key={affiliate.id}
             className="bg-white border border-slate-200 rounded-lg p-4 hover:shadow-md transition-shadow"
           >
-            <div className="flex flex-col lg:flex-row lg:items-center justify-between mb-3 gap-3">
-              <div className="flex flex-col sm:flex-row sm:items-center gap-3 flex-1 min-w-0">
-                <h4 className="font-medium text-slate-900 truncate">{affiliate.name}</h4>
-                <Badge variant="outline" className="text-xs w-fit">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-3 flex-1">
+                <h4 className="font-medium text-slate-900">{affiliate.name}</h4>
+                <Badge variant="outline" className="text-xs">
                   {affiliate.email}
                 </Badge>
                 <div className="flex items-center gap-1 text-sm text-slate-600">
