@@ -34,7 +34,7 @@ const PaymentNotificationItem = ({ notification, onDismiss }: PaymentNotificatio
           </span>
           {notification.campaignName && (
             <span className="text-blue-600 text-sm">
-              • {notification.campaignName}
+              {notification.campaignName}
             </span>
           )}
         </div>
