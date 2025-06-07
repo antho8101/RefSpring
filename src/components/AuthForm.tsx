@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -33,20 +34,20 @@ export const AuthForm = () => {
       if (isLogin) {
         await signInWithEmail(email, password);
         toast({
-          title: t('auth.loginSuccess'),
-          description: t('auth.welcome'),
+          title: "🎉 Connexion réussie !",
+          description: "Bienvenue sur RefSpring ! 🚀",
         });
       } else {
         await signUpWithEmail(email, password);
         toast({
-          title: t('auth.accountCreated'),
-          description: t('auth.accountCreatedDesc'),
+          title: "✨ Compte créé avec succès !",
+          description: "Votre aventure RefSpring commence maintenant ! 🎊",
         });
       }
     } catch (error: any) {
       toast({
-        title: t('auth.error'),
-        description: error.message || t('auth.genericError'),
+        title: "❌ Oups !",
+        description: error.message || "Une erreur s'est produite, réessayez ! 🔄",
         variant: "destructive",
       });
     } finally {
@@ -59,13 +60,13 @@ export const AuthForm = () => {
     try {
       await signInWithGoogle();
       toast({
-        title: t('auth.loginSuccess'),
-        description: t('auth.welcome'),
+        title: "🎉 Connexion réussie !",
+        description: "Bienvenue sur RefSpring ! 🚀",
       });
     } catch (error: any) {
       toast({
-        title: t('auth.error'),
-        description: error.message || t('auth.genericError'),
+        title: "❌ Oups !",
+        description: error.message || "Une erreur s'est produite, réessayez ! 🔄",
         variant: "destructive",
       });
     } finally {
