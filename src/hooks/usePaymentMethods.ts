@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import { stripeBackendService } from '@/services/stripeBackendService';
 
 interface PaymentMethod {
   id: string;
@@ -36,14 +37,39 @@ export const usePaymentMethods = () => {
     
     setLoading(true);
     try {
-      // TODO: Implémenter l'appel API pour récupérer les vraies cartes bancaires
-      // Pour l'instant, on initialise avec un tableau vide
-      setPaymentMethods([]);
+      console.log('🔍 Chargement des cartes bancaires pour:', user.email);
+      
+      // 1. Récupérer le client Stripe
+      const customer = await stripeBackendService.createOrGetCustomer(user.email);
+      console.log('✅ Client Stripe trouvé:', customer.id);
+      
+      // 2. Récupérer les méthodes de paiement du client
+      const paymentMethodsData = await stripeBackendService.getCustomerPaymentMethods(customer.id);
+      console.log('💳 Méthodes de paiement trouvées:', paymentMethodsData.length);
+      
+      // 3. Formatter les données pour l'interface
+      const formattedPaymentMethods = paymentMethodsData.map((pm: any) => ({
+        id: pm.id,
+        type: pm.type,
+        last4: pm.card?.last4 || '****',
+        brand: pm.card?.brand || 'unknown',
+        exp_month: pm.card?.exp_month || 0,
+        exp_year: pm.card?.exp_year || 0,
+        isDefault: false, // TODO: Gérer la carte par défaut
+      }));
+      
+      setPaymentMethods(formattedPaymentMethods);
+      
+      // 4. TODO: Récupérer les campagnes liées depuis Firebase/Supabase
+      // Pour l'instant, on utilise un tableau vide
       setCampaigns([]);
       
-      console.log('Chargement des cartes bancaires pour:', user.email);
+      console.log('✅ Cartes bancaires chargées avec succès');
     } catch (error) {
-      console.error('Erreur lors du chargement des cartes:', error);
+      console.error('❌ Erreur lors du chargement des cartes:', error);
+      // En cas d'erreur, on initialise avec des tableaux vides
+      setPaymentMethods([]);
+      setCampaigns([]);
     } finally {
       setLoading(false);
     }
@@ -56,10 +82,13 @@ export const usePaymentMethods = () => {
   const deletePaymentMethod = async (paymentMethodId: string) => {
     setLoading(true);
     try {
-      // TODO: Implémenter l'appel API pour supprimer la carte
-      console.log(`Suppression de la carte ${paymentMethodId}`);
+      console.log(`🗑️ Suppression de la carte ${paymentMethodId}`);
       
-      // Mettre en pause les campagnes liées
+      // 1. Supprimer la carte chez Stripe
+      await stripeBackendService.detachPaymentMethod(paymentMethodId);
+      console.log('✅ Carte supprimée de Stripe');
+      
+      // 2. Mettre en pause les campagnes liées
       setCampaigns(prev => 
         prev.map(campaign => 
           campaign.paymentMethodId === paymentMethodId
@@ -68,14 +97,14 @@ export const usePaymentMethods = () => {
         )
       );
       
-      // Supprimer la carte
+      // 3. Supprimer la carte de l'état local
       setPaymentMethods(prev => 
         prev.filter(pm => pm.id !== paymentMethodId)
       );
       
-      console.log(`Carte ${paymentMethodId} supprimée et campagnes associées mises en pause`);
+      console.log(`✅ Carte ${paymentMethodId} supprimée et campagnes associées mises en pause`);
     } catch (error) {
-      console.error('Erreur lors de la suppression:', error);
+      console.error('❌ Erreur lors de la suppression:', error);
       throw error;
     } finally {
       setLoading(false);

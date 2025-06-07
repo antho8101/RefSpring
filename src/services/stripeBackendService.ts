@@ -1,4 +1,3 @@
-
 import { STRIPE_SECRET_KEY } from '@/utils/stripeUtils';
 
 // Service pour gérer les appels backend Stripe
@@ -152,6 +151,36 @@ class StripeBackendService {
 
     console.log('✅ Payment Link créé:', paymentLink.url);
     return paymentLink;
+  }
+
+  // Récupérer les méthodes de paiement d'un client
+  async getCustomerPaymentMethods(customerId: string) {
+    console.log('🔍 Récupération des méthodes de paiement pour client:', customerId);
+    
+    const searchParams = new URLSearchParams();
+    searchParams.append('customer', customerId);
+    searchParams.append('type', 'card');
+    
+    const paymentMethods = await this.callStripeAPI(`/payment_methods?${searchParams.toString()}`);
+    
+    console.log('✅ Méthodes de paiement récupérées:', paymentMethods.data.length);
+    return paymentMethods.data;
+  }
+
+  // Détacher une méthode de paiement
+  async detachPaymentMethod(paymentMethodId: string) {
+    console.log('🗑️ Détachement de la méthode de paiement:', paymentMethodId);
+    
+    const formData = new URLSearchParams();
+    // Pas de données supplémentaires nécessaires pour détacher
+    
+    const result = await this.callStripeAPI(`/payment_methods/${paymentMethodId}/detach`, {
+      method: 'POST',
+      body: formData,
+    });
+    
+    console.log('✅ Méthode de paiement détachée:', result.id);
+    return result;
   }
 }
 
