@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { useAffiliates } from '@/hooks/useAffiliates';
+import { useCampaigns } from '@/hooks/useCampaigns';
 import { calculateCommissionsSinceDate, createPaymentDistributionRecord, sendStripePaymentLinks } from '@/services/stripeConnectService';
 import { Affiliate } from '@/types';
 import {
@@ -29,6 +30,7 @@ export const AffiliateDeleteDialog = ({ affiliate, open, onOpenChange, campaignI
   const { toast } = useToast();
   const { user } = useAuth();
   const { deleteAffiliate } = useAffiliates();
+  const { campaigns } = useCampaigns();
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('fr-FR', {
@@ -44,6 +46,10 @@ export const AffiliateDeleteDialog = ({ affiliate, open, onOpenChange, campaignI
     setIsProcessingDeletion(true);
     try {
       console.log('🗑️ Début suppression affilié avec vérification CA:', affiliate.name);
+
+      // Trouver le nom de la campagne
+      const campaign = campaigns.find(c => c.id === campaignId);
+      const campaignName = campaign?.name || 'Campagne inconnue';
 
       // Calculer les commissions de cet affilié spécifique
       const affiliateCommissions = await calculateCommissionsSinceDate(campaignId, null);
@@ -71,8 +77,8 @@ export const AffiliateDeleteDialog = ({ affiliate, open, onOpenChange, campaignI
           'campaign_deletion' // Réutiliser le même type pour la cohérence
         );
 
-        // Envoyer le paiement par email
-        await sendStripePaymentLinks(distributionRecord, `Suppression affilié - ${affiliate.name}`);
+        // Envoyer le paiement par email avec le vrai nom de la campagne
+        await sendStripePaymentLinks(distributionRecord, campaignName);
 
         toast({
           title: "Paiement envoyé",
