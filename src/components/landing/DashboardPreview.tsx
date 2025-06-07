@@ -1,3 +1,4 @@
+
 import { TrendingUp, Users, BarChart3, Target, Zap, Eye, Sparkles, Coffee, Clock } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 
@@ -205,7 +206,6 @@ export const DashboardPreview = () => {
 
                 {activeTab === "analytics" && (
                   <div className="space-y-6 animate-fade-in">
-                    {/* ... keep existing analytics content with enhanced animations */}
                     <div className="grid md:grid-cols-2 gap-6">
                       <div className="space-y-4">
                         <h3 className="font-semibold text-slate-900 flex items-center gap-2">
@@ -296,7 +296,7 @@ export const DashboardPreview = () => {
         <div className="grid md:grid-cols-3 gap-8 mt-16">
           {[
             { icon: Zap, title: "Temps réel", desc: "Toutes vos métriques se mettent à jour instantanément. Suivez chaque clic comme un hawk ! 🦅", color: "blue" },
-            { icon: BarChart3, title: "Analytics poussées", desc: "Analyse comportementale, heatmaps temporelles, prédictions IA... On a tout prévu ! 🧠", color: "green" },
+            { icon: BarChart3, title: "Analytics poussées", desc: "Analyse comportementale, heatmaps temporelles, insights détaillés... On a tout prévu ! 🧠", color: "green" },
             { icon: Users, title: "Gestion simplifiée", desc: "Invitez, gérez et payez vos affiliés en 2 clics. Plus simple qu'une playlist Spotify ! 🎵", color: "purple" }
           ].map((feature, index) => (
             <div key={index} className={`text-center group hover:scale-105 transition-all duration-300 animate-fade-in`} style={{ animationDelay: `${0.8 + index * 0.2}s` }}>
