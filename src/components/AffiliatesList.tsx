@@ -1,3 +1,4 @@
+
 import { useAffiliates } from '@/hooks/useAffiliates';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -150,12 +151,12 @@ export const AffiliatesList = ({ campaignId, onCopyTrackingLink }: AffiliatesLis
                 )}
               </div>
               
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+              <div className="flex items-center gap-2">
                 <Button 
                   variant="outline" 
                   size="sm"
                   onClick={() => handleEditAffiliate(affiliate)}
-                  className="rounded-lg justify-center"
+                  className="rounded-lg"
                 >
                   <Edit2 className="h-4 w-4" />
                 </Button>
@@ -163,7 +164,7 @@ export const AffiliatesList = ({ campaignId, onCopyTrackingLink }: AffiliatesLis
                   variant="outline" 
                   size="sm"
                   onClick={() => handleCopyTrackingLink(affiliate.id)}
-                  className="rounded-lg justify-center"
+                  className="rounded-lg"
                 >
                   <Copy className="h-4 w-4 mr-2" />
                   Copier le lien
