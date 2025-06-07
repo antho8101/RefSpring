@@ -9,6 +9,7 @@ interface AffiliatePerformance {
   conversions: number;
   commissions: number;
   conversionRate: number;
+  commissionRate: number; // Ajout du taux de commission
 }
 
 interface AdvancedStatsAffiliateTableProps {
@@ -49,6 +50,9 @@ export const AdvancedStatsAffiliateTable = ({ affiliates }: AdvancedStatsAffilia
                     <div className="font-semibold text-emerald-600 text-sm">
                       {formatCurrency(affiliate.commissions)}
                     </div>
+                    <div className="text-xs text-slate-500">
+                      {affiliate.commissionRate}% commission
+                    </div>
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-3 text-sm">
@@ -80,6 +84,7 @@ export const AdvancedStatsAffiliateTable = ({ affiliates }: AdvancedStatsAffilia
                 <th className="text-center p-4 text-sm font-semibold text-slate-700">Clics</th>
                 <th className="text-center p-4 text-sm font-semibold text-slate-700">Conversions</th>
                 <th className="text-center p-4 text-sm font-semibold text-slate-700">Taux Conv.</th>
+                <th className="text-center p-4 text-sm font-semibold text-slate-700">Comm. %</th>
                 <th className="text-right p-4 text-sm font-semibold text-slate-700">Commissions</th>
               </tr>
             </thead>
@@ -109,6 +114,11 @@ export const AdvancedStatsAffiliateTable = ({ affiliates }: AdvancedStatsAffilia
                       'bg-red-100 text-red-700'
                     }`}>
                       {affiliate.conversionRate.toFixed(1)}%
+                    </div>
+                  </td>
+                  <td className="p-4 text-center">
+                    <div className="inline-flex items-center justify-center bg-purple-100 text-purple-700 px-2 py-1 rounded-full text-sm font-medium min-w-[50px]">
+                      {affiliate.commissionRate}%
                     </div>
                   </td>
                   <td className="p-4 text-right">

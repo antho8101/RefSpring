@@ -115,6 +115,7 @@ export const calculateAffiliatePerformance = (affiliates: any[], clicks: any[], 
       conversions: affiliateConversions.length,
       commissions: affiliateCommissions,
       conversionRate,
+      commissionRate: affiliate.commissionRate || 0, // Ajout du taux de commission
     };
   }).sort((a, b) => b.commissions - a.commissions);
 };
