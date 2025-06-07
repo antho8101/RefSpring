@@ -23,11 +23,6 @@ export const AccountBillingSettings = ({ onCancel }: AccountBillingSettingsProps
   const { toast } = useToast();
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  // Filtrer les cartes qui ont des campagnes liées
-  const paymentMethodsWithCampaigns = paymentMethods.filter(pm => 
-    getLinkedCampaigns(pm.id).length > 0
-  );
-
   const handleDeletePaymentMethod = async (paymentMethodId: string) => {
     setDeletingId(paymentMethodId);
     try {
@@ -55,7 +50,7 @@ export const AccountBillingSettings = ({ onCancel }: AccountBillingSettingsProps
     });
   };
 
-  if (loading && paymentMethodsWithCampaigns.length === 0) {
+  if (loading && paymentMethods.length === 0) {
     return (
       <div className="space-y-6">
         <div className="text-center py-12">
@@ -92,22 +87,22 @@ export const AccountBillingSettings = ({ onCancel }: AccountBillingSettingsProps
       </div>
 
       <ScrollArea className="flex-1">
-        {paymentMethodsWithCampaigns.length === 0 ? (
+        {paymentMethods.length === 0 ? (
           <div className="text-center py-12 border-2 border-dashed border-slate-200 rounded-lg">
             <div className="mb-4">
               <CreditCard className="h-16 w-16 mx-auto text-slate-400" />
             </div>
             <h3 className="text-lg font-medium text-slate-900 mb-2">
-              Aucune carte bancaire utilisée
+              Aucune carte bancaire
             </h3>
             <p className="text-slate-600 mb-6">
-              Aucune carte bancaire n'est actuellement liée à vos campagnes
+              Ajoutez une carte bancaire pour commencer à utiliser nos services
             </p>
             <AddPaymentMethodDialog onPaymentMethodAdded={refreshPaymentMethods} />
           </div>
         ) : (
           <div className="grid gap-4 pr-4">
-            {paymentMethodsWithCampaigns.map((paymentMethod) => (
+            {paymentMethods.map((paymentMethod) => (
               <PaymentMethodCard
                 key={paymentMethod.id}
                 paymentMethod={paymentMethod}
