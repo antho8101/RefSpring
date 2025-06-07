@@ -1,7 +1,7 @@
-
 import { useTranslation } from 'react-i18next';
 import { useState, useEffect, useRef } from 'react';
-import { Zap, Heart, Rocket } from 'lucide-react';
+import { Zap, Heart, Rocket, ArrowRight } from 'lucide-react';
+import { Button } from "@/components/ui/button";
 
 export const StorySection = () => {
   const { t } = useTranslation();
@@ -56,6 +56,10 @@ export const StorySection = () => {
       funFact: "Nos utilisateurs font +150% de revenus en moyenne"
     }
   ];
+
+  const redirectToDashboard = () => {
+    window.location.href = '/app?signup=true';
+  };
 
   return (
     <section ref={sectionRef} className="py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white to-slate-50 relative overflow-hidden">
@@ -116,6 +120,28 @@ export const StorySection = () => {
               <br />
               <span className="text-green-600 font-bold">Aucun risque, aucun engagement ! 😉</span>
             </p>
+            
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button 
+                size="lg" 
+                className="group bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-xl hover:shadow-2xl transition-all hover:scale-105"
+                onClick={redirectToDashboard}
+              >
+                <span className="flex items-center gap-2">
+                  Créer mon programme gratuitement
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </span>
+              </Button>
+              
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="border-2 border-slate-300 text-slate-700 hover:bg-slate-50 hover:border-slate-400 transition-all hover:scale-105"
+                onClick={() => document.getElementById('dashboard')?.scrollIntoView({ behavior: 'smooth' })}
+              >
+                Voir le dashboard en action
+              </Button>
+            </div>
           </div>
         </div>
       </div>
