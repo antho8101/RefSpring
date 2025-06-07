@@ -118,6 +118,9 @@ export const HeroSection = ({ scrollY, onRedirectToDashboard }: HeroSectionProps
         <div className="group text-center hover:scale-110 transition-transform cursor-default">
           <div className="text-4xl font-bold text-purple-600 mb-2 group-hover:animate-spin">2.5%</div>
           <div className="text-slate-600">Notre commission sur vos revenus générés</div>
+          <div className="text-xs text-slate-500 mt-1">
+            Le reste : pour vous et vos affiliés ! 🤝
+          </div>
           <div className="opacity-0 group-hover:opacity-100 transition-opacity text-xs text-slate-400 mt-1">
             🏢 Vous fixez librement vos taux affiliés !
           </div>
