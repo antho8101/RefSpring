@@ -10,6 +10,7 @@ import { Settings, Trash2 } from 'lucide-react';
 import { useCampaigns } from '@/hooks/useCampaigns';
 import { useToast } from '@/hooks/use-toast';
 import { Campaign } from '@/types';
+import { CampaignDeletionDialog } from '@/components/CampaignDeletionDialog';
 
 interface CampaignSettingsDialogProps {
   campaign: Campaign;
@@ -18,7 +19,7 @@ interface CampaignSettingsDialogProps {
 export const CampaignSettingsDialog = ({ campaign }: CampaignSettingsDialogProps) => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [deleteMode, setDeleteMode] = useState(false);
+  const [deletionDialogOpen, setDeletionDialogOpen] = useState(false);
   const [formData, setFormData] = useState({
     name: campaign.name,
     description: campaign.description || '',
@@ -37,7 +38,6 @@ export const CampaignSettingsDialog = ({ campaign }: CampaignSettingsDialogProps
         isActive: campaign.isActive,
         defaultCommissionRate: campaign.defaultCommissionRate,
       });
-      setDeleteMode(false);
     }
   }, [open, campaign]);
 
@@ -63,74 +63,40 @@ export const CampaignSettingsDialog = ({ campaign }: CampaignSettingsDialogProps
     }
   };
 
-  const handleDelete = async () => {
-    setLoading(true);
+  const handleDeleteCampaign = async () => {
     try {
       await deleteCampaign(campaign.id);
-      toast({
-        title: "Campagne supprimée",
-        description: "La campagne a été supprimée définitivement.",
-      });
-      setOpen(false);
-    } catch (error: any) {
-      toast({
-        title: "Erreur",
-        description: error.message || "Impossible de supprimer la campagne",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
+      console.log('✅ Campagne supprimée avec succès:', campaign.id);
+    } catch (error) {
+      console.error('❌ Erreur suppression campagne:', error);
+      throw error;
     }
   };
 
-  return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="hover:scale-105 transition-all shadow-lg backdrop-blur-sm border-slate-300 rounded-2xl">
-          <Settings className="h-4 w-4" />
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Settings className="h-5 w-5" />
-            {deleteMode ? 'Supprimer la campagne' : 'Paramètres de la campagne'}
-          </DialogTitle>
-          <DialogDescription>
-            {deleteMode 
-              ? 'Cette action est irréversible. Toutes les données associées seront perdues.'
-              : 'Modifiez les paramètres de votre campagne d\'affiliation.'
-            }
-          </DialogDescription>
-        </DialogHeader>
+  const handleDeleteClick = () => {
+    setOpen(false);
+    setDeletionDialogOpen(true);
+  };
 
-        {deleteMode ? (
-          <div className="py-6">
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
-              <p className="text-sm text-red-800">
-                Êtes-vous sûr de vouloir supprimer la campagne <strong>"{campaign.name}"</strong> ? 
-                Cette action supprimera également tous les affiliés et statistiques associés.
-              </p>
-            </div>
-            <div className="flex gap-3">
-              <Button 
-                variant="outline" 
-                onClick={() => setDeleteMode(false)}
-                className="flex-1"
-              >
-                Annuler
-              </Button>
-              <Button 
-                variant="destructive" 
-                onClick={handleDelete}
-                disabled={loading}
-                className="flex-1"
-              >
-                {loading ? 'Suppression...' : 'Supprimer définitivement'}
-              </Button>
-            </div>
-          </div>
-        ) : (
+  return (
+    <>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogTrigger asChild>
+          <Button variant="outline" size="sm" className="hover:scale-105 transition-all shadow-lg backdrop-blur-sm border-slate-300 rounded-2xl">
+            <Settings className="h-4 w-4" />
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Settings className="h-5 w-5" />
+              Paramètres de la campagne
+            </DialogTitle>
+            <DialogDescription>
+              Modifiez les paramètres de votre campagne d'affiliation.
+            </DialogDescription>
+          </DialogHeader>
+
           <form onSubmit={handleSubmit}>
             <div className="grid gap-4 py-4">
               <div className="space-y-2">
@@ -188,7 +154,7 @@ export const CampaignSettingsDialog = ({ campaign }: CampaignSettingsDialogProps
               <Button
                 type="button"
                 variant="destructive"
-                onClick={() => setDeleteMode(true)}
+                onClick={handleDeleteClick}
                 className="mr-auto"
               >
                 <Trash2 className="h-4 w-4 mr-2" />
@@ -204,8 +170,15 @@ export const CampaignSettingsDialog = ({ campaign }: CampaignSettingsDialogProps
               </div>
             </DialogFooter>
           </form>
-        )}
-      </DialogContent>
-    </Dialog>
+        </DialogContent>
+      </Dialog>
+
+      <CampaignDeletionDialog
+        campaign={campaign}
+        open={deletionDialogOpen}
+        onOpenChange={setDeletionDialogOpen}
+        onConfirmDeletion={handleDeleteCampaign}
+      />
+    </>
   );
 };

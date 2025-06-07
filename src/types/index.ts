@@ -62,3 +62,25 @@ export interface BillingRecord {
   createdAt: Date;
   processedAt?: Date;
 }
+
+// Nouvelles interfaces pour la distribution de paiements
+export interface PaymentDistribution {
+  id: string;
+  campaignId: string;
+  userId: string;
+  reason: 'campaign_deletion' | 'monthly_payment';
+  totalRevenue: number;
+  totalCommissions: number;
+  platformFee: number;
+  affiliatePayments: {
+    affiliateId: string;
+    affiliateName: string;
+    affiliateEmail: string;
+    totalCommission: number;
+    conversionsCount: number;
+  }[];
+  status: 'pending' | 'processing' | 'completed' | 'failed';
+  createdAt: Date;
+  processedAt?: Date;
+  stripePaymentLinks?: string[];
+}
