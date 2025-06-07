@@ -27,14 +27,14 @@ export const CampaignSettingsNavigation = ({ activeTab, onTabChange }: CampaignS
             <button
               key={item.id}
               onClick={() => onTabChange(item.id)}
-              className={`w-full flex items-center gap-3 px-4 py-3 text-sm rounded-xl transition-colors ${
+              className={`w-full flex items-center gap-3 px-4 py-3 text-sm rounded-xl transition-colors text-left ${
                 activeTab === item.id 
                   ? 'bg-white text-slate-900 shadow-sm font-medium' 
                   : 'text-slate-600 hover:bg-white/50'
               }`}
             >
-              <Icon className="h-5 w-5" />
-              {item.label}
+              <Icon className="h-5 w-5 flex-shrink-0" />
+              <span className="text-left leading-tight">{item.label}</span>
             </button>
           );
         })}
