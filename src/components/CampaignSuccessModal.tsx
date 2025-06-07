@@ -8,7 +8,6 @@ import { TrackingScriptSection } from './TrackingScriptSection';
 import { ConversionCodeSection } from './ConversionCodeSection';
 import { SecurityInfoSection } from './SecurityInfoSection';
 import { NextStepsSection } from './NextStepsSection';
-import { ConfettiCelebration } from './ConfettiCelebration';
 
 interface CampaignSuccessModalProps {
   open: boolean;
@@ -60,9 +59,6 @@ export const CampaignSuccessModal = ({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
-        {/* Confettis qui se déclenchent à l'ouverture */}
-        <ConfettiCelebration trigger={open} />
-        
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Check className="h-5 w-5 text-green-600" />
