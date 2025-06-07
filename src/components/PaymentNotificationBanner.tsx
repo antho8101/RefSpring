@@ -27,7 +27,7 @@ const PaymentNotificationItem = ({ notification, onDismiss }: PaymentNotificatio
   };
 
   return (
-    <Alert className="bg-blue-50 border-blue-200 rounded-xl">
+    <Alert className="bg-blue-50 border-blue-200 rounded-xl py-4">
       <CreditCard className="h-4 w-4 text-blue-600" />
       <AlertDescription className="flex items-center justify-between w-full">
         <div className="flex items-center gap-2">
