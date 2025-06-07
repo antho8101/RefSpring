@@ -1,4 +1,3 @@
-
 import { Brain, Shield, Rocket, Smartphone, Globe, Zap, Star, Heart } from "lucide-react";
 import { useState, useEffect, useRef } from 'react';
 
@@ -31,11 +30,11 @@ export const AdvancedFeaturesSection = () => {
   const features = [
     {
       icon: <Brain className="w-8 h-8 text-blue-600" />,
-      title: "IA intégrée 🧠",
-      description: "Notre petite IA analyse vos campagnes et vous dit comment les optimiser. C'est comme avoir un consultant... mais gratuit !",
-      details: ["Prédictions de performance", "Conseils d'optimisation", "Détection d'anomalies"],
-      funEmoji: "🤖",
-      hoverText: "L'IA qui travaille pour VOUS, pas contre vous !"
+      title: "Analytics intelligentes 🧠",
+      description: "Nos algorithmes analysent vos campagnes et vous donnent des conseils d'optimisation sur mesure !",
+      details: ["Rapports détaillés", "Conseils d'optimisation", "Détection d'anomalies"],
+      funEmoji: "📊",
+      hoverText: "Des insights qui vous font gagner plus !"
     },
     {
       icon: <Shield className="w-8 h-8 text-green-600" />,
@@ -120,10 +119,8 @@ export const AdvancedFeaturesSection = () => {
               onMouseLeave={() => setHoveredFeature(null)}
             >
               <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-slate-100 hover:border-blue-200 h-full relative overflow-hidden group-hover:scale-105">
-                {/* Hover Effect Background */}
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-50/0 to-purple-50/0 group-hover:from-blue-50 group-hover:to-purple-50 transition-all duration-300"></div>
                 
-                {/* Fun emoji that appears on hover */}
                 <div className="absolute top-4 right-4 text-2xl opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-0 group-hover:scale-100 group-hover:animate-bounce">
                   {feature.funEmoji}
                 </div>
@@ -150,7 +147,6 @@ export const AdvancedFeaturesSection = () => {
                     ))}
                   </ul>
 
-                  {/* Hidden hover text */}
                   <div className={`transition-all duration-300 ${
                     hoveredFeature === index 
                       ? 'opacity-100 translate-y-0' 
@@ -166,10 +162,8 @@ export const AdvancedFeaturesSection = () => {
           ))}
         </div>
 
-        {/* Enhanced Call to Action */}
         <div className="text-center mt-16">
           <div className="bg-gradient-to-r from-blue-50 via-purple-50 to-pink-50 p-8 rounded-2xl border border-blue-100 hover:shadow-2xl transition-all group cursor-default relative overflow-hidden">
-            {/* Animated background gradient */}
             <div className="absolute inset-0 bg-gradient-to-r from-blue-100/0 via-purple-100/0 to-pink-100/0 group-hover:from-blue-100/50 group-hover:via-purple-100/50 group-hover:to-pink-100/50 transition-all duration-500"></div>
             
             <div className="relative z-10">
