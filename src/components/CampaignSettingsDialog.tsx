@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -150,11 +149,7 @@ export const CampaignSettingsDialog = ({ campaign }: CampaignSettingsDialogProps
       case 'affiliates':
         return (
           <div className="space-y-6">
-            <div className="flex justify-between items-center">
-              <div>
-                <h4 className="text-lg font-medium text-slate-900">Affiliés de la campagne</h4>
-                <p className="text-sm text-slate-600">Gérez tous les affiliés participant à cette campagne</p>
-              </div>
+            <div className="flex justify-end">
               <CreateAffiliateDialog campaignId={campaign.id} campaignName={campaign.name} />
             </div>
             <AffiliatesManagementTable campaignId={campaign.id} />
