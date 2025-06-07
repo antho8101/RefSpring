@@ -116,49 +116,49 @@ export const CampaignSettingsDialog = ({ campaign }: CampaignSettingsDialogProps
             <Settings className="h-4 w-4" />
           </Button>
         </DialogTrigger>
-        <DialogContent className="sm:max-w-[900px] max-h-[90vh] overflow-hidden p-0">
-          <div className="flex h-[600px]">
+        <DialogContent className="fixed inset-[30px] max-w-none max-h-none h-auto w-auto p-0 bg-white">
+          <div className="flex h-full">
             {/* Menu latéral */}
-            <div className="w-48 bg-slate-50 border-r p-4">
-              <div className="mb-4">
-                <h2 className="text-lg font-semibold text-slate-900">Paramètres</h2>
+            <div className="w-64 bg-slate-50 border-r p-6 flex flex-col">
+              <div className="mb-6">
+                <h2 className="text-xl font-semibold text-slate-900">Paramètres</h2>
                 <p className="text-sm text-slate-600">Configuration de la campagne</p>
               </div>
               
-              <nav className="space-y-2">
+              <nav className="space-y-3 flex-1">
                 <button
                   onClick={() => setActiveTab('general')}
-                  className={`w-full flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors ${
+                  className={`w-full flex items-center gap-3 px-4 py-3 text-sm rounded-xl transition-colors ${
                     activeTab === 'general' 
-                      ? 'bg-white text-slate-900 shadow-sm' 
+                      ? 'bg-white text-slate-900 shadow-sm font-medium' 
                       : 'text-slate-600 hover:bg-white/50'
                   }`}
                 >
-                  <FileText className="h-4 w-4" />
+                  <FileText className="h-5 w-5" />
                   Général
                 </button>
                 
                 <button
                   onClick={() => setActiveTab('payment')}
-                  className={`w-full flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors ${
+                  className={`w-full flex items-center gap-3 px-4 py-3 text-sm rounded-xl transition-colors ${
                     activeTab === 'payment' 
-                      ? 'bg-white text-slate-900 shadow-sm' 
+                      ? 'bg-white text-slate-900 shadow-sm font-medium' 
                       : 'text-slate-600 hover:bg-white/50'
                   }`}
                 >
-                  <CreditCard className="h-4 w-4" />
+                  <CreditCard className="h-5 w-5" />
                   Méthode de paiement
                 </button>
                 
                 <button
                   onClick={() => setActiveTab('affiliates')}
-                  className={`w-full flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors ${
+                  className={`w-full flex items-center gap-3 px-4 py-3 text-sm rounded-xl transition-colors ${
                     activeTab === 'affiliates' 
-                      ? 'bg-white text-slate-900 shadow-sm' 
+                      ? 'bg-white text-slate-900 shadow-sm font-medium' 
                       : 'text-slate-600 hover:bg-white/50'
                   }`}
                 >
-                  <Users className="h-4 w-4" />
+                  <Users className="h-5 w-5" />
                   Gestion des affiliés
                 </button>
               </nav>
@@ -167,29 +167,45 @@ export const CampaignSettingsDialog = ({ campaign }: CampaignSettingsDialogProps
             {/* Contenu principal */}
             <div className="flex-1 flex flex-col">
               {/* En-tête de la section */}
-              <div className="p-6 border-b bg-white">
-                <h3 className="text-lg font-semibold text-slate-900">{getTabTitle()}</h3>
-                <p className="text-sm text-slate-600 mt-1">
+              <div className="p-8 border-b bg-white">
+                <h3 className="text-2xl font-semibold text-slate-900">{getTabTitle()}</h3>
+                <p className="text-slate-600 mt-2">
                   {activeTab === 'general' && 'Configurez les informations de base de votre campagne'}
                   {activeTab === 'payment' && 'Gérez votre méthode de paiement pour les commissions'}
                   {activeTab === 'affiliates' && 'Gérez tous les affiliés de cette campagne'}
                 </p>
               </div>
 
-              {/* Contenu scrollable */}
-              <div className="flex-1 overflow-y-auto p-6">
+              {/* Contenu principal sans scroll */}
+              <div className="flex-1 p-8">
                 {activeTab === 'general' && (
-                  <form onSubmit={handleSubmit} className="space-y-6">
-                    <div className="space-y-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="name">Nom de la campagne</Label>
-                        <Input
-                          id="name"
-                          value={formData.name}
-                          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                          placeholder="Ex: Programme d'affiliation 2024"
-                          required
-                        />
+                  <form onSubmit={handleSubmit} className="space-y-8 h-full flex flex-col">
+                    <div className="flex-1 space-y-6">
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                          <Label htmlFor="name">Nom de la campagne</Label>
+                          <Input
+                            id="name"
+                            value={formData.name}
+                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                            placeholder="Ex: Programme d'affiliation 2024"
+                            required
+                          />
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <Label htmlFor="defaultCommissionRate">Taux de commission par défaut (%)</Label>
+                          <Input
+                            id="defaultCommissionRate"
+                            type="number"
+                            min="0"
+                            max="100"
+                            step="0.1"
+                            value={formData.defaultCommissionRate}
+                            onChange={(e) => setFormData({ ...formData, defaultCommissionRate: parseFloat(e.target.value) })}
+                            required
+                          />
+                        </div>
                       </div>
                       
                       <div className="space-y-2">
@@ -199,7 +215,7 @@ export const CampaignSettingsDialog = ({ campaign }: CampaignSettingsDialogProps
                           value={formData.description}
                           onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                           placeholder="Description de votre campagne d'affiliation..."
-                          rows={3}
+                          rows={4}
                         />
                       </div>
 
@@ -213,8 +229,8 @@ export const CampaignSettingsDialog = ({ campaign }: CampaignSettingsDialogProps
                           required
                         />
                         {hasTargetUrlChanged && (
-                          <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 flex items-start gap-2">
-                            <AlertTriangle className="h-4 w-4 text-orange-600 mt-0.5 flex-shrink-0" />
+                          <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 flex items-start gap-3">
+                            <AlertTriangle className="h-5 w-5 text-orange-600 mt-0.5 flex-shrink-0" />
                             <div className="text-sm">
                               <p className="text-orange-800 font-medium">Attention - URL modifiée</p>
                               <p className="text-orange-700">
@@ -225,21 +241,7 @@ export const CampaignSettingsDialog = ({ campaign }: CampaignSettingsDialogProps
                         )}
                       </div>
                       
-                      <div className="space-y-2">
-                        <Label htmlFor="defaultCommissionRate">Taux de commission par défaut (%)</Label>
-                        <Input
-                          id="defaultCommissionRate"
-                          type="number"
-                          min="0"
-                          max="100"
-                          step="0.1"
-                          value={formData.defaultCommissionRate}
-                          onChange={(e) => setFormData({ ...formData, defaultCommissionRate: parseFloat(e.target.value) })}
-                          required
-                        />
-                      </div>
-                      
-                      <div className="flex items-center justify-between py-2">
+                      <div className="flex items-center justify-between py-4 px-4 bg-slate-50 rounded-lg">
                         <div className="space-y-0.5">
                           <Label htmlFor="isActive">Campagne active</Label>
                           <p className="text-sm text-muted-foreground">
@@ -254,7 +256,7 @@ export const CampaignSettingsDialog = ({ campaign }: CampaignSettingsDialogProps
                       </div>
                     </div>
 
-                    <div className="flex justify-between pt-4 border-t">
+                    <div className="flex justify-between pt-6 border-t">
                       <Button
                         type="button"
                         variant="destructive"
@@ -264,7 +266,7 @@ export const CampaignSettingsDialog = ({ campaign }: CampaignSettingsDialogProps
                         <Trash2 className="h-4 w-4 mr-2" />
                         Supprimer la campagne
                       </Button>
-                      <div className="flex gap-2">
+                      <div className="flex gap-3">
                         <Button type="button" variant="outline" onClick={() => setOpen(false)} className="rounded-xl">
                           Annuler
                         </Button>
@@ -277,12 +279,12 @@ export const CampaignSettingsDialog = ({ campaign }: CampaignSettingsDialogProps
                 )}
 
                 {activeTab === 'payment' && (
-                  <div className="space-y-4">
-                    <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
+                  <div className="space-y-6">
+                    <div className="bg-slate-50 border border-slate-200 rounded-xl p-6">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="font-medium text-slate-900">Carte de paiement configurée</p>
-                          <p className="text-sm text-slate-600">
+                          <p className="font-medium text-slate-900 text-lg">Carte de paiement configurée</p>
+                          <p className="text-slate-600 mt-1">
                             {campaign.stripeCustomerId ? 
                               "Une méthode de paiement est associée à cette campagne" : 
                               "Aucune méthode de paiement configurée"
@@ -292,7 +294,6 @@ export const CampaignSettingsDialog = ({ campaign }: CampaignSettingsDialogProps
                         <Button
                           type="button"
                           variant="outline"
-                          size="sm"
                           onClick={handlePaymentMethodChange}
                           className="rounded-xl"
                         >
