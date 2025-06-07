@@ -30,36 +30,35 @@ export const StorySection = () => {
   const stories = [
     {
       step: "01",
-      title: "Les autres plateformes 🤦‍♂️",
-      description: "299€/mois même si vous vendez 0€. Sympa comme modèle... pour eux ! Vous payez avant même de savoir si ça marche.",
+      title: "Le problème classique 🤦‍♂️",
+      description: "Les autres plateformes : 299€/mois même si vous vendez 0€. Vous payez avant même de savoir si ça marche. C'est de l'arnaque légale !",
       icon: <Zap className="w-8 h-8 text-red-500" />,
       color: "red",
       emoji: "😤",
-      funFact: "Certains perdent plus qu'ils ne gagnent !"
+      funFact: "Beaucoup perdent plus qu'ils ne gagnent..."
     },
     {
       step: "02", 
-      title: "RefSpring arrive 🎉",
-      description: "On a dit STOP à ce délire ! Vous payez SEULEMENT si vous vendez. 2,5% sur vos ventes réelles, point barre.",
+      title: "Notre solution 🎉",
+      description: "RefSpring : 0€ de frais fixes. Vous payez SEULEMENT 2,5% sur vos ventes réelles. On prend des risques avec vous !",
       icon: <Heart className="w-8 h-8 text-green-500" />,
       color: "green",
       emoji: "🥳",
-      funFact: "Enfin une plateforme qui prend des risques avec vous !"
+      funFact: "On mange des pâtes si vous ne vendez rien !"
     },
     {
       step: "03",
-      title: "Vous explosez vos objectifs 🚀",
-      description: "Vos affiliés bossent mieux car ils ont accès aux meilleurs outils. Vous gagnez plus, on gagne ensemble !",
+      title: "Vous explosez tout 🚀",
+      description: "Dashboard propre, tracking précis, affiliés motivés. Vous vous concentrez sur votre business, nous on gère la technique !",
       icon: <Rocket className="w-8 h-8 text-blue-500" />,
       color: "blue",
       emoji: "💰",
-      funFact: "Nos utilisateurs augmentent leurs revenus de 340% en moyenne"
+      funFact: "Nos utilisateurs font +150% de revenus en moyenne"
     }
   ];
 
   return (
     <section ref={sectionRef} className="py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white to-slate-50 relative overflow-hidden">
-      {/* Animated Background Elements */}
       <div className="absolute top-10 left-10 w-20 h-20 bg-blue-100 rounded-full opacity-50 animate-pulse"></div>
       <div className="absolute bottom-20 right-20 w-16 h-16 bg-purple-100 rounded-full opacity-40 animate-bounce"></div>
       
@@ -69,7 +68,7 @@ export const StorySection = () => {
             L'histoire de RefSpring 📖
           </h2>
           <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
-            On en avait <strong>marre de voir des entrepreneurs se faire arnaquer</strong> par des plateformes qui prennent l'argent avant les résultats.
+            On en avait <strong>marre de voir des entrepreneurs se faire avoir</strong> par des plateformes qui prennent l'argent avant les résultats.
             <br />
             <span className="text-blue-600 font-semibold">Alors on a créé le contraire ! 😎</span>
           </p>
@@ -97,10 +96,9 @@ export const StorySection = () => {
               </h3>
               <p className="text-slate-600 leading-relaxed mb-4">{item.description}</p>
               
-              {/* Hidden fun fact that appears on hover */}
               <div className="opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
                 <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-3 rounded-lg border border-blue-100">
-                  <div className="text-sm text-blue-700 font-medium">💡 Le saviez-vous ?</div>
+                  <div className="text-sm text-blue-700 font-medium">💡 Fun fact</div>
                   <div className="text-xs text-blue-600 mt-1">{item.funFact}</div>
                 </div>
               </div>
@@ -108,29 +106,16 @@ export const StorySection = () => {
           ))}
         </div>
 
-        {/* Interactive Call-to-Action */}
         <div className="text-center">
           <div className="bg-gradient-to-r from-blue-50 via-purple-50 to-pink-50 p-8 rounded-2xl border border-blue-100 hover:shadow-xl transition-all group cursor-default">
             <h3 className="text-2xl font-bold text-slate-900 mb-4 group-hover:scale-105 transition-transform">
-              Prêt à rejoindre la révolution ? 🎯
+              Prêt à tester ? C'est gratuit ! 🎯
             </h3>
             <p className="text-slate-600 mb-6">
-              <span className="font-semibold">Plus de 2 400 entrepreneurs malins</span> ont déjà fait le choix intelligent.
+              <span className="font-semibold">Créez votre programme en 5 minutes</span> et voyez si ça marche pour vous.
               <br />
-              <span className="text-green-600 font-bold">Pourquoi pas vous ? 😉</span>
+              <span className="text-green-600 font-bold">Aucun risque, aucun engagement ! 😉</span>
             </p>
-            <div className="flex items-center justify-center gap-4">
-              <div className="flex -space-x-2">
-                {[...Array(5)].map((_, i) => (
-                  <div key={i} className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-400 to-purple-400 border-2 border-white flex items-center justify-center text-white text-xs font-bold">
-                    {String.fromCharCode(65 + i)}
-                  </div>
-                ))}
-                <div className="w-10 h-10 rounded-full bg-slate-200 border-2 border-white flex items-center justify-center text-slate-600 text-xs font-bold">
-                  +2K
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>

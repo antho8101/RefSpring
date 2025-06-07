@@ -30,39 +30,38 @@ export const TestimonialsSection = () => {
   const testimonials = [
     {
       name: "Marie Laurent",
-      company: "TechFlow SaaS",
-      revenue: "€12K",
-      quote: "En 4 mois, je suis passée de 0€ à 12K€ ! Le fait que RefSpring ne gagne que quand je gagne m'a convaincue. Enfin une plateforme honnête !",
+      company: "E-commerce Fashion",
+      revenue: "€8K",
+      quote: "Enfin une plateforme honnête ! Je paie seulement sur mes ventes réelles. Plus jamais de frais fixes qui me ruinent !",
       avatar: "ML",
       mood: "🤩",
-      beforeAfter: "De 0€ à 12K€ en 4 mois",
-      secretTip: "Le secret ? Des affiliés motivés par de vrais outils !"
+      beforeAfter: "De 299€ de frais à 0€ fixe",
+      secretTip: "Le dashboard me fait gagner 2h par semaine !"
     },
     {
       name: "Thomas Dubois", 
-      company: "EcoCommerce",
-      revenue: "€28K",
-      quote: "Fini les 299€/mois dans le vide ! Mon programme d'affiliation génère maintenant plus que mes ventes directes. Merci RefSpring ! 🙏",
+      company: "SaaS B2B",
+      revenue: "€15K",
+      quote: "Setup en 10 minutes, premiers affiliés en 2 jours. RefSpring tient ses promesses, c'est vraiment simple ! 🙏",
       avatar: "TD",
       mood: "😍",
-      beforeAfter: "Plus de CA que les ventes directes",
-      secretTip: "Les analytics en temps réel changent tout !"
+      beforeAfter: "10 min de setup vs 3 semaines avant",
+      secretTip: "Mes affiliés adorent l'interface !"
     },
     {
       name: "Sophie Chen",
-      company: "FinanceApp",
-      revenue: "€45K",
-      quote: "Le modèle transparent correspond parfaitement à ma mentalité d'entrepreneur. Je paie pour les résultats, pas pour des promesses vides !",
+      company: "Formation en ligne",
+      revenue: "€22K",
+      quote: "Je recommande à tous mes collègues entrepreneurs. Fini les plateformes qui vous arnaquent avec des frais cachés !",
       avatar: "SC",
       mood: "🚀",
-      beforeAfter: "x5 en 6 mois",
-      secretTip: "L'IA prédit mes meilleures conversions !"
+      beforeAfter: "x3 mon chiffre d'affiliation",
+      secretTip: "Le tracking est ultra-précis !"
     }
   ];
 
   return (
     <section ref={sectionRef} id="testimonials" className="py-24 px-4 sm:px-6 lg:px-8 bg-white relative overflow-hidden">
-      {/* Animated Background Elements */}
       <div className="absolute top-20 left-10 w-64 h-64 bg-gradient-to-r from-pink-100 to-purple-100 rounded-full blur-3xl opacity-60 animate-pulse"></div>
       <div className="absolute bottom-20 right-10 w-48 h-48 bg-gradient-to-r from-blue-100 to-green-100 rounded-full blur-2xl opacity-40 animate-bounce"></div>
       
@@ -70,17 +69,17 @@ export const TestimonialsSection = () => {
         <div className="text-center mb-16">
           <div className="inline-flex items-center gap-2 mb-4 px-4 py-2 bg-gradient-to-r from-green-100 to-blue-100 rounded-full border border-green-200">
             <Heart className="w-5 h-5 text-red-500 animate-pulse" />
-            <span className="text-green-700 font-semibold">Success Stories</span>
+            <span className="text-green-700 font-semibold">Témoignages Vrais</span>
             <Zap className="w-4 h-4 text-yellow-600 animate-bounce" />
           </div>
           <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6">
-            Ils ont osé... et ça marche ! 🎯
+            Ils l'ont testé... et adopté ! 🎯
           </h2>
           <p className="text-xl text-slate-600 max-w-3xl mx-auto">
-            Découvrez comment ces entrepreneurs malins ont 
-            <span className="font-bold text-green-600"> explosé leurs revenus</span> avec RefSpring.
+            Découvrez pourquoi ces entrepreneurs 
+            <span className="font-bold text-green-600"> ne reviendront jamais</span> aux plateformes à frais fixes.
             <br />
-            <span className="text-blue-600 font-semibold">Leur secret ? Ils ont arrêté de payer pour rien ! 😎</span>
+            <span className="text-blue-600 font-semibold">Leurs retours sont sans filtre ! 😎</span>
           </p>
         </div>
         
@@ -96,11 +95,9 @@ export const TestimonialsSection = () => {
               }`}
             >
               <div className="bg-gradient-to-br from-slate-50 to-white p-8 rounded-2xl shadow-lg border border-slate-100 hover:shadow-2xl transition-all hover:scale-105 h-full relative overflow-hidden">
-                {/* Hover glow effect */}
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-50/0 to-purple-50/0 group-hover:from-blue-50/70 group-hover:to-purple-50/70 transition-all duration-300"></div>
                 
                 <div className="relative z-10">
-                  {/* Header with avatar and mood */}
                   <div className="flex items-center gap-4 mb-6">
                     <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold group-hover:animate-pulse">
                       {testimonial.avatar}
@@ -119,7 +116,6 @@ export const TestimonialsSection = () => {
                     </div>
                   </div>
 
-                  {/* Stars with animation */}
                   <div className="flex mb-4">
                     {[...Array(5)].map((_, i) => (
                       <Star 
@@ -130,21 +126,18 @@ export const TestimonialsSection = () => {
                     ))}
                   </div>
 
-                  {/* Quote */}
                   <p className="text-slate-600 leading-relaxed italic mb-4 group-hover:text-slate-700 transition-colors">
                     "{testimonial.quote}"
                   </p>
 
-                  {/* Before/After badge */}
                   <div className="bg-gradient-to-r from-green-100 to-blue-100 p-3 rounded-lg border border-green-200 mb-4">
                     <div className="text-sm font-bold text-green-700">📈 Résultat</div>
                     <div className="text-xs text-green-600">{testimonial.beforeAfter}</div>
                   </div>
 
-                  {/* Secret tip (appears on hover) */}
                   <div className="opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
                     <div className="bg-gradient-to-r from-yellow-50 to-orange-50 p-3 rounded-lg border border-yellow-200">
-                      <div className="text-sm text-orange-700 font-medium">🤫 Le secret :</div>
+                      <div className="text-sm text-orange-700 font-medium">💡 Son conseil :</div>
                       <div className="text-xs text-orange-600 mt-1">{testimonial.secretTip}</div>
                     </div>
                   </div>
@@ -154,30 +147,12 @@ export const TestimonialsSection = () => {
           ))}
         </div>
         
-        {/* Enhanced social proof */}
         <div className="text-center mt-12 group cursor-default">
           <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl border border-blue-100 p-6 hover:shadow-xl transition-all">
-            <div className="flex items-center justify-center gap-4 mb-4">
-              <div className="flex -space-x-2">
-                {[...Array(8)].map((_, i) => (
-                  <div 
-                    key={i} 
-                    className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-400 to-purple-400 border-2 border-white flex items-center justify-center text-white text-xs font-bold hover:scale-110 transition-transform"
-                    style={{ animationDelay: `${i * 0.1}s` }}
-                  >
-                    {String.fromCharCode(65 + i)}
-                  </div>
-                ))}
-                <div className="w-10 h-10 rounded-full bg-slate-200 border-2 border-white flex items-center justify-center text-slate-600 text-xs font-bold group-hover:animate-bounce">
-                  +2K
-                </div>
-              </div>
-            </div>
             <p className="text-slate-600 text-lg">
-              <strong className="text-green-600">Rejoignez plus de 2 400+ entrepreneurs malins</strong> qui ont choisi 
-              de garder leur argent et de payer seulement sur les résultats.
+              <strong className="text-green-600">Rejoignez ces entrepreneurs malins</strong> qui ont arrêté de payer des frais fixes pour rien.
               <br />
-              <span className="text-blue-600 font-semibold">C'est ça, l'intelligence ! 🧠✨</span>
+              <span className="text-blue-600 font-semibold">Testez gratuitement, vous verrez la différence ! 🧠✨</span>
             </p>
           </div>
         </div>

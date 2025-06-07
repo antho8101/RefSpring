@@ -12,16 +12,14 @@ export const DashboardPreview = () => {
   });
   const sectionRef = useRef<HTMLElement>(null);
 
-  // Intersection Observer for animations
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             setIsVisible(true);
-            // Animate numbers
             setTimeout(() => {
-              setAnimatedNumbers({ revenue: 12847, affiliates: 847, conversions: 234 });
+              setAnimatedNumbers({ revenue: 8547, affiliates: 23, conversions: 89 });
             }, 500);
           }
         });
@@ -36,10 +34,9 @@ export const DashboardPreview = () => {
     return () => observer.disconnect();
   }, []);
 
-  // Animated counter hook
   useEffect(() => {
     if (isVisible) {
-      const duration = 2000; // 2 seconds
+      const duration = 2000;
       const steps = 60;
       const stepTime = duration / steps;
       
@@ -49,9 +46,9 @@ export const DashboardPreview = () => {
         const progress = currentStep / steps;
         
         setAnimatedNumbers({
-          revenue: Math.floor(12847 * progress),
-          affiliates: Math.floor(847 * progress),
-          conversions: Math.floor(234 * progress)
+          revenue: Math.floor(8547 * progress),
+          affiliates: Math.floor(23 * progress),
+          conversions: Math.floor(89 * progress)
         });
         
         if (currentStep >= steps) {
@@ -67,12 +64,12 @@ export const DashboardPreview = () => {
     overview: {
       revenue: `€${animatedNumbers.revenue.toLocaleString()}`,
       affiliates: animatedNumbers.affiliates.toString(),
-      growth: "+23%",
+      growth: "+18%",
       conversions: animatedNumbers.conversions.toString()
     },
     analytics: {
-      conversionRate: "4.2%",
-      avgOrderValue: "€89",
+      conversionRate: "3.2%",
+      avgOrderValue: "€96",
       topAffiliate: "Marie L.",
       bestDay: "Mardi"
     }
@@ -80,7 +77,6 @@ export const DashboardPreview = () => {
 
   return (
     <section ref={sectionRef} id="dashboard" className="py-24 px-4 sm:px-6 lg:px-8 bg-slate-900 relative overflow-hidden">
-      {/* Animated background elements */}
       <div className="absolute inset-0">
         <div className="absolute top-20 left-20 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
         <div className="absolute bottom-20 right-20 w-48 h-48 bg-purple-500/10 rounded-full blur-2xl animate-bounce"></div>
@@ -91,30 +87,28 @@ export const DashboardPreview = () => {
         <div className="text-center mb-16">
           <div className="inline-flex items-center gap-2 mb-4 px-4 py-2 bg-gradient-to-r from-slate-700 to-slate-800 rounded-full border border-slate-600">
             <Sparkles className="w-5 h-5 text-yellow-400 animate-spin" />
-            <span className="text-slate-300 font-semibold">Live Preview</span>
+            <span className="text-slate-300 font-semibold">Aperçu Dashboard</span>
             <Eye className="w-4 h-4 text-blue-400 animate-pulse" />
           </div>
           <h2 className={`text-4xl md:text-5xl font-bold text-white mb-6 transition-all duration-700 ${
             isVisible ? 'animate-fade-in-scale' : 'opacity-0 translate-y-10'
           }`}>
-            Votre command center vous attend 🚀
+            Votre tableau de bord vous attend 🚀
           </h2>
           <p className={`text-xl text-slate-300 max-w-3xl mx-auto transition-all duration-700 ${
             isVisible ? 'animate-fade-in' : 'opacity-0 translate-y-5'
           }`} style={{ animationDelay: '0.2s' }}>
-            Un dashboard aussi <strong className="text-blue-400">intuitif et puissant</strong> que vous ne l'avez jamais eu. 
+            Un dashboard <strong className="text-blue-400">simple et efficace</strong> pour suivre vos performances. 
             <br />
-            Suivez vos perfs en temps réel, analysez vos affiliés et optimisez comme un boss ! 😎
+            Tout ce dont vous avez besoin, rien de superflu ! 😎
           </p>
         </div>
         
-        {/* Interactive Dashboard Demo */}
         <div className={`relative max-w-6xl mx-auto transition-all duration-1000 ${
           isVisible ? 'animate-fade-in-scale opacity-100' : 'opacity-0 scale-95'
         }`} style={{ animationDelay: '0.4s' }}>
           <div className="bg-gradient-to-br from-slate-800 to-slate-900 p-8 rounded-3xl shadow-2xl border border-slate-700 hover:shadow-slate-700/50 transition-all">
             <div className="bg-white rounded-2xl shadow-xl overflow-hidden group">
-              {/* Browser Header with animations */}
               <div className="flex items-center gap-3 px-6 py-4 bg-slate-50 border-b">
                 <div className="w-3 h-3 bg-red-500 rounded-full hover:animate-pulse cursor-pointer"></div>
                 <div className="w-3 h-3 bg-yellow-500 rounded-full hover:animate-pulse cursor-pointer"></div>
@@ -128,12 +122,11 @@ export const DashboardPreview = () => {
                 </div>
               </div>
               
-              {/* Dashboard Tabs with hover effects */}
               <div className="flex border-b bg-white">
                 {[
                   { id: "overview", label: "Vue d'ensemble", emoji: "📊" },
-                  { id: "analytics", label: "Analytics avancées", emoji: "🔍" },
-                  { id: "affiliates", label: "Gestion affiliés", emoji: "👥" }
+                  { id: "analytics", label: "Analytics", emoji: "🔍" },
+                  { id: "affiliates", label: "Affiliés", emoji: "👥" }
                 ].map((tab) => (
                   <button
                     key={tab.id}
@@ -155,7 +148,6 @@ export const DashboardPreview = () => {
                 ))}
               </div>
 
-              {/* Dashboard Content with enhanced animations */}
               <div className="p-6">
                 {activeTab === "overview" && (
                   <div className="space-y-6">
@@ -175,13 +167,12 @@ export const DashboardPreview = () => {
                             <div className="ml-auto text-lg group-hover:animate-spin">{stat.trend}</div>
                           </div>
                           <div className="text-sm text-slate-600">{stat.label}</div>
-                          {/* Hidden fun fact on hover */}
                           <div className="opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 mt-2">
                             <div className="text-xs text-slate-500 italic">
-                              {index === 0 && "🎯 +340% vs mois dernier !"}
-                              {index === 1 && "⭐ Taux de rétention: 94%"}
-                              {index === 2 && "📊 Meilleur score du marché"}
-                              {index === 3 && "🏆 Record personnel battu !"}
+                              {index === 0 && "🎯 En croissance constante !"}
+                              {index === 1 && "⭐ Taux de rétention: 87%"}
+                              {index === 2 && "📊 Objectif dépassé !"}
+                              {index === 3 && "🏆 Nouveau record !"}
                             </div>
                           </div>
                         </div>
@@ -191,13 +182,13 @@ export const DashboardPreview = () => {
                     <div className="h-48 bg-gradient-to-r from-blue-100 via-purple-100 to-pink-100 rounded-xl flex items-center justify-center group hover:shadow-lg transition-all cursor-default">
                       <div className="text-center">
                         <BarChart3 className="w-12 h-12 text-slate-600 mx-auto mb-2 group-hover:animate-bounce" />
-                        <div className="text-slate-600 font-medium group-hover:text-slate-800 transition-colors">Graphiques interactifs en temps réel</div>
+                        <div className="text-slate-600 font-medium group-hover:text-slate-800 transition-colors">Graphiques de performance</div>
                         <div className="text-sm text-slate-500 flex items-center justify-center gap-2 mt-1">
                           <span>Évolution du CA, clics, conversions...</span>
                           <Clock className="w-4 h-4 animate-spin" />
                         </div>
                         <div className="mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <div className="text-xs text-slate-400">📍 Mise à jour toutes les 30 secondes</div>
+                          <div className="text-xs text-slate-400">📍 Données actualisées en continu</div>
                         </div>
                       </div>
                     </div>
@@ -210,7 +201,7 @@ export const DashboardPreview = () => {
                       <div className="space-y-4">
                         <h3 className="font-semibold text-slate-900 flex items-center gap-2">
                           <Zap className="w-5 h-5 text-yellow-500 animate-pulse" />
-                          Métriques comportementales
+                          Métriques clés
                         </h3>
                         <div className="space-y-3">
                           {[
@@ -236,8 +227,8 @@ export const DashboardPreview = () => {
                         <div className="h-32 bg-gradient-to-r from-green-100 to-blue-100 rounded-lg flex items-center justify-center group hover:shadow-lg transition-all">
                           <div className="text-center">
                             <Eye className="w-8 h-8 text-slate-600 mx-auto mb-1 group-hover:animate-spin" />
-                            <div className="text-sm text-slate-600">Heatmap des performances</div>
-                            <div className="opacity-0 group-hover:opacity-100 text-xs text-slate-500 mt-1">🔥 Zones chaudes détectées</div>
+                            <div className="text-sm text-slate-600">Évolution des performances</div>
+                            <div className="opacity-0 group-hover:opacity-100 text-xs text-slate-500 mt-1">📊 Tendances détaillées</div>
                           </div>
                         </div>
                         <div className="text-center p-3 bg-amber-50 rounded-lg border border-amber-200 hover:bg-amber-100 transition-colors">
@@ -250,11 +241,10 @@ export const DashboardPreview = () => {
 
                 {activeTab === "affiliates" && (
                   <div className="space-y-4 animate-fade-in">
-                    {/* ... keep existing affiliates content with enhanced styling */}
                     <div className="flex justify-between items-center">
                       <h3 className="font-semibold text-slate-900 flex items-center gap-2">
                         <Users className="w-5 h-5 text-blue-600 animate-pulse" />
-                        Vos super-affiliés
+                        Vos affiliés
                       </h3>
                       <button className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors hover:scale-105 flex items-center gap-2 group">
                         <span>+ Nouvel affilié</span>
@@ -270,9 +260,9 @@ export const DashboardPreview = () => {
                         <div>Commissions</div>
                       </div>
                       {[
-                        { name: "Marie Laurent", clicks: "1,247", conversions: "52", commission: "€524", emoji: "🌟" },
-                        { name: "Thomas Dupont", clicks: "892", conversions: "31", commission: "€310", emoji: "🚀" },
-                        { name: "Sarah Chen", clicks: "1,105", conversions: "47", commission: "€470", emoji: "💎" }
+                        { name: "Marie Laurent", clicks: "467", conversions: "15", commission: "€156", emoji: "🌟" },
+                        { name: "Thomas Dupont", clicks: "321", conversions: "9", commission: "€94", emoji: "🚀" },
+                        { name: "Sophie Chen", clicks: "298", conversions: "12", commission: "€118", emoji: "💎" }
                       ].map((affiliate, index) => (
                         <div key={index} className="grid grid-cols-4 gap-4 py-3 border-b border-slate-200 last:border-b-0 hover:bg-white rounded transition-colors group">
                           <div className="font-medium text-slate-900 flex items-center gap-2">
@@ -292,12 +282,11 @@ export const DashboardPreview = () => {
           </div>
         </div>
 
-        {/* Enhanced Features Grid */}
         <div className="grid md:grid-cols-3 gap-8 mt-16">
           {[
-            { icon: Zap, title: "Temps réel", desc: "Toutes vos métriques se mettent à jour instantanément. Suivez chaque clic comme un hawk ! 🦅", color: "blue" },
-            { icon: BarChart3, title: "Analytics poussées", desc: "Analyse comportementale, heatmaps temporelles, insights détaillés... On a tout prévu ! 🧠", color: "green" },
-            { icon: Users, title: "Gestion simplifiée", desc: "Invitez, gérez et payez vos affiliés en 2 clics. Plus simple qu'une playlist Spotify ! 🎵", color: "purple" }
+            { icon: Zap, title: "Temps réel", desc: "Toutes vos métriques se mettent à jour en direct. Suivez chaque vente instantanément ! ⚡", color: "blue" },
+            { icon: BarChart3, title: "Analytics claires", desc: "Graphiques simples, données précises. Comprenez vos performances d'un coup d'œil ! 📊", color: "green" },
+            { icon: Users, title: "Gestion simple", desc: "Invitez et gérez vos affiliés facilement. Interface intuitive, pas de prise de tête ! 👥", color: "purple" }
           ].map((feature, index) => (
             <div key={index} className={`text-center group hover:scale-105 transition-all duration-300 animate-fade-in`} style={{ animationDelay: `${0.8 + index * 0.2}s` }}>
               <div className={`w-16 h-16 bg-${feature.color}-600 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:animate-bounce group-hover:shadow-lg transition-all`}>

@@ -41,7 +41,7 @@ export const HeroSection = ({ scrollY, onRedirectToDashboard }: HeroSectionProps
         <div className="mb-8 animate-bounce-in" style={{ animationDelay: '0.2s' }}>
           <span className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-100 to-purple-100 border-2 border-blue-300 rounded-full text-blue-800 font-bold text-lg shadow-lg hover:shadow-xl transition-all hover:scale-105">
             <Zap className="w-6 h-6 animate-pulse text-yellow-500" />
-            PLATEFORME D'AFFILIATION RÉVOLUTIONNAIRE
+            PLATEFORME D'AFFILIATION QUI CHANGE TOUT
             <Eye className="w-5 h-5 animate-bounce" />
           </span>
         </div>
@@ -92,37 +92,37 @@ export const HeroSection = ({ scrollY, onRedirectToDashboard }: HeroSectionProps
             onClick={() => document.getElementById('dashboard')?.scrollIntoView({ behavior: 'smooth' })}
           >
             <span className="flex items-center gap-2">
-              Voir comment ça marche
+              Voir le dashboard
               <Eye className="w-5 h-5 group-hover:animate-bounce" />
             </span>
           </Button>
         </div>
       </div>
 
-      {/* Fun Stats with Easter Eggs - Moved to bottom */}
+      {/* Real Stats - Moved to bottom */}
       <div className="grid md:grid-cols-3 gap-8 mb-8 animate-fade-in relative z-20" style={{ animationDelay: '0.8s' }}>
         <div className="group text-center hover:scale-110 transition-transform cursor-default">
-          <div className="text-4xl font-bold text-blue-600 mb-2 group-hover:animate-bounce">€50M+</div>
-          <div className="text-slate-600">Revenus générés par nos utilisateurs</div>
+          <div className="text-4xl font-bold text-blue-600 mb-2 group-hover:animate-bounce">100%</div>
+          <div className="text-slate-600">Gratuit au démarrage</div>
           <div className="opacity-0 group-hover:opacity-100 transition-opacity text-xs text-slate-400 mt-1">
-            🎯 Et ce n'est que le début !
+            💰 Zéro euro pour commencer !
           </div>
         </div>
         <div className="group text-center hover:scale-110 transition-transform cursor-default">
           <div className="text-4xl font-bold text-green-600 mb-2 group-hover:animate-pulse">€0</div>
-          <div className="text-slate-600">Frais mensuels à payer</div>
+          <div className="text-slate-600">Frais mensuels fixes</div>
           <div className="opacity-0 group-hover:opacity-100 transition-opacity text-xs text-slate-400 mt-1">
-            💰 Gardez votre argent pour vous !
+            🎯 On gagne seulement si vous gagnez !
           </div>
         </div>
         <div className="group text-center hover:scale-110 transition-transform cursor-default">
           <div className="text-4xl font-bold text-purple-600 mb-2 group-hover:animate-spin">2.5%</div>
-          <div className="text-slate-600">Notre commission sur vos revenus générés</div>
+          <div className="text-slate-600">Notre commission sur vos ventes générées</div>
           <div className="text-xs text-slate-500 mt-1">
-            Le reste : pour vous et vos affiliés ! 🤝
+            Simple, transparent, honnête ! 🤝
           </div>
           <div className="opacity-0 group-hover:opacity-100 transition-opacity text-xs text-slate-400 mt-1">
-            🏢 Vous fixez librement vos taux affiliés !
+            🔧 Vous fixez librement les taux de vos affiliés !
           </div>
         </div>
       </div>

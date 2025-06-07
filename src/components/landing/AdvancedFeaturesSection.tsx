@@ -1,3 +1,4 @@
+
 import { Brain, Shield, Rocket, Smartphone, Globe, Zap, Star, Heart } from "lucide-react";
 import { useState, useEffect, useRef } from 'react';
 
@@ -30,57 +31,56 @@ export const AdvancedFeaturesSection = () => {
   const features = [
     {
       icon: <Brain className="w-8 h-8 text-blue-600" />,
-      title: "Analytics intelligentes 🧠",
-      description: "Nos algorithmes analysent vos campagnes et vous donnent des conseils d'optimisation sur mesure !",
-      details: ["Rapports détaillés", "Conseils d'optimisation", "Détection d'anomalies"],
+      title: "Dashboard intelligent 🧠",
+      description: "Un tableau de bord qui vous montre tout ce qui compte : performances, tendances, affiliés top. Simple et efficace !",
+      details: ["Métriques en temps réel", "Graphiques clairs", "Données exportables"],
       funEmoji: "📊",
-      hoverText: "Des insights qui vous font gagner plus !"
+      hoverText: "Tout ce dont vous avez besoin, rien de plus !"
     },
     {
       icon: <Shield className="w-8 h-8 text-green-600" />,
-      title: "Protection anti-fraude 🛡️",
-      description: "On chasse les clics frauduleux comme des chasseurs de primes ! Vos commissions restent propres.",
-      details: ["Détection en temps réel", "Blacklist automatique", "Rapports de sécurité"],
-      funEmoji: "🕵️",
-      hoverText: "Zero tolérance pour les tricheurs !"
+      title: "Tracking fiable 🛡️",
+      description: "Notre système de tracking suit chaque clic, chaque conversion. Pas de commissions perdues, pas de disputes !",
+      details: ["Tracking pixel", "Liens personnalisés", "Rapports détaillés"],
+      funEmoji: "🎯",
+      hoverText: "Chaque euro compte et on les compte bien !"
     },
     {
       icon: <Rocket className="w-8 h-8 text-purple-600" />,
-      title: "API complète 🚀",
-      description: "Connectez RefSpring à votre écosystème existant. Nos développeurs ont pensé à tout !",
-      details: ["Documentation claire", "SDKs multiples", "Webhooks en temps réel"],
-      funEmoji: "👨‍💻",
-      hoverText: "Pour les geeks qui aiment les belles APIs !"
+      title: "Configuration rapide 🚀",
+      description: "5 minutes pour créer votre programme. Code à copier-coller, liens à partager. C'est tout !",
+      details: ["Setup en 5 min", "Code simple", "Support réactif"],
+      funEmoji: "⚡",
+      hoverText: "Plus simple qu'une playlist Spotify !"
     },
     {
       icon: <Smartphone className="w-8 h-8 text-orange-600" />,
-      title: "Mobile-first 📱",
-      description: "Gérez vos campagnes depuis votre canapé, dans le métro, aux toilettes... On ne juge pas !",
-      details: ["App responsive", "Notifications push", "Mode hors-ligne"],
+      title: "Interface mobile 📱",
+      description: "Suivez vos performances depuis votre canapé. L'app fonctionne partout, même dans le métro !",
+      details: ["App responsive", "Données sync", "Accès offline"],
       funEmoji: "🛋️",
-      hoverText: "Parce que les meilleures idées viennent sous la douche !"
+      hoverText: "Gérez votre business en pyjama !"
     },
     {
       icon: <Globe className="w-8 h-8 text-cyan-600" />,
       title: "Multi-devises 🌍",
-      description: "Dollars, euros, yens... On gère 120+ devises. Votre business n'a plus de frontières !",
-      details: ["Conversion automatique", "Paiements locaux", "Rapports consolidés"],
+      description: "Dollars, euros, livres... On gère les principales devises pour vos affiliés internationaux !",
+      details: ["EUR, USD, GBP", "Conversion auto", "Rapports consolidés"],
       funEmoji: "💱",
-      hoverText: "Conquête mondiale en cours... 🗺️"
+      hoverText: "Votre business sans frontières !"
     },
     {
       icon: <Zap className="w-8 h-8 text-yellow-600" />,
-      title: "Intégrations magiques ⚡",
-      description: "Shopify, WooCommerce, Discord... Connectez tout en 1 clic. C'est de la magie !",
-      details: ["Shopify, WooCommerce", "Google Analytics", "Slack, Discord"],
-      funEmoji: "🪄",
-      hoverText: "Abracadabra... tout est connecté !"
+      title: "Paiements automatiques ⚡",
+      description: "Configurez les paiements une fois, on s'occupe du reste. Vos affiliés sont payés automatiquement !",
+      details: ["Paiements auto", "Seuils configurables", "Historique complet"],
+      funEmoji: "💰",
+      hoverText: "Moins de paperasse, plus de business !"
     }
   ];
 
   return (
     <section ref={sectionRef} className="py-24 px-4 sm:px-6 lg:px-8 bg-white relative overflow-hidden">
-      {/* Animated Background */}
       <div className="absolute inset-0 opacity-30">
         <div className="absolute top-20 left-20 w-32 h-32 bg-gradient-to-r from-blue-200 to-purple-200 rounded-full blur-3xl animate-pulse"></div>
         <div className="absolute bottom-20 right-20 w-24 h-24 bg-gradient-to-r from-green-200 to-blue-200 rounded-full blur-2xl animate-bounce"></div>
@@ -91,17 +91,17 @@ export const AdvancedFeaturesSection = () => {
         <div className="text-center mb-16">
           <div className="inline-flex items-center gap-2 mb-4 px-4 py-2 bg-gradient-to-r from-yellow-100 to-orange-100 rounded-full border border-yellow-200">
             <Star className="w-5 h-5 text-yellow-600 animate-spin" />
-            <span className="text-yellow-700 font-semibold">Features Premium</span>
+            <span className="text-yellow-700 font-semibold">Ce qu'on fait vraiment</span>
             <Heart className="w-4 h-4 text-red-500 animate-pulse" />
           </div>
           <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6">
-            Des outils qui déchirent 🔥
+            Les fonctionnalités qui marchent 🔥
           </h2>
           <p className="text-xl text-slate-600 max-w-3xl mx-auto">
-            RefSpring ne fait pas que du basique. On vous a préparé 
-            <span className="font-bold text-blue-600"> un arsenal complet</span> pour dominer l'affiliation !
+            Pas de promesses en l'air ! RefSpring vous donne 
+            <span className="font-bold text-blue-600"> les outils essentiels</span> pour gérer votre affiliation.
             <br />
-            <span className="text-green-600 font-semibold">Et tout ça... gratuit ! 😎</span>
+            <span className="text-green-600 font-semibold">Simple, efficace, et ça marche ! 😎</span>
           </p>
         </div>
 
@@ -175,9 +175,9 @@ export const AdvancedFeaturesSection = () => {
                 <Star className="w-6 h-6 text-yellow-500 animate-spin" style={{ animationDirection: 'reverse' }} />
               </div>
               <p className="text-slate-600 mb-6">
-                Créez votre compte gratuit et découvrez le dashboard le plus stylé du marché.
+                Créez votre compte gratuit et testez par vous-même.
                 <br />
-                <span className="font-bold text-green-600">Promis, vous allez kiffer ! 😍</span>
+                <span className="font-bold text-green-600">Promis, c'est aussi simple qu'on le dit ! 😍</span>
               </p>
               <button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-3 rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all hover:scale-105 group-hover:animate-pulse">
                 <span className="flex items-center gap-2">
