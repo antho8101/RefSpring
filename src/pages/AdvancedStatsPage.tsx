@@ -1,4 +1,3 @@
-
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAdvancedStatsExtended } from '@/hooks/useAdvancedStatsExtended';
 import { useCampaigns } from '@/hooks/useCampaigns';
@@ -192,14 +191,14 @@ const AdvancedStatsPage = () => {
             {/* Colonne droite (1/3) - HALL OF FAME avec glow discret mais animé */}
             <div className="xl:col-span-1 relative">
               {/* Effet glow discret avec pulse doux */}
-              <div className="absolute -inset-3 bg-gradient-to-r from-blue-400/20 via-purple-500/20 to-blue-400/20 rounded-2xl blur-xl animate-pulse"></div>
-              <div className="absolute -inset-2 bg-gradient-to-r from-purple-400/15 via-blue-500/15 to-purple-400/15 rounded-xl blur-lg animate-pulse" style={{ animationDelay: '1s' }}></div>
+              <div className="absolute -inset-2 bg-gradient-to-r from-blue-400/10 via-purple-500/10 to-blue-400/10 rounded-2xl blur-lg animate-pulse" style={{ animationDuration: '3s' }}></div>
+              <div className="absolute -inset-1 bg-gradient-to-r from-purple-400/8 via-blue-500/8 to-purple-400/8 rounded-xl blur-md animate-pulse" style={{ animationDelay: '1.5s', animationDuration: '4s' }}></div>
               
               {/* Carte principale avec rotation subtile */}
-              <div className="relative bg-gradient-to-br from-blue-500 via-purple-600 to-indigo-700 rounded-2xl p-6 shadow-2xl border-none h-full overflow-hidden transform hover:scale-105 transition-all duration-300 z-10 animate-pulse" style={{ animationDuration: '3s' }}>
-                {/* Effet de brillance animé qui tourne */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 animate-pulse"></div>
-                <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-white/5 via-transparent to-white/5 animate-pulse" style={{ animationDelay: '1.5s', animationDuration: '4s' }}></div>
+              <div className="relative bg-gradient-to-br from-blue-500 via-purple-600 to-indigo-700 rounded-2xl p-6 shadow-2xl border-none h-full overflow-hidden transform hover:scale-[1.02] transition-all duration-500 z-10">
+                {/* Effet de brillance animé qui tourne - plus subtil */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -skew-x-12 animate-pulse" style={{ animationDuration: '4s' }}></div>
+                <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-white/3 via-transparent to-white/3 animate-pulse" style={{ animationDelay: '2s', animationDuration: '5s' }}></div>
                 
                 {/* Étoiles en arrière-plan avec animations décalées */}
                 <div className="absolute top-3 left-3">
