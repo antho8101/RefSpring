@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { CreditCard, Trash2, Pause } from 'lucide-react';
+import { CreditCard, Trash2, Pause, AlertTriangle } from 'lucide-react';
 import { CriticalActionConfirmDialog } from '@/components/CriticalActionConfirmDialog';
 
 interface Campaign {
@@ -27,13 +27,15 @@ interface PaymentMethodCardProps {
   linkedCampaigns: Campaign[];
   onDelete: (paymentMethodId: string) => void;
   isDeleting?: boolean;
+  canDelete?: { canDelete: boolean; reason?: string };
 }
 
 export const PaymentMethodCard = ({ 
   paymentMethod, 
   linkedCampaigns, 
   onDelete,
-  isDeleting = false 
+  isDeleting = false,
+  canDelete = { canDelete: true }
 }: PaymentMethodCardProps) => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
@@ -44,6 +46,7 @@ export const PaymentMethodCard = ({
 
   const activeCampaigns = linkedCampaigns.filter(c => c.isActive);
   const hasLinkedCampaigns = linkedCampaigns.length > 0;
+  const hasActiveCampaigns = activeCampaigns.length > 0;
 
   const getCardIcon = (brand: string) => {
     // Retourner l'icône appropriée selon la marque
@@ -51,6 +54,10 @@ export const PaymentMethodCard = ({
   };
 
   const getDeleteDescription = () => {
+    if (!canDelete.canDelete) {
+      return canDelete.reason || "Cette carte ne peut pas être supprimée.";
+    }
+
     if (!hasLinkedCampaigns) {
       return "Cette action supprimera définitivement cette carte bancaire de votre compte.";
     }
@@ -84,19 +91,33 @@ Les campagnes devront être reconfigurées avec une nouvelle carte pour être r�
                 </p>
               </div>
             </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setDeleteDialogOpen(true)}
-              disabled={isDeleting}
-              className="text-red-600 hover:text-red-700 hover:bg-red-50"
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
+            <div className="flex items-center gap-2">
+              {!canDelete.canDelete && (
+                <AlertTriangle className="h-4 w-4 text-orange-500" title={canDelete.reason} />
+              )}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setDeleteDialogOpen(true)}
+                disabled={isDeleting || !canDelete.canDelete}
+                className={`${canDelete.canDelete ? 'text-red-600 hover:text-red-700 hover:bg-red-50' : 'text-slate-400 cursor-not-allowed'}`}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
           </CardTitle>
         </CardHeader>
 
         <CardContent className="pt-0">
+          {!canDelete.canDelete && (
+            <div className="mb-3 p-2 bg-orange-50 border border-orange-200 rounded-lg">
+              <p className="text-sm text-orange-700 flex items-center gap-2">
+                <AlertTriangle className="h-4 w-4" />
+                {canDelete.reason}
+              </p>
+            </div>
+          )}
+          
           {hasLinkedCampaigns ? (
             <div className="space-y-3">
               <p className="text-sm font-medium text-slate-700">
@@ -139,6 +160,7 @@ Les campagnes devront être reconfigurées avec une nouvelle carte pour être r�
         confirmText={hasLinkedCampaigns ? "Supprimer et mettre en pause" : "Supprimer"}
         onConfirm={handleDelete}
         variant="danger"
+        disabled={!canDelete.canDelete}
       />
     </>
   );

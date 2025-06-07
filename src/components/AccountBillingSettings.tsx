@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { CreditCard, RefreshCw } from 'lucide-react';
@@ -16,6 +17,7 @@ export const AccountBillingSettings = ({ onCancel }: AccountBillingSettingsProps
     paymentMethods, 
     loading, 
     getLinkedCampaigns, 
+    canDeletePaymentMethod,
     deletePaymentMethod,
     refreshPaymentMethods
   } = usePaymentMethods();
@@ -30,10 +32,10 @@ export const AccountBillingSettings = ({ onCancel }: AccountBillingSettingsProps
         title: "Carte supprimée",
         description: "La carte bancaire a été supprimée et les campagnes associées ont été mises en pause",
       });
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Erreur",
-        description: "Impossible de supprimer la carte bancaire",
+        description: error.message || "Impossible de supprimer la carte bancaire",
         variant: "destructive",
       });
     } finally {
@@ -106,6 +108,7 @@ export const AccountBillingSettings = ({ onCancel }: AccountBillingSettingsProps
                 key={paymentMethod.id}
                 paymentMethod={paymentMethod}
                 linkedCampaigns={getLinkedCampaigns(paymentMethod.id)}
+                canDelete={canDeletePaymentMethod(paymentMethod.id)}
                 onDelete={handleDeletePaymentMethod}
                 isDeleting={deletingId === paymentMethod.id}
               />

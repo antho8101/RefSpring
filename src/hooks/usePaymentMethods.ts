@@ -44,7 +44,39 @@ export const usePaymentMethods = () => {
     return campaigns.filter(campaign => campaign.paymentMethodId === paymentMethodId);
   };
 
+  const canDeletePaymentMethod = (paymentMethodId: string): { canDelete: boolean; reason?: string } => {
+    const linkedCampaigns = getLinkedCampaigns(paymentMethodId);
+    const activeCampaigns = linkedCampaigns.filter(c => c.isActive);
+    
+    // Si c'est la dernière carte et qu'il y a des campagnes actives liées
+    if (paymentMethods.length === 1 && activeCampaigns.length > 0) {
+      return {
+        canDelete: false,
+        reason: `Impossible de supprimer la dernière carte car ${activeCampaigns.length} campagne(s) active(s) y sont liées. Désactivez d'abord les campagnes.`
+      };
+    }
+
+    // Si la carte a des campagnes actives liées et qu'aucune autre carte n'est disponible pour les campagnes
+    if (activeCampaigns.length > 0) {
+      const otherCards = paymentMethods.filter(pm => pm.id !== paymentMethodId);
+      if (otherCards.length === 0) {
+        return {
+          canDelete: false,
+          reason: `Cette carte est liée à ${activeCampaigns.length} campagne(s) active(s) et aucune autre carte n'est disponible.`
+        };
+      }
+    }
+
+    return { canDelete: true };
+  };
+
   const deletePaymentMethod = async (paymentMethodId: string) => {
+    // Vérifier si la suppression est autorisée
+    const { canDelete, reason } = canDeletePaymentMethod(paymentMethodId);
+    if (!canDelete) {
+      throw new Error(reason);
+    }
+
     setLoading(true);
     try {
       // 1. Supprimer la carte chez Stripe
@@ -103,6 +135,7 @@ export const usePaymentMethods = () => {
     campaigns,
     loading,
     getLinkedCampaigns,
+    canDeletePaymentMethod,
     deletePaymentMethod,
     refreshPaymentMethods: loadPaymentMethods,
     cleanupDuplicates,
