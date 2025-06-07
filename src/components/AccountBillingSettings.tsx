@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { CreditCard, RefreshCw } from 'lucide-react';
+import { CreditCard, RefreshCw, Trash2 } from 'lucide-react';
 import { PaymentMethodCard } from '@/components/PaymentMethodCard';
 import { AddPaymentMethodDialog } from '@/components/AddPaymentMethodDialog';
 import { usePaymentMethods } from '@/hooks/usePaymentMethods';
@@ -18,10 +18,12 @@ export const AccountBillingSettings = ({ onCancel }: AccountBillingSettingsProps
     loading, 
     getLinkedCampaigns, 
     deletePaymentMethod,
-    refreshPaymentMethods 
+    refreshPaymentMethods,
+    cleanupDuplicates 
   } = usePaymentMethods();
   const { toast } = useToast();
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [cleaningDuplicates, setCleaningDuplicates] = useState(false);
 
   const handleDeletePaymentMethod = async (paymentMethodId: string) => {
     setDeletingId(paymentMethodId);
@@ -50,6 +52,25 @@ export const AccountBillingSettings = ({ onCancel }: AccountBillingSettingsProps
     });
   };
 
+  const handleCleanupDuplicates = async () => {
+    setCleaningDuplicates(true);
+    try {
+      const removedCount = await cleanupDuplicates();
+      toast({
+        title: "Nettoyage terminé",
+        description: `${removedCount} carte(s) en double supprimée(s)`,
+      });
+    } catch (error) {
+      toast({
+        title: "Erreur",
+        description: "Impossible de nettoyer les doublons",
+        variant: "destructive",
+      });
+    } finally {
+      setCleaningDuplicates(false);
+    }
+  };
+
   if (loading && paymentMethods.length === 0) {
     return (
       <div className="space-y-6">
@@ -76,6 +97,16 @@ export const AccountBillingSettings = ({ onCancel }: AccountBillingSettingsProps
           <Button
             variant="outline"
             size="sm"
+            onClick={handleCleanupDuplicates}
+            disabled={cleaningDuplicates || loading}
+            className="text-orange-600 hover:text-orange-700 hover:bg-orange-50"
+          >
+            <Trash2 className={`h-4 w-4 mr-2 ${cleaningDuplicates ? 'animate-spin' : ''}`} />
+            Nettoyer doublons
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
             onClick={handleRefresh}
             disabled={loading}
           >
@@ -86,7 +117,7 @@ export const AccountBillingSettings = ({ onCancel }: AccountBillingSettingsProps
         </div>
       </div>
 
-      <ScrollArea className="flex-1">
+      <ScrollArea className="flex-1 h-96">
         {paymentMethods.length === 0 ? (
           <div className="text-center py-12 border-2 border-dashed border-slate-200 rounded-lg">
             <div className="mb-4">
