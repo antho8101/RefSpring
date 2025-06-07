@@ -25,20 +25,20 @@ const PaymentNotificationItem = ({ notification, onDismiss }: PaymentNotificatio
 
   return (
     <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
-      <div className="flex items-center justify-between w-full">
-        <div className="flex items-center gap-3">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between w-full gap-3">
+        <div className="flex items-center gap-3 min-w-0">
           <CreditCard className="h-5 w-5 text-blue-600 flex-shrink-0" />
-          <span className="text-blue-800 font-medium">
+          <span className="text-blue-800 font-medium text-sm sm:text-base">
             Prochain paiement dû : {formatCurrency(notification.amount)} le {formatDate(notification.dueDate)}
           </span>
         </div>
         
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-2">
           <Button
             variant="outline"
             size="sm"
             onClick={() => onDismiss(notification.id, false)}
-            className="text-blue-700 border-blue-300 hover:bg-blue-100 rounded-xl"
+            className="text-blue-700 border-blue-300 hover:bg-blue-100 rounded-xl justify-center"
           >
             <Clock className="h-3 w-3 mr-1" />
             Me le rappeler plus tard
@@ -48,7 +48,7 @@ const PaymentNotificationItem = ({ notification, onDismiss }: PaymentNotificatio
             variant="outline"
             size="sm"
             onClick={() => onDismiss(notification.id, true)}
-            className="text-blue-700 border-blue-300 hover:bg-blue-100 rounded-xl"
+            className="text-blue-700 border-blue-300 hover:bg-blue-100 rounded-xl justify-center"
           >
             <X className="h-3 w-3 mr-1" />
             Ne plus me rappeler
