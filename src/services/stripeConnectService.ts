@@ -1,4 +1,3 @@
-
 import { 
   collection, 
   query, 
@@ -60,9 +59,8 @@ export const calculateCommissionsSinceDate = async (
 
     conversionsSnapshot.docs.forEach(doc => {
       const conversion = doc.data() as Conversion;
-      const conversionDate = conversion.timestamp.toDate ? 
-        conversion.timestamp.toDate() : 
-        new Date(conversion.timestamp);
+      // Conversion.timestamp is already a Date type, no need for .toDate()
+      const conversionDate = conversion.timestamp;
 
       // Filtrer par date
       if (conversionDate >= sinceDate) {
