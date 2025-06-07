@@ -116,16 +116,6 @@ export const CampaignInfoCards = ({ campaign }: CampaignInfoCardsProps) => {
           </div>
         </div>
       </div>
-
-      <div className="bg-purple-50/50 p-4 rounded-xl lg:col-span-2">
-        <div className="flex items-center gap-2 text-purple-600 mb-2">
-          <Calendar className="h-4 w-4" />
-          <span className="text-sm font-medium">Créée le</span>
-        </div>
-        <p className="text-sm font-semibold text-slate-900">
-          {new Date(campaign.createdAt).toLocaleDateString('fr-FR')}
-        </p>
-      </div>
       
       <div className="bg-blue-50/50 p-4 rounded-xl lg:col-span-5">
         <div className="flex items-center gap-2 text-blue-600 mb-2">
@@ -134,6 +124,16 @@ export const CampaignInfoCards = ({ campaign }: CampaignInfoCardsProps) => {
         </div>
         <p className="font-mono text-xs text-slate-600 truncate bg-white/70 px-2 py-1 rounded">
           {campaign.targetUrl}
+        </p>
+      </div>
+
+      <div className="bg-purple-50/50 p-4 rounded-xl lg:col-span-2">
+        <div className="flex items-center gap-2 text-purple-600 mb-2">
+          <Calendar className="h-4 w-4" />
+          <span className="text-sm font-medium">Créée le</span>
+        </div>
+        <p className="text-sm font-semibold text-slate-900">
+          {new Date(campaign.createdAt).toLocaleDateString('fr-FR')}
         </p>
       </div>
     </div>
