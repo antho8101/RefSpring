@@ -1,5 +1,5 @@
 
-import { Shield, Star, Check, X, Zap } from "lucide-react";
+import { Shield, Star, X, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface PricingHeaderProps {
@@ -85,14 +85,6 @@ export const PricingHeader = ({ onGetStarted }: PricingHeaderProps) => {
 
           {/* RefSpring - The Hero Treatment */}
           <div className="relative group transform scale-105 hover:scale-110 transition-all duration-700">
-            {/* Hero-style animated background elements */}
-            <div className="absolute inset-0">
-              <div className="absolute -inset-4 bg-gradient-to-br from-blue-50 via-white to-purple-50 rounded-3xl"></div>
-              <div className="absolute top-4 left-4 w-32 h-32 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-full blur-2xl animate-pulse"></div>
-              <div className="absolute bottom-4 right-4 w-40 h-40 bg-gradient-to-r from-green-500/20 to-blue-500/20 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-24 h-24 bg-gradient-to-r from-purple-500/15 to-pink-500/15 rounded-full blur-xl animate-pulse" style={{ animationDelay: '2s' }}></div>
-            </div>
-            
             {/* Main card with hero styling */}
             <div className="relative bg-white/95 backdrop-blur-sm border-4 border-slate-200 p-10 rounded-3xl shadow-2xl hover:shadow-3xl transition-all duration-500 group-hover:border-blue-300">
               <div className="relative z-10">
@@ -108,33 +100,18 @@ export const PricingHeader = ({ onGetStarted }: PricingHeaderProps) => {
                 </div>
                 <ul className="space-y-4 mb-8 text-base">
                   <li className="flex items-center gap-3 group/item hover:scale-105 transition-transform">
-                    <div className="bg-gradient-to-r from-green-500 to-blue-500 rounded-full p-2 transition-all">
-                      <Check className="w-5 h-5 text-white" />
-                    </div>
                     <span className="font-bold text-slate-900 group-hover/item:text-blue-700 transition-colors">✨ Tu paies que si tu gagnes</span>
                   </li>
                   <li className="flex items-center gap-3 group/item hover:scale-105 transition-transform">
-                    <div className="bg-gradient-to-r from-blue-500 to-purple-500 rounded-full p-2 transition-all">
-                      <Check className="w-5 h-5 text-white" />
-                    </div>
                     <span className="font-bold text-slate-900 group-hover/item:text-purple-700 transition-colors">⚡ Setup en 10 minutes chrono</span>
                   </li>
                   <li className="flex items-center gap-3 group/item hover:scale-105 transition-transform">
-                    <div className="bg-gradient-to-r from-purple-500 to-green-500 rounded-full p-2 transition-all">
-                      <Check className="w-5 h-5 text-white" />
-                    </div>
                     <span className="font-bold text-slate-900 group-hover/item:text-green-700 transition-colors">🎯 Dashboard qui déchire</span>
                   </li>
                   <li className="flex items-center gap-3 group/item hover:scale-105 transition-transform">
-                    <div className="bg-gradient-to-r from-green-500 to-blue-500 rounded-full p-2 transition-all">
-                      <Check className="w-5 h-5 text-white" />
-                    </div>
                     <span className="font-bold text-slate-900 group-hover/item:text-blue-700 transition-colors">🔒 Tracking au pixel près</span>
                   </li>
                   <li className="flex items-center gap-3 group/item hover:scale-105 transition-transform">
-                    <div className="bg-gradient-to-r from-purple-500 to-green-500 rounded-full p-2 transition-all">
-                      <Check className="w-5 h-5 text-white" />
-                    </div>
                     <span className="font-bold text-slate-900 group-hover/item:text-purple-700 transition-colors">💰 Paiements automatiques</span>
                   </li>
                 </ul>
