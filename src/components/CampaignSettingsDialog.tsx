@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
-import { Settings, Trash2 } from 'lucide-react';
+import { Settings, Trash2, AlertTriangle } from 'lucide-react';
 import { useCampaigns } from '@/hooks/useCampaigns';
 import { useToast } from '@/hooks/use-toast';
 import { Campaign } from '@/types';
@@ -20,9 +20,11 @@ export const CampaignSettingsDialog = ({ campaign }: CampaignSettingsDialogProps
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [deletionDialogOpen, setDeletionDialogOpen] = useState(false);
+  const [initialTargetUrl, setInitialTargetUrl] = useState(campaign.targetUrl || '');
   const [formData, setFormData] = useState({
     name: campaign.name,
     description: campaign.description || '',
+    targetUrl: campaign.targetUrl || '',
     isActive: campaign.isActive,
     defaultCommissionRate: campaign.defaultCommissionRate,
   });
@@ -32,9 +34,12 @@ export const CampaignSettingsDialog = ({ campaign }: CampaignSettingsDialogProps
 
   useEffect(() => {
     if (open) {
+      const targetUrl = campaign.targetUrl || '';
+      setInitialTargetUrl(targetUrl);
       setFormData({
         name: campaign.name,
         description: campaign.description || '',
+        targetUrl,
         isActive: campaign.isActive,
         defaultCommissionRate: campaign.defaultCommissionRate,
       });
@@ -78,6 +83,8 @@ export const CampaignSettingsDialog = ({ campaign }: CampaignSettingsDialogProps
     setDeletionDialogOpen(true);
   };
 
+  const hasTargetUrlChanged = formData.targetUrl !== initialTargetUrl;
+
   return (
     <>
       <Dialog open={open} onOpenChange={setOpen}>
@@ -119,6 +126,28 @@ export const CampaignSettingsDialog = ({ campaign }: CampaignSettingsDialogProps
                   placeholder="Description de votre campagne d'affiliation..."
                   rows={3}
                 />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="targetUrl">URL de destination</Label>
+                <Input
+                  id="targetUrl"
+                  value={formData.targetUrl}
+                  onChange={(e) => setFormData({ ...formData, targetUrl: e.target.value })}
+                  placeholder="https://monsite.com/produit"
+                  required
+                />
+                {hasTargetUrlChanged && (
+                  <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 flex items-start gap-2">
+                    <AlertTriangle className="h-4 w-4 text-orange-600 mt-0.5 flex-shrink-0" />
+                    <div className="text-sm">
+                      <p className="text-orange-800 font-medium">Attention - URL modifiée</p>
+                      <p className="text-orange-700">
+                        N'oubliez pas d'ajouter le script de tracking à la nouvelle page de destination pour continuer à traquer les conversions.
+                      </p>
+                    </div>
+                  </div>
+                )}
               </div>
               
               <div className="space-y-2">
