@@ -68,7 +68,7 @@ export const HeroSection = ({ scrollY, onRedirectToDashboard }: HeroSectionProps
           <span className="bg-yellow-100 px-3 py-1 rounded-lg border border-yellow-300 font-bold text-slate-900">🤔 C'est quoi RefSpring ?</span>
           <br /><br />
           <span className="text-2xl">📈 Vous vendez un produit/service ?</span><br />
-          <span className="text-xl text-slate-600">RefSpring trouve des vendeurs (affiliés) pour vous</span>
+          <span className="text-xl text-slate-600">Créez votre programme d'affiliation et recrutez vos vendeurs</span>
           <br /><br />
           <span className="text-2xl">💰 Ils vendent = ils gagnent + vous gagnez</span><br />
           <span className="text-xl text-slate-600">Ils vendent pas = personne paie rien !</span>
