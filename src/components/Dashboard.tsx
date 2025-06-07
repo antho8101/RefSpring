@@ -1,3 +1,4 @@
+
 import { useAuth } from '@/hooks/useAuth';
 import { useCampaigns } from '@/hooks/useCampaigns';
 import { useAffiliates } from '@/hooks/useAffiliates';
@@ -130,68 +131,68 @@ const DashboardStats = ({ activeCampaigns, totalCampaigns, totalAffiliates, user
   };
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
-      <Card className="bg-gradient-to-br from-white to-blue-50/50 border-slate-200/50 shadow-xl transition-all duration-300 hover:shadow-2xl hover:scale-105 hover:bg-gradient-to-br hover:from-white hover:to-blue-100/70">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium text-slate-700">Campagnes Actives</CardTitle>
-          <div className="p-2 bg-blue-100 rounded-full ml-3">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 mb-6 sm:mb-8 px-1">
+      <Card className="bg-gradient-to-br from-white to-blue-50/50 border-slate-200/50 shadow-xl transition-all duration-300 hover:shadow-2xl hover:scale-105 hover:bg-gradient-to-br hover:from-white hover:to-blue-100/70 min-w-0">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-4 pt-4">
+          <CardTitle className="text-sm font-medium text-slate-700 truncate pr-2">Campagnes Actives</CardTitle>
+          <div className="p-2 bg-blue-100 rounded-full flex-shrink-0">
             <BarChart3 className="h-4 w-4 text-blue-600" />
           </div>
         </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold text-slate-900">{activeCampaigns}</div>
-          <p className="text-xs text-slate-500">sur {totalCampaigns} campagne{totalCampaigns > 1 ? 's' : ''}</p>
+        <CardContent className="px-4 pb-4">
+          <div className="text-2xl font-bold text-slate-900 truncate">{activeCampaigns}</div>
+          <p className="text-xs text-slate-500 truncate">sur {totalCampaigns} campagne{totalCampaigns > 1 ? 's' : ''}</p>
         </CardContent>
       </Card>
 
-      <Card className="bg-gradient-to-br from-white to-green-50/50 border-slate-200/50 shadow-xl transition-all duration-300 hover:shadow-2xl hover:scale-105 hover:bg-gradient-to-br hover:from-white hover:to-green-100/70">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium text-slate-700">Total Affiliés</CardTitle>
-          <div className="p-2 bg-green-100 rounded-full ml-3">
+      <Card className="bg-gradient-to-br from-white to-green-50/50 border-slate-200/50 shadow-xl transition-all duration-300 hover:shadow-2xl hover:scale-105 hover:bg-gradient-to-br hover:from-white hover:to-green-100/70 min-w-0">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-4 pt-4">
+          <CardTitle className="text-sm font-medium text-slate-700 truncate pr-2">Total Affiliés</CardTitle>
+          <div className="p-2 bg-green-100 rounded-full flex-shrink-0">
             <Users className="h-4 w-4 text-green-600" />
           </div>
         </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold text-slate-900">{totalAffiliates}</div>
-          <p className="text-xs text-slate-500">affiliés actifs</p>
+        <CardContent className="px-4 pb-4">
+          <div className="text-2xl font-bold text-slate-900 truncate">{totalAffiliates}</div>
+          <p className="text-xs text-slate-500 truncate">affiliés actifs</p>
         </CardContent>
       </Card>
 
-      <Card className="bg-gradient-to-br from-white to-purple-50/50 border-slate-200/50 shadow-xl transition-all duration-300 hover:shadow-2xl hover:scale-105 hover:bg-gradient-to-br hover:from-white hover:to-purple-100/70">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium text-slate-700">
+      <Card className="bg-gradient-to-br from-white to-purple-50/50 border-slate-200/50 shadow-xl transition-all duration-300 hover:shadow-2xl hover:scale-105 hover:bg-gradient-to-br hover:from-white hover:to-purple-100/70 min-w-0">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-4 pt-4">
+          <CardTitle className="text-sm font-medium text-slate-700 truncate pr-2">
             Chiffre d'affaires
-            <span className="text-xs text-slate-500 block font-normal">{periodLabel}</span>
+            <span className="text-xs text-slate-500 block font-normal truncate">{periodLabel}</span>
           </CardTitle>
-          <div className="p-2 bg-purple-100 rounded-full ml-3">
+          <div className="p-2 bg-purple-100 rounded-full flex-shrink-0">
             <DollarSign className="h-4 w-4 text-purple-600" />
           </div>
         </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold text-slate-900">
+        <CardContent className="px-4 pb-4">
+          <div className="text-xl lg:text-2xl font-bold text-slate-900 truncate">
             {loading ? '...' : formatCurrency(globalStats.totalRevenue)}
           </div>
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-slate-500 truncate">
             {loading ? 'Calcul...' : `${globalStats.totalConversions} conversion${globalStats.totalConversions > 1 ? 's' : ''}`}
           </p>
         </CardContent>
       </Card>
 
-      <Card className="bg-gradient-to-br from-white to-orange-50/50 border-slate-200/50 shadow-xl transition-all duration-300 hover:shadow-2xl hover:scale-105 hover:bg-gradient-to-br hover:from-white hover:to-orange-100/70">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium text-slate-700">
+      <Card className="bg-gradient-to-br from-white to-orange-50/50 border-slate-200/50 shadow-xl transition-all duration-300 hover:shadow-2xl hover:scale-105 hover:bg-gradient-to-br hover:from-white hover:to-orange-100/70 min-w-0">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-4 pt-4">
+          <CardTitle className="text-sm font-medium text-slate-700 truncate pr-2">
             Taux Conversion
-            <span className="text-xs text-slate-500 block font-normal">{periodLabel}</span>
+            <span className="text-xs text-slate-500 block font-normal truncate">{periodLabel}</span>
           </CardTitle>
-          <div className="p-2 bg-orange-100 rounded-full ml-3">
+          <div className="p-2 bg-orange-100 rounded-full flex-shrink-0">
             <Percent className="h-4 w-4 text-orange-600" />
           </div>
         </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold text-slate-900">
+        <CardContent className="px-4 pb-4">
+          <div className="text-2xl font-bold text-slate-900 truncate">
             {loading ? '...' : `${globalStats.conversionRate.toFixed(1)}%`}
           </div>
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-slate-500 truncate">
             {loading ? 'Calcul...' : `${globalStats.totalClicks} clic${globalStats.totalClicks > 1 ? 's' : ''} total`}
           </p>
         </CardContent>
@@ -248,7 +249,7 @@ export const Dashboard = memo(() => {
           onPeriodChange={setPeriod}
         />
 
-        <main className="relative z-10 max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 flex-1">
+        <main className="relative z-10 max-w-[1800px] mx-auto w-full px-3 sm:px-4 lg:px-8 py-4 sm:py-6 lg:py-8 flex-1 min-w-0">
           {/* Bandeau de notifications de paiement */}
           <ErrorBoundary fallback={<div>Erreur notifications</div>}>
             <PaymentNotificationBanner />

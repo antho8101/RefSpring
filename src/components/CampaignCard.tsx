@@ -63,26 +63,26 @@ export const CampaignCard = ({ campaign, onCopyUrl }: CampaignCardProps) => {
   };
 
   return (
-    <Card className="bg-gradient-to-br from-white to-slate-50/50 border-slate-200/50 shadow-md hover:shadow-lg transition-all backdrop-blur-sm group">
+    <Card className="bg-gradient-to-br from-white to-slate-50/50 border-slate-200/50 shadow-md hover:shadow-lg transition-all backdrop-blur-sm group min-w-0 overflow-hidden">
       <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
         <CollapsibleTrigger asChild>
-          <CardHeader className="pb-3 cursor-pointer hover:bg-slate-50/50 transition-colors">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3 flex-1">
+          <CardHeader className="pb-3 cursor-pointer hover:bg-slate-50/50 transition-colors min-w-0">
+            <div className="flex items-center justify-between min-w-0">
+              <div className="flex items-center gap-3 flex-1 min-w-0">
                 {isExpanded ? 
-                  <ChevronDown className="h-5 w-5 text-slate-500" /> : 
-                  <ChevronRight className="h-5 w-5 text-slate-500" />
+                  <ChevronDown className="h-5 w-5 text-slate-500 flex-shrink-0" /> : 
+                  <ChevronRight className="h-5 w-5 text-slate-500 flex-shrink-0" />
                 }
-                <div className="flex-1">
-                  <CardTitle className="flex items-center gap-2 text-lg">
-                    <div className="flex items-center gap-2">
-                      {campaign.name}
+                <div className="flex-1 min-w-0">
+                  <CardTitle className="flex items-center gap-2 text-lg min-w-0">
+                    <div className="flex items-center gap-2 min-w-0 flex-wrap">
+                      <span className="truncate">{campaign.name}</span>
                       <Badge 
                         variant={campaign.isActive ? "default" : "secondary"}
-                        className={campaign.isActive 
-                          ? "bg-gradient-to-r from-green-500 to-green-600 text-white border-0 text-xs px-2 py-0.5" 
-                          : "bg-slate-200 text-slate-600 text-xs px-2 py-0.5"
-                        }
+                        className={`${campaign.isActive 
+                          ? "bg-gradient-to-r from-green-500 to-green-600 text-white border-0" 
+                          : "bg-slate-200 text-slate-600"
+                        } text-xs px-2 py-0.5 flex-shrink-0`}
                       >
                         {campaign.isActive ? "Active" : "En pause"}
                       </Badge>
@@ -95,7 +95,7 @@ export const CampaignCard = ({ campaign, onCopyUrl }: CampaignCardProps) => {
                   )}
                 </div>
               </div>
-              <div className="ml-4" onClick={(e) => e.stopPropagation()}>
+              <div className="ml-2 flex-shrink-0" onClick={(e) => e.stopPropagation()}>
                 <CampaignActions campaign={campaign} onCopyUrl={onCopyUrl} />
               </div>
             </div>
@@ -103,7 +103,7 @@ export const CampaignCard = ({ campaign, onCopyUrl }: CampaignCardProps) => {
         </CollapsibleTrigger>
         
         <CollapsibleContent>
-          <CardContent className="pt-0">
+          <CardContent className="pt-0 min-w-0">
             <CampaignStats campaign={campaign} affiliatesCount={affiliates.length} />
 
             {/* Section des affiliés */}
@@ -111,15 +111,15 @@ export const CampaignCard = ({ campaign, onCopyUrl }: CampaignCardProps) => {
               <CollapsibleTrigger asChild>
                 <Button 
                   variant="ghost" 
-                  className="w-full flex items-center justify-between p-2 hover:bg-slate-100/50 rounded-lg mt-3"
+                  className="w-full flex items-center justify-between p-2 hover:bg-slate-100/50 rounded-lg mt-3 min-w-0"
                 >
-                  <div className="flex items-center gap-2">
-                    <Users className="h-4 w-4" />
-                    <span className="font-medium text-sm">Affiliés ({affiliates.length})</span>
+                  <div className="flex items-center gap-2 min-w-0">
+                    <Users className="h-4 w-4 flex-shrink-0" />
+                    <span className="font-medium text-sm truncate">Affiliés ({affiliates.length})</span>
                   </div>
                   {isAffiliatesOpen ? 
-                    <ChevronDown className="h-4 w-4" /> : 
-                    <ChevronRight className="h-4 w-4" />
+                    <ChevronDown className="h-4 w-4 flex-shrink-0" /> : 
+                    <ChevronRight className="h-4 w-4 flex-shrink-0" />
                   }
                 </Button>
               </CollapsibleTrigger>
