@@ -1,9 +1,12 @@
+
 import { 
   collection, 
   query, 
   where, 
   getDocs, 
-  addDoc 
+  addDoc,
+  orderBy,
+  limit
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Affiliate, Conversion } from '@/types';
@@ -24,10 +27,56 @@ export interface PaymentDistribution {
   affiliatePayments: CommissionCalculation[];
 }
 
+export interface LastPaymentInfo {
+  hasPayments: boolean;
+  lastPaymentDate: Date | null;
+}
+
+// Récupérer les informations du dernier paiement pour une campagne
+export const getLastPaymentInfo = async (campaignId: string): Promise<LastPaymentInfo> => {
+  console.log('🔍 Recherche du dernier paiement pour la campagne:', campaignId);
+  
+  try {
+    const paymentsQuery = query(
+      collection(db, 'paymentDistributions'),
+      where('campaignId', '==', campaignId),
+      where('status', '==', 'completed'),
+      orderBy('processedAt', 'desc'),
+      limit(1)
+    );
+    
+    const paymentsSnapshot = await getDocs(paymentsQuery);
+    
+    if (paymentsSnapshot.empty) {
+      console.log('💡 Aucun paiement précédent trouvé pour cette campagne');
+      return {
+        hasPayments: false,
+        lastPaymentDate: null
+      };
+    }
+    
+    const lastPayment = paymentsSnapshot.docs[0].data();
+    const lastPaymentDate = lastPayment.processedAt?.toDate() || lastPayment.createdAt?.toDate();
+    
+    console.log('✅ Dernier paiement trouvé:', lastPaymentDate);
+    return {
+      hasPayments: true,
+      lastPaymentDate
+    };
+  } catch (error) {
+    console.error('❌ Erreur récupération dernier paiement:', error);
+    // En cas d'erreur, on considère qu'il n'y a pas de paiements précédents
+    return {
+      hasPayments: false,
+      lastPaymentDate: null
+    };
+  }
+};
+
 // Calculer les commissions dues depuis une date donnée
 export const calculateCommissionsSinceDate = async (
   campaignId: string,
-  sinceDate: Date
+  sinceDate: Date | null
 ): Promise<PaymentDistribution> => {
   console.log('💰 Calcul des commissions depuis:', sinceDate, 'pour campagne:', campaignId);
 
@@ -88,10 +137,11 @@ export const calculateCommissionsSinceDate = async (
         convertedDate: conversionDate,
         amount: conversion.amount,
         commission: conversion.commission,
-        isAfterSinceDate: conversionDate >= sinceDate
+        isAfterSinceDate: sinceDate ? conversionDate >= sinceDate : true
       });
 
-      if (conversionDate >= sinceDate) {
+      // Si sinceDate est null, on prend toutes les conversions
+      if (!sinceDate || conversionDate >= sinceDate) {
         const affiliate = affiliates[conversion.affiliateId];
         if (affiliate) {
           const commission = parseFloat(conversion.commission.toString()) || 0;

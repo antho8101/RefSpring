@@ -9,7 +9,9 @@ import {
   calculateCommissionsSinceDate, 
   createPaymentDistributionRecord,
   sendStripePaymentLinks,
-  PaymentDistribution 
+  getLastPaymentInfo,
+  PaymentDistribution,
+  LastPaymentInfo 
 } from '@/services/stripeConnectService';
 import { useAuth } from '@/hooks/useAuth';
 import { CampaignInfoSection } from '@/components/campaign-deletion/CampaignInfoSection';
@@ -35,26 +37,40 @@ export const CampaignDeletionDialog = ({
   const [loading, setLoading] = useState(false);
   const [calculatingCommissions, setCalculatingCommissions] = useState(false);
   const [distribution, setDistribution] = useState<PaymentDistribution | null>(null);
-  // CORRECTION : Mettre une date plus récente pour capturer les conversions de test
-  const [lastPaymentDate] = useState(new Date(2024, 11, 1)); // 1er décembre au lieu du 5
+  const [lastPaymentInfo, setLastPaymentInfo] = useState<LastPaymentInfo>({
+    hasPayments: false,
+    lastPaymentDate: null
+  });
   const { user } = useAuth();
   const { toast } = useToast();
 
   useEffect(() => {
     if (open && campaign.id) {
-      calculatePendingCommissions();
+      initializePaymentCalculation();
     }
   }, [open, campaign.id]);
 
-  const calculatePendingCommissions = async () => {
+  const initializePaymentCalculation = async () => {
     setCalculatingCommissions(true);
     try {
-      console.log('🔄 Calcul des commissions en attente pour:', campaign.name);
-      const commissions = await calculateCommissionsSinceDate(campaign.id, lastPaymentDate);
+      console.log('🔄 Récupération des informations de paiement pour:', campaign.name);
+      
+      // Récupérer les vraies informations de dernier paiement
+      const paymentInfo = await getLastPaymentInfo(campaign.id);
+      setLastPaymentInfo(paymentInfo);
+      
+      console.log('📅 Informations de paiement:', paymentInfo);
+      
+      // Calculer les commissions depuis le dernier paiement (ou depuis le début si aucun)
+      const commissions = await calculateCommissionsSinceDate(
+        campaign.id, 
+        paymentInfo.lastPaymentDate
+      );
       setDistribution(commissions);
+      
       console.log('✅ Commissions calculées:', commissions);
     } catch (error) {
-      console.error('❌ Erreur calcul commissions:', error);
+      console.error('❌ Erreur initialisation calculs:', error);
       toast({
         title: "Erreur",
         description: "Impossible de calculer les commissions en attente",
@@ -118,7 +134,10 @@ export const CampaignDeletionDialog = ({
         </DialogHeader>
 
         <div className="py-4 space-y-4 flex-1 overflow-y-auto">
-          <CampaignInfoSection campaign={campaign} lastPaymentDate={lastPaymentDate} />
+          <CampaignInfoSection 
+            campaign={campaign} 
+            lastPaymentInfo={lastPaymentInfo}
+          />
           
           <LoadingSection 
             isLoading={calculatingCommissions} 
@@ -134,7 +153,7 @@ export const CampaignDeletionDialog = ({
               
               <RevenueDisplaySection 
                 distribution={distribution} 
-                lastPaymentDate={lastPaymentDate} 
+                lastPaymentInfo={lastPaymentInfo}
               />
               
               <AffiliatePaymentsSection distribution={distribution} />
