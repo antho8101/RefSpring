@@ -57,7 +57,7 @@ export const CreateAffiliateDialog = ({ campaignId, campaignName }: CreateAffili
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="hover:scale-105 transition-all shadow-lg backdrop-blur-sm border-slate-300">
+        <Button variant="outline" size="sm" className="hover:scale-105 transition-all shadow-lg backdrop-blur-sm border-slate-300 rounded-2xl">
           <UserPlus className="h-4 w-4 mr-2" />
           Ajouter un affilié
         </Button>
