@@ -125,9 +125,10 @@ export const deleteCampaignFromFirestore = async (campaignId: string, userId: st
     console.log('✅ Conversions supprimées avec succès');
 
     // 5. Finalement, supprimer la campagne elle-même
-    console.log('🗑️ Suppression de la campagne...');
+    console.log('🗑️ Suppression de la campagne elle-même...');
     const campaignRef = doc(db, 'campaigns', campaignId);
     await deleteDoc(campaignRef);
+    console.log('✅ Campagne supprimée de Firestore:', campaignId);
     
     console.log('✅ Suppression complète terminée pour la campagne:', campaignId);
     
