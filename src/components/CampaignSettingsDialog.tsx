@@ -23,6 +23,7 @@ export const CampaignSettingsDialog = ({ campaign }: CampaignSettingsDialogProps
   const [loading, setLoading] = useState(false);
   const [deletionDialogOpen, setDeletionDialogOpen] = useState(false);
   const [initialTargetUrl, setInitialTargetUrl] = useState(campaign.targetUrl || '');
+  const [activeTab, setActiveTab] = useState('general');
   const [formData, setFormData] = useState({
     name: campaign.name,
     description: campaign.description || '',
@@ -94,6 +95,19 @@ export const CampaignSettingsDialog = ({ campaign }: CampaignSettingsDialogProps
 
   const hasTargetUrlChanged = formData.targetUrl !== initialTargetUrl;
 
+  const getTabTitle = () => {
+    switch (activeTab) {
+      case 'general':
+        return 'Paramètres généraux';
+      case 'payment':
+        return 'Méthode de paiement';
+      case 'affiliates':
+        return 'Gestion des affiliés';
+      default:
+        return 'Paramètres';
+    }
+  };
+
   return (
     <>
       <Dialog open={open} onOpenChange={setOpen}>
@@ -102,179 +116,200 @@ export const CampaignSettingsDialog = ({ campaign }: CampaignSettingsDialogProps
             <Settings className="h-4 w-4" />
           </Button>
         </DialogTrigger>
-        <DialogContent className="sm:max-w-[900px] max-h-[90vh] overflow-hidden">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Settings className="h-5 w-5" />
-              Paramètres de la campagne
-            </DialogTitle>
-            <DialogDescription>
-              Gérez tous les paramètres de votre campagne d'affiliation.
-            </DialogDescription>
-          </DialogHeader>
+        <DialogContent className="sm:max-w-[900px] max-h-[90vh] overflow-hidden p-0">
+          <div className="flex h-[600px]">
+            {/* Menu latéral */}
+            <div className="w-48 bg-slate-50 border-r p-4">
+              <div className="mb-4">
+                <h2 className="text-lg font-semibold text-slate-900">Paramètres</h2>
+                <p className="text-sm text-slate-600">Configuration de la campagne</p>
+              </div>
+              
+              <nav className="space-y-2">
+                <button
+                  onClick={() => setActiveTab('general')}
+                  className={`w-full flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors ${
+                    activeTab === 'general' 
+                      ? 'bg-white text-slate-900 shadow-sm' 
+                      : 'text-slate-600 hover:bg-white/50'
+                  }`}
+                >
+                  <FileText className="h-4 w-4" />
+                  Général
+                </button>
+                
+                <button
+                  onClick={() => setActiveTab('payment')}
+                  className={`w-full flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors ${
+                    activeTab === 'payment' 
+                      ? 'bg-white text-slate-900 shadow-sm' 
+                      : 'text-slate-600 hover:bg-white/50'
+                  }`}
+                >
+                  <CreditCard className="h-4 w-4" />
+                  Méthode de paiement
+                </button>
+                
+                <button
+                  onClick={() => setActiveTab('affiliates')}
+                  className={`w-full flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors ${
+                    activeTab === 'affiliates' 
+                      ? 'bg-white text-slate-900 shadow-sm' 
+                      : 'text-slate-600 hover:bg-white/50'
+                  }`}
+                >
+                  <Users className="h-4 w-4" />
+                  Gestion des affiliés
+                </button>
+              </nav>
+            </div>
 
-          <Tabs defaultValue="general" className="flex h-[600px]">
-            <TabsList className="flex-col h-full w-48 justify-start bg-slate-50 p-2">
-              <TabsTrigger 
-                value="general" 
-                className="w-full justify-start gap-2 text-left data-[state=active]:bg-white"
-              >
-                <FileText className="h-4 w-4" />
-                Général
-              </TabsTrigger>
-              <TabsTrigger 
-                value="payment" 
-                className="w-full justify-start gap-2 text-left data-[state=active]:bg-white"
-              >
-                <CreditCard className="h-4 w-4" />
-                Méthode de paiement
-              </TabsTrigger>
-              <TabsTrigger 
-                value="affiliates" 
-                className="w-full justify-start gap-2 text-left data-[state=active]:bg-white"
-              >
-                <Users className="h-4 w-4" />
-                Gestion des affiliés
-              </TabsTrigger>
-            </TabsList>
+            {/* Contenu principal */}
+            <div className="flex-1 flex flex-col">
+              {/* En-tête de la section */}
+              <div className="p-6 border-b bg-white">
+                <h3 className="text-lg font-semibold text-slate-900">{getTabTitle()}</h3>
+                <p className="text-sm text-slate-600 mt-1">
+                  {activeTab === 'general' && 'Configurez les informations de base de votre campagne'}
+                  {activeTab === 'payment' && 'Gérez votre méthode de paiement pour les commissions'}
+                  {activeTab === 'affiliates' && 'Gérez tous les affiliés de cette campagne'}
+                </p>
+              </div>
 
-            <div className="flex-1 overflow-y-auto p-6">
-              <TabsContent value="general" className="mt-0 space-y-6">
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="name">Nom de la campagne</Label>
-                      <Input
-                        id="name"
-                        value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        placeholder="Ex: Programme d'affiliation 2024"
-                        required
-                      />
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="description">Description</Label>
-                      <Textarea
-                        id="description"
-                        value={formData.description}
-                        onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                        placeholder="Description de votre campagne d'affiliation..."
-                        rows={3}
-                      />
-                    </div>
+              {/* Contenu scrollable */}
+              <div className="flex-1 overflow-y-auto p-6">
+                {activeTab === 'general' && (
+                  <form onSubmit={handleSubmit} className="space-y-6">
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="name">Nom de la campagne</Label>
+                        <Input
+                          id="name"
+                          value={formData.name}
+                          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                          placeholder="Ex: Programme d'affiliation 2024"
+                          required
+                        />
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="description">Description</Label>
+                        <Textarea
+                          id="description"
+                          value={formData.description}
+                          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                          placeholder="Description de votre campagne d'affiliation..."
+                          rows={3}
+                        />
+                      </div>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="targetUrl">URL de destination</Label>
-                      <Input
-                        id="targetUrl"
-                        value={formData.targetUrl}
-                        onChange={(e) => setFormData({ ...formData, targetUrl: e.target.value })}
-                        placeholder="https://monsite.com/produit"
-                        required
-                      />
-                      {hasTargetUrlChanged && (
-                        <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 flex items-start gap-2">
-                          <AlertTriangle className="h-4 w-4 text-orange-600 mt-0.5 flex-shrink-0" />
-                          <div className="text-sm">
-                            <p className="text-orange-800 font-medium">Attention - URL modifiée</p>
-                            <p className="text-orange-700">
-                              N'oubliez pas d'ajouter le script de tracking à la nouvelle page de destination pour continuer à traquer les conversions.
-                            </p>
+                      <div className="space-y-2">
+                        <Label htmlFor="targetUrl">URL de destination</Label>
+                        <Input
+                          id="targetUrl"
+                          value={formData.targetUrl}
+                          onChange={(e) => setFormData({ ...formData, targetUrl: e.target.value })}
+                          placeholder="https://monsite.com/produit"
+                          required
+                        />
+                        {hasTargetUrlChanged && (
+                          <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 flex items-start gap-2">
+                            <AlertTriangle className="h-4 w-4 text-orange-600 mt-0.5 flex-shrink-0" />
+                            <div className="text-sm">
+                              <p className="text-orange-800 font-medium">Attention - URL modifiée</p>
+                              <p className="text-orange-700">
+                                N'oubliez pas d'ajouter le script de tracking à la nouvelle page de destination pour continuer à traquer les conversions.
+                              </p>
+                            </div>
                           </div>
+                        )}
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="defaultCommissionRate">Taux de commission par défaut (%)</Label>
+                        <Input
+                          id="defaultCommissionRate"
+                          type="number"
+                          min="0"
+                          max="100"
+                          step="0.1"
+                          value={formData.defaultCommissionRate}
+                          onChange={(e) => setFormData({ ...formData, defaultCommissionRate: parseFloat(e.target.value) })}
+                          required
+                        />
+                      </div>
+                      
+                      <div className="flex items-center justify-between py-2">
+                        <div className="space-y-0.5">
+                          <Label htmlFor="isActive">Campagne active</Label>
+                          <p className="text-sm text-muted-foreground">
+                            Les campagnes inactives n'acceptent plus de nouveaux clics
+                          </p>
                         </div>
-                      )}
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="defaultCommissionRate">Taux de commission par défaut (%)</Label>
-                      <Input
-                        id="defaultCommissionRate"
-                        type="number"
-                        min="0"
-                        max="100"
-                        step="0.1"
-                        value={formData.defaultCommissionRate}
-                        onChange={(e) => setFormData({ ...formData, defaultCommissionRate: parseFloat(e.target.value) })}
-                        required
-                      />
-                    </div>
-                    
-                    <div className="flex items-center justify-between py-2">
-                      <div className="space-y-0.5">
-                        <Label htmlFor="isActive">Campagne active</Label>
-                        <p className="text-sm text-muted-foreground">
-                          Les campagnes inactives n'acceptent plus de nouveaux clics
-                        </p>
+                        <Switch
+                          id="isActive"
+                          checked={formData.isActive}
+                          onCheckedChange={(checked) => setFormData({ ...formData, isActive: checked })}
+                        />
                       </div>
-                      <Switch
-                        id="isActive"
-                        checked={formData.isActive}
-                        onCheckedChange={(checked) => setFormData({ ...formData, isActive: checked })}
-                      />
                     </div>
-                  </div>
 
-                  <div className="flex justify-between pt-4 border-t">
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      onClick={handleDeleteClick}
-                      className="rounded-xl"
-                    >
-                      <Trash2 className="h-4 w-4 mr-2" />
-                      Supprimer la campagne
-                    </Button>
-                    <div className="flex gap-2">
-                      <Button type="button" variant="outline" onClick={() => setOpen(false)} className="rounded-xl">
-                        Annuler
-                      </Button>
-                      <Button type="submit" disabled={loading} className="rounded-xl">
-                        {loading ? 'Enregistrement...' : 'Enregistrer'}
-                      </Button>
-                    </div>
-                  </div>
-                </form>
-              </TabsContent>
-
-              <TabsContent value="payment" className="mt-0 space-y-6">
-                <div className="space-y-4">
-                  <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-medium text-slate-900">Carte de paiement configurée</p>
-                        <p className="text-sm text-slate-600">
-                          {campaign.stripeCustomerId ? 
-                            "Une méthode de paiement est associée à cette campagne" : 
-                            "Aucune méthode de paiement configurée"
-                          }
-                        </p>
-                      </div>
+                    <div className="flex justify-between pt-4 border-t">
                       <Button
                         type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={handlePaymentMethodChange}
+                        variant="destructive"
+                        onClick={handleDeleteClick}
                         className="rounded-xl"
                       >
-                        <CreditCard className="h-4 w-4 mr-2" />
-                        Changer
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Supprimer la campagne
                       </Button>
+                      <div className="flex gap-2">
+                        <Button type="button" variant="outline" onClick={() => setOpen(false)} className="rounded-xl">
+                          Annuler
+                        </Button>
+                        <Button type="submit" disabled={loading} className="rounded-xl">
+                          {loading ? 'Enregistrement...' : 'Enregistrer'}
+                        </Button>
+                      </div>
+                    </div>
+                  </form>
+                )}
+
+                {activeTab === 'payment' && (
+                  <div className="space-y-4">
+                    <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="font-medium text-slate-900">Carte de paiement configurée</p>
+                          <p className="text-sm text-slate-600">
+                            {campaign.stripeCustomerId ? 
+                              "Une méthode de paiement est associée à cette campagne" : 
+                              "Aucune méthode de paiement configurée"
+                            }
+                          </p>
+                        </div>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={handlePaymentMethodChange}
+                          className="rounded-xl"
+                        >
+                          <CreditCard className="h-4 w-4 mr-2" />
+                          Changer
+                        </Button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </TabsContent>
+                )}
 
-              <TabsContent value="affiliates" className="mt-0">
-                <div className="space-y-4">
-                  <div className="text-sm text-muted-foreground">
-                    Gérez tous les affiliés de cette campagne depuis cette interface.
-                  </div>
+                {activeTab === 'affiliates' && (
                   <AffiliatesList campaignId={campaign.id} />
-                </div>
-              </TabsContent>
+                )}
+              </div>
             </div>
-          </Tabs>
+          </div>
         </DialogContent>
       </Dialog>
 
