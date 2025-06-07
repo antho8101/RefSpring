@@ -156,7 +156,7 @@ export const AffiliatesManagementTable = ({ campaignId, onCopyTrackingLink }: Af
                       variant="outline" 
                       size="sm"
                       onClick={() => handleEditAffiliate(affiliate)}
-                      className="rounded-lg"
+                      className="rounded-xl"
                     >
                       <Edit2 className="h-4 w-4" />
                     </Button>
@@ -164,7 +164,7 @@ export const AffiliatesManagementTable = ({ campaignId, onCopyTrackingLink }: Af
                       variant="outline" 
                       size="sm"
                       onClick={() => handleCopyTrackingLink(affiliate.id)}
-                      className="rounded-lg"
+                      className="rounded-xl"
                     >
                       <Copy className="h-4 w-4" />
                     </Button>
@@ -172,7 +172,7 @@ export const AffiliatesManagementTable = ({ campaignId, onCopyTrackingLink }: Af
                       variant="outline" 
                       size="sm"
                       onClick={() => handleDeleteAffiliate(affiliate)}
-                      className="rounded-lg text-red-600 hover:bg-red-50 hover:text-red-700 border-red-200"
+                      className="rounded-xl text-red-600 hover:bg-red-50 hover:text-red-700 border-red-200"
                     >
                       <X className="h-4 w-4" />
                     </Button>
