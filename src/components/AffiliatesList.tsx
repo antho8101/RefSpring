@@ -2,8 +2,10 @@
 import { useAffiliates } from '@/hooks/useAffiliates';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Copy, User, Hash, Edit2, X, TrendingUp, Euro } from 'lucide-react';
+import { Copy, User, Calendar, Hash, Edit2, Trash2, BarChart3, MousePointer, TrendingUp, CreditCard, Percent } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { format } from 'date-fns';
+import { fr } from 'date-fns/locale';
 import { useState } from 'react';
 import { AffiliateManagementDialog } from '@/components/AffiliateManagementDialog';
 import { Affiliate } from '@/types';
@@ -14,38 +16,73 @@ interface AffiliatesListProps {
   onCopyTrackingLink?: (affiliateId: string) => void;
 }
 
-const AffiliateStatsInline = ({ affiliateId }: { affiliateId: string }) => {
+const AffiliateStatsCard = ({ affiliateId, commissionRate }: { affiliateId: string; commissionRate: number }) => {
   const { stats, loading } = useAffiliateStats(affiliateId);
   
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('fr-FR', {
       style: 'currency',
       currency: 'EUR',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
+      minimumFractionDigits: 2,
     }).format(value);
   };
 
   const conversionRate = stats.clicks > 0 ? ((stats.conversions / stats.clicks) * 100) : 0;
-  const totalRevenue = stats.commissions > 0 ? stats.commissions / 0.1 : 0; // Estimation basée sur commission moyenne 10%
+  
+  // Calculer le coût total (commissions + 2.5% de frais de plateforme)
+  const platformFeeRate = 0.025; // 2.5%
+  const totalRevenue = stats.commissions / (commissionRate / 100); // Chiffre d'affaires généré
+  const platformFee = totalRevenue * platformFeeRate;
+  const totalCost = stats.commissions + platformFee;
 
   if (loading) {
     return (
-      <div className="flex gap-4 text-sm text-slate-500">
-        <div className="animate-pulse">Chargement...</div>
+      <div className="flex gap-4 text-xs text-slate-500">
+        <div className="animate-pulse">Chargement stats...</div>
       </div>
     );
   }
 
   return (
-    <div className="flex items-center gap-6 text-sm">
-      <div className="flex items-center gap-1 text-purple-600">
-        <TrendingUp className="h-4 w-4" />
-        <span className="font-medium">{conversionRate.toFixed(1)}%</span>
+    <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-xs">
+      {/* Première ligne */}
+      <div className="flex items-center gap-1 text-blue-600">
+        <MousePointer className="h-3 w-3" />
+        <span className="font-medium">{stats.clicks}</span>
+        <span className="text-slate-500">clics</span>
       </div>
+      <div className="flex items-center gap-1 text-green-600">
+        <TrendingUp className="h-3 w-3" />
+        <span className="font-medium">{stats.conversions}</span>
+        <span className="text-slate-500">conv.</span>
+      </div>
+      
+      {/* Deuxième ligne */}
+      <div className="flex items-center gap-1 text-purple-600">
+        <Percent className="h-3 w-3" />
+        <span className="font-medium">{commissionRate}%</span>
+        <span className="text-slate-500">commission</span>
+      </div>
+      <div className="flex items-center gap-1 text-orange-600">
+        <span className="font-medium">{conversionRate.toFixed(1)}%</span>
+        <span className="text-slate-500">taux conv.</span>
+      </div>
+      
+      {/* Troisième ligne */}
       <div className="flex items-center gap-1 text-emerald-600">
-        <Euro className="h-4 w-4" />
-        <span className="font-medium">{formatCurrency(totalRevenue)}</span>
+        <BarChart3 className="h-3 w-3" />
+        <span className="font-medium">{formatCurrency(stats.commissions)}</span>
+        <span className="text-slate-500">commissions</span>
+      </div>
+      <div className="flex flex-col">
+        <div className="flex items-center gap-1 text-red-600">
+          <CreditCard className="h-3 w-3" />
+          <span className="font-medium">{formatCurrency(totalCost)}</span>
+          <span className="text-slate-500">coût total</span>
+        </div>
+        <span className="text-[10px] text-slate-400 mt-0.5">
+          (incl. {formatCurrency(platformFee)} RefSpring)
+        </span>
       </div>
     </div>
   );
@@ -59,9 +96,9 @@ export const AffiliatesList = ({ campaignId, onCopyTrackingLink }: AffiliatesLis
 
   if (loading) {
     return (
-      <div className="space-y-1">
+      <div className="space-y-3">
         {[...Array(3)].map((_, i) => (
-          <div key={i} className="animate-pulse bg-slate-100 h-16 rounded-lg"></div>
+          <div key={i} className="animate-pulse bg-slate-100 h-20 rounded-lg"></div>
         ))}
       </div>
     );
@@ -69,7 +106,7 @@ export const AffiliatesList = ({ campaignId, onCopyTrackingLink }: AffiliatesLis
 
   if (affiliates.length === 0) {
     return (
-      <div className="text-center py-12">
+      <div className="text-center py-8">
         <User className="h-12 w-12 mx-auto mb-4 text-slate-400" />
         <p className="text-slate-600 font-medium">Aucun affilié pour cette campagne</p>
         <p className="text-slate-500 text-sm">Les affiliés apparaîtront ici une fois ajoutés</p>
@@ -88,87 +125,63 @@ export const AffiliatesList = ({ campaignId, onCopyTrackingLink }: AffiliatesLis
     setDialogMode('edit');
   };
 
-  const handleDeleteAffiliate = (affiliate: Affiliate) => {
-    setSelectedAffiliate(affiliate);
-    setDialogMode('delete');
-  };
-
   return (
     <>
-      <div className="bg-white border border-slate-200 rounded-lg overflow-hidden">
-        {/* Header */}
-        <div className="bg-slate-50 px-6 py-4 border-b border-slate-200">
-          <div className="grid grid-cols-12 gap-4 items-center text-sm font-medium text-slate-700">
-            <div className="col-span-3">Affilié</div>
-            <div className="col-span-2">Code</div>
-            <div className="col-span-3">Performance</div>
-            <div className="col-span-4 text-right">Actions</div>
-          </div>
-        </div>
-
-        {/* Affiliates List */}
-        <div className="divide-y divide-slate-200">
-          {affiliates.map((affiliate) => (
-            <div
-              key={affiliate.id}
-              className="px-6 py-4 hover:bg-slate-50 transition-colors"
-            >
-              <div className="grid grid-cols-12 gap-4 items-center">
-                {/* Affilié Info */}
-                <div className="col-span-3">
-                  <div className="space-y-1">
-                    <p className="font-medium text-slate-900">{affiliate.name}</p>
-                    <Badge variant="outline" className="text-xs">
-                      {affiliate.email}
-                    </Badge>
-                  </div>
+      <div className="space-y-3">
+        {affiliates.map((affiliate) => (
+          <div
+            key={affiliate.id}
+            className="bg-white border border-slate-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+          >
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-3 flex-1">
+                <h4 className="font-medium text-slate-900">{affiliate.name}</h4>
+                <Badge variant="outline" className="text-xs">
+                  {affiliate.email}
+                </Badge>
+                <div className="flex items-center gap-1 text-sm text-slate-600">
+                  <Hash className="h-3 w-3" />
+                  <span className="font-mono">{affiliate.trackingCode}</span>
                 </div>
-
-                {/* Code de tracking */}
-                <div className="col-span-2">
+                {affiliate.createdAt && (
                   <div className="flex items-center gap-1 text-sm text-slate-600">
-                    <Hash className="h-3 w-3" />
-                    <span className="font-mono">{affiliate.trackingCode}</span>
+                    <Calendar className="h-3 w-3" />
+                    <span>{format(affiliate.createdAt, 'dd MMM yyyy', { locale: fr })}</span>
                   </div>
-                </div>
-
-                {/* Performance */}
-                <div className="col-span-3">
-                  <AffiliateStatsInline affiliateId={affiliate.id} />
-                </div>
-
-                {/* Actions */}
-                <div className="col-span-4 flex items-center justify-end gap-2">
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => handleEditAffiliate(affiliate)}
-                    className="rounded-lg"
-                  >
-                    <Edit2 className="h-4 w-4" />
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => handleCopyTrackingLink(affiliate.id)}
-                    className="rounded-lg"
-                  >
-                    <Copy className="h-4 w-4 mr-2" />
-                    Copier le lien
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => handleDeleteAffiliate(affiliate)}
-                    className="rounded-lg text-red-600 hover:text-red-700 hover:bg-red-50"
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
+                )}
+              </div>
+              
+              <div className="flex items-center gap-2">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => handleEditAffiliate(affiliate)}
+                  className="rounded-lg"
+                >
+                  <Edit2 className="h-4 w-4" />
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => handleCopyTrackingLink(affiliate.id)}
+                  className="rounded-lg"
+                >
+                  <Copy className="h-4 w-4 mr-2" />
+                  Copier le lien
+                </Button>
               </div>
             </div>
-          ))}
-        </div>
+
+            {/* Statistiques mises à jour */}
+            <div className="bg-slate-50 rounded-lg p-3 border border-slate-100">
+              <div className="flex items-center gap-2 mb-3">
+                <BarChart3 className="h-4 w-4 text-slate-600" />
+                <span className="text-sm font-medium text-slate-700">Performances & Coûts</span>
+              </div>
+              <AffiliateStatsCard affiliateId={affiliate.id} commissionRate={affiliate.commissionRate} />
+            </div>
+          </div>
+        ))}
       </div>
 
       {selectedAffiliate && (
