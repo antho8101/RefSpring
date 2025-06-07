@@ -83,67 +83,68 @@ export const PricingHeader = ({ onGetStarted }: PricingHeaderProps) => {
             </div>
           </div>
 
-          {/* RefSpring - The Future */}
-          <div className="relative group transform scale-110 hover:scale-115 transition-all duration-500">
-            {/* Multiple animated glow layers */}
-            <div className="absolute -inset-6 bg-gradient-to-r from-blue-500 via-purple-500 to-green-500 rounded-3xl opacity-30 group-hover:opacity-40 blur-3xl animate-pulse transition-opacity duration-700"></div>
-            <div className="absolute -inset-4 bg-gradient-to-r from-blue-400 via-purple-400 to-green-400 rounded-3xl opacity-40 animate-pulse blur-2xl" style={{ animationDelay: '0.5s' }}></div>
-            <div className="absolute -inset-2 bg-gradient-to-r from-blue-600 via-purple-600 to-green-600 rounded-3xl opacity-50 animate-pulse blur-xl" style={{ animationDelay: '1s' }}></div>
+          {/* RefSpring - The Hero Treatment */}
+          <div className="relative group transform scale-110 hover:scale-115 transition-all duration-700">
+            {/* Hero-style animated background elements */}
+            <div className="absolute inset-0">
+              <div className="absolute -inset-8 bg-gradient-to-br from-blue-50 via-white to-purple-50 rounded-3xl opacity-80"></div>
+              <div className="absolute top-4 left-4 w-32 h-32 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-full blur-2xl animate-pulse"></div>
+              <div className="absolute bottom-4 right-4 w-40 h-40 bg-gradient-to-r from-green-500/20 to-blue-500/20 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-24 h-24 bg-gradient-to-r from-purple-500/15 to-pink-500/15 rounded-full blur-xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+            </div>
             
-            {/* Main card */}
-            <div className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 border-4 border-transparent bg-clip-padding p-10 rounded-3xl shadow-2xl backdrop-blur-sm">
-              {/* Animated border */}
-              <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-blue-500 via-purple-500 to-green-500 opacity-30 animate-pulse"></div>
-              
+            {/* Main card with hero styling */}
+            <div className="relative bg-white/95 backdrop-blur-sm border-4 border-slate-200 p-10 rounded-3xl shadow-2xl hover:shadow-3xl transition-all duration-500 group-hover:border-blue-300">
               <div className="relative z-10">
                 <div className="text-center mb-8">
-                  <div className="bg-gradient-to-r from-blue-500 via-purple-500 to-green-500 text-white px-6 py-3 rounded-full text-base font-black mb-6 shadow-lg animate-pulse">
+                  <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-100 to-purple-100 border-2 border-blue-300 rounded-full text-blue-800 font-black text-lg shadow-lg hover:shadow-xl transition-all hover:scale-105 px-6 py-3 mb-6">
+                    <Zap className="w-6 h-6 animate-pulse text-yellow-500" />
                     🚀 RefSpring 🚀
                   </div>
-                  <div className="text-7xl font-black bg-gradient-to-r from-blue-400 via-purple-400 to-green-400 bg-clip-text text-transparent mb-3">
+                  <div className="text-7xl font-black bg-gradient-to-r from-slate-900 via-blue-600 to-purple-600 bg-clip-text text-transparent mb-3 animate-pulse">
                     0€<span className="text-2xl text-slate-400">/mois</span>
                   </div>
-                  <p className="text-slate-300 font-bold text-xl">2,5% seulement sur tes gains</p>
+                  <p className="text-slate-700 font-bold text-xl">2,5% seulement sur tes gains</p>
                 </div>
                 <ul className="space-y-4 mb-8 text-base">
-                  <li className="flex items-center gap-3 group hover:scale-105 transition-transform">
-                    <div className="bg-gradient-to-r from-green-400 to-green-500 rounded-full p-1.5 shadow-lg">
+                  <li className="flex items-center gap-3 group/item hover:scale-105 transition-transform">
+                    <div className="bg-gradient-to-r from-green-500 to-blue-500 rounded-full p-2 shadow-lg group-hover/item:shadow-xl transition-all">
                       <Check className="w-5 h-5 text-white" />
                     </div>
-                    <span className="font-bold text-white">✨ Tu paies que si tu gagnes</span>
+                    <span className="font-bold text-slate-900 group-hover/item:text-blue-700 transition-colors">✨ Tu paies que si tu gagnes</span>
                   </li>
-                  <li className="flex items-center gap-3 group hover:scale-105 transition-transform">
-                    <div className="bg-gradient-to-r from-green-400 to-green-500 rounded-full p-1.5 shadow-lg">
+                  <li className="flex items-center gap-3 group/item hover:scale-105 transition-transform">
+                    <div className="bg-gradient-to-r from-blue-500 to-purple-500 rounded-full p-2 shadow-lg group-hover/item:shadow-xl transition-all">
                       <Check className="w-5 h-5 text-white" />
                     </div>
-                    <span className="font-bold text-white">⚡ Setup en 5 minutes chrono</span>
+                    <span className="font-bold text-slate-900 group-hover/item:text-purple-700 transition-colors">⚡ Setup en 10 minutes chrono</span>
                   </li>
-                  <li className="flex items-center gap-3 group hover:scale-105 transition-transform">
-                    <div className="bg-gradient-to-r from-green-400 to-green-500 rounded-full p-1.5 shadow-lg">
+                  <li className="flex items-center gap-3 group/item hover:scale-105 transition-transform">
+                    <div className="bg-gradient-to-r from-purple-500 to-green-500 rounded-full p-2 shadow-lg group-hover/item:shadow-xl transition-all">
                       <Check className="w-5 h-5 text-white" />
                     </div>
-                    <span className="font-bold text-white">🎯 Dashboard qui déchire</span>
+                    <span className="font-bold text-slate-900 group-hover/item:text-green-700 transition-colors">🎯 Dashboard qui déchire</span>
                   </li>
-                  <li className="flex items-center gap-3 group hover:scale-105 transition-transform">
-                    <div className="bg-gradient-to-r from-green-400 to-green-500 rounded-full p-1.5 shadow-lg">
+                  <li className="flex items-center gap-3 group/item hover:scale-105 transition-transform">
+                    <div className="bg-gradient-to-r from-green-500 to-blue-500 rounded-full p-2 shadow-lg group-hover/item:shadow-xl transition-all">
                       <Check className="w-5 h-5 text-white" />
                     </div>
-                    <span className="font-bold text-white">🔒 Tracking au pixel près</span>
+                    <span className="font-bold text-slate-900 group-hover/item:text-blue-700 transition-colors">🔒 Tracking au pixel près</span>
                   </li>
-                  <li className="flex items-center gap-3 group hover:scale-105 transition-transform">
-                    <div className="bg-gradient-to-r from-green-400 to-green-500 rounded-full p-1.5 shadow-lg">
+                  <li className="flex items-center gap-3 group/item hover:scale-105 transition-transform">
+                    <div className="bg-gradient-to-r from-purple-500 to-green-500 rounded-full p-2 shadow-lg group-hover/item:shadow-xl transition-all">
                       <Check className="w-5 h-5 text-white" />
                     </div>
-                    <span className="font-bold text-white">💰 Paiements automatiques</span>
+                    <span className="font-bold text-slate-900 group-hover/item:text-purple-700 transition-colors">💰 Paiements automatiques</span>
                   </li>
                 </ul>
                 <Button 
-                  className="w-full bg-gradient-to-r from-blue-500 via-purple-500 to-green-500 hover:from-blue-600 hover:via-purple-600 hover:to-green-600 text-white font-black px-8 py-6 shadow-2xl hover:shadow-3xl hover:scale-105 transition-all text-xl rounded-2xl border-2 border-white/20"
+                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-black px-8 py-6 shadow-2xl hover:shadow-3xl hover:scale-105 transition-all text-xl rounded-2xl border-2 border-blue-300 group-hover:border-purple-300 animate-pulse"
                   onClick={handleGetStarted}
                 >
                   🎯 Tester maintenant (c'est gratuit)
                 </Button>
-                <p className="text-center text-slate-400 text-sm mt-4 font-bold">
+                <p className="text-center text-slate-600 text-sm mt-4 font-bold">
                   ✓ Aucune CB ✓ Accès immédiat ✓ Zéro bullshit
                 </p>
               </div>
