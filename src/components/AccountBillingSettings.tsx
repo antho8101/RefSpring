@@ -6,6 +6,7 @@ import { PaymentMethodCard } from '@/components/PaymentMethodCard';
 import { AddPaymentMethodDialog } from '@/components/AddPaymentMethodDialog';
 import { usePaymentMethods } from '@/hooks/usePaymentMethods';
 import { useToast } from '@/hooks/use-toast';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface AccountBillingSettingsProps {
   onCancel: () => void;
@@ -21,6 +22,11 @@ export const AccountBillingSettings = ({ onCancel }: AccountBillingSettingsProps
   } = usePaymentMethods();
   const { toast } = useToast();
   const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  // Filtrer les cartes qui ont des campagnes liées
+  const paymentMethodsWithCampaigns = paymentMethods.filter(pm => 
+    getLinkedCampaigns(pm.id).length > 0
+  );
 
   const handleDeletePaymentMethod = async (paymentMethodId: string) => {
     setDeletingId(paymentMethodId);
@@ -49,7 +55,7 @@ export const AccountBillingSettings = ({ onCancel }: AccountBillingSettingsProps
     });
   };
 
-  if (loading && paymentMethods.length === 0) {
+  if (loading && paymentMethodsWithCampaigns.length === 0) {
     return (
       <div className="space-y-6">
         <div className="text-center py-12">
@@ -63,7 +69,7 @@ export const AccountBillingSettings = ({ onCancel }: AccountBillingSettingsProps
   }
 
   return (
-    <div className="space-y-6 max-w-4xl">
+    <div className="space-y-6 max-w-4xl h-full flex flex-col">
       <div className="flex items-center justify-between">
         <div>
           <h4 className="text-lg font-medium text-slate-900">Cartes bancaires</h4>
@@ -85,34 +91,36 @@ export const AccountBillingSettings = ({ onCancel }: AccountBillingSettingsProps
         </div>
       </div>
 
-      {paymentMethods.length === 0 ? (
-        <div className="text-center py-12 border-2 border-dashed border-slate-200 rounded-lg">
-          <div className="mb-4">
-            <CreditCard className="h-16 w-16 mx-auto text-slate-400" />
+      <ScrollArea className="flex-1">
+        {paymentMethodsWithCampaigns.length === 0 ? (
+          <div className="text-center py-12 border-2 border-dashed border-slate-200 rounded-lg">
+            <div className="mb-4">
+              <CreditCard className="h-16 w-16 mx-auto text-slate-400" />
+            </div>
+            <h3 className="text-lg font-medium text-slate-900 mb-2">
+              Aucune carte bancaire utilisée
+            </h3>
+            <p className="text-slate-600 mb-6">
+              Aucune carte bancaire n'est actuellement liée à vos campagnes
+            </p>
+            <AddPaymentMethodDialog onPaymentMethodAdded={refreshPaymentMethods} />
           </div>
-          <h3 className="text-lg font-medium text-slate-900 mb-2">
-            Aucune carte bancaire
-          </h3>
-          <p className="text-slate-600 mb-6">
-            Ajoutez une carte bancaire pour commencer à utiliser nos services
-          </p>
-          <AddPaymentMethodDialog onPaymentMethodAdded={refreshPaymentMethods} />
-        </div>
-      ) : (
-        <div className="grid gap-4">
-          {paymentMethods.map((paymentMethod) => (
-            <PaymentMethodCard
-              key={paymentMethod.id}
-              paymentMethod={paymentMethod}
-              linkedCampaigns={getLinkedCampaigns(paymentMethod.id)}
-              onDelete={handleDeletePaymentMethod}
-              isDeleting={deletingId === paymentMethod.id}
-            />
-          ))}
-        </div>
-      )}
+        ) : (
+          <div className="grid gap-4 pr-4">
+            {paymentMethodsWithCampaigns.map((paymentMethod) => (
+              <PaymentMethodCard
+                key={paymentMethod.id}
+                paymentMethod={paymentMethod}
+                linkedCampaigns={getLinkedCampaigns(paymentMethod.id)}
+                onDelete={handleDeletePaymentMethod}
+                isDeleting={deletingId === paymentMethod.id}
+              />
+            ))}
+          </div>
+        )}
+      </ScrollArea>
 
-      <div className="pt-6 border-t">
+      <div className="pt-6 border-t flex-shrink-0">
         <div className="flex gap-3">
           <Button variant="outline" onClick={onCancel}>
             Fermer
