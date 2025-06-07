@@ -86,19 +86,19 @@ export const PricingHeader = ({ onGetStarted }: PricingHeaderProps) => {
           {/* RefSpring - The Hero Treatment */}
           <div className="relative group transform scale-105 hover:scale-110 transition-all duration-700">
             {/* Main card with hero styling */}
-            <div className="relative bg-white/95 backdrop-blur-sm border-4 border-slate-200 p-10 rounded-3xl shadow-2xl hover:shadow-3xl transition-all duration-500 group-hover:border-blue-300">
+            <div className="relative bg-white/95 backdrop-blur-sm border-2 border-slate-200 p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-500 group-hover:border-blue-300">
               <div className="relative z-10">
-                <div className="text-center mb-8">
-                  <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-100 to-purple-100 border-2 border-blue-300 rounded-full text-blue-800 font-black text-lg shadow-lg hover:shadow-xl transition-all hover:scale-105 px-6 py-3 mb-6">
-                    <Zap className="w-6 h-6 animate-pulse text-yellow-500" />
+                <div className="text-center mb-6">
+                  <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-100 to-purple-100 border border-blue-300 rounded-full text-blue-800 font-bold text-sm px-4 py-2 mb-4">
+                    <Zap className="w-4 h-4 animate-pulse text-yellow-500" />
                     🚀 RefSpring 🚀
                   </div>
-                  <div className="text-7xl font-black bg-gradient-to-r from-slate-900 via-blue-600 to-purple-600 bg-clip-text text-transparent mb-3 animate-pulse">
-                    0€<span className="text-2xl text-slate-400">/mois</span>
+                  <div className="text-5xl font-black bg-gradient-to-r from-slate-900 via-blue-600 to-purple-600 bg-clip-text text-transparent mb-2 animate-pulse">
+                    0€<span className="text-lg text-slate-400">/mois</span>
                   </div>
-                  <p className="text-slate-700 font-bold text-xl">2,5% seulement sur tes gains</p>
+                  <p className="text-slate-700 font-bold text-lg">2,5% seulement sur tes gains</p>
                 </div>
-                <ul className="space-y-4 mb-8 text-base">
+                <ul className="space-y-3 mb-6 text-sm">
                   <li className="flex items-center gap-3 group/item hover:scale-105 transition-transform">
                     <span className="font-bold text-slate-900 group-hover/item:text-blue-700 transition-colors">✨ Tu paies que si tu gagnes</span>
                   </li>
@@ -116,12 +116,12 @@ export const PricingHeader = ({ onGetStarted }: PricingHeaderProps) => {
                   </li>
                 </ul>
                 <Button 
-                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-black px-8 py-6 shadow-2xl hover:shadow-3xl hover:scale-105 transition-all text-xl rounded-2xl border-2 border-blue-300 group-hover:border-purple-300 animate-pulse"
+                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-black px-6 py-4 shadow-lg hover:shadow-xl hover:scale-105 transition-all text-lg rounded-xl border border-blue-300 group-hover:border-purple-300 animate-pulse"
                   onClick={handleGetStarted}
                 >
                   🎯 Tester maintenant (c'est gratuit)
                 </Button>
-                <p className="text-center text-slate-600 text-sm mt-4 font-bold">
+                <p className="text-center text-slate-600 text-xs mt-3 font-bold">
                   ✓ Aucune CB ✓ Accès immédiat ✓ Zéro bullshit
                 </p>
               </div>
