@@ -11,7 +11,7 @@ export const FAQ = ({ variant = 'landing' }: FAQProps) => {
   const landingFAQs = [
     {
       q: "Pourquoi ne demandez-vous pas de carte bancaire à l'inscription ?",
-      a: "On croit en la confiance mutuelle. Testez RefSpring entièrement, créez des campagnes et voyez les résultats avant de nous donner votre CB. Elle n'est demandée qu'à la création de votre première campagne."
+      a: "On croit en la confiance mutuelle. Vous pouvez explorer l'interface et comprendre le système avant de vous engager. Votre CB n'est demandée qu'au moment de créer votre première campagne."
     },
     {
       q: "Que se passe-t-il si je gagne moins de 20€ dans un mois ?",
@@ -30,7 +30,7 @@ export const FAQ = ({ variant = 'landing' }: FAQProps) => {
   const pricingFAQs = [
     {
       q: "Pourquoi pas de carte bancaire à l'inscription ?",
-      a: "On fait confiance. Vous pouvez tester RefSpring entièrement, créer des campagnes et voir les résultats avant de nous donner votre CB. La carte n'est demandée qu'à la création de votre première campagne."
+      a: "On fait confiance. Vous pouvez explorer l'interface et comprendre comment RefSpring fonctionne avant de vous engager. La carte n'est demandée qu'au moment de créer votre première campagne."
     },
     {
       q: "Que se passe-t-il si je gagne moins de 20€ dans un mois ?",
@@ -42,7 +42,7 @@ export const FAQ = ({ variant = 'landing' }: FAQProps) => {
     },
     {
       q: "Puis-je vraiment tout faire gratuitement ?",
-      a: "Oui ! Créer votre compte, configurer des campagnes, inviter des affiliés, voir les stats... Tout est inclus. Vous payez seulement quand vos affiliés vous ramènent des ventes."
+      a: "Vous pouvez créer votre compte et explorer l'interface gratuitement. Pour créer une campagne active et commencer à gagner, on demande une carte pour sécuriser le processus."
     },
     {
       q: "Y a-t-il des frais cachés quelque part ?",
