@@ -1,4 +1,5 @@
-import { FileText, CreditCard, Users } from 'lucide-react';
+
+import { FileText, CreditCard, Users, Code } from 'lucide-react';
 
 interface CampaignSettingsNavigationProps {
   activeTab: string;
@@ -8,6 +9,7 @@ interface CampaignSettingsNavigationProps {
 export const CampaignSettingsNavigation = ({ activeTab, onTabChange }: CampaignSettingsNavigationProps) => {
   const navigationItems = [
     { id: 'general', label: 'Général', icon: FileText },
+    { id: 'integration', label: 'Intégration', icon: Code },
     { id: 'payment', label: 'Méthode de paiement', icon: CreditCard },
     { id: 'affiliates', label: 'Gestion des affiliés', icon: Users },
   ];

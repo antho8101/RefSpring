@@ -11,6 +11,7 @@ import { AffiliatesList } from '@/components/AffiliatesList';
 import { CampaignSettingsNavigation } from '@/components/CampaignSettingsNavigation';
 import { CampaignGeneralSettings } from '@/components/CampaignGeneralSettings';
 import { CampaignPaymentSettings } from '@/components/CampaignPaymentSettings';
+import { CampaignIntegrationSettings } from '@/components/CampaignIntegrationSettings';
 
 interface CampaignSettingsDialogProps {
   campaign: Campaign;
@@ -95,6 +96,8 @@ export const CampaignSettingsDialog = ({ campaign }: CampaignSettingsDialogProps
     switch (activeTab) {
       case 'general':
         return 'Paramètres généraux';
+      case 'integration':
+        return 'Intégration';
       case 'payment':
         return 'Méthode de paiement';
       case 'affiliates':
@@ -108,6 +111,8 @@ export const CampaignSettingsDialog = ({ campaign }: CampaignSettingsDialogProps
     switch (activeTab) {
       case 'general':
         return 'Configurez les informations de base de votre campagne';
+      case 'integration':
+        return 'Scripts à intégrer sur votre site marchand';
       case 'payment':
         return 'Gérez votre méthode de paiement pour les commissions';
       case 'affiliates':
@@ -132,6 +137,8 @@ export const CampaignSettingsDialog = ({ campaign }: CampaignSettingsDialogProps
             onDeleteClick={handleDeleteClick}
           />
         );
+      case 'integration':
+        return <CampaignIntegrationSettings campaign={campaign} />;
       case 'payment':
         return (
           <CampaignPaymentSettings
