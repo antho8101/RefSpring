@@ -4,6 +4,7 @@ import { LandingHeader } from "@/components/landing/LandingHeader";
 import { HeroSection } from "@/components/landing/HeroSection";
 import { StorySection } from "@/components/landing/StorySection";
 import { DashboardPreview } from "@/components/landing/DashboardPreview";
+import { AdvancedFeaturesSection } from "@/components/landing/AdvancedFeaturesSection";
 import { TestimonialsSection } from "@/components/landing/TestimonialsSection";
 import { FeaturesSection } from "@/components/landing/FeaturesSection";
 import { StatsSection } from "@/components/landing/StatsSection";
@@ -115,6 +116,7 @@ const LandingPage = () => {
         <HeroSection scrollY={scrollY} onRedirectToDashboard={redirectToDashboard} />
         <StorySection />
         <DashboardPreview />
+        <AdvancedFeaturesSection />
         <TestimonialsSection />
         <FeaturesSection />
         <StatsSection />
