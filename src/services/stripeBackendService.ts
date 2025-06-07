@@ -104,7 +104,7 @@ class StripeBackendService {
     return this.callStripeAPI(`/checkout/sessions/${sessionId}`);
   }
 
-  // Créer un Payment Link pour un affilié (syntaxe corrigée)
+  // Créer un Payment Link pour un affilié (CORRIGÉ pour éviter les erreurs de précision)
   async createPaymentLink(amount: number, currency: string, affiliateEmail: string, campaignName: string) {
     console.log('💰 Création Payment Link:', { amount, currency, affiliateEmail });
     
@@ -120,11 +120,15 @@ class StripeBackendService {
 
     console.log('✅ Produit créé:', product.id);
 
+    // CORRECTION : Calculer le montant en centimes avec Math.round pour éviter les erreurs de précision
+    const unitAmountInCents = Math.round(amount * 100);
+    console.log('💰 Montant original:', amount, '€, en centimes:', unitAmountInCents);
+
     // Ensuite, créer un prix pour ce produit
     const priceData = new URLSearchParams();
     priceData.append('currency', currency);
     priceData.append('product', product.id);
-    priceData.append('unit_amount', (amount * 100).toString()); // Stripe utilise les centimes
+    priceData.append('unit_amount', unitAmountInCents.toString()); // Utiliser Math.round et toString()
 
     const price = await this.callStripeAPI('/prices', {
       method: 'POST',
