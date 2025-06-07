@@ -52,7 +52,9 @@ const TermsPage = () => {
               <h2 className="text-2xl font-semibold text-slate-900">Description du service</h2>
               <p className="text-slate-700 leading-relaxed">
                 RefSpring est une plateforme d'affiliation qui permet aux entreprises de gérer leurs programmes 
-                d'affiliation et aux affiliés de promouvoir des produits et services.
+                d'affiliation et aux affiliés de promouvoir des produits et services. RefSpring facilite la 
+                communication entre les créateurs de campagne et leurs affiliés, notamment pour la gestion des 
+                commissions via notre système d'envoi d'emails automatisé.
               </p>
             </section>
 
@@ -90,17 +92,63 @@ const TermsPage = () => {
 
             {/* Commissions et paiements */}
             <section className="space-y-4">
-              <h2 className="text-2xl font-semibold text-slate-900">Commissions et paiements</h2>
-              <div className="space-y-3">
-                <p className="text-slate-700">
-                  RefSpring prélève une commission de 2,5% sur les gains générés par les affiliés.
+              <h2 className="text-2xl font-semibold text-slate-900">Modèle économique et gestion des paiements</h2>
+              <div className="space-y-4">
+                <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                  <h3 className="font-semibold text-slate-900 mb-2">Notre commission</h3>
+                  <p className="text-slate-700">
+                    RefSpring prélève une commission de 2,5% sur le chiffre d'affaires généré via les affiliés. 
+                    Aucun frais mensuel, aucun abonnement - nous gagnons seulement quand vous gagnez.
+                  </p>
+                </div>
+                
+                <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
+                  <h3 className="font-semibold text-slate-900 mb-2">Gestion des paiements aux affiliés</h3>
+                  <ul className="list-disc list-inside text-slate-700 space-y-1">
+                    <li>RefSpring envoie automatiquement des emails aux affiliés avec les détails des commissions à payer</li>
+                    <li>Le paiement effectif des commissions reste la responsabilité du créateur de campagne</li>
+                    <li>RefSpring agit comme intermédiaire technique pour faciliter la communication</li>
+                    <li>Les paiements sont calculés mensuellement selon les paramètres de chaque campagne</li>
+                  </ul>
+                </div>
+              </div>
+            </section>
+
+            {/* Limitation de responsabilité - Section renforcée */}
+            <section className="space-y-4">
+              <h2 className="text-2xl font-semibold text-slate-900 flex items-center gap-2">
+                <AlertTriangle className="h-6 w-6 text-red-600" />
+                Limitation de responsabilité
+              </h2>
+              <div className="space-y-4">
+                <div className="bg-red-50 p-6 rounded-lg border border-red-200">
+                  <h3 className="font-semibold text-red-900 mb-3">Responsabilité des paiements d'affiliation</h3>
+                  <ul className="list-disc list-inside text-red-800 space-y-2">
+                    <li>
+                      <strong>RefSpring ne garantit pas les paiements aux affiliés.</strong> Nous facilitons uniquement 
+                      la communication entre créateurs de campagne et affiliés.
+                    </li>
+                    <li>
+                      <strong>En cas d'insolvabilité ou de défaillance</strong> du créateur de campagne, RefSpring 
+                      ne peut être tenu responsable des commissions impayées.
+                    </li>
+                    <li>
+                      <strong>RefSpring n'est pas un garant financier</strong> mais un intermédiaire technique 
+                      fournissant des outils de gestion d'affiliation.
+                    </li>
+                    <li>
+                      <strong>Les affiliés acceptent ces risques</strong> en participant aux campagnes disponibles 
+                      sur notre plateforme.
+                    </li>
+                  </ul>
+                </div>
+                
+                <p className="text-slate-700 leading-relaxed">
+                  RefSpring ne peut être tenu responsable des dommages indirects, incidents ou 
+                  consécutifs résultant de l'utilisation de nos services, y compris mais sans s'y limiter : 
+                  les pertes de revenus, les commissions impayées, ou les dommages résultant de l'insolvabilité 
+                  d'un créateur de campagne, dans la limite autorisée par la loi.
                 </p>
-                <ul className="list-disc list-inside text-slate-700 ml-4 space-y-1">
-                  <li>Les paiements sont effectués mensuellement</li>
-                  <li>Seuil minimum de paiement : 50€</li>
-                  <li>Les gains frauduleux peuvent être annulés</li>
-                  <li>Les remboursements peuvent affecter les commissions</li>
-                </ul>
               </div>
             </section>
 
@@ -113,13 +161,19 @@ const TermsPage = () => {
               </p>
             </section>
 
-            {/* Limitation de responsabilité */}
+            {/* Résiliation */}
             <section className="space-y-4">
-              <h2 className="text-2xl font-semibold text-slate-900">Limitation de responsabilité</h2>
-              <p className="text-slate-700 leading-relaxed">
-                RefSpring ne peut être tenu responsable des dommages indirects, incidents ou 
-                consécutifs résultant de l'utilisation de nos services, dans la limite autorisée par la loi.
-              </p>
+              <h2 className="text-2xl font-semibold text-slate-900">Résiliation</h2>
+              <div className="space-y-3">
+                <p className="text-slate-700">
+                  RefSpring se réserve le droit de suspendre ou de résilier votre accès au service 
+                  en cas de violation de ces conditions.
+                </p>
+                <p className="text-slate-700">
+                  En cas de résiliation, les commissions dues aux affiliés restent de la responsabilité 
+                  du créateur de campagne, même après la fermeture de son compte RefSpring.
+                </p>
+              </div>
             </section>
 
             {/* Modification des conditions */}
@@ -127,7 +181,8 @@ const TermsPage = () => {
               <h2 className="text-2xl font-semibold text-slate-900">Modification des conditions</h2>
               <p className="text-slate-700 leading-relaxed">
                 Nous nous réservons le droit de modifier ces conditions à tout moment. 
-                Les modifications seront effectives dès leur publication sur cette page.
+                Les modifications seront effectives dès leur publication sur cette page. 
+                Il est de votre responsabilité de consulter régulièrement ces conditions.
               </p>
             </section>
 
