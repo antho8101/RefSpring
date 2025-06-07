@@ -37,20 +37,6 @@ export const HeroSection = ({ scrollY, onRedirectToDashboard }: HeroSectionProps
       <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-purple-50"></div>
       
       <div className="max-w-6xl mx-auto text-center relative z-20 flex-grow flex flex-col justify-center">
-        {/* Easter Egg Logo */}
-        <div 
-          className="mb-8 cursor-pointer transition-transform hover:scale-110 active:scale-95"
-          onClick={handleEasterEggClick}
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-        >
-          <div className="flex items-center justify-center gap-2 text-6xl mb-4">
-            <span className={`transition-all duration-300 ${clickCount > 3 ? 'animate-spin' : ''}`}>🌸</span>
-            <span className="font-bold text-slate-900 hover:text-blue-600 transition-colors">RefSpring</span>
-            {clickCount > 0 && <Sparkles className="w-8 h-8 text-yellow-500 animate-bounce" />}
-          </div>
-        </div>
-
         {/* Clear explanation badge */}
         <div className="mb-8 animate-bounce-in" style={{ animationDelay: '0.2s' }}>
           <span className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-100 to-purple-100 border-2 border-blue-300 rounded-full text-blue-800 font-bold text-lg shadow-lg hover:shadow-xl transition-all hover:scale-105">
