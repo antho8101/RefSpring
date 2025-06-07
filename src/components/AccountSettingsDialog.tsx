@@ -16,8 +16,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { deleteUser, reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
 import { AccountSettingsNavigation } from '@/components/AccountSettingsNavigation';
-import { AccountProfileSettings } from '@/components/AccountProfileSettings';
-import { AccountSecuritySettings } from '@/components/AccountSecuritySettings';
+import { AccountSettings } from '@/components/AccountSettings';
 import { AccountBillingSettings } from '@/components/AccountBillingSettings';
 import { AccountPrivacySettings } from '@/components/AccountPrivacySettings';
 
@@ -30,7 +29,7 @@ export const AccountSettingsDialog = ({ children }: AccountSettingsDialogProps) 
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState('profile');
+  const [activeTab, setActiveTab] = useState('account');
   const [deletionDialogOpen, setDeletionDialogOpen] = useState(false);
   const [deletionPassword, setDeletionPassword] = useState('');
 
@@ -74,10 +73,8 @@ export const AccountSettingsDialog = ({ children }: AccountSettingsDialogProps) 
 
   const getTabTitle = () => {
     switch (activeTab) {
-      case 'profile':
-        return 'Profil utilisateur';
-      case 'security':
-        return 'Sécurité du compte';
+      case 'account':
+        return 'Gestion du compte';
       case 'billing':
         return 'Facturation';
       case 'privacy':
@@ -89,10 +86,8 @@ export const AccountSettingsDialog = ({ children }: AccountSettingsDialogProps) 
 
   const getTabDescription = () => {
     switch (activeTab) {
-      case 'profile':
-        return 'Modifiez vos informations personnelles';
-      case 'security':
-        return 'Gérez votre mot de passe et la sécurité';
+      case 'account':
+        return 'Modifiez votre email et mot de passe';
       case 'billing':
         return 'Consultez vos informations de facturation';
       case 'privacy':
@@ -104,10 +99,8 @@ export const AccountSettingsDialog = ({ children }: AccountSettingsDialogProps) 
 
   const renderTabContent = () => {
     switch (activeTab) {
-      case 'profile':
-        return <AccountProfileSettings onCancel={() => setOpen(false)} />;
-      case 'security':
-        return <AccountSecuritySettings onCancel={() => setOpen(false)} />;
+      case 'account':
+        return <AccountSettings onCancel={() => setOpen(false)} />;
       case 'billing':
         return <AccountBillingSettings onCancel={() => setOpen(false)} />;
       case 'privacy':
