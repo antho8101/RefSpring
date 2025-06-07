@@ -35,17 +35,20 @@ const AdvancedStatsPage = () => {
       a.name === stats.behavioralMetrics.topPerformingAffiliate.name
     );
     
-    if (topAffiliate) {
+    if (topAffiliate && topAffiliate.conversions > 0) {
       // Calculer le CA basé sur les commissions et le taux de commission
       const revenue = topAffiliate.commissionRate > 0 
         ? (topAffiliate.commissions / topAffiliate.commissionRate) * 100
-        : 0;
+        : topAffiliate.commissions * 10; // Estimation si pas de taux
       return revenue;
     }
     
-    // Fallback: utiliser le CA total divisé par le nombre d'affiliés actifs si pas trouvé
-    const activeAffiliates = stats.topAffiliates.filter(a => a.conversions > 0).length;
-    return activeAffiliates > 0 ? stats.totalRevenue / activeAffiliates : 0;
+    // Fallback: utiliser une estimation basée sur les métriques comportementales
+    if (stats.behavioralMetrics.averageOrderValue > 0) {
+      return stats.behavioralMetrics.averageOrderValue * stats.behavioralMetrics.topPerformingAffiliate.conversionRate;
+    }
+    
+    return 0;
   };
 
   if (loading) {
@@ -185,9 +188,15 @@ const AdvancedStatsPage = () => {
               </div>
             </div>
 
-            {/* Colonne droite (1/3) - HALL OF FAME */}
-            <div className="xl:col-span-1">
-              <div className="relative bg-gradient-to-br from-blue-500 via-purple-600 to-indigo-700 rounded-2xl p-6 shadow-2xl border-none h-full overflow-hidden transform hover:scale-105 transition-all duration-300">
+            {/* Colonne droite (1/3) - HALL OF FAME avec GLOW SPECTACULAIRE */}
+            <div className="xl:col-span-1 relative">
+              {/* Effet glow externe ULTRA VISIBLE - multiple couches */}
+              <div className="absolute -inset-8 bg-gradient-to-r from-blue-500 via-purple-600 to-blue-500 rounded-3xl blur-3xl opacity-75 animate-pulse"></div>
+              <div className="absolute -inset-6 bg-gradient-to-r from-purple-500 via-blue-600 to-purple-500 rounded-3xl blur-2xl opacity-60 animate-pulse" style={{ animationDelay: '0.5s' }}></div>
+              <div className="absolute -inset-4 bg-gradient-to-r from-blue-400 via-purple-500 to-blue-400 rounded-2xl blur-xl opacity-50 animate-pulse" style={{ animationDelay: '1s' }}></div>
+              
+              {/* Carte principale */}
+              <div className="relative bg-gradient-to-br from-blue-500 via-purple-600 to-indigo-700 rounded-2xl p-6 shadow-2xl border-none h-full overflow-hidden transform hover:scale-105 transition-all duration-300 z-10">
                 {/* Effet de brillance animé */}
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -skew-x-12 animate-pulse"></div>
                 
@@ -258,11 +267,6 @@ const AdvancedStatsPage = () => {
                     </div>
                   </div>
                 </div>
-
-                {/* Effet glow externe MEGA BOOST - RefSpring colors */}
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-400 via-purple-500 to-indigo-600 blur-2xl -z-10 scale-150 animate-pulse opacity-80"></div>
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/80 via-purple-600/80 to-indigo-700/80 blur-xl -z-10 scale-125 animate-pulse"></div>
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-600/60 via-purple-700/60 to-indigo-800/60 blur-3xl -z-10 scale-175 animate-pulse"></div>
               </div>
             </div>
           </div>
