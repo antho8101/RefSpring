@@ -55,10 +55,10 @@ export const HeroSection = ({ scrollY, onRedirectToDashboard }: HeroSectionProps
           <span className="relative text-slate-900">
             et payez{" "}
             <span className="relative inline-block">
-              <span className="bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent font-black text-shadow-lg animate-pulse">
+              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent font-black text-shadow-lg animate-pulse">
                 SEULEMENT
               </span>
-              <div className="absolute -inset-1 bg-gradient-to-r from-yellow-400 to-orange-500 opacity-30 blur-sm rounded-lg animate-pulse"></div>
+              <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 opacity-30 blur-sm rounded-lg animate-pulse"></div>
             </span>
             {" "}quand ça marche ! 
           </span>
