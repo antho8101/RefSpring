@@ -1,6 +1,8 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import { collection, query, where, getDocs } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 
 export interface PaymentNotification {
   id: string;
@@ -15,6 +17,7 @@ export const usePaymentNotifications = () => {
   const [notifications, setNotifications] = useState<PaymentNotification[]>([]);
   const [dismissedNotifications, setDismissedNotifications] = useState<string[]>([]);
   const [snoozedNotifications, setSnoozedNotifications] = useState<Record<string, Date>>({});
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (!user?.uid) return;
@@ -41,23 +44,102 @@ export const usePaymentNotifications = () => {
   }, [user?.uid]);
 
   const loadPaymentNotifications = async () => {
-    // Simulation des notifications de paiement à venir
-    // Dans un vrai système, ceci ferait une requête à la base de données
-    const now = new Date();
-    const fiveDaysFromNow = new Date(now.getTime() + 5 * 24 * 60 * 60 * 1000);
+    if (!user?.uid) return;
     
-    // Simulation de notifications
-    const mockNotifications: PaymentNotification[] = [
-      {
-        id: 'payment_1',
-        amount: 127.50,
-        dueDate: fiveDaysFromNow,
-        campaignName: 'Campagne E-commerce',
-        type: 'commission'
+    setLoading(true);
+    
+    try {
+      console.log('💰 NOTIFICATIONS - Calcul du montant réel dû pour:', user.uid);
+      
+      // Récupérer toutes les campagnes de l'utilisateur
+      const campaignsQuery = query(
+        collection(db, 'campaigns'), 
+        where('userId', '==', user.uid)
+      );
+      const campaignsSnapshot = await getDocs(campaignsQuery);
+      const campaignIds = campaignsSnapshot.docs.map(doc => doc.id);
+      
+      if (campaignIds.length === 0) {
+        console.log('💰 NOTIFICATIONS - Aucune campagne trouvée');
+        setNotifications([]);
+        setLoading(false);
+        return;
       }
-    ];
 
-    setNotifications(mockNotifications);
+      // Calculer la date du dernier paiement (5 du mois dernier)
+      const now = new Date();
+      const lastPaymentDate = new Date(now.getFullYear(), now.getMonth() - 1, 5);
+      
+      // Calculer la prochaine date de paiement (5 du mois prochain)
+      const nextPaymentDate = new Date(now.getFullYear(), now.getMonth() + 1, 5);
+      
+      console.log('💰 NOTIFICATIONS - Période de calcul:', {
+        depuis: lastPaymentDate,
+        prochainPaiement: nextPaymentDate
+      });
+
+      // Récupérer toutes les conversions depuis le dernier paiement
+      const conversionsQuery = query(
+        collection(db, 'conversions'),
+        where('campaignId', 'in', campaignIds)
+      );
+      const conversionsSnapshot = await getDocs(conversionsQuery);
+      
+      let totalRevenue = 0;
+      let totalCommissions = 0;
+      let conversionsCount = 0;
+
+      conversionsSnapshot.docs.forEach(doc => {
+        const conversion = doc.data();
+        const conversionDate = conversion.timestamp instanceof Date 
+          ? conversion.timestamp 
+          : conversion.timestamp.toDate();
+
+        // Filtrer les conversions depuis le dernier paiement
+        if (conversionDate >= lastPaymentDate) {
+          const amount = parseFloat(conversion.amount) || 0;
+          const commission = parseFloat(conversion.commission) || 0;
+          
+          totalRevenue += amount;
+          totalCommissions += commission;
+          conversionsCount++;
+        }
+      });
+
+      // Calculer la commission RefSpring (2.5% du CA)
+      const platformFee = totalRevenue * 0.025;
+      
+      // Montant total à payer (commissions affiliés + commission RefSpring)
+      const totalAmountDue = totalCommissions + platformFee;
+
+      console.log('💰 NOTIFICATIONS - Calculs réels:', {
+        totalRevenue,
+        totalCommissions,
+        platformFee,
+        totalAmountDue,
+        conversionsCount
+      });
+
+      // Créer la notification seulement s'il y a quelque chose à payer
+      if (totalAmountDue > 0) {
+        const notification: PaymentNotification = {
+          id: 'monthly_payment',
+          amount: totalAmountDue,
+          dueDate: nextPaymentDate,
+          type: 'platform_fee'
+        };
+
+        setNotifications([notification]);
+      } else {
+        console.log('💰 NOTIFICATIONS - Aucun montant dû');
+        setNotifications([]);
+      }
+    } catch (error) {
+      console.error('❌ NOTIFICATIONS - Erreur calcul montant dû:', error);
+      setNotifications([]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const dismissNotification = (notificationId: string, permanent: boolean = false) => {
@@ -95,14 +177,12 @@ export const usePaymentNotifications = () => {
       return false;
     }
 
-    // Afficher seulement si dans les 5 jours
-    const now = new Date();
-    const fiveDaysFromNow = new Date(now.getTime() + 5 * 24 * 60 * 60 * 1000);
-    return notification.dueDate <= fiveDaysFromNow;
+    return true;
   });
 
   return {
     notifications: visibleNotifications,
     dismissNotification,
+    loading,
   };
 };
