@@ -153,6 +153,22 @@ class StripeBackendService {
     return paymentLink;
   }
 
+  // Définir une méthode de paiement par défaut pour un client
+  async setDefaultPaymentMethod(customerId: string, paymentMethodId: string) {
+    console.log('⭐ Définition de la méthode de paiement par défaut:', { customerId, paymentMethodId });
+    
+    const formData = new URLSearchParams();
+    formData.append('invoice_settings[default_payment_method]', paymentMethodId);
+    
+    const result = await this.callStripeAPI(`/customers/${customerId}`, {
+      method: 'POST',
+      body: formData,
+    });
+    
+    console.log('✅ Méthode de paiement par défaut définie:', result.id);
+    return result;
+  }
+
   // Récupérer les méthodes de paiement d'un client
   async getCustomerPaymentMethods(customerId: string) {
     console.log('🔍 Récupération des méthodes de paiement pour client:', customerId);

@@ -1,12 +1,13 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { CreditCard, RefreshCw } from 'lucide-react';
+import { CreditCard, RefreshCw, Star } from 'lucide-react';
 import { PaymentMethodCard } from '@/components/PaymentMethodCard';
 import { AddPaymentMethodDialog } from '@/components/AddPaymentMethodDialog';
 import { usePaymentMethods } from '@/hooks/usePaymentMethods';
 import { useToast } from '@/hooks/use-toast';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { paymentMethodService } from '@/services/paymentMethodService';
+import { useAuth } from '@/hooks/useAuth';
 
 interface AccountBillingSettingsProps {
   onCancel: () => void;
@@ -21,8 +22,10 @@ export const AccountBillingSettings = ({ onCancel }: AccountBillingSettingsProps
     deletePaymentMethod,
     refreshPaymentMethods
   } = usePaymentMethods();
+  const { user } = useAuth();
   const { toast } = useToast();
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [settingDefaultId, setSettingDefaultId] = useState<string | null>(null);
 
   const handleDeletePaymentMethod = async (paymentMethodId: string) => {
     setDeletingId(paymentMethodId);
@@ -40,6 +43,28 @@ export const AccountBillingSettings = ({ onCancel }: AccountBillingSettingsProps
       });
     } finally {
       setDeletingId(null);
+    }
+  };
+
+  const handleSetDefaultCard = async (paymentMethodId: string) => {
+    if (!user?.email) return;
+    
+    setSettingDefaultId(paymentMethodId);
+    try {
+      await paymentMethodService.setDefaultPaymentMethod(user.email, paymentMethodId);
+      await refreshPaymentMethods();
+      toast({
+        title: "Carte par défaut mise à jour",
+        description: "Cette carte est maintenant votre carte par défaut",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Erreur",
+        description: error.message || "Impossible de définir cette carte comme par défaut",
+        variant: "destructive",
+      });
+    } finally {
+      setSettingDefaultId(null);
     }
   };
 
@@ -70,7 +95,7 @@ export const AccountBillingSettings = ({ onCancel }: AccountBillingSettingsProps
         <div>
           <h4 className="text-lg font-medium text-slate-900">Cartes bancaires</h4>
           <p className="text-sm text-slate-600">
-            Gérez vos cartes bancaires et visualisez les campagnes associées
+            Gérez vos cartes bancaires et définissez votre carte par défaut
           </p>
         </div>
         <div className="flex gap-3">
@@ -104,14 +129,26 @@ export const AccountBillingSettings = ({ onCancel }: AccountBillingSettingsProps
         ) : (
           <div className="grid gap-4 pr-4">
             {paymentMethods.map((paymentMethod) => (
-              <PaymentMethodCard
-                key={paymentMethod.id}
-                paymentMethod={paymentMethod}
-                linkedCampaigns={getLinkedCampaigns(paymentMethod.id)}
-                canDelete={canDeletePaymentMethod(paymentMethod.id)}
-                onDelete={handleDeletePaymentMethod}
-                isDeleting={deletingId === paymentMethod.id}
-              />
+              <div key={paymentMethod.id} className="relative">
+                <PaymentMethodCard
+                  paymentMethod={paymentMethod}
+                  linkedCampaigns={getLinkedCampaigns(paymentMethod.id)}
+                  canDelete={canDeletePaymentMethod(paymentMethod.id)}
+                  onDelete={handleDeletePaymentMethod}
+                  isDeleting={deletingId === paymentMethod.id}
+                />
+                {!paymentMethod.isDefault && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleSetDefaultCard(paymentMethod.id)}
+                    disabled={settingDefaultId === paymentMethod.id}
+                    className="absolute top-3 right-12 text-amber-600 hover:text-amber-700 hover:bg-amber-50"
+                  >
+                    <Star className="h-4 w-4" />
+                  </Button>
+                )}
+              </div>
             ))}
           </div>
         )}
