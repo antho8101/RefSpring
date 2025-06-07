@@ -2,6 +2,7 @@
 import { useAuth } from '@/hooks/useAuth';
 import { useCampaigns } from '@/hooks/useCampaigns';
 import { useAffiliates } from '@/hooks/useAffiliates';
+import { useStatsFilters } from '@/hooks/useStatsFilters';
 import { DashboardBackground } from '@/components/DashboardBackground';
 import { DashboardHeader } from '@/components/DashboardHeader';
 import { DashboardContent } from '@/components/DashboardContent';
@@ -9,6 +10,7 @@ import { DashboardFooter } from '@/components/DashboardFooter';
 import { NetworkStatus } from '@/components/NetworkStatus';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { PaymentNotificationBanner } from '@/components/PaymentNotificationBanner';
+import { StatsPeriodSelector } from '@/components/StatsPeriodSelector';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { Helmet } from 'react-helmet-async';
 import { memo, useCallback, useMemo, useEffect, useState } from 'react';
@@ -26,8 +28,8 @@ interface GlobalStats {
   conversionRate: number;
 }
 
-// Composant de stats avec vraies données Firebase
-const DashboardStats = ({ activeCampaigns, totalCampaigns, totalAffiliates, userId }) => {
+// Composant de stats avec vraies données Firebase et filtrage par période
+const DashboardStats = ({ activeCampaigns, totalCampaigns, totalAffiliates, userId, filterDate, periodLabel }) => {
   const [globalStats, setGlobalStats] = useState<GlobalStats>({
     totalRevenue: 0,
     totalCommissions: 0,
@@ -42,7 +44,7 @@ const DashboardStats = ({ activeCampaigns, totalCampaigns, totalAffiliates, user
       if (!userId) return;
       
       try {
-        console.log('📊 DASHBOARD - Chargement des stats globales pour:', userId);
+        console.log(`📊 DASHBOARD - Chargement des stats globales ${periodLabel} pour:`, userId);
         
         // Récupérer les campagnes de l'utilisateur
         const campaignsQuery = query(collection(db, 'campaigns'), where('userId', '==', userId));
@@ -60,13 +62,32 @@ const DashboardStats = ({ activeCampaigns, totalCampaigns, totalAffiliates, user
           getDocs(query(collection(db, 'conversions'), where('campaignId', 'in', campaignIds)))
         ]);
 
-        const totalClicks = clicksSnapshot.size;
+        // Filtrer par période si nécessaire
+        const filterDataByDate = (data: any[]) => {
+          if (!filterDate) return data;
+          
+          return data.filter(item => {
+            if (!item.timestamp) return false;
+            try {
+              const itemDate = item.timestamp.toDate ? 
+                item.timestamp.toDate() : 
+                new Date(item.timestamp);
+              return itemDate >= filterDate;
+            } catch (error) {
+              return false;
+            }
+          });
+        };
+
+        const filteredClicks = filterDataByDate(clicksSnapshot.docs.map(doc => doc.data()));
+        const filteredConversions = filterDataByDate(conversionsSnapshot.docs.map(doc => doc.data()));
+
+        const totalClicks = filteredClicks.length;
         let totalRevenue = 0;
         let totalCommissions = 0;
         let totalConversions = 0;
 
-        conversionsSnapshot.docs.forEach(doc => {
-          const data = doc.data();
+        filteredConversions.forEach(data => {
           const amount = parseFloat(data.amount) || 0;
           const commission = parseFloat(data.commission) || 0;
           
@@ -77,7 +98,7 @@ const DashboardStats = ({ activeCampaigns, totalCampaigns, totalAffiliates, user
 
         const conversionRate = totalClicks > 0 ? (totalConversions / totalClicks) * 100 : 0;
 
-        console.log('📊 DASHBOARD - Stats calculées:', {
+        console.log(`📊 DASHBOARD - Stats calculées ${periodLabel}:`, {
           totalClicks,
           totalConversions,
           totalRevenue,
@@ -100,7 +121,7 @@ const DashboardStats = ({ activeCampaigns, totalCampaigns, totalAffiliates, user
     };
 
     loadGlobalStats();
-  }, [userId]);
+  }, [userId, filterDate, periodLabel]);
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('fr-FR', {
@@ -140,7 +161,10 @@ const DashboardStats = ({ activeCampaigns, totalCampaigns, totalAffiliates, user
 
       <Card className="bg-gradient-to-br from-white to-purple-50/50 border-slate-200/50 shadow-xl transition-all duration-300 hover:shadow-2xl hover:scale-105 hover:bg-gradient-to-br hover:from-white hover:to-purple-100/70">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium text-slate-700">Chiffre d'affaires</CardTitle>
+          <CardTitle className="text-sm font-medium text-slate-700">
+            Chiffre d'affaires
+            <span className="text-xs text-slate-500 block font-normal">{periodLabel}</span>
+          </CardTitle>
           <div className="p-2 bg-purple-100 rounded-full ml-3">
             <DollarSign className="h-4 w-4 text-purple-600" />
           </div>
@@ -157,7 +181,10 @@ const DashboardStats = ({ activeCampaigns, totalCampaigns, totalAffiliates, user
 
       <Card className="bg-gradient-to-br from-white to-orange-50/50 border-slate-200/50 shadow-xl transition-all duration-300 hover:shadow-2xl hover:scale-105 hover:bg-gradient-to-br hover:from-white hover:to-orange-100/70">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium text-slate-700">Taux Conversion</CardTitle>
+          <CardTitle className="text-sm font-medium text-slate-700">
+            Taux Conversion
+            <span className="text-xs text-slate-500 block font-normal">{periodLabel}</span>
+          </CardTitle>
           <div className="p-2 bg-orange-100 rounded-full ml-3">
             <Percent className="h-4 w-4 text-orange-600" />
           </div>
@@ -179,6 +206,7 @@ export const Dashboard = memo(() => {
   const { user } = useAuth();
   const { campaigns, loading: campaignsLoading } = useCampaigns();
   const { affiliates, loading: affiliatesLoading } = useAffiliates();
+  const { period, setPeriod, getDateFilter, getPeriodLabel } = useStatsFilters();
 
   const handleLogout = useCallback(async () => {
     try {
@@ -223,12 +251,23 @@ export const Dashboard = memo(() => {
             <PaymentNotificationBanner />
           </ErrorBoundary>
 
+          {/* Sélecteur de période pour les stats globales */}
+          <div className="mb-4 flex justify-center">
+            <StatsPeriodSelector 
+              period={period}
+              onPeriodChange={setPeriod}
+              className="bg-white p-2 rounded-lg border border-slate-200 shadow-sm"
+            />
+          </div>
+
           <ErrorBoundary fallback={<div>Erreur stats</div>}>
             <DashboardStats 
               activeCampaigns={dashboardMetrics.activeCampaigns}
               totalCampaigns={dashboardMetrics.totalCampaigns}
               totalAffiliates={dashboardMetrics.totalAffiliates}
               userId={user?.uid}
+              filterDate={getDateFilter()}
+              periodLabel={getPeriodLabel()}
             />
           </ErrorBoundary>
 
