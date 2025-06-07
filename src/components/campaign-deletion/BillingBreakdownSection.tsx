@@ -38,7 +38,7 @@ export const BillingBreakdownSection = ({ distribution, totalToDistribute }: Bil
             <div>
               <p className="font-medium text-red-900">Commission RefSpring</p>
               <p className="text-sm text-red-700">
-                2.5% sur le CA de {distribution.totalRevenue.toFixed(2)}€ + frais Stripe
+                2.5% sur le CA
               </p>
             </div>
             <div className="text-right">
