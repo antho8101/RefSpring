@@ -32,11 +32,11 @@ export const HeroSection = ({ scrollY, onRedirectToDashboard }: HeroSectionProps
   };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 overflow-hidden">
+    <section className="relative min-h-screen flex flex-col justify-between px-4 sm:px-6 lg:px-8 overflow-hidden">
       {/* Simple Background Elements */}
       <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-purple-50"></div>
       
-      <div className="max-w-6xl mx-auto text-center relative z-20">
+      <div className="max-w-6xl mx-auto text-center relative z-20 flex-grow flex flex-col justify-center">
         {/* Easter Egg Logo */}
         <div 
           className="mb-8 cursor-pointer transition-transform hover:scale-110 active:scale-95"
@@ -111,29 +111,29 @@ export const HeroSection = ({ scrollY, onRedirectToDashboard }: HeroSectionProps
             </span>
           </Button>
         </div>
+      </div>
 
-        {/* Fun Stats with Easter Eggs */}
-        <div className="grid md:grid-cols-3 gap-8 mt-16 animate-fade-in" style={{ animationDelay: '0.8s' }}>
-          <div className="group text-center hover:scale-110 transition-transform cursor-default">
-            <div className="text-4xl font-bold text-blue-600 mb-2 group-hover:animate-bounce">€50M+</div>
-            <div className="text-slate-600">Revenus générés par nos utilisateurs</div>
-            <div className="opacity-0 group-hover:opacity-100 transition-opacity text-xs text-slate-400 mt-1">
-              🎯 Et ce n'est que le début !
-            </div>
+      {/* Fun Stats with Easter Eggs - Moved to bottom */}
+      <div className="grid md:grid-cols-3 gap-8 mb-8 animate-fade-in relative z-20" style={{ animationDelay: '0.8s' }}>
+        <div className="group text-center hover:scale-110 transition-transform cursor-default">
+          <div className="text-4xl font-bold text-blue-600 mb-2 group-hover:animate-bounce">€50M+</div>
+          <div className="text-slate-600">Revenus générés par nos utilisateurs</div>
+          <div className="opacity-0 group-hover:opacity-100 transition-opacity text-xs text-slate-400 mt-1">
+            🎯 Et ce n'est que le début !
           </div>
-          <div className="group text-center hover:scale-110 transition-transform cursor-default">
-            <div className="text-4xl font-bold text-green-600 mb-2 group-hover:animate-pulse">€0</div>
-            <div className="text-slate-600">Frais mensuels à payer</div>
-            <div className="opacity-0 group-hover:opacity-100 transition-opacity text-xs text-slate-400 mt-1">
-              💰 Gardez votre argent pour vous !
-            </div>
+        </div>
+        <div className="group text-center hover:scale-110 transition-transform cursor-default">
+          <div className="text-4xl font-bold text-green-600 mb-2 group-hover:animate-pulse">€0</div>
+          <div className="text-slate-600">Frais mensuels à payer</div>
+          <div className="opacity-0 group-hover:opacity-100 transition-opacity text-xs text-slate-400 mt-1">
+            💰 Gardez votre argent pour vous !
           </div>
-          <div className="group text-center hover:scale-110 transition-transform cursor-default">
-            <div className="text-4xl font-bold text-purple-600 mb-2 group-hover:animate-spin">2.5%</div>
-            <div className="text-slate-600">Commission uniquement sur les ventes</div>
-            <div className="opacity-0 group-hover:opacity-100 transition-opacity text-xs text-slate-400 mt-1">
-              🤝 Équitable pour tous !
-            </div>
+        </div>
+        <div className="group text-center hover:scale-110 transition-transform cursor-default">
+          <div className="text-4xl font-bold text-purple-600 mb-2 group-hover:animate-spin">2.5%</div>
+          <div className="text-slate-600">Commission uniquement sur les ventes</div>
+          <div className="opacity-0 group-hover:opacity-100 transition-opacity text-xs text-slate-400 mt-1">
+            🤝 Équitable pour tous !
           </div>
         </div>
       </div>
