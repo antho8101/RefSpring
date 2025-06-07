@@ -1,9 +1,9 @@
 
-
 import { Globe, TrendingUp, Github } from "lucide-react";
 import { Link } from "react-router-dom";
 import { LanguageSelector } from "@/components/LanguageSelector";
 import { useTranslation } from 'react-i18next';
+import { RefSpringLogo } from "@/components/RefSpringLogo";
 
 export const LandingFooter = () => {
   const { t } = useTranslation();
@@ -14,7 +14,10 @@ export const LandingFooter = () => {
       <div className="mx-auto">
         <div className="grid md:grid-cols-5 gap-8">
           <div className="md:col-span-2">
-            <div className="font-bold text-3xl text-white mb-4">RefSpring</div>
+            <div className="flex items-center gap-3 mb-4">
+              <RefSpringLogo width="32" height="32" className="text-white" />
+              <div className="font-bold text-3xl text-white">RefSpring</div>
+            </div>
             <p className="text-slate-400 mb-6 leading-relaxed">
               {t('hero.subtitle.normal')}
             </p>
@@ -77,4 +80,3 @@ export const LandingFooter = () => {
     </footer>
   );
 };
-
