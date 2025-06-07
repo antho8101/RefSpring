@@ -5,15 +5,19 @@ import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import { RefSpringLogo } from '@/components/RefSpringLogo';
 import { AccountSettingsDialog } from '@/components/AccountSettingsDialog';
+import { StatsPeriodToggle } from '@/components/StatsPeriodToggle';
 import { signOut } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
+import { StatsPeriod } from '@/hooks/useStatsFilters';
 
 interface DashboardHeaderProps {
   user: any;
   onLogout: () => Promise<void>;
+  period: StatsPeriod;
+  onPeriodChange: (period: StatsPeriod) => void;
 }
 
-export const DashboardHeader = ({ user, onLogout }: DashboardHeaderProps) => {
+export const DashboardHeader = ({ user, onLogout, period, onPeriodChange }: DashboardHeaderProps) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleLogout = async () => {
@@ -51,6 +55,9 @@ export const DashboardHeader = ({ user, onLogout }: DashboardHeaderProps) => {
                 <Settings className="h-4 w-4 text-slate-500" />
               </button>
             </AccountSettingsDialog>
+            
+            <StatsPeriodToggle period={period} onPeriodChange={onPeriodChange} />
+            
             <Button 
               variant="outline" 
               size="sm" 
@@ -83,6 +90,11 @@ export const DashboardHeader = ({ user, onLogout }: DashboardHeaderProps) => {
                   <Settings className="h-4 w-4 text-slate-500 ml-auto" />
                 </button>
               </AccountSettingsDialog>
+              
+              <div className="px-4 flex justify-center">
+                <StatsPeriodToggle period={period} onPeriodChange={onPeriodChange} />
+              </div>
+              
               <div className="px-4">
                 <Button 
                   variant="outline" 

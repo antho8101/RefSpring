@@ -1,4 +1,3 @@
-
 import { useAuth } from '@/hooks/useAuth';
 import { useCampaigns } from '@/hooks/useCampaigns';
 import { useAffiliates } from '@/hooks/useAffiliates';
@@ -10,7 +9,6 @@ import { DashboardFooter } from '@/components/DashboardFooter';
 import { NetworkStatus } from '@/components/NetworkStatus';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { PaymentNotificationBanner } from '@/components/PaymentNotificationBanner';
-import { StatsPeriodSelector } from '@/components/StatsPeriodSelector';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { Helmet } from 'react-helmet-async';
 import { memo, useCallback, useMemo, useEffect, useState } from 'react';
@@ -243,22 +241,18 @@ export const Dashboard = memo(() => {
       <NetworkStatus />
       <div className="min-h-screen bg-gradient-to-br from-blue-50/50 via-white to-purple-50/50 relative overflow-hidden flex flex-col">
         <DashboardBackground />
-        <DashboardHeader user={user} onLogout={handleLogout} />
+        <DashboardHeader 
+          user={user} 
+          onLogout={handleLogout}
+          period={period}
+          onPeriodChange={setPeriod}
+        />
 
         <main className="relative z-10 max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 flex-1">
           {/* Bandeau de notifications de paiement */}
           <ErrorBoundary fallback={<div>Erreur notifications</div>}>
             <PaymentNotificationBanner />
           </ErrorBoundary>
-
-          {/* Sélecteur de période pour les stats globales */}
-          <div className="mb-4 flex justify-center">
-            <StatsPeriodSelector 
-              period={period}
-              onPeriodChange={setPeriod}
-              className="bg-white p-2 rounded-lg border border-slate-200 shadow-sm"
-            />
-          </div>
 
           <ErrorBoundary fallback={<div>Erreur stats</div>}>
             <DashboardStats 
