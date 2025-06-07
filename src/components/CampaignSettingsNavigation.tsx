@@ -1,4 +1,3 @@
-
 import { FileText, CreditCard, Users, Code, Trash2 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
@@ -50,15 +49,13 @@ export const CampaignSettingsNavigation = ({ activeTab, onTabChange, onDeleteCli
           <div>
             <p className="text-xs font-medium text-red-600 uppercase tracking-wide">Danger Zone</p>
           </div>
-          <Button
-            variant="destructive"
+          <button
             onClick={onDeleteClick}
-            className="w-full justify-start rounded-xl"
-            size="sm"
+            className="w-full flex items-center justify-start gap-2 px-4 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl transition-colors text-sm font-medium"
           >
-            <Trash2 className="h-4 w-4 mr-2" />
+            <Trash2 className="h-4 w-4" />
             Supprimer la campagne
-          </Button>
+          </button>
         </div>
       </div>
     </div>
