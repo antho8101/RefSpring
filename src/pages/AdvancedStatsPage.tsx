@@ -1,6 +1,6 @@
 
 import { useParams, useNavigate } from 'react-router-dom';
-import { useAdvancedStats } from '@/hooks/useAdvancedStats';
+import { useAdvancedStatsExtended } from '@/hooks/useAdvancedStatsExtended';
 import { useCampaigns } from '@/hooks/useCampaigns';
 import { useStatsFilters } from '@/hooks/useStatsFilters';
 import { Button } from '@/components/ui/button';
@@ -9,6 +9,9 @@ import { useEffect, useState } from 'react';
 import { AdvancedStatsMetrics } from '@/components/AdvancedStatsMetrics';
 import { AdvancedStatsCharts } from '@/components/AdvancedStatsCharts';
 import { AdvancedStatsAffiliateTable } from '@/components/AdvancedStatsAffiliateTable';
+import { AdvancedStatsEvolution } from '@/components/AdvancedStatsEvolution';
+import { AdvancedStatsTimeAnalysis } from '@/components/AdvancedStatsTimeAnalysis';
+import { AdvancedStatsBehavioralMetrics } from '@/components/AdvancedStatsBehavioralMetrics';
 import { StatsPeriodToggle } from '@/components/StatsPeriodToggle';
 
 const AdvancedStatsPage = () => {
@@ -16,7 +19,7 @@ const AdvancedStatsPage = () => {
   const navigate = useNavigate();
   const { campaigns } = useCampaigns();
   const { period, setPeriod, getDateFilter, getPeriodLabel } = useStatsFilters();
-  const { stats, loading } = useAdvancedStats(campaignId, getDateFilter());
+  const { stats, loading } = useAdvancedStatsExtended(campaignId, getDateFilter());
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const campaign = campaigns.find(c => c.id === campaignId);
@@ -24,7 +27,7 @@ const AdvancedStatsPage = () => {
   // Debug: afficher les stats dans la console
   useEffect(() => {
     if (!loading) {
-      console.log(`📊 STATS AFFICHÉES (${getPeriodLabel()}):`, stats);
+      console.log(`📊 STATS ÉTENDUES AFFICHÉES (${getPeriodLabel()}):`, stats);
     }
   }, [stats, loading, getPeriodLabel]);
 
@@ -145,8 +148,17 @@ const AdvancedStatsPage = () => {
           </div>
         )}
 
-        {/* Métriques */}
+        {/* Métriques d'évolution */}
+        <AdvancedStatsEvolution evolution={stats.evolution} />
+
+        {/* Métriques principales */}
         <AdvancedStatsMetrics stats={stats} loading={loading} />
+
+        {/* Métriques comportementales */}
+        <AdvancedStatsBehavioralMetrics behavioralMetrics={stats.behavioralMetrics} />
+
+        {/* Analyse temporelle */}
+        <AdvancedStatsTimeAnalysis timeAnalysis={stats.timeAnalysis} />
 
         {/* Graphiques */}
         <AdvancedStatsCharts 
