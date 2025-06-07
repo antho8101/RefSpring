@@ -19,13 +19,13 @@ export const CampaignActions = ({ campaign, onCopyUrl }: CampaignActionsProps) =
   };
 
   return (
-    <div className="flex items-center space-x-2">
+    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:space-x-2 sm:gap-0">
       <CreateAffiliateDialog campaignId={campaign.id} campaignName={campaign.name} />
       <Button
         variant="outline"
         size="sm"
         onClick={handleAdvancedStats}
-        className="relative overflow-hidden bg-gradient-to-r from-blue-50 via-white to-purple-50 text-blue-700 border-2 border-blue-200/70 hover:border-blue-300 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 before:absolute before:inset-0 before:bg-gradient-to-r before:from-blue-100/20 before:via-transparent before:to-purple-100/20 before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300 after:absolute after:inset-0 after:bg-gradient-to-r after:from-transparent after:via-white/10 after:to-transparent after:opacity-0 hover:after:opacity-100 after:transition-opacity after:duration-500 rounded-2xl"
+        className="relative overflow-hidden bg-gradient-to-r from-blue-50 via-white to-purple-50 text-blue-700 border-2 border-blue-200/70 hover:border-blue-300 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 before:absolute before:inset-0 before:bg-gradient-to-r before:from-blue-100/20 before:via-transparent before:to-purple-100/20 before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300 after:absolute after:inset-0 after:bg-gradient-to-r after:from-transparent after:via-white/10 after:to-transparent after:opacity-0 hover:after:opacity-100 after:transition-opacity after:duration-500 rounded-2xl justify-center"
         style={{
           boxShadow: '0 0 20px rgba(59, 130, 246, 0.1), 0 4px 6px -1px rgba(0, 0, 0, 0.1)',
         }}
