@@ -51,34 +51,39 @@ export const HeroSection = ({ scrollY, onRedirectToDashboard }: HeroSectionProps
           </div>
         </div>
 
-        {/* Animated Subtitle Badge */}
+        {/* Clear explanation badge */}
         <div className="mb-8 animate-bounce-in" style={{ animationDelay: '0.2s' }}>
-          <span className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-full text-blue-700 font-medium shadow-lg hover:shadow-xl transition-all hover:scale-105">
-            <Zap className="w-5 h-5 animate-pulse text-yellow-500" />
-            {t('hero.badge')} 
-            <Eye className="w-4 h-4 animate-bounce" />
+          <span className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-100 to-purple-100 border-2 border-blue-300 rounded-full text-blue-800 font-bold text-lg shadow-lg hover:shadow-xl transition-all hover:scale-105">
+            <Zap className="w-6 h-6 animate-pulse text-yellow-500" />
+            PLATEFORME D'AFFILIATION RÉVOLUTIONNAIRE
+            <Eye className="w-5 h-5 animate-bounce" />
           </span>
         </div>
 
-        {/* Main Title with Gradient Animation */}
-        <h1 className="text-5xl md:text-7xl font-bold mb-8 animate-fade-in-scale leading-tight">
-          <span className="bg-gradient-to-r from-slate-900 via-blue-600 to-purple-600 bg-clip-text text-transparent animate-pulse">
-            {t('hero.title.part1')}
+        {/* Super clear main title */}
+        <h1 className="text-4xl md:text-6xl font-bold mb-8 animate-fade-in-scale leading-tight">
+          <span className="bg-gradient-to-r from-slate-900 via-blue-600 to-purple-600 bg-clip-text text-transparent">
+            Créez votre programme d'affiliation
           </span>
           <br />
-          <span className="relative">
-            {t('hero.title.part2')}
-            <div className="absolute -inset-2 bg-gradient-to-r from-blue-400 to-purple-400 opacity-20 blur-xl rounded-lg animate-pulse"></div>
+          <span className="relative text-slate-900">
+            et payez SEULEMENT quand ça marche ! 
+            <div className="absolute -inset-2 bg-gradient-to-r from-green-400 to-blue-400 opacity-20 blur-xl rounded-lg animate-pulse"></div>
           </span>
         </h1>
 
-        {/* Animated Description */}
-        <p className="text-xl md:text-2xl text-slate-600 mb-12 max-w-4xl mx-auto leading-relaxed animate-fade-in" style={{ animationDelay: '0.4s' }}>
-          <span className="font-semibold text-slate-900">Fini les 99-299€/mois à balancer dans le vide ! 💸</span>
-          <br />
-          Avec RefSpring, on gagne seulement quand <em>vous</em> gagnez. 
-          <span className="inline-flex items-center gap-1 ml-2 text-green-600 font-bold">
-            Malin, non ? 😉 <MousePointer className="w-5 h-5 animate-bounce" />
+        {/* Ultra simple explanation */}
+        <p className="text-xl md:text-2xl text-slate-700 mb-12 max-w-5xl mx-auto leading-relaxed animate-fade-in font-medium" style={{ animationDelay: '0.4s' }}>
+          <span className="bg-yellow-100 px-3 py-1 rounded-lg border border-yellow-300 font-bold text-slate-900">🤔 C'est quoi RefSpring ?</span>
+          <br /><br />
+          <span className="text-2xl">📈 Vous vendez un produit/service ?</span><br />
+          <span className="text-xl text-slate-600">RefSpring trouve des vendeurs (affiliés) pour vous</span>
+          <br /><br />
+          <span className="text-2xl">💰 Ils vendent = ils gagnent + vous gagnez</span><br />
+          <span className="text-xl text-slate-600">Ils vendent pas = personne paie rien !</span>
+          <br /><br />
+          <span className="inline-flex items-center gap-2 text-green-600 font-bold text-xl bg-green-50 px-4 py-2 rounded-lg border border-green-200">
+            Simple comme bonjour, non ? 😉 <MousePointer className="w-5 h-5 animate-bounce" />
           </span>
         </p>
 
@@ -93,7 +98,7 @@ export const HeroSection = ({ scrollY, onRedirectToDashboard }: HeroSectionProps
           >
             <span className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></span>
             <span className="relative flex items-center gap-2">
-              {t('hero.cta.start')}
+              Créer mon programme d'affiliation
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               <Sparkles className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity animate-spin" />
             </span>
@@ -106,7 +111,7 @@ export const HeroSection = ({ scrollY, onRedirectToDashboard }: HeroSectionProps
             onClick={() => document.getElementById('dashboard')?.scrollIntoView({ behavior: 'smooth' })}
           >
             <span className="flex items-center gap-2">
-              {t('hero.cta.demo')}
+              Voir comment ça marche
               <Eye className="w-5 h-5 group-hover:animate-bounce" />
             </span>
           </Button>
