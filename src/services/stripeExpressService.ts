@@ -35,8 +35,18 @@ export class StripeExpressService {
       // Récupérer la session de checkout au lieu du SetupIntent
       const session = await stripeBackendService.getCheckoutSession(setupIntentId);
       
+      // Pour les sessions setup, le statut peut être 'complete' quand le setup_intent est réussi
+      let status = 'incomplete';
+      if (session.status === 'complete' && session.setup_intent) {
+        // Récupérer les détails du SetupIntent pour vérifier son statut
+        const setupIntent = await stripeBackendService.getSetupIntent(session.setup_intent);
+        if (setupIntent.status === 'succeeded') {
+          status = 'succeeded';
+        }
+      }
+      
       return {
-        status: session.status,
+        status: status,
         paymentMethod: session.setup_intent, // La session contient le setup_intent
       };
     } catch (error) {
