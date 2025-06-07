@@ -104,22 +104,46 @@ class StripeBackendService {
     return this.callStripeAPI(`/checkout/sessions/${sessionId}`);
   }
 
-  // Créer un Payment Link pour un affilié
+  // Créer un Payment Link pour un affilié (syntaxe corrigée)
   async createPaymentLink(amount: number, currency: string, affiliateEmail: string, campaignName: string) {
     console.log('💰 Création Payment Link:', { amount, currency, affiliateEmail });
     
-    const formData = new URLSearchParams();
-    formData.append('line_items[0][price_data][currency]', currency);
-    formData.append('line_items[0][price_data][product_data][name]', `Commission - ${campaignName}`);
-    formData.append('line_items[0][price_data][unit_amount]', (amount * 100).toString()); // Stripe utilise les centimes
-    formData.append('line_items[0][quantity]', '1');
-    formData.append('metadata[affiliate_email]', affiliateEmail);
-    formData.append('metadata[campaign_name]', campaignName);
-    formData.append('metadata[type]', 'affiliate_commission');
+    // D'abord, créer un produit
+    const productData = new URLSearchParams();
+    productData.append('name', `Commission - ${campaignName}`);
+    productData.append('type', 'service');
+
+    const product = await this.callStripeAPI('/products', {
+      method: 'POST',
+      body: productData,
+    });
+
+    console.log('✅ Produit créé:', product.id);
+
+    // Ensuite, créer un prix pour ce produit
+    const priceData = new URLSearchParams();
+    priceData.append('currency', currency);
+    priceData.append('product', product.id);
+    priceData.append('unit_amount', (amount * 100).toString()); // Stripe utilise les centimes
+
+    const price = await this.callStripeAPI('/prices', {
+      method: 'POST',
+      body: priceData,
+    });
+
+    console.log('✅ Prix créé:', price.id);
+
+    // Enfin, créer le Payment Link avec le prix
+    const paymentLinkData = new URLSearchParams();
+    paymentLinkData.append('line_items[0][price]', price.id);
+    paymentLinkData.append('line_items[0][quantity]', '1');
+    paymentLinkData.append('metadata[affiliate_email]', affiliateEmail);
+    paymentLinkData.append('metadata[campaign_name]', campaignName);
+    paymentLinkData.append('metadata[type]', 'affiliate_commission');
 
     const paymentLink = await this.callStripeAPI('/payment_links', {
       method: 'POST',
-      body: formData,
+      body: paymentLinkData,
     });
 
     console.log('✅ Payment Link créé:', paymentLink.url);
