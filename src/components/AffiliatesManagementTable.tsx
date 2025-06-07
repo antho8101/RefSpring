@@ -214,7 +214,7 @@ export const AffiliatesManagementTable = ({ campaignId, onCopyTrackingLink }: Af
       )}
 
       <AlertDialog open={!!affiliateToDelete} onOpenChange={() => setAffiliateToDelete(null)}>
-        <AlertDialogContent>
+        <AlertDialogContent className="bg-white border border-slate-200 shadow-xl">
           <AlertDialogHeader>
             <AlertDialogTitle>Supprimer l'affilié</AlertDialogTitle>
             <AlertDialogDescription>
