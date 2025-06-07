@@ -1,9 +1,9 @@
 
 import emailjs from '@emailjs/browser';
 
-// Configuration EmailJS avec vos clés API
-const EMAILJS_SERVICE_ID = 'default_service'; // À ajuster selon votre configuration EmailJS
-const EMAILJS_TEMPLATE_ID = 'template_commission'; // À ajuster selon votre template
+// Configuration EmailJS avec vos vraies clés API
+const EMAILJS_SERVICE_ID = 'service_5bbcvon';
+const EMAILJS_TEMPLATE_ID = 'template_ssdwvt4';
 const EMAILJS_PUBLIC_KEY = 'PL2a6c90I4enuUbE7';
 const EMAILJS_PRIVATE_KEY = 'cLzY1cODYI2SjP7KlLv85';
 
@@ -22,196 +22,78 @@ export interface AffiliateCommissionEmail {
   paymentLinkUrl: string;
 }
 
-// Template HTML pour l'email de commission (adapté pour EmailJS)
+// Template HTML pour l'email de commission RefSpring (en anglais)
 const getCommissionEmailTemplate = (data: AffiliateCommissionEmail): string => {
   return `
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Votre commission RefSpring</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background-color: #f8fafc;
-        }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 40px 30px;
-            text-align: center;
-        }
-        .logo {
-            font-size: 28px;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-        .subtitle {
-            font-size: 16px;
-            opacity: 0.9;
-        }
-        .content {
-            padding: 40px 30px;
-        }
-        .greeting {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 20px;
-            color: #1a202c;
-        }
-        .message {
-            font-size: 16px;
-            margin-bottom: 30px;
-            color: #4a5568;
-        }
-        .commission-box {
-            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 25px;
-            margin: 30px 0;
-            text-align: center;
-        }
-        .commission-amount {
-            font-size: 36px;
-            font-weight: bold;
-            color: #2d3748;
-            margin-bottom: 8px;
-        }
-        .commission-label {
-            font-size: 14px;
-            color: #718096;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        .campaign-info {
-            background: #f7fafc;
-            border-left: 4px solid #667eea;
-            padding: 20px;
-            margin: 25px 0;
-            border-radius: 0 8px 8px 0;
-        }
-        .campaign-name {
-            font-weight: 600;
-            color: #2d3748;
-            margin-bottom: 5px;
-        }
-        .campaign-label {
-            font-size: 14px;
-            color: #718096;
-        }
-        .cta-button {
-            display: inline-block;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            text-decoration: none;
-            padding: 16px 32px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 16px;
-            text-align: center;
-            transition: transform 0.2s;
-            margin: 20px 0;
-        }
-        .cta-button:hover {
-            transform: translateY(-2px);
-        }
-        .footer {
-            background: #f7fafc;
-            padding: 30px;
-            text-align: center;
-            border-top: 1px solid #e2e8f0;
-        }
-        .footer-text {
-            font-size: 14px;
-            color: #718096;
-            margin-bottom: 10px;
-        }
-        .footer-link {
-            color: #667eea;
-            text-decoration: none;
-        }
-        .security-note {
-            background: #fef5e7;
-            border: 1px solid #fbd38d;
-            border-radius: 6px;
-            padding: 15px;
-            margin: 25px 0;
-            font-size: 14px;
-            color: #744210;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <div class="logo">RefSpring</div>
-            <div class="subtitle">Votre commission est prête !</div>
-        </div>
-        
-        <div class="content">
-            <div class="greeting">Bonjour ${data.affiliateName} 👋</div>
-            
-            <div class="message">
-                Félicitations ! Votre commission pour la campagne est maintenant disponible.
-                Cliquez sur le bouton ci-dessous pour recevoir votre paiement via Stripe.
-            </div>
-            
-            <div class="commission-box">
-                <div class="commission-amount">${data.amount.toFixed(2)}€</div>
-                <div class="commission-label">Commission à recevoir</div>
-            </div>
-            
-            <div class="campaign-info">
-                <div class="campaign-label">Campagne</div>
-                <div class="campaign-name">${data.campaignName}</div>
-            </div>
-            
-            <div style="text-align: center;">
-                <a href="${data.paymentLinkUrl}" class="cta-button">
-                    💳 Recevoir ma commission
-                </a>
-            </div>
-            
-            <div class="security-note">
-                <strong>🔒 Sécurisé par Stripe</strong><br>
-                Ce lien de paiement est sécurisé et géré par Stripe, leader mondial des paiements en ligne.
-                Vos données bancaires sont protégées selon les standards PCI DSS.
-            </div>
-            
-            <div class="message">
-                <strong>Important :</strong> Ce lien de paiement est personnel et ne doit pas être partagé.
-                Il expire automatiquement après utilisation ou dans 30 jours.
-            </div>
-        </div>
-        
-        <div class="footer">
-            <div class="footer-text">
-                Cet email a été envoyé automatiquement par RefSpring
-            </div>
-            <div class="footer-text">
-                Questions ? Contactez-nous à <a href="mailto:support@refspring.com" class="footer-link">support@refspring.com</a>
-            </div>
-        </div>
+<div style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f8fafc; padding: 20px;">
+  <div style="max-width: 600px; margin: 0 auto; background-color: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+    
+    <!-- Header avec branding RefSpring -->
+    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 40px 30px; text-align: center;">
+      <div style="font-size: 28px; font-weight: bold; margin-bottom: 8px;">RefSpring</div>
+      <div style="font-size: 16px; opacity: 0.9;">Commission Payment Ready! 💰</div>
     </div>
-</body>
-</html>
+    
+    <!-- Contenu principal -->
+    <div style="padding: 40px 30px;">
+      <div style="font-size: 18px; font-weight: 600; margin-bottom: 20px; color: #1a202c;">
+        Hello ${data.affiliateName}! 👋
+      </div>
+      
+      <div style="font-size: 16px; margin-bottom: 30px; color: #4a5568; line-height: 1.6;">
+        Great news! Your commission for the <strong>${data.campaignName}</strong> campaign is ready to be collected.
+        We've generated a secure payment link just for you.
+      </div>
+      
+      <!-- Commission amount highlight -->
+      <div style="background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%); border: 2px solid #e2e8f0; border-radius: 12px; padding: 25px; margin: 30px 0; text-align: center;">
+        <div style="font-size: 36px; font-weight: bold; color: #2d3748; margin-bottom: 8px;">
+          €${data.amount.toFixed(2)}
+        </div>
+        <div style="font-size: 14px; color: #718096; text-transform: uppercase; letter-spacing: 0.5px;">
+          Commission Amount
+        </div>
+      </div>
+      
+      <!-- Call to Action Button -->
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="${data.paymentLinkUrl}" 
+           style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; padding: 16px 32px; border-radius: 8px; font-weight: 600; font-size: 16px; transition: transform 0.2s;"
+           target="_blank" rel="noopener">
+          💳 Get My Commission!
+        </a>
+      </div>
+      
+      <!-- Security notice -->
+      <div style="background: #fef5e7; border: 1px solid #fbd38d; border-radius: 6px; padding: 15px; margin: 25px 0; font-size: 14px; color: #744210;">
+        <strong>🔒 Secured by Stripe</strong><br>
+        This payment link is secure and powered by Stripe, the world's leading payment processor.
+        Your banking information is protected according to PCI DSS standards.
+      </div>
+      
+      <div style="font-size: 16px; margin-bottom: 30px; color: #4a5568; line-height: 1.6;">
+        <strong>Important:</strong> This payment link is personal and should not be shared.
+        It will automatically expire after use or in 30 days for security reasons.
+      </div>
+      
+      <div style="font-size: 14px; color: #718096; margin-top: 30px;">
+        Thanks for being an amazing affiliate partner! 🚀<br>
+        <strong>The RefSpring Team</strong>
+      </div>
+    </div>
+    
+    <!-- Footer -->
+    <div style="background: #f7fafc; padding: 30px; text-align: center; border-top: 1px solid #e2e8f0;">
+      <div style="font-size: 14px; color: #718096; margin-bottom: 10px;">
+        This email was sent automatically by RefSpring
+      </div>
+      <div style="font-size: 14px; color: #718096;">
+        Questions? Contact us at <a href="mailto:support@refspring.com" style="color: #667eea; text-decoration: none;">support@refspring.com</a>
+      </div>
+    </div>
+    
+  </div>
+</div>
 `;
 };
 
@@ -225,14 +107,15 @@ export class EmailService {
       console.log('📧 Nom campagne:', data.campaignName);
       
       console.log('🚀 Tentative d\'envoi via EmailJS...');
-      console.log('🔗 Service EmailJS configuré avec template ID:', EMAILJS_TEMPLATE_ID);
+      console.log('🔗 Service EmailJS configuré:', EMAILJS_SERVICE_ID);
+      console.log('🔗 Template EmailJS configuré:', EMAILJS_TEMPLATE_ID);
       
       // Préparer les paramètres pour EmailJS
       const templateParams = {
         to_email: data.affiliateEmail,
         to_name: data.affiliateName,
         from_name: 'RefSpring',
-        subject: `💰 Votre commission de ${data.amount.toFixed(2)}€ est prête !`,
+        subject: `💰 Your €${data.amount.toFixed(2)} commission is ready!`,
         affiliate_name: data.affiliateName,
         commission_amount: data.amount.toFixed(2),
         campaign_name: data.campaignName,
