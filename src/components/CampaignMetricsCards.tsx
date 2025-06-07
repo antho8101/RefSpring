@@ -8,7 +8,7 @@ interface CampaignMetricsCardsProps {
     totalConversions: number;
     conversionRate: number;
     netRevenue: number;
-    totalCommissions: number;
+    totalCost: number;
   };
   loading: boolean;
 }
@@ -62,15 +62,15 @@ export const CampaignMetricsCards = ({ stats, loading }: CampaignMetricsCardsPro
       <div className="bg-gradient-to-br from-emerald-50/20 to-emerald-100/10 p-4 rounded-xl border border-emerald-100/20">
         <div className="flex items-center gap-2 text-emerald-600 mb-2">
           <DollarSign className="h-4 w-4" />
-          <span className="text-sm font-medium">Total CA Généré</span>
+          <span className="text-sm font-medium">CA Net Généré</span>
         </div>
         <div className="text-lg font-bold text-slate-900 mb-1">
           {loading ? '...' : `${stats.netRevenue.toFixed(2)}€`}
         </div>
         <p className="text-xs text-slate-500">
           {loading ? 'Calcul...' : 
-            stats.totalCommissions === 0 ? 'Aucune commission' : 
-            `après ${stats.totalCommissions.toFixed(2)}€ de commissions`
+            stats.totalCost === 0 ? 'Aucun coût' : 
+            `après ${stats.totalCost.toFixed(2)}€ de coûts totaux`
           }
         </p>
       </div>

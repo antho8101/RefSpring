@@ -8,6 +8,8 @@ interface CampaignStatsData {
   totalConversions: number;
   totalRevenue: number;
   totalCommissions: number;
+  platformFee: number;
+  totalCost: number;
   netRevenue: number;
   conversionRate: number;
   affiliatesCount: number;
@@ -19,6 +21,8 @@ export const useCampaignStats = (campaignId: string) => {
     totalConversions: 0,
     totalRevenue: 0,
     totalCommissions: 0,
+    platformFee: 0,
+    totalCost: 0,
     netRevenue: 0,
     conversionRate: 0,
     affiliatesCount: 0,
@@ -78,16 +82,26 @@ export const useCampaignStats = (campaignId: string) => {
           });
         });
 
-        const netRevenue = totalRevenue - totalCommissions;
+        // NOUVEAU : Calculer la commission RefSpring (2.5% du CA total)
+        const platformFee = totalRevenue * 0.025;
+        
+        // NOUVEAU : Calculer le coût total (commissions affiliés + commission RefSpring)
+        const totalCost = totalCommissions + platformFee;
+        
+        // NOUVEAU : Déduire le coût total du CA pour avoir le vrai CA net
+        const netRevenue = totalRevenue - totalCost;
+        
         const conversionRate = totalClicks > 0 ? (totalConversions / totalClicks) * 100 : 0;
 
-        console.log('📊 CAMPAIGN STATS - Stats calculées RAPIDEMENT:', {
+        console.log('📊 CAMPAIGN STATS - Stats calculées avec TRANSPARENCE TOTALE:', {
           affiliatesCount,
           totalClicks,
           totalConversions,
           totalRevenue,
           totalCommissions,
-          netRevenue,
+          platformFee: platformFee.toFixed(2),
+          totalCost: totalCost.toFixed(2),
+          netRevenue: netRevenue.toFixed(2),
           conversionRate: conversionRate.toFixed(2)
         });
 
@@ -97,6 +111,8 @@ export const useCampaignStats = (campaignId: string) => {
           totalConversions,
           totalRevenue,
           totalCommissions,
+          platformFee,
+          totalCost,
           netRevenue,
           conversionRate,
         });
@@ -107,6 +123,8 @@ export const useCampaignStats = (campaignId: string) => {
           totalConversions: 0,
           totalRevenue: 0,
           totalCommissions: 0,
+          platformFee: 0,
+          totalCost: 0,
           netRevenue: 0,
           conversionRate: 0,
           affiliatesCount: 0,
