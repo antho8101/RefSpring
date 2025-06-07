@@ -11,7 +11,7 @@ export const Calculator = ({ variant = 'landing' }: CalculatorProps) => {
   const isLanding = variant === 'landing';
   const [monthlyRevenue, setMonthlyRevenue] = useState(isLanding ? 5000 : 10000);
   
-  const competitorsCost = (isLanding ? 199 : 299) + (monthlyRevenue * (isLanding ? 0.08 : 0.10));
+  const competitorsCost = (isLanding ? 299 : 399) + (monthlyRevenue * (isLanding ? 0.08 : 0.10));
   const refspringCost = monthlyRevenue >= 20 ? monthlyRevenue * 0.025 : 0;
   const savings = competitorsCost - refspringCost;
 
@@ -21,12 +21,12 @@ export const Calculator = ({ variant = 'landing' }: CalculatorProps) => {
         <div className="text-center mb-16">
           <CalculatorIcon className="w-16 h-16 text-blue-600 mx-auto mb-4" />
           <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6">
-            {isLanding ? 'Calculez vos économies' : 'Calculez vos coûts'}
+            {isLanding ? 'Calculez vos économies' : 'Simulez vos économies'}
           </h2>
           <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
             {isLanding 
               ? 'Voyez immédiatement combien vous économisez avec notre modèle'
-              : 'Comparez les différents modèles selon vos revenus'
+              : 'Comparez avec ce que vous payez actuellement'
             }
           </p>
         </div>
@@ -37,7 +37,7 @@ export const Calculator = ({ variant = 'landing' }: CalculatorProps) => {
               <label className="block text-lg font-semibold text-slate-900 mb-4">
                 {isLanding 
                   ? 'Vos revenus mensuels d\'affiliation estimés'
-                  : 'Revenus mensuels de vos affiliés'
+                  : 'Revenus mensuels générés par vos affiliés'
                 }
               </label>
               <div className="relative">
@@ -62,13 +62,13 @@ export const Calculator = ({ variant = 'landing' }: CalculatorProps) => {
             <div className="grid md:grid-cols-3 gap-6 mb-8">
               <div className={`text-center p-6 ${isLanding ? 'bg-red-50 border border-red-100' : 'bg-slate-50'} rounded-xl`}>
                 <h3 className="font-semibold text-slate-900 mb-2">
-                  {isLanding ? 'Autres plateformes' : 'Plateformes SaaS'}
+                  Autres plateformes
                 </h3>
                 <div className={`text-2xl font-bold ${isLanding ? 'text-red-600' : 'text-slate-600'} mb-1`}>
                   {competitorsCost.toLocaleString('fr-FR')}€
                 </div>
                 <p className="text-sm text-slate-500">
-                  {isLanding ? '199€/mois + 8% commission' : '299€/mois + 10% commission'}
+                  {isLanding ? '299€/mois + 8% commission' : '399€/mois + 10% commission'}
                 </p>
               </div>
 
@@ -78,14 +78,14 @@ export const Calculator = ({ variant = 'landing' }: CalculatorProps) => {
                   {refspringCost.toLocaleString('fr-FR')}€
                 </div>
                 <p className="text-sm text-slate-500">
-                  {isLanding ? '0€/mois + 2,5% uniquement' : '0€/mois + 2,5% commission'}
+                  0€/mois + 2,5% uniquement
                 </p>
               </div>
 
               <div className={`text-center p-6 ${isLanding ? 'bg-blue-50 border border-blue-200' : 'bg-blue-50'} rounded-xl`}>
                 {isLanding && <TrendingUp className="w-8 h-8 text-blue-600 mx-auto mb-2" />}
                 <h3 className="font-semibold text-slate-900 mb-2">
-                  {isLanding ? 'Vous économisez' : 'Économies'}
+                  Vous économisez
                 </h3>
                 <div className="text-2xl font-bold text-blue-600 mb-1">
                   {savings.toLocaleString('fr-FR')}€
@@ -96,13 +96,13 @@ export const Calculator = ({ variant = 'landing' }: CalculatorProps) => {
 
             <div className={`text-center p-6 ${isLanding ? 'bg-gradient-to-r from-green-600 to-blue-600' : 'bg-gradient-to-r from-blue-600 to-purple-600'} rounded-xl text-white`}>
               <h3 className="text-xl font-semibold mb-2">
-                {isLanding ? 'Sur 12 mois, vous économisez' : 'Économies annuelles'}
+                Économies annuelles
               </h3>
               <div className="text-4xl font-bold mb-2">
                 {(savings * 12).toLocaleString('fr-FR')}€
               </div>
               <p className={isLanding ? 'text-green-100' : 'text-blue-100'}>
-                {isLanding ? 'C\'est ça la différence RefSpring' : 'Différence avec RefSpring'}
+                Voilà ce que vous économisez avec RefSpring
               </p>
             </div>
           </CardContent>

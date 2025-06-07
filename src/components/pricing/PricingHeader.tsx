@@ -21,7 +21,7 @@ export const PricingHeader = ({ onGetStarted }: PricingHeaderProps) => {
         <div className="text-center mb-16">
           <div className="inline-flex items-center gap-2 bg-gradient-to-r from-green-100 to-blue-100 text-green-800 px-6 py-3 rounded-full text-sm font-medium mb-8 border border-green-200/50 backdrop-blur-sm animate-scale-in">
             <Shield className="w-4 h-4" />
-            Une offre pour tous
+            Le seul modèle équitable
             <Star className="w-4 h-4 text-yellow-500" />
           </div>
           
@@ -29,48 +29,48 @@ export const PricingHeader = ({ onGetStarted }: PricingHeaderProps) => {
             RefSpring vs les autres plateformes
           </h1>
           <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
-            Il y a RefSpring et il y a les autres, c'est tout
+            On vous explique pourquoi on est différent
           </p>
         </div>
 
         {/* Pricing Comparison */}
         <div className="grid md:grid-cols-2 gap-12 max-w-5xl mx-auto items-center">
-          {/* Traditional Model - All Others - Made smaller and duller */}
+          {/* Traditional Model - All Others */}
           <div className="bg-gray-50/70 border border-gray-200/50 p-6 rounded-lg shadow-sm opacity-75 transform scale-90">
             <div className="text-center mb-4">
               <div className="bg-gray-200 text-gray-600 px-3 py-1.5 rounded-full text-xs font-medium mb-3">
                 Toutes les autres plateformes
               </div>
               <div className="text-2xl font-semibold text-gray-600 mb-1">
-                99-299€<span className="text-sm text-gray-500">/mois</span>
+                199-499€<span className="text-sm text-gray-500">/mois</span>
               </div>
               <p className="text-gray-500 text-sm">+ commission variable</p>
             </div>
             <ul className="space-y-2 mb-4 text-sm">
               <li className="flex items-center gap-2">
                 <X className="w-4 h-4 text-red-400" />
-                <span className="text-gray-600">Frais mensuels fixes</span>
+                <span className="text-gray-600">Frais mensuels fixes énormes</span>
               </li>
               <li className="flex items-center gap-2">
                 <X className="w-4 h-4 text-red-400" />
-                <span className="text-gray-600">Engagement contractuel</span>
+                <span className="text-gray-600">Engagement sur 12 mois</span>
               </li>
               <li className="flex items-center gap-2">
                 <X className="w-4 h-4 text-red-400" />
-                <span className="text-gray-600">Coûts même sans revenus</span>
+                <span className="text-gray-600">Vous payez même sans revenus</span>
               </li>
               <li className="flex items-center gap-2">
                 <X className="w-4 h-4 text-red-400" />
-                <span className="text-gray-600">Risque financier élevé</span>
+                <span className="text-gray-600">Interface complexe</span>
               </li>
               <li className="flex items-center gap-2">
                 <X className="w-4 h-4 text-red-400" />
-                <span className="text-gray-600">Fonctionnalités bridées</span>
+                <span className="text-gray-600">Support payant</span>
               </li>
             </ul>
           </div>
 
-          {/* RefSpring - Made bigger and more attractive */}
+          {/* RefSpring */}
           <div className="relative group transform scale-110">
             {/* Multiple animated glow layers */}
             <div className="absolute -inset-3 bg-gradient-to-r from-blue-500 via-purple-500 to-green-500 rounded-3xl opacity-20 group-hover:opacity-40 blur-2xl animate-pulse transition-opacity duration-500"></div>
@@ -103,32 +103,32 @@ export const PricingHeader = ({ onGetStarted }: PricingHeaderProps) => {
                     <div className="bg-gradient-to-r from-green-400 to-green-600 rounded-full p-1">
                       <Check className="w-5 h-5 text-white" />
                     </div>
-                    <span className="font-bold text-slate-800">🚀 Aucun engagement</span>
+                    <span className="font-bold text-slate-800">🚀 Setup en 10 minutes</span>
                   </li>
                   <li className="flex items-center gap-3">
                     <div className="bg-gradient-to-r from-green-400 to-green-600 rounded-full p-1">
                       <Check className="w-5 h-5 text-white" />
                     </div>
-                    <span className="font-bold text-slate-800">💰 Payez seulement si vous gagnez</span>
+                    <span className="font-bold text-slate-800">💰 Dashboard simple et clair</span>
                   </li>
                   <li className="flex items-center gap-3">
                     <div className="bg-gradient-to-r from-green-400 to-green-600 rounded-full p-1">
                       <Check className="w-5 h-5 text-white" />
                     </div>
-                    <span className="font-bold text-slate-800">🛡️ Risque zéro</span>
+                    <span className="font-bold text-slate-800">🛡️ Tracking fiable</span>
                   </li>
                   <li className="flex items-center gap-3">
                     <div className="bg-gradient-to-r from-green-400 to-green-600 rounded-full p-1">
                       <Check className="w-5 h-5 text-white" />
                     </div>
-                    <span className="font-bold text-slate-800">🎯 Toutes les fonctionnalités incluses</span>
+                    <span className="font-bold text-slate-800">🎯 Paiements automatiques</span>
                   </li>
                 </ul>
                 <Button 
                   className="w-full bg-gradient-to-r from-blue-600 via-purple-600 to-green-600 hover:from-blue-700 hover:via-purple-700 hover:to-green-700 text-white font-bold px-8 py-4 shadow-2xl hover:shadow-3xl hover:scale-105 transition-all text-xl rounded-2xl border-2 border-white/50"
                   onClick={handleGetStarted}
                 >
-                  🚀 Commencer gratuitement 🚀
+                  🚀 Tester gratuitement 🚀
                 </Button>
                 <p className="text-center text-slate-600 text-sm mt-4 font-medium">
                   ✓ Aucune carte bancaire requise ✓ Accès immédiat

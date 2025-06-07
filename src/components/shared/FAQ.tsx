@@ -11,7 +11,7 @@ export const FAQ = ({ variant = 'landing' }: FAQProps) => {
   const landingFAQs = [
     {
       q: "Pourquoi ne demandez-vous pas de carte bancaire à l'inscription ?",
-      a: "Nous croyons en la confiance mutuelle. Testez RefSpring entièrement, créez des campagnes et voyez les résultats avant de nous donner votre CB. Elle n'est demandée qu'à la création de votre première campagne."
+      a: "On croit en la confiance mutuelle. Testez RefSpring entièrement, créez des campagnes et voyez les résultats avant de nous donner votre CB. Elle n'est demandée qu'à la création de votre première campagne."
     },
     {
       q: "Que se passe-t-il si je gagne moins de 20€ dans un mois ?",
@@ -23,29 +23,29 @@ export const FAQ = ({ variant = 'landing' }: FAQProps) => {
     },
     {
       q: "Combien de temps pour configurer ma première campagne ?",
-      a: "15 minutes maximum. Créez votre compte, configurez votre campagne, générez vos liens de tracking, et c'est parti. Pas de validation manuelle ni d'attente."
+      a: "10 minutes maximum. Créez votre compte, configurez votre campagne, générez vos liens de tracking, et c'est parti. Pas de validation manuelle ni d'attente."
     }
   ];
 
   const pricingFAQs = [
     {
-      q: "Pourquoi ne pas demander de carte bancaire à l'inscription ?",
-      a: "Nous croyons en la confiance mutuelle. Vous pouvez tester RefSpring entièrement, créer des campagnes et voir les résultats avant de nous donner votre CB. La carte n'est demandée qu'à la création de votre première campagne."
+      q: "Pourquoi pas de carte bancaire à l'inscription ?",
+      a: "On fait confiance. Vous pouvez tester RefSpring entièrement, créer des campagnes et voir les résultats avant de nous donner votre CB. La carte n'est demandée qu'à la création de votre première campagne."
     },
     {
       q: "Que se passe-t-il si je gagne moins de 20€ dans un mois ?",
-      a: "Aucune facturation ! Le seuil de 20€ évite les micro-facturations et les frais Stripe disproportionnés. Vous ne payez rien ce mois-là."
+      a: "Rien ! Le seuil de 20€ évite les micro-facturations. Vous ne payez rien ce mois-là."
     },
     {
-      q: "Puis-je utiliser une carte différente pour chaque campagne ?",
-      a: "Absolument ! Parfait si vous gérez plusieurs clients ou avez des comptes séparés. Chaque campagne peut avoir sa propre méthode de paiement."
+      q: "Comment vous faites pour être rentable avec 2,5% seulement ?",
+      a: "On a optimisé nos coûts et automatisé nos processus. Notre modèle fonctionne sur le volume : plus vous réussissez, plus on réussit ensemble."
     },
     {
-      q: "Comment êtes-vous sûrs que 2,5% est rentable pour vous ?",
-      a: "Nous avons optimisé nos coûts d'infrastructure et automatisé nos processus. Notre modèle fonctionne sur le volume : plus vous réussissez, plus nous réussissons ensemble."
+      q: "Puis-je vraiment tout faire gratuitement ?",
+      a: "Oui ! Créer votre compte, configurer des campagnes, inviter des affiliés, voir les stats... Tout est inclus. Vous payez seulement quand vos affiliés vous ramènent des ventes."
     },
     {
-      q: "Y a-t-il des frais cachés ?",
+      q: "Y a-t-il des frais cachés quelque part ?",
       a: "Zéro. Les 2,5% incluent tout : hébergement, support, mises à jour, analytics, API. Aucun frais de setup, d'export, ou premium."
     }
   ];
@@ -61,7 +61,7 @@ export const FAQ = ({ variant = 'landing' }: FAQProps) => {
           </h2>
           {isLanding && (
             <p className="text-xl text-slate-600">
-              Les réponses aux questions que se posent nos utilisateurs
+              Les vraies questions de nos utilisateurs
             </p>
           )}
         </div>

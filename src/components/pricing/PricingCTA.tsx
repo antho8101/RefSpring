@@ -15,10 +15,10 @@ export const PricingCTA = ({ onGetStarted }: PricingCTAProps) => {
           <Clock className="w-16 h-16 text-blue-200 mx-auto mb-4 animate-pulse" />
         </div>
         <h2 className="text-4xl md:text-6xl font-bold text-white mb-6">
-          Prêt à commencer ?
+          Prêt à tester ?
         </h2>
         <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto leading-relaxed">
-          Rejoignez les entreprises qui ont choisi un modèle équitable.
+          Rejoignez les entrepreneurs qui ont choisi un modèle équitable.
           Aucun risque, aucun engagement.
         </p>
         <div className="flex flex-col sm:flex-row gap-6 justify-center">
@@ -35,8 +35,9 @@ export const PricingCTA = ({ onGetStarted }: PricingCTAProps) => {
             size="lg" 
             variant="outline" 
             className="text-lg px-12 py-6 border-2 border-white text-white hover:bg-white hover:text-slate-900 hover:scale-105 transition-all"
+            onClick={() => document.getElementById('dashboard')?.scrollIntoView({ behavior: 'smooth' })}
           >
-            Voir une démo live
+            Voir le dashboard
           </Button>
         </div>
         <p className="text-blue-200 text-sm mt-6">
