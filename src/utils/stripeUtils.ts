@@ -1,5 +1,4 @@
-
-// Clés Stripe en dur pour le développement (environnement test)
+// Clés Stripe test - vos vraies clés
 export const STRIPE_PUBLIC_KEY = 'pk_test_51RWK0X4bg54RW2vEox1ilBvJP7snu2jCKn0DGCkvnHPc8nlegKUftmWBwUvWf1jPlbOYYv3KANwQ2BwjeEbeBZ6M00MX8WGMuZ';
 export const STRIPE_SECRET_KEY = 'sk_test_51RWK0X4bg54RW2vEGdcZGBE6JDmCI8Zd2cWSEb7M0q8DLFoU1W4qgRgfJsrH7BqSAeKbQcAKXELfkpQk4zFlQJ5b00GxsK33ov';
 
@@ -15,26 +14,18 @@ export interface CreatePaymentSetupResponse {
   checkoutUrl: string;
 }
 
-// Variable pour activer/désactiver la simulation (mettre à false quand Firebase Functions sera prêt)
-const USE_SIMULATION = true;
+// Variable pour activer/désactiver la simulation (maintenant désactivée)
+const USE_SIMULATION = false;
 
-// Fonction pour créer un SetupIntent Stripe (sera appelée via HTTP)
+// Fonction pour créer un SetupIntent Stripe
 export const createPaymentSetup = async (data: CreatePaymentSetupRequest): Promise<CreatePaymentSetupResponse> => {
   if (USE_SIMULATION) {
+    // Code de simulation existant gardé pour référence
     console.log('🧪 SIMULATION: Création du setup de paiement pour', data.campaignName);
-    
-    // Simuler un délai réseau
     await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Générer des IDs temporaires
     const setupIntentId = `seti_sim_${Date.now()}`;
     const customerId = `cus_sim_${Date.now()}`;
-    
-    // Construire l'URL de simulation
     const simulationUrl = `${window.location.origin}/payment-success?setup_intent=${setupIntentId}&campaign_id=${data.campaignId}&simulation=true`;
-    
-    console.log('🧪 SIMULATION: Redirection vers', simulationUrl);
-    
     return {
       setupIntentId,
       stripeCustomerId: customerId,
@@ -42,45 +33,57 @@ export const createPaymentSetup = async (data: CreatePaymentSetupRequest): Promi
     };
   }
 
-  // Code original pour les vraies Firebase Functions
-  const response = await fetch('/api/createPaymentSetup', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(data),
-  });
+  // Implémentation réelle avec vos clés Stripe test
+  console.log('🔄 Création réelle du setup de paiement pour:', data.campaignName);
+  
+  try {
+    // Appel à notre nouvelle fonction backend
+    const response = await fetch('/api/stripe/create-setup', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
 
-  if (!response.ok) {
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Erreur ${response.status}: ${errorText}`);
+    }
+
+    const result = await response.json();
+    console.log('✅ Setup de paiement créé:', result);
+    return result;
+  } catch (error) {
+    console.error('❌ Erreur création setup:', error);
     throw new Error('Erreur lors de la création du setup de paiement');
   }
-
-  return response.json();
 };
 
 // Fonction pour vérifier le statut d'un SetupIntent
 export const checkPaymentSetupStatus = async (setupIntentId: string): Promise<{ status: string; paymentMethod?: string }> => {
   if (USE_SIMULATION) {
     console.log('🧪 SIMULATION: Vérification du statut pour', setupIntentId);
-    
-    // Simuler un délai
     await new Promise(resolve => setTimeout(resolve, 500));
-    
-    // Simuler un succès
     return {
       status: 'succeeded',
       paymentMethod: 'pm_simulation_123',
     };
   }
 
-  // Code original pour les vraies Firebase Functions
-  const response = await fetch(`/api/checkPaymentSetup/${setupIntentId}`);
-  
-  if (!response.ok) {
+  // Implémentation réelle
+  try {
+    const response = await fetch(`/api/stripe/check-setup/${setupIntentId}`);
+    
+    if (!response.ok) {
+      throw new Error(`Erreur ${response.status}: ${await response.text()}`);
+    }
+
+    return response.json();
+  } catch (error) {
+    console.error('❌ Erreur vérification statut:', error);
     throw new Error('Erreur lors de la vérification du statut');
   }
-
-  return response.json();
 };
 
 // Fonction pour calculer les commissions mensuelles
@@ -98,6 +101,6 @@ export const calculateMonthlyCommissions = (conversions: any[], period: string):
 
 // Fonction pour calculer les frais (2.5% du CA)
 export const calculateFees = (revenue: number): number => {
-  if (revenue < 20) return 0; // Pas de frais si moins de 20€
-  return revenue * 0.025; // 2.5% du CA
+  if (revenue < 20) return 0;
+  return revenue * 0.025;
 };

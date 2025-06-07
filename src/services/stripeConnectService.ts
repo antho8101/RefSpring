@@ -1,3 +1,4 @@
+
 import { 
   collection, 
   query, 
@@ -7,6 +8,7 @@ import {
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Affiliate, Conversion } from '@/types';
+import { stripeExpressService } from './stripeExpressService';
 
 export interface CommissionCalculation {
   affiliateId: string;
@@ -18,7 +20,7 @@ export interface CommissionCalculation {
 
 export interface PaymentDistribution {
   totalCommissions: number;
-  platformFee: number; // 2.5% du CA
+  platformFee: number;
   totalRevenue: number;
   affiliatePayments: CommissionCalculation[];
 }
@@ -31,7 +33,6 @@ export const calculateCommissionsSinceDate = async (
   console.log('💰 Calcul des commissions depuis:', sinceDate, 'pour campagne:', campaignId);
 
   try {
-    // 1. Récupérer tous les affiliés de la campagne
     const affiliatesQuery = query(
       collection(db, 'affiliates'),
       where('campaignId', '==', campaignId)
@@ -46,7 +47,6 @@ export const calculateCommissionsSinceDate = async (
 
     console.log('👥 Affiliés trouvés:', Object.keys(affiliates).length);
 
-    // 2. Récupérer toutes les conversions depuis la date donnée
     const conversionsQuery = query(
       collection(db, 'conversions'),
       where('campaignId', '==', campaignId)
@@ -59,10 +59,8 @@ export const calculateCommissionsSinceDate = async (
 
     conversionsSnapshot.docs.forEach(doc => {
       const conversion = doc.data() as Conversion;
-      // Conversion.timestamp is already a Date type, no need for .toDate()
       const conversionDate = conversion.timestamp;
 
-      // Filtrer par date
       if (conversionDate >= sinceDate) {
         const affiliate = affiliates[conversion.affiliateId];
         if (affiliate) {
@@ -88,7 +86,7 @@ export const calculateCommissionsSinceDate = async (
       }
     });
 
-    const platformFee = totalRevenue * 0.025; // 2.5% du CA
+    const platformFee = totalRevenue * 0.025;
     const affiliatePayments = Object.values(affiliateCommissions);
 
     console.log('💰 Calculs terminés:', {
@@ -146,29 +144,41 @@ export const createPaymentDistributionRecord = async (
   }
 };
 
-// Simuler l'envoi des liens de paiement Stripe (pour l'instant)
+// Fonction mise à jour pour envoyer de vrais Payment Links Stripe
 export const sendStripePaymentLinks = async (
   distribution: PaymentDistribution,
   campaignName: string
 ): Promise<void> => {
-  console.log('📧 Simulation envoi liens de paiement Stripe pour:', campaignName);
+  console.log('📧 Envoi des vrais Payment Links Stripe pour:', campaignName);
   
-  // Simuler l'envoi pour chaque affilié
-  for (const payment of distribution.affiliatePayments) {
-    if (payment.totalCommission > 0) {
-      console.log(`📧 Lien envoyé à ${payment.affiliateEmail}: ${payment.totalCommission.toFixed(2)}€`);
-      
-      // TODO: Intégrer avec Stripe Connect Express
-      // - Créer/vérifier le compte Express de l'affilié
-      // - Générer un Payment Link pour le montant dû
-      // - Envoyer l'email avec le lien
+  try {
+    // Utiliser le service Stripe Express pour envoyer les Payment Links
+    const results = await stripeExpressService.sendPaymentLinksToAffiliates(
+      distribution.affiliatePayments,
+      campaignName
+    );
+    
+    // Traiter les résultats
+    const successCount = results.filter(r => r.status === 'sent').length;
+    const errorCount = results.filter(r => r.status === 'error').length;
+    
+    console.log(`✅ Payment Links envoyés: ${successCount} succès, ${errorCount} erreurs`);
+    
+    // Afficher les liens générés pour débogage
+    results.forEach(result => {
+      if (result.status === 'sent') {
+        console.log(`💰 ${result.affiliateEmail}: ${result.paymentLinkUrl}`);
+      }
+    });
+    
+    // Gérer notre commission RefSpring
+    if (distribution.platformFee > 0) {
+      console.log(`💰 Commission RefSpring à percevoir: ${distribution.platformFee.toFixed(2)}€`);
     }
-  }
 
-  // Simuler le paiement de notre commission
-  if (distribution.platformFee > 0) {
-    console.log(`💰 Commission RefSpring: ${distribution.platformFee.toFixed(2)}€`);
+    console.log('✅ Processus de distribution terminé');
+  } catch (error) {
+    console.error('❌ Erreur envoi Payment Links:', error);
+    throw error;
   }
-
-  console.log('✅ Tous les liens de paiement ont été envoyés');
 };
