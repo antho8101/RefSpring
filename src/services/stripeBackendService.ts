@@ -59,6 +59,7 @@ class StripeBackendService {
     const formData = new URLSearchParams();
     formData.append('customer', customerId);
     formData.append('mode', 'setup');
+    formData.append('currency', 'eur'); // Obligatoire pour les sessions setup
     formData.append('success_url', `${window.location.origin}/payment-success?setup_intent={CHECKOUT_SESSION_ID}&campaign_id=${campaignId}`);
     formData.append('cancel_url', `${window.location.origin}/dashboard`);
     formData.append('metadata[campaign_name]', campaignName);
