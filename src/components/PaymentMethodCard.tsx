@@ -93,7 +93,9 @@ Les campagnes devront être reconfigurées avec une nouvelle carte pour être r�
             </div>
             <div className="flex items-center gap-2">
               {!canDelete.canDelete && (
-                <AlertTriangle className="h-4 w-4 text-orange-500" title={canDelete.reason} />
+                <div title={canDelete.reason}>
+                  <AlertTriangle className="h-4 w-4 text-orange-500" />
+                </div>
               )}
               <Button
                 variant="ghost"
@@ -152,16 +154,17 @@ Les campagnes devront être reconfigurées avec une nouvelle carte pour être r�
         </CardContent>
       </Card>
 
-      <CriticalActionConfirmDialog
-        open={deleteDialogOpen}
-        onOpenChange={setDeleteDialogOpen}
-        title="Supprimer la carte bancaire"
-        description={getDeleteDescription()}
-        confirmText={hasLinkedCampaigns ? "Supprimer et mettre en pause" : "Supprimer"}
-        onConfirm={handleDelete}
-        variant="danger"
-        disabled={!canDelete.canDelete}
-      />
+      {canDelete.canDelete && (
+        <CriticalActionConfirmDialog
+          open={deleteDialogOpen}
+          onOpenChange={setDeleteDialogOpen}
+          title="Supprimer la carte bancaire"
+          description={getDeleteDescription()}
+          confirmText={hasLinkedCampaigns ? "Supprimer et mettre en pause" : "Supprimer"}
+          onConfirm={handleDelete}
+          variant="danger"
+        />
+      )}
     </>
   );
 };
