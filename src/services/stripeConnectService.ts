@@ -1,4 +1,3 @@
-
 import { 
   collection, 
   query, 
@@ -239,15 +238,15 @@ export const createPaymentDistributionRecord = async (
   }
 };
 
-// Fonction mise à jour pour envoyer de vrais Payment Links Stripe
+// Fonction mise à jour pour envoyer de vrais emails avec Payment Links Stripe
 export const sendStripePaymentLinks = async (
   distribution: PaymentDistribution,
   campaignName: string
 ): Promise<void> => {
-  console.log('📧 Envoi des vrais Payment Links Stripe pour:', campaignName);
+  console.log('📧 Envoi des vrais emails avec Payment Links Stripe pour:', campaignName);
   
   try {
-    // Utiliser le service Stripe Express pour envoyer les Payment Links
+    // Utiliser le service Stripe Express pour envoyer les vrais emails
     const results = await stripeExpressService.sendPaymentLinksToAffiliates(
       distribution.affiliatePayments,
       campaignName
@@ -255,14 +254,16 @@ export const sendStripePaymentLinks = async (
     
     // Traiter les résultats
     const successCount = results.filter(r => r.status === 'sent').length;
-    const errorCount = results.filter(r => r.status === 'error').length;
+    const errorCount = results.filter(r => r.status === 'error' || r.status === 'email_error').length;
     
-    console.log(`✅ Payment Links envoyés: ${successCount} succès, ${errorCount} erreurs`);
+    console.log(`✅ Emails avec Payment Links envoyés: ${successCount} succès, ${errorCount} erreurs`);
     
     // Afficher les liens générés pour débogage
     results.forEach(result => {
       if (result.status === 'sent') {
-        console.log(`💰 ${result.affiliateEmail}: ${result.paymentLinkUrl}`);
+        console.log(`💰 ${result.affiliateEmail}: Email envoyé avec lien ${result.paymentLinkUrl}`);
+      } else if (result.status === 'error' || result.status === 'email_error') {
+        console.log(`❌ ${result.affiliateEmail}: ${result.error || 'Erreur envoi email'}`);
       }
     });
     
@@ -271,9 +272,9 @@ export const sendStripePaymentLinks = async (
       console.log(`💰 Commission RefSpring à percevoir: ${distribution.platformFee.toFixed(2)}€`);
     }
 
-    console.log('✅ Processus de distribution terminé');
+    console.log('✅ Processus de distribution avec emails terminé');
   } catch (error) {
-    console.error('❌ Erreur envoi Payment Links:', error);
+    console.error('❌ Erreur envoi emails avec Payment Links:', error);
     throw error;
   }
 };

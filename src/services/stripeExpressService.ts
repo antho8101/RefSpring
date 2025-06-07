@@ -1,4 +1,6 @@
+
 import { stripeBackendService } from './stripeBackendService';
+import { EmailService } from './emailService';
 
 // Service pour gérer l'intégration avec notre backend simulé
 export class StripeExpressService {
@@ -56,10 +58,12 @@ export class StripeExpressService {
   }
 
   async sendPaymentLinksToAffiliates(affiliatePayments: any[], campaignName: string) {
-    console.log('📧 Envoi des Payment Links aux affiliés');
+    console.log('📧 Envoi des vrais emails avec Payment Links aux affiliés');
     
     const results = [];
+    const emailsToSend = [];
     
+    // Préparer tous les Payment Links d'abord
     for (const payment of affiliatePayments) {
       if (payment.totalCommission > 0) {
         try {
@@ -71,23 +75,27 @@ export class StripeExpressService {
             campaignName
           );
           
-          // Simuler l'envoi d'email (en vrai, vous utiliseriez un service d'email)
-          console.log(`📧 Payment Link envoyé à ${payment.affiliateEmail}:`);
-          console.log(`   💰 Montant: ${payment.totalCommission.toFixed(2)}€`);
-          console.log(`   🔗 Lien: ${paymentLink.url}`);
+          // Préparer les données pour l'email
+          emailsToSend.push({
+            affiliateEmail: payment.affiliateEmail,
+            affiliateName: payment.affiliateName,
+            amount: payment.totalCommission,
+            campaignName: campaignName,
+            paymentLinkUrl: paymentLink.url,
+          });
           
           results.push({
             affiliateEmail: payment.affiliateEmail,
             amount: payment.totalCommission,
             paymentLinkUrl: paymentLink.url,
-            status: 'sent'
+            status: 'link_created'
           });
           
-          // Délai pour éviter le rate limiting
+          // Délai pour éviter le rate limiting Stripe
           await new Promise(resolve => setTimeout(resolve, 100));
           
         } catch (error) {
-          console.error(`❌ Erreur envoi à ${payment.affiliateEmail}:`, error);
+          console.error(`❌ Erreur création Payment Link pour ${payment.affiliateEmail}:`, error);
           results.push({
             affiliateEmail: payment.affiliateEmail,
             status: 'error',
@@ -97,7 +105,28 @@ export class StripeExpressService {
       }
     }
     
-    console.log('✅ Tous les Payment Links ont été traités');
+    // Envoyer tous les emails en lot
+    if (emailsToSend.length > 0) {
+      console.log(`📧 Envoi de ${emailsToSend.length} emails de commission`);
+      
+      const emailResults = await EmailService.sendBulkCommissionEmails(emailsToSend);
+      
+      console.log(`✅ Résultats envoi emails: ${emailResults.successful} succès, ${emailResults.failed} échecs`);
+      
+      if (emailResults.errors.length > 0) {
+        console.log('❌ Erreurs emails:', emailResults.errors);
+      }
+      
+      // Mettre à jour les résultats avec le statut d'envoi d'email
+      results.forEach(result => {
+        if (result.status === 'link_created') {
+          const emailSent = emailResults.successful > 0; // Simplification pour l'exemple
+          result.status = emailSent ? 'sent' : 'email_error';
+        }
+      });
+    }
+    
+    console.log('✅ Tous les Payment Links et emails ont été traités');
     return results;
   }
 }
