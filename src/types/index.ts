@@ -9,6 +9,7 @@ export interface Campaign {
   updatedAt: Date;
   userId: string;
   isActive: boolean;
+  defaultCommissionRate: number; // Taux de commission par défaut en pourcentage
   // Nouveaux champs Stripe
   stripeCustomerId?: string;
   stripeSetupIntentId?: string;
