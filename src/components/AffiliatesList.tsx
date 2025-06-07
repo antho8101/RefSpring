@@ -1,4 +1,3 @@
-
 import { useAffiliates } from '@/hooks/useAffiliates';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -128,39 +127,25 @@ export const AffiliatesList = ({ campaignId, onCopyTrackingLink }: AffiliatesLis
             key={affiliate.id}
             className="bg-white border border-slate-200 rounded-lg p-4 hover:shadow-md transition-shadow"
           >
-            <div className="flex items-center justify-between">
-              <div className="flex-1">
-                <div className="flex items-center gap-3 mb-3">
-                  <h4 className="font-medium text-slate-900">{affiliate.name}</h4>
-                  <Badge variant="outline" className="text-xs">
-                    {affiliate.email}
-                  </Badge>
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-3 flex-1">
+                <h4 className="font-medium text-slate-900">{affiliate.name}</h4>
+                <Badge variant="outline" className="text-xs">
+                  {affiliate.email}
+                </Badge>
+                <div className="flex items-center gap-1 text-sm text-slate-600">
+                  <Hash className="h-3 w-3" />
+                  <span className="font-mono">{affiliate.trackingCode}</span>
                 </div>
-                
-                <div className="flex items-center gap-4 text-sm text-slate-600 mb-2">
-                  <div className="flex items-center gap-1">
-                    <Hash className="h-3 w-3" />
-                    <span className="font-mono">{affiliate.trackingCode}</span>
+                {affiliate.createdAt && (
+                  <div className="flex items-center gap-1 text-sm text-slate-600">
+                    <Calendar className="h-3 w-3" />
+                    <span>{format(affiliate.createdAt, 'dd MMM yyyy', { locale: fr })}</span>
                   </div>
-                  {affiliate.createdAt && (
-                    <div className="flex items-center gap-1">
-                      <Calendar className="h-3 w-3" />
-                      <span>{format(affiliate.createdAt, 'dd MMM yyyy', { locale: fr })}</span>
-                    </div>
-                  )}
-                </div>
-
-                {/* Statistiques mises à jour */}
-                <div className="bg-slate-50 rounded-lg p-3 border border-slate-100">
-                  <div className="flex items-center gap-2 mb-3">
-                    <BarChart3 className="h-4 w-4 text-slate-600" />
-                    <span className="text-sm font-medium text-slate-700">Performances & Coûts</span>
-                  </div>
-                  <AffiliateStatsCard affiliateId={affiliate.id} commissionRate={affiliate.commissionRate} />
-                </div>
+                )}
               </div>
               
-              <div className="flex items-center gap-2 ml-4">
+              <div className="flex items-center gap-2">
                 <Button 
                   variant="outline" 
                   size="sm"
@@ -177,6 +162,15 @@ export const AffiliatesList = ({ campaignId, onCopyTrackingLink }: AffiliatesLis
                   Copier le lien
                 </Button>
               </div>
+            </div>
+
+            {/* Statistiques mises à jour */}
+            <div className="bg-slate-50 rounded-lg p-3 border border-slate-100">
+              <div className="flex items-center gap-2 mb-3">
+                <BarChart3 className="h-4 w-4 text-slate-600" />
+                <span className="text-sm font-medium text-slate-700">Performances & Coûts</span>
+              </div>
+              <AffiliateStatsCard affiliateId={affiliate.id} commissionRate={affiliate.commissionRate} />
             </div>
           </div>
         ))}
