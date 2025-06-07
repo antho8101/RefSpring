@@ -1,5 +1,6 @@
 
 
+
 import { X, Clock, CreditCard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -69,7 +70,7 @@ export const PaymentNotificationBanner = () => {
   }
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 mb-6">
       {notifications.map((notification) => (
         <PaymentNotificationItem
           key={notification.id}
@@ -80,4 +81,5 @@ export const PaymentNotificationBanner = () => {
     </div>
   );
 };
+
 
