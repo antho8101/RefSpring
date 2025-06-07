@@ -1,11 +1,10 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
-import { Trash2, AlertTriangle } from 'lucide-react';
+import { AlertTriangle } from 'lucide-react';
 import { Campaign } from '@/types';
 
 interface CampaignGeneralSettingsProps {
@@ -32,7 +31,6 @@ export const CampaignGeneralSettings = ({
   onFormDataChange,
   onSubmit,
   onCancel,
-  onDeleteClick,
 }: CampaignGeneralSettingsProps) => {
   const hasTargetUrlChanged = formData.targetUrl !== initialTargetUrl;
 
@@ -114,16 +112,7 @@ export const CampaignGeneralSettings = ({
         </div>
       </div>
 
-      <div className="flex justify-between pt-6 border-t">
-        <Button
-          type="button"
-          variant="destructive"
-          onClick={onDeleteClick}
-          className="rounded-xl"
-        >
-          <Trash2 className="h-4 w-4 mr-2" />
-          Supprimer la campagne
-        </Button>
+      <div className="flex justify-end pt-6 border-t">
         <div className="flex gap-3">
           <Button type="button" variant="outline" onClick={onCancel} className="rounded-xl">
             Annuler
