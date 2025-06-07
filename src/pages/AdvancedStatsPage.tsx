@@ -1,4 +1,3 @@
-
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAdvancedStatsExtended } from '@/hooks/useAdvancedStatsExtended';
 import { useCampaigns } from '@/hooks/useCampaigns';
@@ -205,6 +204,61 @@ const AdvancedStatsPage = () => {
               </div>
             </div>
 
+            {/* Métriques additionnelles */}
+            <div className="xl:col-span-1">
+              <div className="bg-gradient-to-br from-emerald-50/50 via-white to-green-50/30 rounded-2xl p-6 shadow-lg border border-white/50 h-full">
+                <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
+                  <Zap className="h-5 w-5 text-emerald-600" />
+                  Métriques Avancées
+                </h3>
+                <div className="space-y-4">
+                  <div className="bg-white/60 rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <Users className="h-5 w-5 text-blue-600" />
+                      <span className="text-xl font-bold text-blue-600">{additionalMetrics.activeAffiliates}</span>
+                    </div>
+                    <p className="text-sm text-slate-600">Affiliés actifs</p>
+                  </div>
+
+                  <div className="bg-white/60 rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <DollarSign className="h-5 w-5 text-green-600" />
+                      <span className="text-lg font-bold text-green-600">
+                        {new Intl.NumberFormat('fr-FR', {
+                          style: 'currency',
+                          currency: 'EUR',
+                          minimumFractionDigits: 0,
+                        }).format(additionalMetrics.avgCommissionPerAffiliate)}
+                      </span>
+                    </div>
+                    <p className="text-sm text-slate-600">Commission moy./affilié</p>
+                  </div>
+
+                  <div className="bg-white/60 rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <Target className="h-5 w-5 text-purple-600" />
+                      <span className="text-xl font-bold text-purple-600">{additionalMetrics.profitMargin.toFixed(1)}%</span>
+                    </div>
+                    <p className="text-sm text-slate-600">Marge bénéficiaire</p>
+                  </div>
+
+                  <div className="bg-white/60 rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <Award className="h-5 w-5 text-orange-600" />
+                      <span className="text-lg font-bold text-orange-600">
+                        {new Intl.NumberFormat('fr-FR', {
+                          style: 'currency',
+                          currency: 'EUR',
+                          minimumFractionDigits: 2,
+                        }).format(additionalMetrics.avgRevenuePerClick)}
+                      </span>
+                    </div>
+                    <p className="text-sm text-slate-600">CA moyen/clic</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {/* HALL OF FAME */}
             <div className="xl:col-span-1 relative">
               <div className="absolute -inset-2 bg-gradient-to-r from-blue-400/10 via-purple-500/10 to-blue-400/10 rounded-2xl blur-lg animate-pulse" style={{ animationDuration: '3s' }}></div>
@@ -212,7 +266,6 @@ const AdvancedStatsPage = () => {
               
               <div className="relative bg-gradient-to-br from-blue-500 via-purple-600 to-indigo-700 rounded-2xl p-6 shadow-2xl border-none h-full overflow-hidden transform hover:scale-[1.01] transition-all duration-700 z-10">
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -skew-x-12 animate-pulse" style={{ animationDuration: '4s' }}></div>
-                <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-white/3 via-transparent to-white/3 animate-pulse" style={{ animationDelay: '2s', animationDuration: '5s' }}></div>
                 
                 <div className="absolute top-3 left-3">
                   <Star className="h-4 w-4 text-blue-200 fill-current animate-pulse" style={{ animationDuration: '2s' }} />
@@ -275,62 +328,10 @@ const AdvancedStatsPage = () => {
                 </div>
               </div>
             </div>
-
-            {/* Métriques additionnelles */}
-            <div className="xl:col-span-1">
-              <div className="bg-gradient-to-br from-emerald-50/50 via-white to-green-50/30 rounded-2xl p-6 shadow-lg border border-white/50 h-full">
-                <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
-                  <Zap className="h-5 w-5 text-emerald-600" />
-                  Métriques Avancées
-                </h3>
-                <div className="space-y-4">
-                  <div className="bg-white/60 rounded-lg p-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <Users className="h-5 w-5 text-blue-600" />
-                      <span className="text-xl font-bold text-blue-600">{additionalMetrics.activeAffiliates}</span>
-                    </div>
-                    <p className="text-sm text-slate-600">Affiliés actifs</p>
-                  </div>
-
-                  <div className="bg-white/60 rounded-lg p-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <DollarSign className="h-5 w-5 text-green-600" />
-                      <span className="text-lg font-bold text-green-600">
-                        {new Intl.NumberFormat('fr-FR', {
-                          style: 'currency',
-                          currency: 'EUR',
-                          minimumFractionDigits: 0,
-                        }).format(additionalMetrics.avgCommissionPerAffiliate)}
-                      </span>
-                    </div>
-                    <p className="text-sm text-slate-600">Commission moy./affilié</p>
-                  </div>
-
-                  <div className="bg-white/60 rounded-lg p-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <Target className="h-5 w-5 text-purple-600" />
-                      <span className="text-xl font-bold text-purple-600">{additionalMetrics.profitMargin.toFixed(1)}%</span>
-                    </div>
-                    <p className="text-sm text-slate-600">Marge bénéficiaire</p>
-                  </div>
-
-                  <div className="bg-white/60 rounded-lg p-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <Award className="h-5 w-5 text-orange-600" />
-                      <span className="text-lg font-bold text-orange-600">
-                        {new Intl.NumberFormat('fr-FR', {
-                          style: 'currency',
-                          currency: 'EUR',
-                          minimumFractionDigits: 2,
-                        }).format(additionalMetrics.avgRevenuePerClick)}
-                      </span>
-                    </div>
-                    <p className="text-sm text-slate-600">CA moyen/clic</p>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
+
+          {/* Div avec animation après les métriques avancées */}
+          <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-white/3 via-transparent to-white/3 animate-pulse" style={{ animationDelay: '2s', animationDuration: '5s' }}></div>
 
           {/* Section 3: Graphiques et performance financière */}
           <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
