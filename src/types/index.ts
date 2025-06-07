@@ -13,6 +13,7 @@ export interface Campaign {
   // Nouveaux champs Stripe
   stripeCustomerId?: string;
   stripeSetupIntentId?: string;
+  stripePaymentMethodId?: string; // ID de la méthode de paiement Stripe associée
   paymentConfigured: boolean;
   isDraft: boolean; // Pour gérer l'état avant validation Stripe
 }
