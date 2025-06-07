@@ -33,30 +33,9 @@ export const HeroSection = ({ scrollY, onRedirectToDashboard }: HeroSectionProps
 
   return (
     <section className="relative min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 overflow-hidden">
-      {/* Parallax Background Elements */}
-      <div 
-        className="absolute top-1/4 left-1/4 w-2 h-2 bg-blue-400 rounded-full opacity-60 animate-pulse"
-        style={{ transform: `translate(${scrollY * 0.3}px, ${scrollY * 0.2}px)` }}
-      ></div>
-      <div 
-        className="absolute top-1/3 right-1/3 w-1 h-1 bg-purple-400 rounded-full opacity-40"
-        style={{ transform: `translate(${-scrollY * 0.2}px, ${scrollY * 0.4}px)` }}
-      ></div>
-      <div 
-        className="absolute bottom-1/4 left-1/3 w-3 h-3 bg-green-400 rounded-full opacity-30 animate-bounce"
-        style={{ transform: `translate(${scrollY * 0.1}px, ${-scrollY * 0.3}px)` }}
-      ></div>
-
-      {/* Interactive Mouse Follower */}
-      <div 
-        className="absolute pointer-events-none z-10 w-8 h-8 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full opacity-20 blur-sm transition-all duration-300"
-        style={{ 
-          left: mousePosition.x - 16, 
-          top: mousePosition.y - 16,
-          transform: `scale(${isHovered ? 2 : 1})`
-        }}
-      ></div>
-
+      {/* Simple Background Elements */}
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-purple-50"></div>
+      
       <div className="max-w-6xl mx-auto text-center relative z-20">
         {/* Easter Egg Logo */}
         <div 
