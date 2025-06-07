@@ -43,7 +43,7 @@ export const PricingHeader = ({ onGetStarted }: PricingHeaderProps) => {
         {/* Pricing Battle */}
         <div className="grid md:grid-cols-2 gap-12 max-w-6xl mx-auto items-center">
           {/* Les Autres - Deprecated */}
-          <div className="relative opacity-60 transform scale-90 hover:scale-95 transition-all duration-500">
+          <div className="relative transform scale-90 hover:scale-95 transition-all duration-500">
             <div className="absolute -inset-2 bg-gradient-to-r from-red-500 to-red-600 rounded-3xl opacity-20 blur-xl"></div>
             <div className="relative bg-white border-2 border-red-200 p-8 rounded-3xl shadow-lg">
               <div className="text-center mb-6">
