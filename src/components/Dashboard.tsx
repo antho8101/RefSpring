@@ -8,6 +8,7 @@ import { DashboardContent } from '@/components/DashboardContent';
 import { DashboardFooter } from '@/components/DashboardFooter';
 import { NetworkStatus } from '@/components/NetworkStatus';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { PaymentNotificationBanner } from '@/components/PaymentNotificationBanner';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { Helmet } from 'react-helmet-async';
 import { memo, useCallback, useMemo, useEffect, useState } from 'react';
@@ -217,6 +218,11 @@ export const Dashboard = memo(() => {
         <DashboardHeader user={user} onLogout={handleLogout} />
 
         <main className="relative z-10 max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 flex-1">
+          {/* Bandeau de notifications de paiement */}
+          <ErrorBoundary fallback={<div>Erreur notifications</div>}>
+            <PaymentNotificationBanner />
+          </ErrorBoundary>
+
           <ErrorBoundary fallback={<div>Erreur stats</div>}>
             <DashboardStats 
               activeCampaigns={dashboardMetrics.activeCampaigns}
