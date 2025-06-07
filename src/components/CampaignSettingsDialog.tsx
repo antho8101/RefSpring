@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -7,7 +6,7 @@ import { useCampaigns } from '@/hooks/useCampaigns';
 import { useToast } from '@/hooks/use-toast';
 import { Campaign } from '@/types';
 import { CampaignDeletionDialog } from '@/components/CampaignDeletionDialog';
-import { AffiliatesList } from '@/components/AffiliatesList';
+import { AffiliatesManagementTable } from '@/components/AffiliatesManagementTable';
 import { CampaignSettingsNavigation } from '@/components/CampaignSettingsNavigation';
 import { CampaignGeneralSettings } from '@/components/CampaignGeneralSettings';
 import { CampaignPaymentSettings } from '@/components/CampaignPaymentSettings';
@@ -147,7 +146,7 @@ export const CampaignSettingsDialog = ({ campaign }: CampaignSettingsDialogProps
           />
         );
       case 'affiliates':
-        return <AffiliatesList campaignId={campaign.id} />;
+        return <AffiliatesManagementTable campaignId={campaign.id} />;
       default:
         return null;
     }
