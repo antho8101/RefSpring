@@ -1,4 +1,5 @@
 
+
 import { useCallback } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { AppError, ErrorSeverity } from '@/types/errors';
@@ -64,17 +65,18 @@ export const useErrorHandler = () => {
   const getErrorTitle = (severity: ErrorSeverity): string => {
     switch (severity) {
       case ErrorSeverity.CRITICAL:
-        return 'Erreur critique';
+        return '🚨 Oups, problème critique !';
       case ErrorSeverity.HIGH:
-        return 'Erreur importante';
+        return '⚠️ Attention, erreur importante';
       case ErrorSeverity.MEDIUM:
-        return 'Attention';
+        return '🤔 Quelque chose ne va pas';
       case ErrorSeverity.LOW:
-        return 'Information';
+        return '💡 Information';
       default:
-        return 'Erreur';
+        return '❌ Erreur';
     }
   };
 
   return { handleError };
 };
+

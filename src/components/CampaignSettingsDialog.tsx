@@ -55,14 +55,14 @@ export const CampaignSettingsDialog = ({ campaign }: CampaignSettingsDialogProps
     try {
       await updateCampaign(campaign.id, formData);
       toast({
-        title: "Campagne mise à jour",
-        description: "Les modifications ont été enregistrées avec succès.",
+        title: "✅ Parfait !",
+        description: "Votre campagne a été mise à jour avec succès ! 🚀",
       });
       setOpen(false);
     } catch (error: any) {
       toast({
-        title: "Erreur",
-        description: error.message || "Impossible de mettre à jour la campagne",
+        title: "❌ Oups !",
+        description: error.message || "Impossible de mettre à jour la campagne. Réessayez dans un moment ! 🔄",
         variant: "destructive",
       });
     } finally {
@@ -87,8 +87,8 @@ export const CampaignSettingsDialog = ({ campaign }: CampaignSettingsDialogProps
 
   const handlePaymentMethodChange = () => {
     toast({
-      title: "Fonctionnalité en développement",
-      description: "Le changement de méthode de paiement sera bientôt disponible.",
+      title: "🚧 Bientôt disponible !",
+      description: "Cette super fonctionnalité arrive très prochainement ! Restez connecté 😉",
     });
   };
 
