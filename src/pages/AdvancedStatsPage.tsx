@@ -169,22 +169,22 @@ const AdvancedStatsPage = () => {
 
             {/* Colonne droite (1/3) - HALL OF FAME */}
             <div className="xl:col-span-1">
-              <div className="relative bg-gradient-to-br from-amber-400 via-yellow-500 to-orange-500 rounded-2xl p-6 shadow-2xl border-none h-full overflow-hidden transform hover:scale-105 transition-all duration-300">
+              <div className="relative bg-gradient-to-br from-blue-500 via-purple-600 to-indigo-700 rounded-2xl p-6 shadow-2xl border-none h-full overflow-hidden transform hover:scale-105 transition-all duration-300">
                 {/* Effet de brillance animé */}
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -skew-x-12 animate-pulse"></div>
                 
                 {/* Étoiles en arrière-plan */}
                 <div className="absolute top-3 left-3">
-                  <Star className="h-4 w-4 text-yellow-200 fill-current animate-pulse" />
+                  <Star className="h-4 w-4 text-blue-200 fill-current animate-pulse" />
                 </div>
                 <div className="absolute top-6 right-6">
-                  <Star className="h-3 w-3 text-yellow-100 fill-current animate-pulse" style={{ animationDelay: '0.5s' }} />
+                  <Star className="h-3 w-3 text-indigo-100 fill-current animate-pulse" style={{ animationDelay: '0.5s' }} />
                 </div>
                 <div className="absolute bottom-3 right-3">
-                  <Star className="h-4 w-4 text-yellow-200 fill-current animate-pulse" style={{ animationDelay: '1s' }} />
+                  <Star className="h-4 w-4 text-purple-200 fill-current animate-pulse" style={{ animationDelay: '1s' }} />
                 </div>
                 <div className="absolute bottom-6 left-6">
-                  <Star className="h-2 w-2 text-yellow-100 fill-current animate-pulse" style={{ animationDelay: '1.5s' }} />
+                  <Star className="h-2 w-2 text-blue-100 fill-current animate-pulse" style={{ animationDelay: '1.5s' }} />
                 </div>
 
                 {/* Contenu du Hall of Fame */}
@@ -241,8 +241,8 @@ const AdvancedStatsPage = () => {
                   </div>
                 </div>
 
-                {/* Effet glow externe */}
-                <div className="absolute inset-0 bg-gradient-to-br from-amber-400/50 via-yellow-500/50 to-orange-500/50 blur-2xl -z-10 scale-110"></div>
+                {/* Effet glow externe - RefSpring colors */}
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/60 via-purple-600/60 to-indigo-700/60 blur-3xl -z-10 scale-125 animate-pulse"></div>
               </div>
             </div>
           </div>
