@@ -57,9 +57,9 @@ const AdvancedStatsPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/20">
       {/* Header */}
-      <header className="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-50">
+      <header className="bg-white/80 backdrop-blur-sm border-b border-slate-200 shadow-sm sticky top-0 z-50">
         <div className="px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex-1 min-w-0">
@@ -128,15 +128,17 @@ const AdvancedStatsPage = () => {
       </header>
 
       {/* Main Content */}
-      <main className="w-full px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+      <main className="w-full px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
         {/* Message d'information si pas de données */}
         {stats.totalClicks === 0 && stats.totalConversions === 0 && (
-          <div className="mb-6 sm:mb-8 bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <div className="flex flex-col sm:flex-row gap-3">
-              <Globe className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
+          <div className="mb-8 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-6 shadow-sm">
+            <div className="flex flex-col sm:flex-row gap-4">
+              <div className="p-3 bg-blue-100 rounded-full w-fit">
+                <Globe className="h-6 w-6 text-blue-600" />
+              </div>
               <div className="flex-1 min-w-0">
-                <h3 className="text-sm font-medium text-blue-800 mb-2">Aucune donnée disponible</h3>
-                <p className="text-sm text-blue-700">
+                <h3 className="text-lg font-semibold text-blue-900 mb-2">Aucune donnée disponible</h3>
+                <p className="text-blue-700">
                   {period === 'current-month' 
                     ? "Aucune activité détectée ce mois-ci. Les statistiques apparaîtront dès que vos affiliés génèreront du trafic."
                     : "Cette campagne n'a pas encore généré de clics ou de conversions. Les statistiques apparaîtront dès que vos affiliés commenceront à générer du trafic."
@@ -147,25 +149,98 @@ const AdvancedStatsPage = () => {
           </div>
         )}
 
-        {/* Métriques d'évolution */}
-        <AdvancedStatsEvolution evolution={stats.evolution} />
+        {/* Layout asymétrique principal */}
+        <div className="space-y-8">
+          
+          {/* Section 1: Évolution des performances (pleine largeur) */}
+          <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/50">
+            <AdvancedStatsEvolution evolution={stats.evolution} />
+          </div>
 
-        {/* Métriques comportementales */}
-        <AdvancedStatsBehavioralMetrics behavioralMetrics={stats.behavioralMetrics} />
+          {/* Section 2: Layout 2/3 - 1/3 */}
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+            
+            {/* Colonne gauche (2/3) - Métriques comportementales */}
+            <div className="xl:col-span-2">
+              <div className="bg-gradient-to-br from-white via-slate-50/50 to-blue-50/30 rounded-2xl p-6 shadow-lg border border-white/50">
+                <AdvancedStatsBehavioralMetrics behavioralMetrics={stats.behavioralMetrics} />
+              </div>
+            </div>
 
-        {/* Analyse temporelle */}
-        <AdvancedStatsTimeAnalysis timeAnalysis={stats.timeAnalysis} />
+            {/* Colonne droite (1/3) - Analyse temporelle compacte */}
+            <div className="xl:col-span-1">
+              <div className="bg-gradient-to-br from-purple-50/50 via-white to-indigo-50/30 rounded-2xl p-6 shadow-lg border border-white/50 h-full">
+                <h3 className="text-lg font-semibold text-slate-900 mb-4">📊 Analyse Temporelle</h3>
+                <div className="space-y-4">
+                  <div className="bg-white/60 rounded-lg p-4">
+                    <div className="text-2xl font-bold text-blue-600 mb-1">
+                      {stats.timeAnalysis.bestPerformingHour}h
+                    </div>
+                    <p className="text-sm text-slate-600">Meilleure heure</p>
+                  </div>
+                  <div className="bg-white/60 rounded-lg p-4">
+                    <div className="text-2xl font-bold text-green-600 mb-1">
+                      {stats.timeAnalysis.bestPerformingDay}
+                    </div>
+                    <p className="text-sm text-slate-600">Meilleur jour</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
 
-        {/* Graphiques */}
-        <AdvancedStatsCharts 
-          dailyStats={stats.dailyStats}
-          totalRevenue={stats.totalRevenue}
-          netRevenue={stats.netRevenue}
-          totalCommissions={stats.totalCommissions}
-        />
+          {/* Section 3: Layout 1/3 - 2/3 inversé */}
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+            
+            {/* Colonne gauche (1/3) - Résumé financier */}
+            <div className="xl:col-span-1">
+              <div className="bg-gradient-to-br from-emerald-50/50 via-white to-green-50/30 rounded-2xl p-6 shadow-lg border border-white/50 h-full">
+                <h3 className="text-lg font-semibold text-slate-900 mb-4">💰 Performance Financière</h3>
+                <div className="space-y-4">
+                  <div className="bg-white/60 rounded-lg p-4">
+                    <div className="text-xl font-bold text-emerald-600 mb-1">
+                      {new Intl.NumberFormat('fr-FR', {
+                        style: 'currency',
+                        currency: 'EUR',
+                        minimumFractionDigits: 0,
+                      }).format(stats.totalRevenue)}
+                    </div>
+                    <p className="text-sm text-slate-600">CA Total</p>
+                  </div>
+                  <div className="bg-white/60 rounded-lg p-4">
+                    <div className="text-xl font-bold text-purple-600 mb-1">
+                      {stats.conversionRate.toFixed(1)}%
+                    </div>
+                    <p className="text-sm text-slate-600">Taux de conversion</p>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-        {/* Tableau des affiliés */}
-        <AdvancedStatsAffiliateTable affiliates={stats.topAffiliates} />
+            {/* Colonne droite (2/3) - Graphiques */}
+            <div className="xl:col-span-2">
+              <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/50">
+                <AdvancedStatsCharts 
+                  dailyStats={stats.dailyStats}
+                  totalRevenue={stats.totalRevenue}
+                  netRevenue={stats.netRevenue}
+                  totalCommissions={stats.totalCommissions}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Section 4: Analyse temporelle détaillée (pleine largeur) */}
+          <div className="bg-gradient-to-r from-slate-50/50 via-white to-blue-50/50 rounded-2xl p-6 shadow-lg border border-white/50">
+            <AdvancedStatsTimeAnalysis timeAnalysis={stats.timeAnalysis} />
+          </div>
+
+          {/* Section 5: Tableau des affiliés (pleine largeur) */}
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/50">
+            <AdvancedStatsAffiliateTable affiliates={stats.topAffiliates} />
+          </div>
+
+        </div>
       </main>
     </div>
   );
