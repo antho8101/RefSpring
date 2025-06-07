@@ -83,7 +83,7 @@ export const AdvancedStatsAffiliateTable = ({ affiliates }: AdvancedStatsAffilia
               <SelectTrigger className="w-full sm:w-[250px] rounded-xl">
                 <SelectValue placeholder="Trier par..." />
               </SelectTrigger>
-              <SelectContent className="rounded-xl">
+              <SelectContent className="rounded-xl bg-white border border-slate-200 shadow-lg z-50">
                 <SelectItem value="commissions-desc">Plus performants (commissions)</SelectItem>
                 <SelectItem value="commissions-asc">Moins performants (commissions)</SelectItem>
                 <SelectItem value="clicks-desc">Plus de clics</SelectItem>
