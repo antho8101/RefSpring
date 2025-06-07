@@ -15,7 +15,7 @@ export const CampaignActions = ({ campaign, onCopyUrl }: CampaignActionsProps) =
   const navigate = useNavigate();
 
   const handleAdvancedStats = () => {
-    navigate(`/advanced-stats/${campaign.id}`);
+    navigate(`/campaign/${campaign.id}`);
   };
 
   return (
