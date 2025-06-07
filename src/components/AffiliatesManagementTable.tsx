@@ -1,4 +1,3 @@
-
 import { useAffiliates } from '@/hooks/useAffiliates';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -18,6 +17,16 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 interface AffiliatesManagementTableProps {
   campaignId: string;
@@ -29,6 +38,7 @@ export const AffiliatesManagementTable = ({ campaignId, onCopyTrackingLink }: Af
   const { toast } = useToast();
   const [selectedAffiliate, setSelectedAffiliate] = useState<Affiliate | null>(null);
   const [dialogMode, setDialogMode] = useState<'edit' | 'delete'>('edit');
+  const [affiliateToDelete, setAffiliateToDelete] = useState<Affiliate | null>(null);
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('fr-FR', {
@@ -93,12 +103,18 @@ export const AffiliatesManagementTable = ({ campaignId, onCopyTrackingLink }: Af
     setDialogMode('edit');
   };
 
-  const handleDeleteAffiliate = async (affiliate: Affiliate) => {
+  const handleDeleteClick = (affiliate: Affiliate) => {
+    setAffiliateToDelete(affiliate);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!affiliateToDelete) return;
+
     try {
-      await deleteAffiliate(affiliate.id);
+      await deleteAffiliate(affiliateToDelete.id);
       toast({
         title: "Affilié supprimé",
-        description: `${affiliate.name} a été supprimé avec succès`,
+        description: `${affiliateToDelete.name} a été supprimé avec succès`,
       });
     } catch (error: any) {
       toast({
@@ -106,6 +122,8 @@ export const AffiliatesManagementTable = ({ campaignId, onCopyTrackingLink }: Af
         description: error.message || "Impossible de supprimer l'affilié",
         variant: "destructive",
       });
+    } finally {
+      setAffiliateToDelete(null);
     }
   };
 
@@ -172,7 +190,7 @@ export const AffiliatesManagementTable = ({ campaignId, onCopyTrackingLink }: Af
                       <Button 
                         variant="outline" 
                         size="sm"
-                        onClick={() => handleDeleteAffiliate(affiliate)}
+                        onClick={() => handleDeleteClick(affiliate)}
                         className="rounded-xl text-red-600 hover:bg-red-50 hover:text-red-700 border-red-200"
                       >
                         <X className="h-4 w-4" />
@@ -194,6 +212,27 @@ export const AffiliatesManagementTable = ({ campaignId, onCopyTrackingLink }: Af
           mode={dialogMode}
         />
       )}
+
+      <AlertDialog open={!!affiliateToDelete} onOpenChange={() => setAffiliateToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Supprimer l'affilié</AlertDialogTitle>
+            <AlertDialogDescription>
+              Êtes-vous sûr de vouloir supprimer l'affilié <strong>{affiliateToDelete?.name}</strong> ? 
+              Cette action est irréversible et supprimera toutes les données associées (clics, conversions, liens courts).
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleConfirmDelete}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Supprimer
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 };
