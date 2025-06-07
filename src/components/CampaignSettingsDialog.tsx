@@ -1,18 +1,16 @@
 
 import { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Switch } from '@/components/ui/switch';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Settings, Trash2, AlertTriangle, CreditCard, Users, FileText } from 'lucide-react';
+import { Settings } from 'lucide-react';
 import { useCampaigns } from '@/hooks/useCampaigns';
 import { useToast } from '@/hooks/use-toast';
 import { Campaign } from '@/types';
 import { CampaignDeletionDialog } from '@/components/CampaignDeletionDialog';
 import { AffiliatesList } from '@/components/AffiliatesList';
+import { CampaignSettingsNavigation } from '@/components/CampaignSettingsNavigation';
+import { CampaignGeneralSettings } from '@/components/CampaignGeneralSettings';
+import { CampaignPaymentSettings } from '@/components/CampaignPaymentSettings';
 
 interface CampaignSettingsDialogProps {
   campaign: Campaign;
@@ -93,8 +91,6 @@ export const CampaignSettingsDialog = ({ campaign }: CampaignSettingsDialogProps
     });
   };
 
-  const hasTargetUrlChanged = formData.targetUrl !== initialTargetUrl;
-
   const getTabTitle = () => {
     switch (activeTab) {
       case 'general':
@@ -108,6 +104,48 @@ export const CampaignSettingsDialog = ({ campaign }: CampaignSettingsDialogProps
     }
   };
 
+  const getTabDescription = () => {
+    switch (activeTab) {
+      case 'general':
+        return 'Configurez les informations de base de votre campagne';
+      case 'payment':
+        return 'Gérez votre méthode de paiement pour les commissions';
+      case 'affiliates':
+        return 'Gérez tous les affiliés de cette campagne';
+      default:
+        return '';
+    }
+  };
+
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case 'general':
+        return (
+          <CampaignGeneralSettings
+            campaign={campaign}
+            formData={formData}
+            initialTargetUrl={initialTargetUrl}
+            loading={loading}
+            onFormDataChange={setFormData}
+            onSubmit={handleSubmit}
+            onCancel={() => setOpen(false)}
+            onDeleteClick={handleDeleteClick}
+          />
+        );
+      case 'payment':
+        return (
+          <CampaignPaymentSettings
+            campaign={campaign}
+            onPaymentMethodChange={handlePaymentMethodChange}
+          />
+        );
+      case 'affiliates':
+        return <AffiliatesList campaignId={campaign.id} />;
+      default:
+        return null;
+    }
+  };
+
   return (
     <>
       <Dialog open={open} onOpenChange={setOpen}>
@@ -118,196 +156,19 @@ export const CampaignSettingsDialog = ({ campaign }: CampaignSettingsDialogProps
         </DialogTrigger>
         <DialogContent className="fixed inset-[30px] max-w-none max-h-none h-auto w-auto p-0 bg-white">
           <div className="flex h-full">
-            {/* Menu latéral */}
-            <div className="w-64 bg-slate-50 border-r p-6 flex flex-col">
-              <div className="mb-6">
-                <h2 className="text-xl font-semibold text-slate-900">Paramètres</h2>
-                <p className="text-sm text-slate-600">Configuration de la campagne</p>
-              </div>
-              
-              <nav className="space-y-3 flex-1">
-                <button
-                  onClick={() => setActiveTab('general')}
-                  className={`w-full flex items-center gap-3 px-4 py-3 text-sm rounded-xl transition-colors ${
-                    activeTab === 'general' 
-                      ? 'bg-white text-slate-900 shadow-sm font-medium' 
-                      : 'text-slate-600 hover:bg-white/50'
-                  }`}
-                >
-                  <FileText className="h-5 w-5" />
-                  Général
-                </button>
-                
-                <button
-                  onClick={() => setActiveTab('payment')}
-                  className={`w-full flex items-center gap-3 px-4 py-3 text-sm rounded-xl transition-colors ${
-                    activeTab === 'payment' 
-                      ? 'bg-white text-slate-900 shadow-sm font-medium' 
-                      : 'text-slate-600 hover:bg-white/50'
-                  }`}
-                >
-                  <CreditCard className="h-5 w-5" />
-                  Méthode de paiement
-                </button>
-                
-                <button
-                  onClick={() => setActiveTab('affiliates')}
-                  className={`w-full flex items-center gap-3 px-4 py-3 text-sm rounded-xl transition-colors ${
-                    activeTab === 'affiliates' 
-                      ? 'bg-white text-slate-900 shadow-sm font-medium' 
-                      : 'text-slate-600 hover:bg-white/50'
-                  }`}
-                >
-                  <Users className="h-5 w-5" />
-                  Gestion des affiliés
-                </button>
-              </nav>
-            </div>
+            <CampaignSettingsNavigation 
+              activeTab={activeTab} 
+              onTabChange={setActiveTab} 
+            />
 
-            {/* Contenu principal */}
             <div className="flex-1 flex flex-col">
-              {/* En-tête de la section */}
               <div className="p-8 border-b bg-white">
                 <h3 className="text-2xl font-semibold text-slate-900">{getTabTitle()}</h3>
-                <p className="text-slate-600 mt-2">
-                  {activeTab === 'general' && 'Configurez les informations de base de votre campagne'}
-                  {activeTab === 'payment' && 'Gérez votre méthode de paiement pour les commissions'}
-                  {activeTab === 'affiliates' && 'Gérez tous les affiliés de cette campagne'}
-                </p>
+                <p className="text-slate-600 mt-2">{getTabDescription()}</p>
               </div>
 
-              {/* Contenu principal sans scroll */}
               <div className="flex-1 p-8">
-                {activeTab === 'general' && (
-                  <form onSubmit={handleSubmit} className="space-y-8 h-full flex flex-col">
-                    <div className="flex-1 space-y-6">
-                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        <div className="space-y-2">
-                          <Label htmlFor="name">Nom de la campagne</Label>
-                          <Input
-                            id="name"
-                            value={formData.name}
-                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                            placeholder="Ex: Programme d'affiliation 2024"
-                            required
-                          />
-                        </div>
-                        
-                        <div className="space-y-2">
-                          <Label htmlFor="defaultCommissionRate">Taux de commission par défaut (%)</Label>
-                          <Input
-                            id="defaultCommissionRate"
-                            type="number"
-                            min="0"
-                            max="100"
-                            step="0.1"
-                            value={formData.defaultCommissionRate}
-                            onChange={(e) => setFormData({ ...formData, defaultCommissionRate: parseFloat(e.target.value) })}
-                            required
-                          />
-                        </div>
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <Label htmlFor="description">Description</Label>
-                        <Textarea
-                          id="description"
-                          value={formData.description}
-                          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                          placeholder="Description de votre campagne d'affiliation..."
-                          rows={4}
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="targetUrl">URL de destination</Label>
-                        <Input
-                          id="targetUrl"
-                          value={formData.targetUrl}
-                          onChange={(e) => setFormData({ ...formData, targetUrl: e.target.value })}
-                          placeholder="https://monsite.com/produit"
-                          required
-                        />
-                        {hasTargetUrlChanged && (
-                          <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 flex items-start gap-3">
-                            <AlertTriangle className="h-5 w-5 text-orange-600 mt-0.5 flex-shrink-0" />
-                            <div className="text-sm">
-                              <p className="text-orange-800 font-medium">Attention - URL modifiée</p>
-                              <p className="text-orange-700">
-                                N'oubliez pas d'ajouter le script de tracking à la nouvelle page de destination pour continuer à traquer les conversions.
-                              </p>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                      
-                      <div className="flex items-center justify-between py-4 px-4 bg-slate-50 rounded-lg">
-                        <div className="space-y-0.5">
-                          <Label htmlFor="isActive">Campagne active</Label>
-                          <p className="text-sm text-muted-foreground">
-                            Les campagnes inactives n'acceptent plus de nouveaux clics
-                          </p>
-                        </div>
-                        <Switch
-                          id="isActive"
-                          checked={formData.isActive}
-                          onCheckedChange={(checked) => setFormData({ ...formData, isActive: checked })}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="flex justify-between pt-6 border-t">
-                      <Button
-                        type="button"
-                        variant="destructive"
-                        onClick={handleDeleteClick}
-                        className="rounded-xl"
-                      >
-                        <Trash2 className="h-4 w-4 mr-2" />
-                        Supprimer la campagne
-                      </Button>
-                      <div className="flex gap-3">
-                        <Button type="button" variant="outline" onClick={() => setOpen(false)} className="rounded-xl">
-                          Annuler
-                        </Button>
-                        <Button type="submit" disabled={loading} className="rounded-xl">
-                          {loading ? 'Enregistrement...' : 'Enregistrer'}
-                        </Button>
-                      </div>
-                    </div>
-                  </form>
-                )}
-
-                {activeTab === 'payment' && (
-                  <div className="space-y-6">
-                    <div className="bg-slate-50 border border-slate-200 rounded-xl p-6">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-medium text-slate-900 text-lg">Carte de paiement configurée</p>
-                          <p className="text-slate-600 mt-1">
-                            {campaign.stripeCustomerId ? 
-                              "Une méthode de paiement est associée à cette campagne" : 
-                              "Aucune méthode de paiement configurée"
-                            }
-                          </p>
-                        </div>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={handlePaymentMethodChange}
-                          className="rounded-xl"
-                        >
-                          <CreditCard className="h-4 w-4 mr-2" />
-                          Changer
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {activeTab === 'affiliates' && (
-                  <AffiliatesList campaignId={campaign.id} />
-                )}
+                {renderTabContent()}
               </div>
             </div>
           </div>
