@@ -19,48 +19,6 @@ interface Campaign {
   paymentMethodId?: string;
 }
 
-// Données simulées pour le développement
-const mockPaymentMethods: PaymentMethod[] = [
-  {
-    id: 'pm_1234567890',
-    type: 'card',
-    last4: '4242',
-    brand: 'visa',
-    exp_month: 12,
-    exp_year: 2025,
-    isDefault: true,
-  },
-  {
-    id: 'pm_0987654321',
-    type: 'card',
-    last4: '5555',
-    brand: 'mastercard',
-    exp_month: 6,
-    exp_year: 2026,
-  },
-];
-
-const mockCampaigns: Campaign[] = [
-  {
-    id: 'camp_1',
-    name: 'Campagne E-commerce',
-    isActive: true,
-    paymentMethodId: 'pm_1234567890',
-  },
-  {
-    id: 'camp_2',
-    name: 'Campagne SaaS',
-    isActive: true,
-    paymentMethodId: 'pm_1234567890',
-  },
-  {
-    id: 'camp_3',
-    name: 'Campagne Blog',
-    isActive: false,
-    paymentMethodId: 'pm_0987654321',
-  },
-];
-
 export const usePaymentMethods = () => {
   const { user } = useAuth();
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
@@ -74,12 +32,16 @@ export const usePaymentMethods = () => {
   }, [user]);
 
   const loadPaymentMethods = async () => {
+    if (!user?.email) return;
+    
     setLoading(true);
     try {
-      // Simuler un appel API
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setPaymentMethods(mockPaymentMethods);
-      setCampaigns(mockCampaigns);
+      // TODO: Implémenter l'appel API pour récupérer les vraies cartes bancaires
+      // Pour l'instant, on initialise avec un tableau vide
+      setPaymentMethods([]);
+      setCampaigns([]);
+      
+      console.log('Chargement des cartes bancaires pour:', user.email);
     } catch (error) {
       console.error('Erreur lors du chargement des cartes:', error);
     } finally {
@@ -94,8 +56,8 @@ export const usePaymentMethods = () => {
   const deletePaymentMethod = async (paymentMethodId: string) => {
     setLoading(true);
     try {
-      // Simuler la suppression et la mise en pause des campagnes
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // TODO: Implémenter l'appel API pour supprimer la carte
+      console.log(`Suppression de la carte ${paymentMethodId}`);
       
       // Mettre en pause les campagnes liées
       setCampaigns(prev => 
