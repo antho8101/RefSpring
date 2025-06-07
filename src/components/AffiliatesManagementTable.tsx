@@ -168,14 +168,16 @@ export const AffiliatesManagementTable = ({ campaignId, onCopyTrackingLink }: Af
                     >
                       <Copy className="h-4 w-4" />
                     </Button>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => handleDeleteAffiliate(affiliate)}
-                      className="rounded-xl text-red-600 hover:bg-red-50 hover:text-red-700 border-red-200"
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
+                    <div className="ml-3 border-l border-slate-200 pl-3">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => handleDeleteAffiliate(affiliate)}
+                        className="rounded-xl text-red-600 hover:bg-red-50 hover:text-red-700 border-red-200"
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
                 </TableCell>
               </TableRow>
