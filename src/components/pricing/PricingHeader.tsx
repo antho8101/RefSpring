@@ -108,31 +108,31 @@ export const PricingHeader = ({ onGetStarted }: PricingHeaderProps) => {
                 </div>
                 <ul className="space-y-4 mb-8 text-base">
                   <li className="flex items-center gap-3 group/item hover:scale-105 transition-transform">
-                    <div className="bg-gradient-to-r from-green-500 to-blue-500 rounded-full p-2 shadow-lg group-hover/item:shadow-xl transition-all">
+                    <div className="bg-gradient-to-r from-green-500 to-blue-500 rounded-full p-2 transition-all">
                       <Check className="w-5 h-5 text-white" />
                     </div>
                     <span className="font-bold text-slate-900 group-hover/item:text-blue-700 transition-colors">✨ Tu paies que si tu gagnes</span>
                   </li>
                   <li className="flex items-center gap-3 group/item hover:scale-105 transition-transform">
-                    <div className="bg-gradient-to-r from-blue-500 to-purple-500 rounded-full p-2 shadow-lg group-hover/item:shadow-xl transition-all">
+                    <div className="bg-gradient-to-r from-blue-500 to-purple-500 rounded-full p-2 transition-all">
                       <Check className="w-5 h-5 text-white" />
                     </div>
                     <span className="font-bold text-slate-900 group-hover/item:text-purple-700 transition-colors">⚡ Setup en 10 minutes chrono</span>
                   </li>
                   <li className="flex items-center gap-3 group/item hover:scale-105 transition-transform">
-                    <div className="bg-gradient-to-r from-purple-500 to-green-500 rounded-full p-2 shadow-lg group-hover/item:shadow-xl transition-all">
+                    <div className="bg-gradient-to-r from-purple-500 to-green-500 rounded-full p-2 transition-all">
                       <Check className="w-5 h-5 text-white" />
                     </div>
                     <span className="font-bold text-slate-900 group-hover/item:text-green-700 transition-colors">🎯 Dashboard qui déchire</span>
                   </li>
                   <li className="flex items-center gap-3 group/item hover:scale-105 transition-transform">
-                    <div className="bg-gradient-to-r from-green-500 to-blue-500 rounded-full p-2 shadow-lg group-hover/item:shadow-xl transition-all">
+                    <div className="bg-gradient-to-r from-green-500 to-blue-500 rounded-full p-2 transition-all">
                       <Check className="w-5 h-5 text-white" />
                     </div>
                     <span className="font-bold text-slate-900 group-hover/item:text-blue-700 transition-colors">🔒 Tracking au pixel près</span>
                   </li>
                   <li className="flex items-center gap-3 group/item hover:scale-105 transition-transform">
-                    <div className="bg-gradient-to-r from-purple-500 to-green-500 rounded-full p-2 shadow-lg group-hover/item:shadow-xl transition-all">
+                    <div className="bg-gradient-to-r from-purple-500 to-green-500 rounded-full p-2 transition-all">
                       <Check className="w-5 h-5 text-white" />
                     </div>
                     <span className="font-bold text-slate-900 group-hover/item:text-purple-700 transition-colors">💰 Paiements automatiques</span>
