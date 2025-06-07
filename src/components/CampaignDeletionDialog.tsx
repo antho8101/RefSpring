@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -175,7 +174,7 @@ export const CampaignDeletionDialog = ({
             variant="destructive" 
             onClick={handleDeleteWithPayments}
             disabled={loading || calculatingCommissions || !distribution}
-            className="bg-red-600 hover:bg-red-700"
+            className="bg-red-600 hover:bg-red-700 text-white"
           >
             {loading ? 'Facturation en cours...' : `Facturer ${totalToDistribute.toFixed(2)}€ et supprimer`}
           </Button>
