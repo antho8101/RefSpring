@@ -1,10 +1,11 @@
+
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, useCarousel } from '@/components/ui/carousel';
 import { DashboardBackground } from '@/components/DashboardBackground';
 import { RefSpringLogo } from '@/components/RefSpringLogo';
-import { CheckCircle, Mail, TrendingUp, Rocket } from 'lucide-react';
+import { CheckCircle, Mail, TrendingUp, Rocket, AlertTriangle } from 'lucide-react';
 
 interface OnboardingCarouselProps {
   onComplete: () => void;
@@ -37,6 +38,14 @@ const slides = [
   },
   {
     id: 4,
+    icon: AlertTriangle,
+    title: "Limitation de responsabilité",
+    subtitle: "Protection juridique",
+    description: "RefSpring ne peut être tenu responsable en cas d'insolvabilité ou de défaillance du créateur de campagne. Nous sommes un intermédiaire technique, pas un garant financier.",
+    color: "from-red-500 to-pink-600"
+  },
+  {
+    id: 5,
     icon: Rocket,
     title: "Bienvenue sur RefSpring !",
     subtitle: "Prêt à commencer ?",
