@@ -1,9 +1,6 @@
 
-
-
 import { X, Clock, CreditCard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { usePaymentNotifications, PaymentNotification } from '@/hooks/usePaymentNotifications';
@@ -27,16 +24,16 @@ const PaymentNotificationItem = ({ notification, onDismiss }: PaymentNotificatio
   };
 
   return (
-    <Alert className="bg-blue-50 border-blue-200 rounded-xl py-4">
-      <CreditCard className="h-4 w-4 text-blue-600" />
-      <AlertDescription className="flex items-center justify-between w-full">
-        <div className="flex items-center gap-2">
+    <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+      <div className="flex items-center justify-between w-full">
+        <div className="flex items-center gap-3">
+          <CreditCard className="h-5 w-5 text-blue-600 flex-shrink-0" />
           <span className="text-blue-800 font-medium">
             Prochain paiement dû : {formatCurrency(notification.amount)} le {formatDate(notification.dueDate)}
           </span>
         </div>
         
-        <div className="flex items-center gap-2 ml-4">
+        <div className="flex items-center gap-2">
           <Button
             variant="outline"
             size="sm"
@@ -57,8 +54,8 @@ const PaymentNotificationItem = ({ notification, onDismiss }: PaymentNotificatio
             Ne plus me rappeler
           </Button>
         </div>
-      </AlertDescription>
-    </Alert>
+      </div>
+    </div>
   );
 };
 
@@ -81,5 +78,3 @@ export const PaymentNotificationBanner = () => {
     </div>
   );
 };
-
-
