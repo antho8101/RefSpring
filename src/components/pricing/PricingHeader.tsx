@@ -23,7 +23,7 @@ export const PricingHeader = ({ onGetStarted }: PricingHeaderProps) => {
       {/* Grid Pattern */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#0000000a_1px,transparent_1px),linear-gradient(to_bottom,#0000000a_1px,transparent_1px)] bg-[size:14px_24px] opacity-20"></div>
       
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 py-8">
         {/* Header with badge */}
         <div className="text-center mb-16 animate-fade-in">
           <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-100 to-purple-100 text-blue-800 px-6 py-3 rounded-full text-sm font-bold mb-8 border border-blue-200/50 shadow-lg hover:shadow-xl transition-all hover:scale-105">
@@ -84,7 +84,7 @@ export const PricingHeader = ({ onGetStarted }: PricingHeaderProps) => {
           </div>
 
           {/* RefSpring - The Hero Treatment */}
-          <div className="relative group transform scale-110 hover:scale-115 transition-all duration-700">
+          <div className="relative group transform scale-105 hover:scale-110 transition-all duration-700">
             {/* Hero-style animated background elements */}
             <div className="absolute inset-0">
               <div className="absolute -inset-4 bg-gradient-to-br from-blue-50 via-white to-purple-50 rounded-3xl opacity-80"></div>
