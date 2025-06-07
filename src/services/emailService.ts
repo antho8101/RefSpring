@@ -218,7 +218,7 @@ export class EmailService {
         html: getCommissionEmailTemplate(data),
       });
 
-      console.log('✅ Email envoyé avec succès:', emailData.id);
+      console.log('✅ Email envoyé avec succès:', emailData.data?.id || 'success');
       return true;
     } catch (error) {
       console.error('❌ Erreur envoi email:', error);
