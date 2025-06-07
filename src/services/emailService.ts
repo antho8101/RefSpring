@@ -212,16 +212,19 @@ export class EmailService {
       console.log('📧 Envoi email commission à:', data.affiliateEmail);
       
       const emailData = await resend.emails.send({
-        from: 'RefSpring <commissions@affiliate.refspring.com>',
+        from: 'RefSpring <commissions@refspring.com>',
         to: [data.affiliateEmail],
         subject: `💰 Votre commission de ${data.amount.toFixed(2)}€ est prête !`,
         html: getCommissionEmailTemplate(data),
       });
 
       console.log('✅ Email envoyé avec succès:', emailData.data?.id || 'success');
+      console.log('📧 Détails envoi:', emailData);
       return true;
     } catch (error) {
-      console.error('❌ Erreur envoi email:', error);
+      console.error('❌ Erreur envoi email complète:', error);
+      console.error('❌ Message d\'erreur:', error.message);
+      console.error('❌ Code d\'erreur:', error.code || 'unknown');
       return false;
     }
   }
