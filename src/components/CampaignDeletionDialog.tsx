@@ -2,8 +2,7 @@
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { AlertTriangle, DollarSign, Users, Calendar, CreditCard } from 'lucide-react';
+import { AlertTriangle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Campaign } from '@/types';
 import { 
@@ -13,8 +12,12 @@ import {
   PaymentDistribution 
 } from '@/services/stripeConnectService';
 import { useAuth } from '@/hooks/useAuth';
-import { format } from 'date-fns';
-import { fr } from 'date-fns/locale';
+import { CampaignInfoSection } from '@/components/campaign-deletion/CampaignInfoSection';
+import { LoadingSection } from '@/components/campaign-deletion/LoadingSection';
+import { BillingBreakdownSection } from '@/components/campaign-deletion/BillingBreakdownSection';
+import { RevenueDisplaySection } from '@/components/campaign-deletion/RevenueDisplaySection';
+import { AffiliatePaymentsSection } from '@/components/campaign-deletion/AffiliatePaymentsSection';
+import { ProcessInfoSection } from '@/components/campaign-deletion/ProcessInfoSection';
 
 interface CampaignDeletionDialogProps {
   campaign: Campaign;
@@ -68,7 +71,6 @@ export const CampaignDeletionDialog = ({
     try {
       console.log('🚀 Début suppression avec paiements pour:', campaign.name);
 
-      // 1. Créer l'enregistrement de distribution
       await createPaymentDistributionRecord(
         campaign.id,
         user.uid,
@@ -76,10 +78,7 @@ export const CampaignDeletionDialog = ({
         'campaign_deletion'
       );
 
-      // 2. Envoyer les liens de paiement Stripe
       await sendStripePaymentLinks(distribution, campaign.name);
-
-      // 3. Supprimer la campagne
       await onConfirmDeletion();
 
       toast({
@@ -118,126 +117,28 @@ export const CampaignDeletionDialog = ({
         </DialogHeader>
 
         <div className="py-4 space-y-4">
-          {/* Info campagne */}
-          <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
-            <h4 className="font-medium text-slate-900 mb-2">Campagne à supprimer</h4>
-            <p className="text-slate-700 font-medium">{campaign.name}</p>
-            <p className="text-sm text-slate-500 mt-1 flex items-center gap-1">
-              <Calendar className="h-4 w-4" />
-              Dernier paiement : {format(lastPaymentDate, 'dd MMMM yyyy', { locale: fr })}
-            </p>
-          </div>
-
-          {/* Calcul des commissions */}
-          {calculatingCommissions && (
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <p className="text-blue-800 flex items-center gap-2">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-                Calcul des montants en cours...
-              </p>
-            </div>
-          )}
+          <CampaignInfoSection campaign={campaign} lastPaymentDate={lastPaymentDate} />
+          
+          <LoadingSection 
+            isLoading={calculatingCommissions} 
+            message="Calcul des montants en cours..." 
+          />
 
           {distribution && (
             <div className="space-y-4">
-              {/* Récapitulatif financier avec séparation claire */}
-              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                <h4 className="font-medium text-red-900 mb-3 flex items-center gap-2">
-                  <CreditCard className="h-4 w-4" />
-                  Montants qui vous seront facturés
-                </h4>
-                <div className="space-y-3">
-                  {/* Commissions affiliés */}
-                  <div className="bg-white rounded-lg p-3 border border-red-100">
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <p className="font-medium text-red-900">Commissions aux affiliés</p>
-                        <p className="text-sm text-red-700">
-                          Montant à reverser aux {distribution.affiliatePayments.length} affilié(s)
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-xl font-bold text-red-900">
-                          {distribution.totalCommissions.toFixed(2)}€
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Commission RefSpring */}
-                  <div className="bg-white rounded-lg p-3 border border-red-100">
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <p className="font-medium text-red-900">Commission RefSpring</p>
-                        <p className="text-sm text-red-700">
-                          2.5% sur le CA de {distribution.totalRevenue.toFixed(2)}€ + frais Stripe
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-xl font-bold text-red-900">
-                          {distribution.platformFee.toFixed(2)}€
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Total */}
-                  <div className="bg-red-100 rounded-lg p-3 border-2 border-red-300">
-                    <div className="flex justify-between items-center">
-                      <p className="text-lg font-bold text-red-900">TOTAL À FACTURER</p>
-                      <p className="text-2xl font-black text-red-900">
-                        {totalToDistribute.toFixed(2)}€
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Chiffre d'affaires pour contexte */}
-              <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
-                <h4 className="font-medium text-slate-900 mb-2 flex items-center gap-2">
-                  <DollarSign className="h-4 w-4" />
-                  Chiffre d'affaires depuis le dernier paiement
-                </h4>
-                <p className="text-2xl font-bold text-slate-900">{distribution.totalRevenue.toFixed(2)}€</p>
-                <p className="text-sm text-slate-600 mt-1">
-                  Généré entre le {format(lastPaymentDate, 'dd MMMM', { locale: fr })} et aujourd'hui
-                </p>
-              </div>
-
-              {/* Détail par affilié */}
-              {distribution.affiliatePayments.length > 0 && (
-                <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
-                  <h4 className="font-medium text-slate-900 mb-3 flex items-center gap-2">
-                    <Users className="h-4 w-4" />
-                    Détail des paiements aux affiliés
-                  </h4>
-                  <div className="space-y-2 max-h-32 overflow-y-auto">
-                    {distribution.affiliatePayments.map((payment) => (
-                      <div key={payment.affiliateId} className="flex items-center justify-between py-2 px-3 bg-white rounded border">
-                        <div>
-                          <p className="text-sm font-medium text-slate-900">{payment.affiliateName}</p>
-                          <p className="text-xs text-slate-500">{payment.conversionsCount} conversions</p>
-                        </div>
-                        <Badge variant="secondary" className="font-semibold">
-                          {payment.totalCommission.toFixed(2)}€
-                        </Badge>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Processus */}
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <h4 className="font-medium text-blue-900 mb-2">Processus de facturation et suppression</h4>
-                <ol className="text-sm text-blue-800 space-y-1">
-                  <li>1. 💳 Prélèvement automatique sur votre carte enregistrée</li>
-                  <li>2. 📧 Envoi des liens de paiement Stripe aux affiliés</li>
-                  <li>3. 💰 Transfert des commissions vers les comptes affiliés</li>
-                  <li>4. 🗑️ Suppression définitive de la campagne et données associées</li>
-                </ol>
-              </div>
+              <BillingBreakdownSection 
+                distribution={distribution} 
+                totalToDistribute={totalToDistribute} 
+              />
+              
+              <RevenueDisplaySection 
+                distribution={distribution} 
+                lastPaymentDate={lastPaymentDate} 
+              />
+              
+              <AffiliatePaymentsSection distribution={distribution} />
+              
+              <ProcessInfoSection />
             </div>
           )}
         </div>
