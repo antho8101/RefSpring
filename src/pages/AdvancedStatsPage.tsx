@@ -1,4 +1,3 @@
-
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAdvancedStatsExtended } from '@/hooks/useAdvancedStatsExtended';
 import { useCampaigns } from '@/hooks/useCampaigns';
@@ -29,6 +28,25 @@ const AdvancedStatsPage = () => {
       console.log(`📊 STATS ÉTENDUES AFFICHÉES (${getPeriodLabel()}):`, stats);
     }
   }, [stats, loading, getPeriodLabel]);
+
+  // Calculer le CA rapporté par le top performer
+  const getTopPerformerRevenue = () => {
+    const topAffiliate = stats.topAffiliates.find(a => 
+      a.name === stats.behavioralMetrics.topPerformingAffiliate.name
+    );
+    
+    if (topAffiliate) {
+      // Calculer le CA basé sur les commissions et le taux de commission
+      const revenue = topAffiliate.commissionRate > 0 
+        ? (topAffiliate.commissions / topAffiliate.commissionRate) * 100
+        : 0;
+      return revenue;
+    }
+    
+    // Fallback: utiliser le CA total divisé par le nombre d'affiliés actifs si pas trouvé
+    const activeAffiliates = stats.topAffiliates.filter(a => a.conversions > 0).length;
+    return activeAffiliates > 0 ? stats.totalRevenue / activeAffiliates : 0;
+  };
 
   if (loading) {
     return (
@@ -224,7 +242,7 @@ const AdvancedStatsPage = () => {
                           style: 'currency',
                           currency: 'EUR',
                           minimumFractionDigits: 0,
-                        }).format(stats.topAffiliates.find(a => a.name === stats.behavioralMetrics.topPerformingAffiliate.name)?.revenue || 0)}
+                        }).format(getTopPerformerRevenue())}
                       </div>
                       <div className="text-xs font-bold text-white/90 uppercase tracking-wide">
                         CA rapporté
