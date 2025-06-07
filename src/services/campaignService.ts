@@ -3,7 +3,8 @@ import { collection, query, where, getDocs, addDoc, updateDoc, deleteDoc, doc, s
 import { db } from '@/lib/firebase';
 import { Campaign } from '@/types';
 
-export interface Campaign {
+// Simplified interface for the payment methods view
+export interface CampaignSummary {
   id: string;
   name: string;
   isActive: boolean;
@@ -11,7 +12,7 @@ export interface Campaign {
 }
 
 export const campaignService = {
-  async getCampaigns(userId: string): Promise<Campaign[]> {
+  async getCampaigns(userId: string): Promise<CampaignSummary[]> {
     console.log('🔍 Chargement des campagnes depuis Firebase pour:', userId);
     
     const campaignsQuery = query(
@@ -29,7 +30,7 @@ export const campaignService = {
         isActive: !data.isDraft && data.paymentConfigured,
         paymentMethodId: data.stripePaymentMethodId,
       };
-    }) as Campaign[];
+    }) as CampaignSummary[];
     
     console.log('✅ Campagnes chargées:', campaignsData.length);
     return campaignsData;

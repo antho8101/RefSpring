@@ -2,13 +2,13 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { paymentMethodService, PaymentMethod } from '@/services/paymentMethodService';
-import { campaignService, Campaign } from '@/services/campaignService';
+import { campaignService, CampaignSummary } from '@/services/campaignService';
 import { duplicateCardRemover } from '@/utils/duplicateCardRemover';
 
 export const usePaymentMethods = () => {
   const { user } = useAuth();
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
-  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+  const [campaigns, setCampaigns] = useState<CampaignSummary[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -40,7 +40,7 @@ export const usePaymentMethods = () => {
     }
   };
 
-  const getLinkedCampaigns = (paymentMethodId: string): Campaign[] => {
+  const getLinkedCampaigns = (paymentMethodId: string): CampaignSummary[] => {
     return campaigns.filter(campaign => campaign.paymentMethodId === paymentMethodId);
   };
 
