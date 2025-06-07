@@ -1,4 +1,3 @@
-
 import { stripeBackendService } from './stripeBackendService';
 
 // Service pour gérer l'intégration avec notre backend simulé
@@ -11,16 +10,17 @@ export class StripeExpressService {
       // 1. Créer ou récupérer le client Stripe
       const customer = await stripeBackendService.createOrGetCustomer(data.userEmail);
       
-      // 2. Créer le SetupIntent
-      const setupIntent = await stripeBackendService.createSetupIntent(customer.id, data.campaignName);
-      
-      // 3. Construire l'URL de redirection Stripe
-      const checkoutUrl = `https://checkout.stripe.com/c/pay/${setupIntent.client_secret}#fidkdWxOYHwnPyd1blpxYHZxWjA0TUl9VHx2YnM8SkNmZGBHPUN1d2lIVlN3fUxAaDNMUkNJXDVfNjVdN0JnQT1SXzhOXyU2U001dUpOQ3x1YklOV0p8TnM0SVdEckZvVnNdfVROQGpVaUhJVz03X2NfYCcpJ2N3amhWYHdzYHcnP3F3cGApJ2lkfGpwcVF8dWAnPyd2bGtiaWBabHFgaCcpJ2BrZGdpYFVpZGZgbWppYWB3dic%2FcXdwYCknaWR8aEZiXWFgeSUl`;
+      // 2. Créer la session de checkout réelle
+      const checkoutSession = await stripeBackendService.createCheckoutSession(
+        customer.id, 
+        data.campaignName, 
+        data.campaignId
+      );
       
       return {
-        setupIntentId: setupIntent.id,
+        setupIntentId: checkoutSession.id, // Utiliser l'ID de session comme référence
         stripeCustomerId: customer.id,
-        checkoutUrl: checkoutUrl,
+        checkoutUrl: checkoutSession.url, // URL réelle générée par Stripe
       };
     } catch (error) {
       console.error('❌ Erreur création setup:', error);
@@ -32,11 +32,12 @@ export class StripeExpressService {
     try {
       console.log('🔍 Vérification setup:', setupIntentId);
       
-      const setupIntent = await stripeBackendService.getSetupIntent(setupIntentId);
+      // Récupérer la session de checkout au lieu du SetupIntent
+      const session = await stripeBackendService.getCheckoutSession(setupIntentId);
       
       return {
-        status: setupIntent.status,
-        paymentMethod: setupIntent.payment_method,
+        status: session.status,
+        paymentMethod: session.setup_intent, // La session contient le setup_intent
       };
     } catch (error) {
       console.error('❌ Erreur vérification setup:', error);

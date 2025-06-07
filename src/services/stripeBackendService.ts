@@ -52,6 +52,27 @@ class StripeBackendService {
     return customer;
   }
 
+  // Créer une session de checkout pour la configuration de paiement
+  async createCheckoutSession(customerId: string, campaignName: string, campaignId: string) {
+    console.log('🔄 Création session checkout pour client:', customerId);
+    
+    const formData = new URLSearchParams();
+    formData.append('customer', customerId);
+    formData.append('mode', 'setup');
+    formData.append('success_url', `${window.location.origin}/payment-success?setup_intent={CHECKOUT_SESSION_ID}&campaign_id=${campaignId}`);
+    formData.append('cancel_url', `${window.location.origin}/dashboard`);
+    formData.append('metadata[campaign_name]', campaignName);
+    formData.append('metadata[campaign_id]', campaignId);
+
+    const session = await this.callStripeAPI('/checkout/sessions', {
+      method: 'POST',
+      body: formData,
+    });
+
+    console.log('✅ Session checkout créée:', session.id);
+    return session;
+  }
+
   // Créer un SetupIntent pour configurer un moyen de paiement
   async createSetupIntent(customerId: string, campaignName: string) {
     console.log('🔄 Création SetupIntent pour client:', customerId);
@@ -74,6 +95,12 @@ class StripeBackendService {
   async getSetupIntent(setupIntentId: string) {
     console.log('🔍 Récupération SetupIntent:', setupIntentId);
     return this.callStripeAPI(`/setup_intents/${setupIntentId}`);
+  }
+
+  // Récupérer une session de checkout
+  async getCheckoutSession(sessionId: string) {
+    console.log('🔍 Récupération session checkout:', sessionId);
+    return this.callStripeAPI(`/checkout/sessions/${sessionId}`);
   }
 
   // Créer un Payment Link pour un affilié
