@@ -1,8 +1,7 @@
-
 import { Resend } from 'resend';
 
 // Configuration Resend avec votre clé API
-const resend = new Resend('re_ERj99YEG_MoezBrj4yV3ghcftsKrXXqoC');
+const resend = new Resend('re_gUoVo8NG_4axGbH6WaWbgF1nBmP85EBrD');
 
 export interface AffiliateCommissionEmail {
   affiliateEmail: string;
