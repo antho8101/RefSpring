@@ -44,7 +44,7 @@ const PaymentNotificationItem = ({ notification, onDismiss }: PaymentNotificatio
             variant="outline"
             size="sm"
             onClick={() => onDismiss(notification.id, false)}
-            className="text-blue-700 border-blue-300 hover:bg-blue-100 rounded-lg"
+            className="text-blue-700 border-blue-300 hover:bg-blue-100"
           >
             <Clock className="h-3 w-3 mr-1" />
             Me le rappeler plus tard
@@ -54,7 +54,7 @@ const PaymentNotificationItem = ({ notification, onDismiss }: PaymentNotificatio
             variant="outline"
             size="sm"
             onClick={() => onDismiss(notification.id, true)}
-            className="text-blue-700 border-blue-300 hover:bg-blue-100 rounded-lg"
+            className="text-blue-700 border-blue-300 hover:bg-blue-100"
           >
             <X className="h-3 w-3 mr-1" />
             Ne plus me rappeler
