@@ -1,16 +1,6 @@
+
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,12 +10,16 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { Settings, Trash2 } from 'lucide-react';
+import { Settings } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
-import { updateEmail, updatePassword, deleteUser, reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth';
+import { deleteUser, reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
+import { AccountSettingsNavigation } from '@/components/AccountSettingsNavigation';
+import { AccountProfileSettings } from '@/components/AccountProfileSettings';
+import { AccountSecuritySettings } from '@/components/AccountSecuritySettings';
+import { AccountBillingSettings } from '@/components/AccountBillingSettings';
+import { AccountPrivacySettings } from '@/components/AccountPrivacySettings';
 
 interface AccountSettingsDialogProps {
   children?: React.ReactNode;
@@ -36,83 +30,15 @@ export const AccountSettingsDialog = ({ children }: AccountSettingsDialogProps) 
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  
-  const [newEmail, setNewEmail] = useState(user?.email || '');
-  const [newPassword, setNewPassword] = useState('');
-  const [currentPassword, setCurrentPassword] = useState('');
-
-  const handleUpdateEmail = async () => {
-    if (!user || !currentPassword) {
-      toast({
-        title: "Erreur",
-        description: "Mot de passe actuel requis",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setLoading(true);
-    try {
-      // Ré-authentification requise pour changer l'email
-      const credential = EmailAuthProvider.credential(user.email!, currentPassword);
-      await reauthenticateWithCredential(user, credential);
-      
-      await updateEmail(user, newEmail);
-      toast({
-        title: "Email mis à jour",
-        description: "Votre email a été modifié avec succès",
-      });
-      setCurrentPassword('');
-    } catch (error: any) {
-      toast({
-        title: "Erreur",
-        description: error.message || "Impossible de mettre à jour l'email",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleUpdatePassword = async () => {
-    if (!user || !currentPassword || !newPassword) {
-      toast({
-        title: "Erreur",
-        description: "Mot de passe actuel et nouveau mot de passe requis",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setLoading(true);
-    try {
-      // Ré-authentification requise pour changer le mot de passe
-      const credential = EmailAuthProvider.credential(user.email!, currentPassword);
-      await reauthenticateWithCredential(user, credential);
-      
-      await updatePassword(user, newPassword);
-      toast({
-        title: "Mot de passe mis à jour",
-        description: "Votre mot de passe a été modifié avec succès",
-      });
-      setCurrentPassword('');
-      setNewPassword('');
-    } catch (error: any) {
-      toast({
-        title: "Erreur",
-        description: error.message || "Impossible de mettre à jour le mot de passe",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [activeTab, setActiveTab] = useState('profile');
+  const [deletionDialogOpen, setDeletionDialogOpen] = useState(false);
+  const [deletionPassword, setDeletionPassword] = useState('');
 
   const handleDeleteAccount = async () => {
-    if (!user || !currentPassword) {
+    if (!user || !deletionPassword) {
       toast({
         title: "Erreur",
-        description: "Mot de passe actuel requis",
+        description: "Mot de passe requis pour supprimer le compte",
         variant: "destructive",
       });
       return;
@@ -120,8 +46,7 @@ export const AccountSettingsDialog = ({ children }: AccountSettingsDialogProps) 
 
     setLoading(true);
     try {
-      // Ré-authentification requise pour supprimer le compte
-      const credential = EmailAuthProvider.credential(user.email!, currentPassword);
+      const credential = EmailAuthProvider.credential(user.email!, deletionPassword);
       await reauthenticateWithCredential(user, credential);
       
       await deleteUser(user);
@@ -137,110 +62,122 @@ export const AccountSettingsDialog = ({ children }: AccountSettingsDialogProps) 
       });
     } finally {
       setLoading(false);
+      setDeletionDialogOpen(false);
+      setDeletionPassword('');
+    }
+  };
+
+  const handleDeleteClick = () => {
+    setOpen(false);
+    setDeletionDialogOpen(true);
+  };
+
+  const getTabTitle = () => {
+    switch (activeTab) {
+      case 'profile':
+        return 'Profil utilisateur';
+      case 'security':
+        return 'Sécurité du compte';
+      case 'billing':
+        return 'Facturation';
+      case 'privacy':
+        return 'Confidentialité';
+      default:
+        return 'Paramètres';
+    }
+  };
+
+  const getTabDescription = () => {
+    switch (activeTab) {
+      case 'profile':
+        return 'Modifiez vos informations personnelles';
+      case 'security':
+        return 'Gérez votre mot de passe et la sécurité';
+      case 'billing':
+        return 'Consultez vos informations de facturation';
+      case 'privacy':
+        return 'Gérez vos préférences de confidentialité';
+      default:
+        return '';
+    }
+  };
+
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case 'profile':
+        return <AccountProfileSettings onCancel={() => setOpen(false)} />;
+      case 'security':
+        return <AccountSecuritySettings onCancel={() => setOpen(false)} />;
+      case 'billing':
+        return <AccountBillingSettings onCancel={() => setOpen(false)} />;
+      case 'privacy':
+        return <AccountPrivacySettings onCancel={() => setOpen(false)} />;
+      default:
+        return null;
     }
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        {children || (
-          <Button variant="outline" size="sm" className="rounded-lg">
-            <Settings className="h-4 w-4" />
-          </Button>
-        )}
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Paramètres du compte</DialogTitle>
-          <DialogDescription>
-            Modifiez vos informations personnelles ou supprimez votre compte.
-          </DialogDescription>
-        </DialogHeader>
-        
-        <div className="space-y-4">
-          {/* Mot de passe actuel */}
-          <div className="space-y-2">
-            <Label htmlFor="currentPassword">Mot de passe actuel</Label>
-            <Input
-              id="currentPassword"
-              type="password"
-              value={currentPassword}
-              onChange={(e) => setCurrentPassword(e.target.value)}
-              placeholder="Entrez votre mot de passe actuel"
+    <>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogTrigger asChild>
+          {children || (
+            <button className="rounded-lg p-2 hover:bg-slate-100 transition-colors">
+              <Settings className="h-4 w-4" />
+            </button>
+          )}
+        </DialogTrigger>
+        <DialogContent className="w-[calc(100vw-60px)] h-[calc(100vh-60px)] max-w-none max-h-none p-0 bg-white overflow-hidden">
+          <div className="flex h-full">
+            <AccountSettingsNavigation 
+              activeTab={activeTab} 
+              onTabChange={setActiveTab}
+              onDeleteClick={handleDeleteClick}
             />
-          </div>
 
-          {/* Nouvel email */}
-          <div className="space-y-2">
-            <Label htmlFor="newEmail">Nouvel email</Label>
-            <Input
-              id="newEmail"
-              type="email"
-              value={newEmail}
-              onChange={(e) => setNewEmail(e.target.value)}
-              placeholder="Entrez votre nouvel email"
-            />
-            <Button 
-              onClick={handleUpdateEmail} 
-              disabled={loading || !currentPassword || newEmail === user?.email}
-              size="sm"
+            <div className="flex-1 flex flex-col">
+              <div className="p-8 border-b bg-white">
+                <h3 className="text-2xl font-semibold text-slate-900">{getTabTitle()}</h3>
+                <p className="text-slate-600 mt-2">{getTabDescription()}</p>
+              </div>
+
+              <div className="flex-1 p-8 overflow-auto">
+                {renderTabContent()}
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <AlertDialog open={deletionDialogOpen} onOpenChange={setDeletionDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Supprimer définitivement le compte</AlertDialogTitle>
+            <AlertDialogDescription>
+              Cette action est irréversible. Toutes vos données seront définitivement supprimées.
+              <div className="mt-4">
+                <input
+                  type="password"
+                  placeholder="Confirmez avec votre mot de passe"
+                  value={deletionPassword}
+                  onChange={(e) => setDeletionPassword(e.target.value)}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-md"
+                />
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleDeleteAccount} 
+              className="bg-red-600 hover:bg-red-700"
+              disabled={!deletionPassword || loading}
             >
-              Mettre à jour l'email
-            </Button>
-          </div>
-
-          {/* Nouveau mot de passe */}
-          <div className="space-y-2">
-            <Label htmlFor="newPassword">Nouveau mot de passe</Label>
-            <Input
-              id="newPassword"
-              type="password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              placeholder="Entrez votre nouveau mot de passe"
-            />
-            <Button 
-              onClick={handleUpdatePassword} 
-              disabled={loading || !currentPassword || !newPassword}
-              size="sm"
-            >
-              Mettre à jour le mot de passe
-            </Button>
-          </div>
-
-          {/* Supprimer le compte */}
-          <div className="pt-4 border-t">
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button variant="destructive" size="sm" disabled={!currentPassword}>
-                  <Trash2 className="h-4 w-4 mr-2" />
-                  Supprimer le compte
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Êtes-vous sûr ?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Cette action est irréversible. Votre compte et toutes vos données seront définitivement supprimés.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Annuler</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleDeleteAccount} className="bg-red-600 hover:bg-red-700">
-                    Supprimer définitivement
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          </div>
-        </div>
-
-        <DialogFooter>
-          <Button variant="outline" onClick={() => setOpen(false)}>
-            Fermer
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+              {loading ? 'Suppression...' : 'Supprimer définitivement'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 };
