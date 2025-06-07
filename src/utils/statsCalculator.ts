@@ -17,15 +17,40 @@ interface AffiliatePerformance {
   conversionRate: number;
 }
 
-export const calculateDailyStats = (clicks: any[], conversions: any[]): DailyStats[] => {
-  const last30Days = Array.from({ length: 30 }, (_, i) => {
+const filterDataByDate = (data: any[], filterDate: Date | null) => {
+  if (!filterDate) return data;
+  
+  return data.filter(item => {
+    if (!item.timestamp) return false;
+    try {
+      const itemDate = item.timestamp.toDate ? 
+        item.timestamp.toDate() : 
+        new Date(item.timestamp);
+      return itemDate >= filterDate;
+    } catch (error) {
+      return false;
+    }
+  });
+};
+
+export const calculateDailyStats = (clicks: any[], conversions: any[], filterDate: Date | null = null): DailyStats[] => {
+  // Filtrer les données si une date de début est spécifiée
+  const filteredClicks = filterDataByDate(clicks, filterDate);
+  const filteredConversions = filterDataByDate(conversions, filterDate);
+
+  // Calculer le nombre de jours à afficher
+  const daysToShow = filterDate ? 
+    Math.min(30, Math.ceil((new Date().getTime() - filterDate.getTime()) / (1000 * 60 * 60 * 24))) + 1 :
+    30;
+
+  const dateRange = Array.from({ length: daysToShow }, (_, i) => {
     const date = new Date();
     date.setDate(date.getDate() - i);
     return date.toISOString().split('T')[0];
   }).reverse();
 
-  return last30Days.map(date => {
-    const dayClicks = clicks.filter(click => {
+  return dateRange.map(date => {
+    const dayClicks = filteredClicks.filter(click => {
       if (!click.timestamp) return false;
       try {
         const clickDate = click.timestamp.toDate ? 
@@ -37,7 +62,7 @@ export const calculateDailyStats = (clicks: any[], conversions: any[]): DailySta
       }
     });
     
-    const dayConversions = conversions.filter(conversion => {
+    const dayConversions = filteredConversions.filter(conversion => {
       if (!conversion.timestamp) return false;
       try {
         const conversionDate = conversion.timestamp.toDate ? 
@@ -66,10 +91,14 @@ export const calculateDailyStats = (clicks: any[], conversions: any[]): DailySta
   });
 };
 
-export const calculateAffiliatePerformance = (affiliates: any[], clicks: any[], conversions: any[]): AffiliatePerformance[] => {
+export const calculateAffiliatePerformance = (affiliates: any[], clicks: any[], conversions: any[], filterDate: Date | null = null): AffiliatePerformance[] => {
+  // Filtrer les données si une date de début est spécifiée
+  const filteredClicks = filterDataByDate(clicks, filterDate);
+  const filteredConversions = filterDataByDate(conversions, filterDate);
+
   return affiliates.map(affiliate => {
-    const affiliateClicks = clicks.filter(click => click.affiliateId === affiliate.id);
-    const affiliateConversions = conversions.filter(conv => conv.affiliateId === affiliate.id);
+    const affiliateClicks = filteredClicks.filter(click => click.affiliateId === affiliate.id);
+    const affiliateConversions = filteredConversions.filter(conv => conv.affiliateId === affiliate.id);
     
     // UTILISER DIRECTEMENT les commissions stockées - PAS DE RECALCUL
     const affiliateCommissions = affiliateConversions.reduce((sum, conv) => {
@@ -90,13 +119,17 @@ export const calculateAffiliatePerformance = (affiliates: any[], clicks: any[], 
   }).sort((a, b) => b.commissions - a.commissions);
 };
 
-export const calculateGlobalMetrics = (clicks: any[], conversions: any[]) => {
-  const totalClicks = clicks.length;
-  const totalConversions = conversions.length;
-  const totalRevenue = conversions.reduce((sum, conv) => sum + (parseFloat(conv.amount) || 0), 0);
+export const calculateGlobalMetrics = (clicks: any[], conversions: any[], filterDate: Date | null = null) => {
+  // Filtrer les données si une date de début est spécifiée
+  const filteredClicks = filterDataByDate(clicks, filterDate);
+  const filteredConversions = filterDataByDate(conversions, filterDate);
+
+  const totalClicks = filteredClicks.length;
+  const totalConversions = filteredConversions.length;
+  const totalRevenue = filteredConversions.reduce((sum, conv) => sum + (parseFloat(conv.amount) || 0), 0);
   
   // UTILISER DIRECTEMENT les commissions stockées - PAS DE RECALCUL
-  const totalCommissions = conversions.reduce((sum, conv) => {
+  const totalCommissions = filteredConversions.reduce((sum, conv) => {
     return sum + (parseFloat(conv.commission) || 0);
   }, 0);
   
@@ -105,11 +138,12 @@ export const calculateGlobalMetrics = (clicks: any[], conversions: any[]) => {
   const averageCPA = totalConversions > 0 ? totalCommissions / totalConversions : 0;
   const averageROAS = totalCommissions > 0 ? totalRevenue / totalCommissions : 0;
 
-  console.log('📊 MÉTRIQUES GLOBALES - COMMISSIONS DIRECTES:', {
+  const periodLabel = filterDate ? 'MOIS EN COURS' : 'TOTAL DEPUIS LE DÉBUT';
+  console.log(`📊 MÉTRIQUES GLOBALES - ${periodLabel}:`, {
     totalCommissions,
     totalRevenue,
     netRevenue,
-    conversions: conversions.map(c => ({ id: c.id, commission: c.commission, amount: c.amount }))
+    conversions: filteredConversions.map(c => ({ id: c.id, commission: c.commission, amount: c.amount }))
   });
 
   return {

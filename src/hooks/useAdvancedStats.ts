@@ -1,39 +1,10 @@
 
 import { useEffect, useState } from 'react';
-import { useAuth } from '@/hooks/useAuth';
-import { 
-  fetchCampaignIds, 
-  fetchClicksForCampaigns, 
-  fetchConversionsForCampaigns, 
-  fetchAffiliatesForCampaigns 
-} from '@/utils/campaignDataFetcher';
-import { 
-  calculateDailyStats, 
-  calculateAffiliatePerformance, 
-  calculateGlobalMetrics 
-} from '@/utils/statsCalculator';
-
-interface DailyStats {
-  date: string;
-  clicks: number;
-  conversions: number;
-  revenue: number;
-  commissions: number;
-}
-
-interface AffiliatePerformance {
-  id: string;
-  name: string;
-  email: string;
-  clicks: number;
-  conversions: number;
-  commissions: number;
-  conversionRate: number;
-}
+import { collection, query, where, getDocs } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
+import { calculateDailyStats, calculateAffiliatePerformance, calculateGlobalMetrics } from '@/utils/statsCalculator';
 
 interface AdvancedStatsData {
-  dailyStats: DailyStats[];
-  topAffiliates: AffiliatePerformance[];
   totalClicks: number;
   totalConversions: number;
   totalRevenue: number;
@@ -42,12 +13,12 @@ interface AdvancedStatsData {
   conversionRate: number;
   averageCPA: number;
   averageROAS: number;
+  dailyStats: any[];
+  topAffiliates: any[];
 }
 
-export const useAdvancedStats = (campaignId?: string) => {
+export const useAdvancedStats = (campaignId: string | undefined, filterDate: Date | null = null) => {
   const [stats, setStats] = useState<AdvancedStatsData>({
-    dailyStats: [],
-    topAffiliates: [],
     totalClicks: 0,
     totalConversions: 0,
     totalRevenue: 0,
@@ -56,13 +27,14 @@ export const useAdvancedStats = (campaignId?: string) => {
     conversionRate: 0,
     averageCPA: 0,
     averageROAS: 0,
+    dailyStats: [],
+    topAffiliates: [],
   });
   const [loading, setLoading] = useState(false);
-  const { user } = useAuth();
 
   useEffect(() => {
-    if (!user) {
-      console.log('📊 ADVANCED STATS - Pas d\'utilisateur connecté');
+    if (!campaignId) {
+      console.log('📊 ADVANCED STATS - Pas de campaignId fourni');
       return;
     }
 
@@ -70,50 +42,57 @@ export const useAdvancedStats = (campaignId?: string) => {
       setLoading(true);
       
       try {
-        console.log('📊 ADVANCED STATS - Chargement des stats avancées pour user:', user.uid, 'campaignId:', campaignId);
+        const periodLabel = filterDate ? 'MOIS EN COURS' : 'DEPUIS LE DÉBUT';
+        console.log(`📊 ADVANCED STATS - Chargement ${periodLabel} pour campagne:`, campaignId);
         
-        // Récupérer les IDs des campagnes
-        const campaignIds = await fetchCampaignIds(user.uid, campaignId);
-
-        if (campaignIds.length === 0) {
-          console.log('📊 Aucune campagne trouvée');
-          setLoading(false);
-          return;
-        }
-
-        // Récupérer toutes les données en parallèle
-        const [allClicks, allConversions, allAffiliates] = await Promise.all([
-          fetchClicksForCampaigns(campaignIds),
-          fetchConversionsForCampaigns(campaignIds),
-          fetchAffiliatesForCampaigns(campaignIds)
+        // Requêtes parallèles pour toutes les données
+        const [affiliatesSnapshot, clicksSnapshot, conversionsSnapshot] = await Promise.all([
+          getDocs(query(collection(db, 'affiliates'), where('campaignId', '==', campaignId))),
+          getDocs(query(collection(db, 'clicks'), where('campaignId', '==', campaignId))),
+          getDocs(query(collection(db, 'conversions'), where('campaignId', '==', campaignId)))
         ]);
 
-        console.log('📊 TOTAUX:', { 
-          clicks: allClicks.length, 
-          conversions: allConversions.length, 
-          affiliates: allAffiliates.length 
-        });
+        const affiliates = affiliatesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        const clicks = clicksSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        const conversions = conversionsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-        // Calculer les statistiques
-        const dailyStats = calculateDailyStats(allClicks, allConversions);
-        const affiliatePerformance = calculateAffiliatePerformance(allAffiliates, allClicks, allConversions);
-        const globalMetrics = calculateGlobalMetrics(allClicks, allConversions);
+        // Calculs avec filtrage par période
+        const globalMetrics = calculateGlobalMetrics(clicks, conversions, filterDate);
+        const dailyStats = calculateDailyStats(clicks, conversions, filterDate);
+        const topAffiliates = calculateAffiliatePerformance(affiliates, clicks, conversions, filterDate);
+
+        console.log(`📊 ADVANCED STATS - Stats calculées ${periodLabel}:`, {
+          ...globalMetrics,
+          dailyStats: dailyStats.length,
+          topAffiliates: topAffiliates.length
+        });
 
         setStats({
-          dailyStats,
-          topAffiliates: affiliatePerformance.slice(0, 10),
           ...globalMetrics,
+          dailyStats,
+          topAffiliates,
         });
-
       } catch (error) {
-        console.error('❌ ADVANCED STATS - Erreur:', error);
+        console.error('❌ ADVANCED STATS - Erreur lors du chargement des stats:', error);
+        setStats({
+          totalClicks: 0,
+          totalConversions: 0,
+          totalRevenue: 0,
+          totalCommissions: 0,
+          netRevenue: 0,
+          conversionRate: 0,
+          averageCPA: 0,
+          averageROAS: 0,
+          dailyStats: [],
+          topAffiliates: [],
+        });
       }
       
       setLoading(false);
     };
 
     loadAdvancedStats();
-  }, [user, campaignId]);
+  }, [campaignId, filterDate]);
 
   return { stats, loading };
 };

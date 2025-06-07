@@ -2,18 +2,21 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAdvancedStats } from '@/hooks/useAdvancedStats';
 import { useCampaigns } from '@/hooks/useCampaigns';
+import { useStatsFilters } from '@/hooks/useStatsFilters';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Globe, Menu } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { AdvancedStatsMetrics } from '@/components/AdvancedStatsMetrics';
 import { AdvancedStatsCharts } from '@/components/AdvancedStatsCharts';
 import { AdvancedStatsAffiliateTable } from '@/components/AdvancedStatsAffiliateTable';
+import { StatsPeriodSelector } from '@/components/StatsPeriodSelector';
 
 const AdvancedStatsPage = () => {
   const { campaignId } = useParams();
   const navigate = useNavigate();
   const { campaigns } = useCampaigns();
-  const { stats, loading } = useAdvancedStats(campaignId);
+  const { period, setPeriod, getDateFilter, getPeriodLabel } = useStatsFilters();
+  const { stats, loading } = useAdvancedStats(campaignId, getDateFilter());
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const campaign = campaigns.find(c => c.id === campaignId);
@@ -21,9 +24,9 @@ const AdvancedStatsPage = () => {
   // Debug: afficher les stats dans la console
   useEffect(() => {
     if (!loading) {
-      console.log('📊 STATS AFFICHÉES:', stats);
+      console.log(`📊 STATS AFFICHÉES (${getPeriodLabel()}):`, stats);
     }
-  }, [stats, loading]);
+  }, [stats, loading, getPeriodLabel]);
 
   if (loading) {
     return (
@@ -59,7 +62,7 @@ const AdvancedStatsPage = () => {
           <div className="flex justify-between items-center h-16">
             <div className="flex-1 min-w-0">
               <h1 className="text-xl sm:text-2xl font-bold text-slate-900 truncate">RefSpring</h1>
-              <p className="text-xs sm:text-sm text-slate-600">Statistiques Avancées</p>
+              <p className="text-xs sm:text-sm text-slate-600">Statistiques Avancées - {getPeriodLabel()}</p>
             </div>
             
             {/* Desktop Header */}
@@ -114,6 +117,15 @@ const AdvancedStatsPage = () => {
 
       {/* Main Content */}
       <main className="w-full px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+        {/* Sélecteur de période */}
+        <div className="mb-6 sm:mb-8 flex justify-center">
+          <StatsPeriodSelector 
+            period={period}
+            onPeriodChange={setPeriod}
+            className="bg-white p-3 rounded-lg border border-slate-200 shadow-sm"
+          />
+        </div>
+
         {/* Message d'information si pas de données */}
         {stats.totalClicks === 0 && stats.totalConversions === 0 && (
           <div className="mb-6 sm:mb-8 bg-blue-50 border border-blue-200 rounded-lg p-4">
@@ -122,7 +134,10 @@ const AdvancedStatsPage = () => {
               <div className="flex-1 min-w-0">
                 <h3 className="text-sm font-medium text-blue-800 mb-2">Aucune donnée disponible</h3>
                 <p className="text-sm text-blue-700">
-                  Cette campagne n'a pas encore généré de clics ou de conversions. Les statistiques apparaîtront dès que vos affiliés commenceront à générer du trafic.
+                  {period === 'current-month' 
+                    ? "Aucune activité détectée ce mois-ci. Les statistiques apparaîtront dès que vos affiliés génèreront du trafic."
+                    : "Cette campagne n'a pas encore généré de clics ou de conversions. Les statistiques apparaîtront dès que vos affiliés commenceront à générer du trafic."
+                  }
                 </p>
               </div>
             </div>
