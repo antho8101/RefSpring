@@ -46,11 +46,11 @@ export const LandingHeader = ({ onRedirectToDashboard, currentPage = 'landing' }
             >
               Tarifs
             </Link>
-            <Link to="/about" className="text-slate-600 hover:text-slate-900 font-medium transition-all hover:scale-105">
-              À propos
+            <Link to="/#dashboard" className="text-slate-600 hover:text-slate-900 font-medium transition-all hover:scale-105">
+              Dashboard
             </Link>
-            <Link to="/contact" className="text-slate-600 hover:text-slate-900 font-medium transition-all hover:scale-105">
-              Contact
+            <Link to="/#testimonials" className="text-slate-600 hover:text-slate-900 font-medium transition-all hover:scale-105">
+              Témoignages
             </Link>
           </nav>
           
