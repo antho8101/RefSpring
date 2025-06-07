@@ -2,7 +2,7 @@
 import { useAffiliates } from '@/hooks/useAffiliates';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Copy, User, Calendar, Hash, Edit2, Trash2, BarChart3, MousePointer, TrendingUp } from 'lucide-react';
+import { Copy, User, Calendar, Hash, Edit2, Trash2, BarChart3, MousePointer, TrendingUp, CreditCard, Percent } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -16,7 +16,7 @@ interface AffiliatesListProps {
   onCopyTrackingLink?: (affiliateId: string) => void;
 }
 
-const AffiliateStatsCard = ({ affiliateId }: { affiliateId: string }) => {
+const AffiliateStatsCard = ({ affiliateId, commissionRate }: { affiliateId: string; commissionRate: number }) => {
   const { stats, loading } = useAffiliateStats(affiliateId);
   
   const formatCurrency = (value: number) => {
@@ -28,6 +28,12 @@ const AffiliateStatsCard = ({ affiliateId }: { affiliateId: string }) => {
   };
 
   const conversionRate = stats.clicks > 0 ? ((stats.conversions / stats.clicks) * 100) : 0;
+  
+  // Calculer le coût total (commissions + 2.5% de frais de plateforme)
+  const platformFeeRate = 0.025; // 2.5%
+  const totalRevenue = stats.commissions / (commissionRate / 100); // Chiffre d'affaires généré
+  const platformFee = totalRevenue * platformFeeRate;
+  const totalCost = stats.commissions + platformFee;
 
   if (loading) {
     return (
@@ -38,7 +44,8 @@ const AffiliateStatsCard = ({ affiliateId }: { affiliateId: string }) => {
   }
 
   return (
-    <div className="flex gap-4 text-xs">
+    <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-xs">
+      {/* Première ligne */}
       <div className="flex items-center gap-1 text-blue-600">
         <MousePointer className="h-3 w-3" />
         <span className="font-medium">{stats.clicks}</span>
@@ -49,13 +56,28 @@ const AffiliateStatsCard = ({ affiliateId }: { affiliateId: string }) => {
         <span className="font-medium">{stats.conversions}</span>
         <span className="text-slate-500">conv.</span>
       </div>
+      
+      {/* Deuxième ligne */}
       <div className="flex items-center gap-1 text-purple-600">
-        <BarChart3 className="h-3 w-3" />
-        <span className="font-medium">{formatCurrency(stats.commissions)}</span>
+        <Percent className="h-3 w-3" />
+        <span className="font-medium">{commissionRate}%</span>
+        <span className="text-slate-500">commission</span>
       </div>
       <div className="flex items-center gap-1 text-orange-600">
         <span className="font-medium">{conversionRate.toFixed(1)}%</span>
-        <span className="text-slate-500">taux</span>
+        <span className="text-slate-500">taux conv.</span>
+      </div>
+      
+      {/* Troisième ligne */}
+      <div className="flex items-center gap-1 text-emerald-600">
+        <BarChart3 className="h-3 w-3" />
+        <span className="font-medium">{formatCurrency(stats.commissions)}</span>
+        <span className="text-slate-500">commissions</span>
+      </div>
+      <div className="flex items-center gap-1 text-red-600">
+        <CreditCard className="h-3 w-3" />
+        <span className="font-medium">{formatCurrency(totalCost)}</span>
+        <span className="text-slate-500">coût total</span>
       </div>
     </div>
   );
@@ -113,9 +135,6 @@ export const AffiliatesList = ({ campaignId, onCopyTrackingLink }: AffiliatesLis
                   <Badge variant="outline" className="text-xs">
                     {affiliate.email}
                   </Badge>
-                  <Badge variant="secondary" className="text-xs">
-                    {affiliate.commissionRate}%
-                  </Badge>
                 </div>
                 
                 <div className="flex items-center gap-4 text-sm text-slate-600 mb-2">
@@ -131,13 +150,13 @@ export const AffiliatesList = ({ campaignId, onCopyTrackingLink }: AffiliatesLis
                   )}
                 </div>
 
-                {/* Nouvelles statistiques */}
+                {/* Statistiques mises à jour */}
                 <div className="bg-slate-50 rounded-lg p-3 border border-slate-100">
-                  <div className="flex items-center gap-2 mb-2">
+                  <div className="flex items-center gap-2 mb-3">
                     <BarChart3 className="h-4 w-4 text-slate-600" />
-                    <span className="text-sm font-medium text-slate-700">Performances</span>
+                    <span className="text-sm font-medium text-slate-700">Performances & Coûts</span>
                   </div>
-                  <AffiliateStatsCard affiliateId={affiliate.id} />
+                  <AffiliateStatsCard affiliateId={affiliate.id} commissionRate={affiliate.commissionRate} />
                 </div>
               </div>
               
