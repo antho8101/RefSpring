@@ -1,11 +1,10 @@
-
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, useCarousel } from '@/components/ui/carousel';
 import { DashboardBackground } from '@/components/DashboardBackground';
 import { RefSpringLogo } from '@/components/RefSpringLogo';
-import { CheckCircle, Shield, TrendingUp, Rocket } from 'lucide-react';
+import { CheckCircle, Mail, TrendingUp, Rocket } from 'lucide-react';
 
 interface OnboardingCarouselProps {
   onComplete: () => void;
@@ -22,18 +21,18 @@ const slides = [
   },
   {
     id: 2,
-    icon: Shield,
-    title: "Outil de tracking uniquement",
-    subtitle: "Notre périmètre d'action",
-    description: "RefSpring est un outil de suivi et d'analyse. Nous ne gérons pas les paiements entre vous et vos affiliés.",
+    icon: Mail,
+    title: "Gestion des paiements simplifiée",
+    subtitle: "Communication automatisée",
+    description: "RefSpring facilite la communication avec vos affiliés en envoyant automatiquement des emails avec les détails des commissions à payer.",
     color: "from-blue-500 to-cyan-600"
   },
   {
     id: 3,
     icon: CheckCircle,
-    title: "Votre responsabilité",
+    title: "Votre responsabilité finale",
     subtitle: "Transparence totale",
-    description: "Il est de votre responsabilité de payer vos affiliés. RefSpring se dégage de tout litige pouvant survenir en cas de non-paiement des commissions.",
+    description: "Bien que RefSpring automatise la communication, le paiement effectif des commissions reste votre responsabilité. RefSpring se dégage de tout litige en cas de non-paiement.",
     color: "from-orange-500 to-red-600"
   },
   {
