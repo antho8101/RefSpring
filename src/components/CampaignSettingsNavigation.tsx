@@ -1,12 +1,15 @@
 
-import { FileText, CreditCard, Users, Code } from 'lucide-react';
+import { FileText, CreditCard, Users, Code, Trash2 } from 'lucide-react';
+import { Separator } from '@/components/ui/separator';
+import { Button } from '@/components/ui/button';
 
 interface CampaignSettingsNavigationProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
+  onDeleteClick?: () => void;
 }
 
-export const CampaignSettingsNavigation = ({ activeTab, onTabChange }: CampaignSettingsNavigationProps) => {
+export const CampaignSettingsNavigation = ({ activeTab, onTabChange, onDeleteClick }: CampaignSettingsNavigationProps) => {
   const navigationItems = [
     { id: 'general', label: 'Général', icon: FileText },
     { id: 'integration', label: 'Intégration', icon: Code },
@@ -40,6 +43,24 @@ export const CampaignSettingsNavigation = ({ activeTab, onTabChange }: CampaignS
           );
         })}
       </nav>
+
+      <div className="mt-6">
+        <Separator className="mb-4" />
+        <div className="space-y-3">
+          <div>
+            <p className="text-xs font-medium text-red-600 uppercase tracking-wide">Danger Zone</p>
+          </div>
+          <Button
+            variant="destructive"
+            onClick={onDeleteClick}
+            className="w-full justify-start rounded-xl"
+            size="sm"
+          >
+            <Trash2 className="h-4 w-4 mr-2" />
+            Supprimer la campagne
+          </Button>
+        </div>
+      </div>
     </div>
   );
 };
