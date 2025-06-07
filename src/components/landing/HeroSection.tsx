@@ -55,7 +55,7 @@ export const HeroSection = ({ scrollY, onRedirectToDashboard }: HeroSectionProps
           <span className="relative text-slate-900">
             et payez{" "}
             <span className="relative inline-block">
-              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent font-black animate-pulse" style={{ filter: 'drop-shadow(0 4px 8px rgba(59, 130, 246, 0.3))' }}>
+              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent font-black animate-pulse text-shadow-none" style={{ textShadow: '0 4px 8px rgba(59, 130, 246, 0.3)' }}>
                 SEULEMENT
               </span>
             </span>
@@ -65,17 +65,7 @@ export const HeroSection = ({ scrollY, onRedirectToDashboard }: HeroSectionProps
 
         {/* Ultra simple explanation */}
         <p className="text-xl md:text-2xl text-slate-700 mb-12 max-w-5xl mx-auto leading-relaxed animate-fade-in font-medium" style={{ animationDelay: '0.4s' }}>
-          <span className="bg-yellow-100 px-3 py-1 rounded-lg border border-yellow-300 font-bold text-slate-900">🤔 C'est quoi RefSpring ?</span>
-          <br /><br />
-          <span className="text-2xl">📈 Vous vendez un produit/service ?</span><br />
-          <span className="text-xl text-slate-600">Créez votre programme d'affiliation et recrutez vos vendeurs</span>
-          <br /><br />
-          <span className="text-2xl">💰 Ils vendent = ils gagnent + vous gagnez</span><br />
-          <span className="text-xl text-slate-600">Ils vendent pas = personne paie rien !</span>
-          <br /><br />
-          <span className="inline-flex items-center gap-2 text-green-600 font-bold text-xl bg-green-50 px-4 py-2 rounded-lg border border-green-200">
-            Simple comme bonjour, non ? 😉 <MousePointer className="w-5 h-5 animate-bounce" />
-          </span>
+          <span className="text-2xl">Créez votre programme d'affiliation et ne payez que quand vos affiliés vous ramènent des ventes ! 💰</span>
         </p>
 
         {/* Enhanced CTA Buttons */}
