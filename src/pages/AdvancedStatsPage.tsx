@@ -4,7 +4,7 @@ import { useAdvancedStatsExtended } from '@/hooks/useAdvancedStatsExtended';
 import { useCampaigns } from '@/hooks/useCampaigns';
 import { useStatsFilters } from '@/hooks/useStatsFilters';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Globe, Menu } from 'lucide-react';
+import { ArrowLeft, Globe, Menu, Crown, Star, TrendingUp } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { AdvancedStatsCharts } from '@/components/AdvancedStatsCharts';
 import { AdvancedStatsAffiliateTable } from '@/components/AdvancedStatsAffiliateTable';
@@ -167,24 +167,82 @@ const AdvancedStatsPage = () => {
               </div>
             </div>
 
-            {/* Colonne droite (1/3) - Analyse temporelle compacte */}
+            {/* Colonne droite (1/3) - HALL OF FAME */}
             <div className="xl:col-span-1">
-              <div className="bg-gradient-to-br from-purple-50/50 via-white to-indigo-50/30 rounded-2xl p-6 shadow-lg border border-white/50 h-full">
-                <h3 className="text-lg font-semibold text-slate-900 mb-4">📊 Analyse Temporelle</h3>
-                <div className="space-y-4">
-                  <div className="bg-white/60 rounded-lg p-4">
-                    <div className="text-2xl font-bold text-blue-600 mb-1">
-                      {stats.timeAnalysis.bestPerformingHour}h
-                    </div>
-                    <p className="text-sm text-slate-600">Meilleure heure</p>
+              <div className="relative bg-gradient-to-br from-amber-400 via-yellow-500 to-orange-500 rounded-2xl p-6 shadow-2xl border-none h-full overflow-hidden transform hover:scale-105 transition-all duration-300">
+                {/* Effet de brillance animé */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -skew-x-12 animate-pulse"></div>
+                
+                {/* Étoiles en arrière-plan */}
+                <div className="absolute top-3 left-3">
+                  <Star className="h-4 w-4 text-yellow-200 fill-current animate-pulse" />
+                </div>
+                <div className="absolute top-6 right-6">
+                  <Star className="h-3 w-3 text-yellow-100 fill-current animate-pulse" style={{ animationDelay: '0.5s' }} />
+                </div>
+                <div className="absolute bottom-3 right-3">
+                  <Star className="h-4 w-4 text-yellow-200 fill-current animate-pulse" style={{ animationDelay: '1s' }} />
+                </div>
+                <div className="absolute bottom-6 left-6">
+                  <Star className="h-2 w-2 text-yellow-100 fill-current animate-pulse" style={{ animationDelay: '1.5s' }} />
+                </div>
+
+                {/* Contenu du Hall of Fame */}
+                <div className="relative z-10 h-full flex flex-col justify-center text-center">
+                  {/* Titre avec couronne */}
+                  <div className="flex items-center justify-center mb-6">
+                    <Crown className="h-8 w-8 text-white drop-shadow-lg mr-2" />
+                    <h3 className="text-xl font-black text-white drop-shadow-lg">HALL OF FAME</h3>
                   </div>
-                  <div className="bg-white/60 rounded-lg p-4">
-                    <div className="text-2xl font-bold text-green-600 mb-1">
-                      {stats.timeAnalysis.bestPerformingDay}
+
+                  {/* Nom de l'affilié */}
+                  <div className="mb-6">
+                    <div className="text-2xl font-black text-white mb-2 drop-shadow-lg break-words">
+                      {stats.behavioralMetrics.topPerformingAffiliate.name}
                     </div>
-                    <p className="text-sm text-slate-600">Meilleur jour</p>
+                    <div className="text-sm text-white/90 font-bold">
+                      🏆 TOP PERFORMER
+                    </div>
+                  </div>
+
+                  {/* Stats principales */}
+                  <div className="space-y-4">
+                    {/* Taux de conversion */}
+                    <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4 border border-white/30">
+                      <div className="text-3xl font-black text-white mb-1 drop-shadow-lg">
+                        {stats.behavioralMetrics.topPerformingAffiliate.conversionRate.toFixed(1)}%
+                      </div>
+                      <div className="text-xs font-bold text-white/90 uppercase tracking-wide">
+                        Taux de conversion
+                      </div>
+                    </div>
+
+                    {/* CA rapporté */}
+                    <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4 border border-white/30">
+                      <div className="text-2xl font-black text-white mb-1 drop-shadow-lg">
+                        {new Intl.NumberFormat('fr-FR', {
+                          style: 'currency',
+                          currency: 'EUR',
+                          minimumFractionDigits: 0,
+                        }).format(stats.topAffiliates.find(a => a.name === stats.behavioralMetrics.topPerformingAffiliate.name)?.revenue || 0)}
+                      </div>
+                      <div className="text-xs font-bold text-white/90 uppercase tracking-wide">
+                        CA rapporté
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Badge tendance */}
+                  <div className="mt-4 flex items-center justify-center">
+                    <div className="bg-emerald-500/30 backdrop-blur-sm rounded-full px-3 py-1 border border-emerald-400/50 flex items-center gap-1">
+                      <TrendingUp className="h-3 w-3 text-white" />
+                      <span className="text-xs font-bold text-white">EN FORME</span>
+                    </div>
                   </div>
                 </div>
+
+                {/* Effet glow externe */}
+                <div className="absolute inset-0 bg-gradient-to-br from-amber-400/50 via-yellow-500/50 to-orange-500/50 blur-2xl -z-10 scale-110"></div>
               </div>
             </div>
           </div>
