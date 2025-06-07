@@ -83,7 +83,7 @@ export const useAdvancedStatsExtended = (campaignId: string | undefined, filterD
         // Filtrer par période courante
         const filterDataByDate = (data: any[], filterDate: Date | null) => {
           if (!filterDate) return data;
-          return data.filter(item => {
+          return data.filter((item: any) => {
             if (!item.timestamp) return false;
             try {
               const itemDate = item.timestamp.toDate ? item.timestamp.toDate() : new Date(item.timestamp);
@@ -107,7 +107,7 @@ export const useAdvancedStatsExtended = (campaignId: string | undefined, filterD
           const previousPeriodStart = new Date(filterDate);
           previousPeriodStart.setDate(previousPeriodStart.getDate() - daysInCurrentPeriod);
           
-          previousClicks = allClicks.filter(item => {
+          previousClicks = allClicks.filter((item: any) => {
             if (!item.timestamp) return false;
             try {
               const itemDate = item.timestamp.toDate ? item.timestamp.toDate() : new Date(item.timestamp);
@@ -117,7 +117,7 @@ export const useAdvancedStatsExtended = (campaignId: string | undefined, filterD
             }
           });
 
-          previousConversions = allConversions.filter(item => {
+          previousConversions = allConversions.filter((item: any) => {
             if (!item.timestamp) return false;
             try {
               const itemDate = item.timestamp.toDate ? item.timestamp.toDate() : new Date(item.timestamp);

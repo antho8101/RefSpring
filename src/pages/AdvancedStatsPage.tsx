@@ -6,7 +6,6 @@ import { useStatsFilters } from '@/hooks/useStatsFilters';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Globe, Menu } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { AdvancedStatsMetrics } from '@/components/AdvancedStatsMetrics';
 import { AdvancedStatsCharts } from '@/components/AdvancedStatsCharts';
 import { AdvancedStatsAffiliateTable } from '@/components/AdvancedStatsAffiliateTable';
 import { AdvancedStatsEvolution } from '@/components/AdvancedStatsEvolution';
@@ -150,9 +149,6 @@ const AdvancedStatsPage = () => {
 
         {/* Métriques d'évolution */}
         <AdvancedStatsEvolution evolution={stats.evolution} />
-
-        {/* Métriques principales */}
-        <AdvancedStatsMetrics stats={stats} loading={loading} />
 
         {/* Métriques comportementales */}
         <AdvancedStatsBehavioralMetrics behavioralMetrics={stats.behavioralMetrics} />
