@@ -133,10 +133,10 @@ export const AffiliatesList = ({ campaignId, onCopyTrackingLink }: AffiliatesLis
             key={affiliate.id}
             className="bg-white border border-slate-200 rounded-lg p-4 hover:shadow-md transition-shadow"
           >
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-3 flex-1">
-                <h4 className="font-medium text-slate-900">{affiliate.name}</h4>
-                <Badge variant="outline" className="text-xs">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between mb-3 gap-3">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-3 flex-1 min-w-0">
+                <h4 className="font-medium text-slate-900 truncate">{affiliate.name}</h4>
+                <Badge variant="outline" className="text-xs w-fit">
                   {affiliate.email}
                 </Badge>
                 <div className="flex items-center gap-1 text-sm text-slate-600">
@@ -151,12 +151,12 @@ export const AffiliatesList = ({ campaignId, onCopyTrackingLink }: AffiliatesLis
                 )}
               </div>
               
-              <div className="flex items-center gap-2">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                 <Button 
                   variant="outline" 
                   size="sm"
                   onClick={() => handleEditAffiliate(affiliate)}
-                  className="rounded-lg"
+                  className="rounded-lg justify-center"
                 >
                   <Edit2 className="h-4 w-4" />
                 </Button>
@@ -164,7 +164,7 @@ export const AffiliatesList = ({ campaignId, onCopyTrackingLink }: AffiliatesLis
                   variant="outline" 
                   size="sm"
                   onClick={() => handleCopyTrackingLink(affiliate.id)}
-                  className="rounded-lg"
+                  className="rounded-lg justify-center"
                 >
                   <Copy className="h-4 w-4 mr-2" />
                   Copier le lien
