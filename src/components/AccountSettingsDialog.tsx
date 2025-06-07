@@ -18,7 +18,6 @@ import { useToast } from '@/hooks/use-toast';
 import { AccountSettingsNavigation } from '@/components/AccountSettingsNavigation';
 import { AccountSettings } from '@/components/AccountSettings';
 import { AccountBillingSettings } from '@/components/AccountBillingSettings';
-import { AccountPrivacySettings } from '@/components/AccountPrivacySettings';
 
 interface AccountSettingsDialogProps {
   children?: React.ReactNode;
@@ -77,8 +76,6 @@ export const AccountSettingsDialog = ({ children }: AccountSettingsDialogProps) 
         return 'Gestion du compte';
       case 'billing':
         return 'Facturation';
-      case 'privacy':
-        return 'Confidentialité';
       default:
         return 'Paramètres';
     }
@@ -90,8 +87,6 @@ export const AccountSettingsDialog = ({ children }: AccountSettingsDialogProps) 
         return 'Modifiez votre email et mot de passe';
       case 'billing':
         return 'Consultez vos informations de facturation';
-      case 'privacy':
-        return 'Gérez vos préférences de confidentialité';
       default:
         return '';
     }
@@ -103,8 +98,6 @@ export const AccountSettingsDialog = ({ children }: AccountSettingsDialogProps) 
         return <AccountSettings onCancel={() => setOpen(false)} />;
       case 'billing':
         return <AccountBillingSettings onCancel={() => setOpen(false)} />;
-      case 'privacy':
-        return <AccountPrivacySettings onCancel={() => setOpen(false)} />;
       default:
         return null;
     }
