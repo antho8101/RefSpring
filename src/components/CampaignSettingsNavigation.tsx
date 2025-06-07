@@ -1,4 +1,3 @@
-
 import { FileText, CreditCard, Users } from 'lucide-react';
 
 interface CampaignSettingsNavigationProps {
@@ -14,7 +13,7 @@ export const CampaignSettingsNavigation = ({ activeTab, onTabChange }: CampaignS
   ];
 
   return (
-    <div className="w-64 bg-slate-50 border-r p-6 flex flex-col">
+    <div className="w-80 bg-slate-50 border-r p-6 flex flex-col">
       <div className="mb-6">
         <h2 className="text-xl font-semibold text-slate-900">Paramètres</h2>
         <p className="text-sm text-slate-600">Configuration de la campagne</p>
