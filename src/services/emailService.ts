@@ -1,12 +1,18 @@
 
-import { Resend } from 'resend';
+import emailjs from '@emailjs/browser';
 
-// Configuration Resend avec votre clé API
-const resend = new Resend('re_gUoVo8NG_4axGbH6WaWbgF1nBmP85EBrD');
+// Configuration EmailJS avec vos clés API
+const EMAILJS_SERVICE_ID = 'default_service'; // À ajuster selon votre configuration EmailJS
+const EMAILJS_TEMPLATE_ID = 'template_commission'; // À ajuster selon votre template
+const EMAILJS_PUBLIC_KEY = 'PL2a6c90I4enuUbE7';
+const EMAILJS_PRIVATE_KEY = 'cLzY1cODYI2SjP7KlLv85';
 
-// Test de la connexion Resend au démarrage
-console.log('🔧 Initialisation du service Resend...');
-console.log('🔑 Clé API configurée:', 're_gUoVo8NG_4axGbH6WaWbgF1nBmP85EBrD');
+// Initialisation EmailJS
+emailjs.init(EMAILJS_PUBLIC_KEY);
+
+// Test de la connexion EmailJS au démarrage
+console.log('🔧 Initialisation du service EmailJS...');
+console.log('🔑 Clé publique configurée:', EMAILJS_PUBLIC_KEY);
 
 export interface AffiliateCommissionEmail {
   affiliateEmail: string;
@@ -16,7 +22,7 @@ export interface AffiliateCommissionEmail {
   paymentLinkUrl: string;
 }
 
-// Template HTML pour l'email de commission
+// Template HTML pour l'email de commission (adapté pour EmailJS)
 const getCommissionEmailTemplate = (data: AffiliateCommissionEmail): string => {
   return `
 <!DOCTYPE html>
@@ -209,7 +215,7 @@ const getCommissionEmailTemplate = (data: AffiliateCommissionEmail): string => {
 `;
 };
 
-// Service principal pour envoyer les emails de commission
+// Service principal pour envoyer les emails de commission avec EmailJS
 export class EmailService {
   static async sendCommissionEmail(data: AffiliateCommissionEmail): Promise<boolean> {
     try {
@@ -218,51 +224,66 @@ export class EmailService {
       console.log('📧 Montant commission:', data.amount);
       console.log('📧 Nom campagne:', data.campaignName);
       
-      console.log('🚀 Tentative d\'envoi via Resend...');
-      console.log('🔗 URL du service Resend:', 'https://api.resend.com/emails');
+      console.log('🚀 Tentative d\'envoi via EmailJS...');
+      console.log('🔗 Service EmailJS configuré avec template ID:', EMAILJS_TEMPLATE_ID);
       
-      const emailPayload = {
-        from: 'RefSpring <commissions@refspring.com>',
-        to: [data.affiliateEmail],
+      // Préparer les paramètres pour EmailJS
+      const templateParams = {
+        to_email: data.affiliateEmail,
+        to_name: data.affiliateName,
+        from_name: 'RefSpring',
         subject: `💰 Votre commission de ${data.amount.toFixed(2)}€ est prête !`,
-        html: getCommissionEmailTemplate(data),
+        affiliate_name: data.affiliateName,
+        commission_amount: data.amount.toFixed(2),
+        campaign_name: data.campaignName,
+        payment_link_url: data.paymentLinkUrl,
+        html_content: getCommissionEmailTemplate(data)
       };
       
-      console.log('📦 Payload email préparé:', {
-        from: emailPayload.from,
-        to: emailPayload.to,
-        subject: emailPayload.subject,
-        htmlLength: emailPayload.html.length
+      console.log('📦 Paramètres template préparés:', {
+        to_email: templateParams.to_email,
+        to_name: templateParams.to_name,
+        subject: templateParams.subject,
+        commission_amount: templateParams.commission_amount,
+        campaign_name: templateParams.campaign_name
       });
 
-      console.log('⏰ Appel resend.emails.send() en cours...');
+      console.log('⏰ Appel emailjs.send() en cours...');
       const startTime = Date.now();
       
-      const emailData = await resend.emails.send(emailPayload);
+      const result = await emailjs.send(
+        EMAILJS_SERVICE_ID,
+        EMAILJS_TEMPLATE_ID,
+        templateParams,
+        EMAILJS_PUBLIC_KEY
+      );
       
       const endTime = Date.now();
-      console.log(`⏱️ Durée de l'appel Resend: ${endTime - startTime}ms`);
+      console.log(`⏱️ Durée de l'appel EmailJS: ${endTime - startTime}ms`);
       
-      console.log('📬 Réponse complète de Resend:', emailData);
-      console.log('📬 Réponse data:', emailData.data);
-      console.log('📬 Réponse error:', emailData.error);
+      console.log('📬 Réponse complète d\'EmailJS:', result);
+      console.log('📬 Status:', result.status);
+      console.log('📬 Text:', result.text);
       
-      if (emailData.error) {
-        console.error('❌ Erreur Resend détectée:', emailData.error);
+      if (result.status === 200) {
+        console.log('✅ Email envoyé avec succès via EmailJS!');
+        return true;
+      } else {
+        console.error('❌ Erreur EmailJS - Status non-200:', result.status);
         return false;
       }
-
-      console.log('✅ Email envoyé avec succès! ID:', emailData.data?.id || 'pas d\'ID');
-      return true;
     } catch (error) {
-      console.error('❌ ERREUR CRITIQUE dans sendCommissionEmail:');
+      console.error('❌ ERREUR CRITIQUE dans sendCommissionEmail (EmailJS):');
       console.error('❌ Type erreur:', typeof error);
       console.error('❌ Erreur complète:', error);
       console.error('❌ Message:', error?.message || 'Pas de message');
       console.error('❌ Stack:', error?.stack || 'Pas de stack');
       
-      if (error?.response) {
-        console.error('❌ Réponse HTTP:', error.response);
+      if (error?.status) {
+        console.error('❌ Status EmailJS:', error.status);
+      }
+      if (error?.text) {
+        console.error('❌ Text EmailJS:', error.text);
       }
       
       return false;
@@ -275,7 +296,7 @@ export class EmailService {
     failed: number;
     errors: string[];
   }> {
-    console.log(`📧 Envoi groupé de ${commissions.length} emails de commission`);
+    console.log(`📧 Envoi groupé de ${commissions.length} emails de commission via EmailJS`);
     
     let successful = 0;
     let failed = 0;
@@ -292,7 +313,7 @@ export class EmailService {
         }
         
         // Délai pour éviter le rate limiting
-        await new Promise(resolve => setTimeout(resolve, 200));
+        await new Promise(resolve => setTimeout(resolve, 500));
       } catch (error) {
         failed++;
         errors.push(`Erreur pour ${commission.affiliateEmail}: ${error.message}`);
