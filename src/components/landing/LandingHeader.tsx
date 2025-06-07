@@ -33,7 +33,8 @@ export const LandingHeader = ({ onRedirectToDashboard, currentPage = 'landing' }
             <RefSpringLogo width="32" height="32" />
             <div className="font-bold text-2xl text-slate-900">RefSpring</div>
           </Link>
-          <nav className="hidden md:flex space-x-8" role="navigation" aria-label="Navigation principale">
+          
+          <nav className="absolute left-1/2 transform -translate-x-1/2 hidden md:flex space-x-8" role="navigation" aria-label="Navigation principale">
             <Link to="/#features" className="text-slate-600 hover:text-slate-900 font-medium transition-all hover:scale-105">
               Fonctionnalités
             </Link>
@@ -52,6 +53,7 @@ export const LandingHeader = ({ onRedirectToDashboard, currentPage = 'landing' }
               Contact
             </Link>
           </nav>
+          
           <div className="flex items-center gap-3">
             <Button variant="outline" className="hidden md:flex hover:scale-105 transition-transform" onClick={handleLoginClick}>
               {user ? t("auth.myDashboard") : t("auth.signIn")}
