@@ -136,14 +136,6 @@ export const HeroSection = ({ scrollY, onRedirectToDashboard }: HeroSectionProps
             </div>
           </div>
         </div>
-
-        {/* Scroll Indicator with Animation */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-          <div className="w-8 h-12 border-2 border-slate-300 rounded-full flex justify-center">
-            <div className="w-1 h-3 bg-slate-400 rounded-full mt-2 animate-pulse"></div>
-          </div>
-          <div className="text-center mt-2 text-sm text-slate-500">Scroll pour découvrir 👇</div>
-        </div>
       </div>
     </section>
   );
