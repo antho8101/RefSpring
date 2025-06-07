@@ -1,9 +1,10 @@
+
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAdvancedStatsExtended } from '@/hooks/useAdvancedStatsExtended';
 import { useCampaigns } from '@/hooks/useCampaigns';
 import { useStatsFilters } from '@/hooks/useStatsFilters';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Globe, Menu, Crown, Star, TrendingUp } from 'lucide-react';
+import { ArrowLeft, Globe, Menu, Crown, Star, TrendingUp, Target, Users, DollarSign, Zap, Clock, Award } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { AdvancedStatsCharts } from '@/components/AdvancedStatsCharts';
 import { AdvancedStatsAffiliateTable } from '@/components/AdvancedStatsAffiliateTable';
@@ -11,6 +12,7 @@ import { AdvancedStatsEvolution } from '@/components/AdvancedStatsEvolution';
 import { AdvancedStatsTimeAnalysis } from '@/components/AdvancedStatsTimeAnalysis';
 import { AdvancedStatsBehavioralMetrics } from '@/components/AdvancedStatsBehavioralMetrics';
 import { StatsPeriodToggle } from '@/components/StatsPeriodToggle';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 const AdvancedStatsPage = () => {
   const { campaignId } = useParams();
@@ -36,20 +38,35 @@ const AdvancedStatsPage = () => {
     );
     
     if (topAffiliate && topAffiliate.conversions > 0) {
-      // Calculer le CA basé sur les commissions et le taux de commission
       const revenue = topAffiliate.commissionRate > 0 
         ? (topAffiliate.commissions / topAffiliate.commissionRate) * 100
-        : topAffiliate.commissions * 10; // Estimation si pas de taux
+        : topAffiliate.commissions * 10;
       return revenue;
     }
     
-    // Fallback: utiliser une estimation basée sur les métriques comportementales
     if (stats.behavioralMetrics.averageOrderValue > 0) {
       return stats.behavioralMetrics.averageOrderValue * stats.behavioralMetrics.topPerformingAffiliate.conversionRate;
     }
     
     return 0;
   };
+
+  // Calculer des métriques additionnelles
+  const calculateAdditionalMetrics = () => {
+    const activeAffiliates = stats.topAffiliates.filter(a => a.conversions > 0).length;
+    const avgCommissionPerAffiliate = activeAffiliates > 0 ? stats.totalCommissions / activeAffiliates : 0;
+    const profitMargin = stats.totalRevenue > 0 ? ((stats.totalRevenue - stats.totalCommissions) / stats.totalRevenue) * 100 : 0;
+    const avgRevenuePerClick = stats.totalClicks > 0 ? stats.totalRevenue / stats.totalClicks : 0;
+    
+    return {
+      activeAffiliates,
+      avgCommissionPerAffiliate,
+      profitMargin,
+      avgRevenuePerClick
+    };
+  };
+
+  const additionalMetrics = calculateAdditionalMetrics();
 
   if (loading) {
     return (
@@ -170,7 +187,7 @@ const AdvancedStatsPage = () => {
           </div>
         )}
 
-        {/* Layout asymétrique principal */}
+        {/* Layout principal restructuré */}
         <div className="space-y-8">
           
           {/* Section 1: Évolution des performances (pleine largeur) */}
@@ -178,29 +195,25 @@ const AdvancedStatsPage = () => {
             <AdvancedStatsEvolution evolution={stats.evolution} />
           </div>
 
-          {/* Section 2: Layout 2/3 - 1/3 */}
-          <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+          {/* Section 2: Métriques comportementales + Hall of Fame + Métriques additionnelles */}
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
             
-            {/* Colonne gauche (2/3) - Métriques comportementales */}
-            <div className="xl:col-span-2">
+            {/* Métriques comportementales */}
+            <div className="xl:col-span-1">
               <div className="bg-gradient-to-br from-white via-slate-50/50 to-blue-50/30 rounded-2xl p-6 shadow-lg border border-white/50">
                 <AdvancedStatsBehavioralMetrics behavioralMetrics={stats.behavioralMetrics} />
               </div>
             </div>
 
-            {/* Colonne droite (1/3) - HALL OF FAME avec glow discret mais animé */}
+            {/* HALL OF FAME */}
             <div className="xl:col-span-1 relative">
-              {/* Effet glow discret avec pulse doux */}
               <div className="absolute -inset-2 bg-gradient-to-r from-blue-400/10 via-purple-500/10 to-blue-400/10 rounded-2xl blur-lg animate-pulse" style={{ animationDuration: '3s' }}></div>
               <div className="absolute -inset-1 bg-gradient-to-r from-purple-400/8 via-blue-500/8 to-purple-400/8 rounded-xl blur-md animate-pulse" style={{ animationDelay: '1.5s', animationDuration: '4s' }}></div>
               
-              {/* Carte principale avec rotation subtile */}
-              <div className="relative bg-gradient-to-br from-blue-500 via-purple-600 to-indigo-700 rounded-2xl p-6 shadow-2xl border-none h-full overflow-hidden transform hover:scale-[1.02] transition-all duration-500 z-10">
-                {/* Effet de brillance animé qui tourne - plus subtil */}
+              <div className="relative bg-gradient-to-br from-blue-500 via-purple-600 to-indigo-700 rounded-2xl p-6 shadow-2xl border-none h-full overflow-hidden transform hover:scale-[1.01] transition-all duration-700 z-10">
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -skew-x-12 animate-pulse" style={{ animationDuration: '4s' }}></div>
                 <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-white/3 via-transparent to-white/3 animate-pulse" style={{ animationDelay: '2s', animationDuration: '5s' }}></div>
                 
-                {/* Étoiles en arrière-plan avec animations décalées */}
                 <div className="absolute top-3 left-3">
                   <Star className="h-4 w-4 text-blue-200 fill-current animate-pulse" style={{ animationDuration: '2s' }} />
                 </div>
@@ -214,15 +227,12 @@ const AdvancedStatsPage = () => {
                   <Star className="h-2 w-2 text-blue-100 fill-current animate-pulse" style={{ animationDelay: '1.8s', animationDuration: '2.2s' }} />
                 </div>
 
-                {/* Contenu du Hall of Fame */}
                 <div className="relative z-10 h-full flex flex-col justify-center text-center">
-                  {/* Titre avec couronne */}
                   <div className="flex items-center justify-center mb-6">
                     <Crown className="h-8 w-8 text-white drop-shadow-lg mr-2 animate-pulse" style={{ animationDuration: '2.5s' }} />
                     <h3 className="text-xl font-black text-white drop-shadow-lg">HALL OF FAME</h3>
                   </div>
 
-                  {/* Nom de l'affilié */}
                   <div className="mb-6">
                     <div className="text-2xl font-black text-white mb-2 drop-shadow-lg break-words">
                       {stats.behavioralMetrics.topPerformingAffiliate.name}
@@ -232,9 +242,7 @@ const AdvancedStatsPage = () => {
                     </div>
                   </div>
 
-                  {/* Stats principales */}
                   <div className="space-y-4">
-                    {/* Taux de conversion */}
                     <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4 border border-white/30">
                       <div className="text-3xl font-black text-white mb-1 drop-shadow-lg">
                         {stats.behavioralMetrics.topPerformingAffiliate.conversionRate.toFixed(1)}%
@@ -244,7 +252,6 @@ const AdvancedStatsPage = () => {
                       </div>
                     </div>
 
-                    {/* CA rapporté */}
                     <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4 border border-white/30">
                       <div className="text-2xl font-black text-white mb-1 drop-shadow-lg">
                         {new Intl.NumberFormat('fr-FR', {
@@ -259,7 +266,6 @@ const AdvancedStatsPage = () => {
                     </div>
                   </div>
 
-                  {/* Badge tendance */}
                   <div className="mt-4 flex items-center justify-center">
                     <div className="bg-emerald-500/30 backdrop-blur-sm rounded-full px-3 py-1 border border-emerald-400/50 flex items-center gap-1 animate-pulse" style={{ animationDuration: '2.8s' }}>
                       <TrendingUp className="h-3 w-3 text-white" />
@@ -269,15 +275,73 @@ const AdvancedStatsPage = () => {
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* Section 3: Layout 1/3 - 2/3 inversé */}
-          <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-            
-            {/* Colonne gauche (1/3) - Résumé financier */}
+            {/* Métriques additionnelles */}
             <div className="xl:col-span-1">
               <div className="bg-gradient-to-br from-emerald-50/50 via-white to-green-50/30 rounded-2xl p-6 shadow-lg border border-white/50 h-full">
-                <h3 className="text-lg font-semibold text-slate-900 mb-4">💰 Performance Financière</h3>
+                <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
+                  <Zap className="h-5 w-5 text-emerald-600" />
+                  Métriques Avancées
+                </h3>
+                <div className="space-y-4">
+                  <div className="bg-white/60 rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <Users className="h-5 w-5 text-blue-600" />
+                      <span className="text-xl font-bold text-blue-600">{additionalMetrics.activeAffiliates}</span>
+                    </div>
+                    <p className="text-sm text-slate-600">Affiliés actifs</p>
+                  </div>
+
+                  <div className="bg-white/60 rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <DollarSign className="h-5 w-5 text-green-600" />
+                      <span className="text-lg font-bold text-green-600">
+                        {new Intl.NumberFormat('fr-FR', {
+                          style: 'currency',
+                          currency: 'EUR',
+                          minimumFractionDigits: 0,
+                        }).format(additionalMetrics.avgCommissionPerAffiliate)}
+                      </span>
+                    </div>
+                    <p className="text-sm text-slate-600">Commission moy./affilié</p>
+                  </div>
+
+                  <div className="bg-white/60 rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <Target className="h-5 w-5 text-purple-600" />
+                      <span className="text-xl font-bold text-purple-600">{additionalMetrics.profitMargin.toFixed(1)}%</span>
+                    </div>
+                    <p className="text-sm text-slate-600">Marge bénéficiaire</p>
+                  </div>
+
+                  <div className="bg-white/60 rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <Award className="h-5 w-5 text-orange-600" />
+                      <span className="text-lg font-bold text-orange-600">
+                        {new Intl.NumberFormat('fr-FR', {
+                          style: 'currency',
+                          currency: 'EUR',
+                          minimumFractionDigits: 2,
+                        }).format(additionalMetrics.avgRevenuePerClick)}
+                      </span>
+                    </div>
+                    <p className="text-sm text-slate-600">CA moyen/clic</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Section 3: Graphiques et performance financière */}
+          <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
+            
+            {/* Performance Financière compacte (1/4) */}
+            <div className="xl:col-span-1">
+              <div className="bg-gradient-to-br from-emerald-50/50 via-white to-green-50/30 rounded-2xl p-6 shadow-lg border border-white/50 h-full">
+                <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
+                  <DollarSign className="h-5 w-5 text-emerald-600" />
+                  Finance
+                </h3>
                 <div className="space-y-4">
                   <div className="bg-white/60 rounded-lg p-4">
                     <div className="text-xl font-bold text-emerald-600 mb-1">
@@ -299,8 +363,8 @@ const AdvancedStatsPage = () => {
               </div>
             </div>
 
-            {/* Colonne droite (2/3) - Graphiques */}
-            <div className="xl:col-span-2">
+            {/* Graphiques (3/4) */}
+            <div className="xl:col-span-3">
               <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/50">
                 <AdvancedStatsCharts 
                   dailyStats={stats.dailyStats}
