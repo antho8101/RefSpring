@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { LandingHeader } from "@/components/landing/LandingHeader";
@@ -115,9 +116,13 @@ const LandingPage = () => {
         <LandingHeader onRedirectToDashboard={redirectToDashboard} />
         <HeroSection scrollY={scrollY} onRedirectToDashboard={redirectToDashboard} />
         <StorySection />
-        <DashboardPreview />
+        <div id="dashboard">
+          <DashboardPreview />
+        </div>
         <AdvancedFeaturesSection />
-        <TestimonialsSection />
+        <div id="testimonials">
+          <TestimonialsSection />
+        </div>
         <FeaturesSection />
         <StatsSection />
         <CTASection onRedirectToDashboard={redirectToDashboard} />
