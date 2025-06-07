@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Users, Target, DollarSign, Repeat, Crown, Star } from 'lucide-react';
+import { Users, Target, DollarSign, Repeat } from 'lucide-react';
 
 interface BehavioralMetrics {
   averageOrderValue: number;
@@ -28,7 +28,7 @@ export const AdvancedStatsBehavioralMetrics = ({ behavioralMetrics }: AdvancedSt
   return (
     <div className="mb-6 sm:mb-8">
       <h3 className="text-lg font-semibold text-slate-900 mb-4">Métriques comportementales</h3>
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
         
         {/* Valeur moyenne des commandes */}
         <Card className="bg-white border-slate-200 shadow-sm hover:shadow-md transition-shadow">
@@ -44,43 +44,6 @@ export const AdvancedStatsBehavioralMetrics = ({ behavioralMetrics }: AdvancedSt
             </div>
             <p className="text-xs text-slate-500">Par conversion</p>
           </CardContent>
-        </Card>
-
-        {/* Hall of Fame - Top Affilié */}
-        <Card className="relative bg-gradient-to-br from-amber-400 via-yellow-500 to-orange-500 border-none shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 overflow-hidden">
-          {/* Effet de brillance animé */}
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 animate-pulse"></div>
-          
-          {/* Étoiles en arrière-plan */}
-          <div className="absolute top-2 left-2">
-            <Star className="h-3 w-3 text-yellow-200 fill-current animate-pulse" />
-          </div>
-          <div className="absolute top-4 right-4">
-            <Star className="h-2 w-2 text-yellow-100 fill-current animate-pulse" style={{ animationDelay: '0.5s' }} />
-          </div>
-          <div className="absolute bottom-2 right-2">
-            <Star className="h-3 w-3 text-yellow-200 fill-current animate-pulse" style={{ animationDelay: '1s' }} />
-          </div>
-          
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
-            <CardTitle className="text-sm font-bold text-white drop-shadow-md">🏆 HALL OF FAME</CardTitle>
-            <div className="p-2 bg-white/20 backdrop-blur-sm rounded-full shadow-lg">
-              <Crown className="h-4 w-4 text-white drop-shadow-md" />
-            </div>
-          </CardHeader>
-          <CardContent className="relative z-10">
-            <div className="text-lg font-black text-white mb-1 truncate drop-shadow-md">
-              {behavioralMetrics.topPerformingAffiliate.name}
-            </div>
-            <div className="flex items-center gap-1">
-              <div className="text-xs font-bold text-white/90 bg-white/20 px-2 py-1 rounded-full backdrop-blur-sm">
-                {behavioralMetrics.topPerformingAffiliate.conversionRate.toFixed(1)}% de conversion
-              </div>
-            </div>
-          </CardContent>
-          
-          {/* Effet glow */}
-          <div className="absolute inset-0 bg-gradient-to-br from-amber-400/50 via-yellow-500/50 to-orange-500/50 blur-xl -z-10"></div>
         </Card>
 
         {/* Taux de rétention des affiliés */}
