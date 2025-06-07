@@ -1,3 +1,4 @@
+
 import { X, Clock, CreditCard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -24,7 +25,7 @@ const PaymentNotificationItem = ({ notification, onDismiss }: PaymentNotificatio
   };
 
   return (
-    <Alert className="bg-blue-50 border-blue-200 mb-4 rounded-xl">
+    <Alert className="bg-blue-50 border-blue-200 mb-3 rounded-xl">
       <CreditCard className="h-4 w-4 text-blue-600" />
       <AlertDescription className="flex items-center justify-between w-full">
         <div className="flex items-center gap-2">
@@ -38,7 +39,7 @@ const PaymentNotificationItem = ({ notification, onDismiss }: PaymentNotificatio
             variant="outline"
             size="sm"
             onClick={() => onDismiss(notification.id, false)}
-            className="text-blue-700 border-blue-300 hover:bg-blue-100"
+            className="text-blue-700 border-blue-300 hover:bg-blue-100 rounded-xl"
           >
             <Clock className="h-3 w-3 mr-1" />
             Me le rappeler plus tard
@@ -48,7 +49,7 @@ const PaymentNotificationItem = ({ notification, onDismiss }: PaymentNotificatio
             variant="outline"
             size="sm"
             onClick={() => onDismiss(notification.id, true)}
-            className="text-blue-700 border-blue-300 hover:bg-blue-100"
+            className="text-blue-700 border-blue-300 hover:bg-blue-100 rounded-xl"
           >
             <X className="h-3 w-3 mr-1" />
             Ne plus me rappeler
