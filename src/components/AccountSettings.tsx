@@ -111,7 +111,7 @@ export const AccountSettings = ({ onCancel }: AccountSettingsProps) => {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 max-w-2xl">
       {/* Email Section */}
       <div className="space-y-6">
         <div>
@@ -127,7 +127,7 @@ export const AccountSettings = ({ onCancel }: AccountSettingsProps) => {
               type="email"
               value={user?.email || ''}
               disabled
-              className="bg-slate-50"
+              className="bg-slate-50 max-w-md"
             />
           </div>
 
@@ -139,6 +139,7 @@ export const AccountSettings = ({ onCancel }: AccountSettingsProps) => {
               value={newEmail}
               onChange={(e) => setNewEmail(e.target.value)}
               placeholder="Entrez votre nouvel email"
+              className="max-w-md"
             />
           </div>
 
@@ -150,13 +151,14 @@ export const AccountSettings = ({ onCancel }: AccountSettingsProps) => {
               value={emailPassword}
               onChange={(e) => setEmailPassword(e.target.value)}
               placeholder="Confirmez avec votre mot de passe actuel"
+              className="max-w-md"
             />
           </div>
 
           <Button 
             onClick={handleUpdateEmail} 
             disabled={loading || !emailPassword || newEmail === user?.email}
-            className="w-full"
+            className="w-full max-w-md"
           >
             {loading ? 'Mise à jour...' : 'Mettre à jour l\'email'}
           </Button>
@@ -181,6 +183,7 @@ export const AccountSettings = ({ onCancel }: AccountSettingsProps) => {
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
               placeholder="Entrez votre mot de passe actuel"
+              className="max-w-md"
             />
           </div>
 
@@ -192,6 +195,7 @@ export const AccountSettings = ({ onCancel }: AccountSettingsProps) => {
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               placeholder="Entrez votre nouveau mot de passe"
+              className="max-w-md"
             />
           </div>
 
@@ -203,13 +207,14 @@ export const AccountSettings = ({ onCancel }: AccountSettingsProps) => {
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="Confirmez votre nouveau mot de passe"
+              className="max-w-md"
             />
           </div>
 
           <Button 
             onClick={handleUpdatePassword} 
             disabled={loading || !currentPassword || !newPassword || !confirmPassword}
-            className="w-full"
+            className="w-full max-w-md"
           >
             {loading ? 'Mise à jour...' : 'Mettre à jour le mot de passe'}
           </Button>
