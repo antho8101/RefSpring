@@ -87,7 +87,7 @@ export const PricingHeader = ({ onGetStarted }: PricingHeaderProps) => {
           <div className="relative group transform scale-110 hover:scale-115 transition-all duration-700">
             {/* Hero-style animated background elements */}
             <div className="absolute inset-0">
-              <div className="absolute -inset-8 bg-gradient-to-br from-blue-50 via-white to-purple-50 rounded-3xl opacity-80"></div>
+              <div className="absolute -inset-4 bg-gradient-to-br from-blue-50 via-white to-purple-50 rounded-3xl opacity-80"></div>
               <div className="absolute top-4 left-4 w-32 h-32 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-full blur-2xl animate-pulse"></div>
               <div className="absolute bottom-4 right-4 w-40 h-40 bg-gradient-to-r from-green-500/20 to-blue-500/20 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '1s' }}></div>
               <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-24 h-24 bg-gradient-to-r from-purple-500/15 to-pink-500/15 rounded-full blur-xl animate-pulse" style={{ animationDelay: '2s' }}></div>
