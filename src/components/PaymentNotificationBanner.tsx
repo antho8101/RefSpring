@@ -1,4 +1,3 @@
-
 import { X, Clock, CreditCard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -32,11 +31,6 @@ const PaymentNotificationItem = ({ notification, onDismiss }: PaymentNotificatio
           <span className="text-blue-800 font-medium">
             Prochain paiement dû : {formatCurrency(notification.amount)} le {formatDate(notification.dueDate)}
           </span>
-          {notification.campaignName && (
-            <span className="text-blue-600 text-sm">
-              {notification.campaignName}
-            </span>
-          )}
         </div>
         
         <div className="flex items-center gap-2 ml-4">
