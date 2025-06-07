@@ -1,3 +1,4 @@
+
 import { useAffiliates } from '@/hooks/useAffiliates';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -73,10 +74,15 @@ const AffiliateStatsCard = ({ affiliateId, commissionRate }: { affiliateId: stri
         <span className="font-medium">{formatCurrency(stats.commissions)}</span>
         <span className="text-slate-500">commissions</span>
       </div>
-      <div className="flex items-center gap-1 text-red-600">
-        <CreditCard className="h-3 w-3" />
-        <span className="font-medium">{formatCurrency(totalCost)}</span>
-        <span className="text-slate-500">coût total</span>
+      <div className="flex flex-col">
+        <div className="flex items-center gap-1 text-red-600">
+          <CreditCard className="h-3 w-3" />
+          <span className="font-medium">{formatCurrency(totalCost)}</span>
+          <span className="text-slate-500">coût total</span>
+        </div>
+        <span className="text-[10px] text-slate-400 mt-0.5">
+          (incl. {formatCurrency(platformFee)} RefSpring)
+        </span>
       </div>
     </div>
   );
