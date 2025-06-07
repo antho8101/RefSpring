@@ -21,12 +21,52 @@ export const CreateAffiliateDialog = ({ campaignId, campaignName }: CreateAffili
     email: '',
     commissionRate: 10,
   });
+  const [errors, setErrors] = useState({
+    name: '',
+    email: '',
+    commissionRate: '',
+  });
   
   const { createAffiliate } = useAffiliates();
   const { toast } = useToast();
 
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const validateForm = () => {
+    const newErrors = {
+      name: '',
+      email: '',
+      commissionRate: '',
+    };
+
+    if (!formData.name.trim()) {
+      newErrors.name = 'Le nom est obligatoire';
+    }
+
+    if (!formData.email.trim()) {
+      newErrors.email = 'L\'email est obligatoire pour envoyer les paiements';
+    } else if (!validateEmail(formData.email)) {
+      newErrors.email = 'Veuillez entrer une adresse email valide';
+    }
+
+    if (formData.commissionRate < 0 || formData.commissionRate > 100) {
+      newErrors.commissionRate = 'Le taux de commission doit être entre 0 et 100%';
+    }
+
+    setErrors(newErrors);
+    return !Object.values(newErrors).some(error => error !== '');
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!validateForm()) {
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -43,6 +83,7 @@ export const CreateAffiliateDialog = ({ campaignId, campaignName }: CreateAffili
       
       setOpen(false);
       setFormData({ name: '', email: '', commissionRate: 10 });
+      setErrors({ name: '', email: '', commissionRate: '' });
     } catch (error: any) {
       toast({
         title: "Erreur",
@@ -51,6 +92,15 @@ export const CreateAffiliateDialog = ({ campaignId, campaignName }: CreateAffili
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleInputChange = (field: string, value: string | number) => {
+    setFormData({ ...formData, [field]: value });
+    
+    // Effacer l'erreur quand l'utilisateur commence à taper
+    if (errors[field as keyof typeof errors]) {
+      setErrors({ ...errors, [field]: '' });
     }
   };
 
@@ -66,36 +116,45 @@ export const CreateAffiliateDialog = ({ campaignId, campaignName }: CreateAffili
         <DialogHeader>
           <DialogTitle>Ajouter un affilié</DialogTitle>
           <DialogDescription>
-            Ajoutez un nouvel affilié à la campagne "{campaignName}"
+            Ajoutez un nouvel affilié à la campagne "{campaignName}". L'email est obligatoire pour l'envoi des paiements.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="name">Nom complet</Label>
+              <Label htmlFor="name">Nom complet *</Label>
               <Input
                 id="name"
                 value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                onChange={(e) => handleInputChange('name', e.target.value)}
                 placeholder="Ex: Jean Dupont"
-                required
+                className={errors.name ? 'border-red-500' : ''}
               />
+              {errors.name && (
+                <p className="text-sm text-red-500">{errors.name}</p>
+              )}
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">Email *</Label>
               <Input
                 id="email"
                 type="email"
                 value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                onChange={(e) => handleInputChange('email', e.target.value)}
                 placeholder="jean@exemple.com"
-                required
+                className={errors.email ? 'border-red-500' : ''}
               />
+              {errors.email && (
+                <p className="text-sm text-red-500">{errors.email}</p>
+              )}
+              <p className="text-xs text-gray-500">
+                Obligatoire pour l'envoi des paiements de commissions
+              </p>
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="commissionRate">Taux de commission (%)</Label>
+              <Label htmlFor="commissionRate">Taux de commission (%) *</Label>
               <Input
                 id="commissionRate"
                 type="number"
@@ -103,10 +162,13 @@ export const CreateAffiliateDialog = ({ campaignId, campaignName }: CreateAffili
                 max="100"
                 step="0.1"
                 value={formData.commissionRate}
-                onChange={(e) => setFormData({ ...formData, commissionRate: parseFloat(e.target.value) })}
+                onChange={(e) => handleInputChange('commissionRate', parseFloat(e.target.value))}
                 placeholder="10"
-                required
+                className={errors.commissionRate ? 'border-red-500' : ''}
               />
+              {errors.commissionRate && (
+                <p className="text-sm text-red-500">{errors.commissionRate}</p>
+              )}
             </div>
           </div>
           
