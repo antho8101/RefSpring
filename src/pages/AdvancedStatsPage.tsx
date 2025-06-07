@@ -9,7 +9,7 @@ import { useEffect, useState } from 'react';
 import { AdvancedStatsMetrics } from '@/components/AdvancedStatsMetrics';
 import { AdvancedStatsCharts } from '@/components/AdvancedStatsCharts';
 import { AdvancedStatsAffiliateTable } from '@/components/AdvancedStatsAffiliateTable';
-import { StatsPeriodSelector } from '@/components/StatsPeriodSelector';
+import { StatsPeriodToggle } from '@/components/StatsPeriodToggle';
 
 const AdvancedStatsPage = () => {
   const { campaignId } = useParams();
@@ -64,9 +64,13 @@ const AdvancedStatsPage = () => {
               <h1 className="text-xl sm:text-2xl font-bold text-slate-900 truncate">RefSpring</h1>
               <p className="text-xs sm:text-sm text-slate-600">Statistiques Avancées - {getPeriodLabel()}</p>
             </div>
-            
-            {/* Desktop Header */}
+
+            {/* Toggle de période dans le header */}
             <div className="hidden lg:flex items-center space-x-4">
+              <StatsPeriodToggle 
+                period={period}
+                onPeriodChange={setPeriod}
+              />
               <div className="text-sm text-slate-700 bg-slate-100 px-3 py-1 rounded-full max-w-[300px] truncate">
                 Campagne : <span className="font-semibold">{campaign.name}</span>
               </div>
@@ -95,6 +99,12 @@ const AdvancedStatsPage = () => {
           {isMobileMenuOpen && (
             <div className="lg:hidden border-t border-slate-200 bg-white">
               <div className="py-4 space-y-3">
+                <div className="flex justify-center">
+                  <StatsPeriodToggle 
+                    period={period}
+                    onPeriodChange={setPeriod}
+                  />
+                </div>
                 <div className="text-sm text-slate-700 px-3 py-2 bg-slate-50 rounded-lg">
                   Campagne : <span className="font-semibold">{campaign.name}</span>
                 </div>
@@ -117,15 +127,6 @@ const AdvancedStatsPage = () => {
 
       {/* Main Content */}
       <main className="w-full px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
-        {/* Sélecteur de période */}
-        <div className="mb-6 sm:mb-8 flex justify-center">
-          <StatsPeriodSelector 
-            period={period}
-            onPeriodChange={setPeriod}
-            className="bg-white p-3 rounded-lg border border-slate-200 shadow-sm"
-          />
-        </div>
-
         {/* Message d'information si pas de données */}
         {stats.totalClicks === 0 && stats.totalConversions === 0 && (
           <div className="mb-6 sm:mb-8 bg-blue-50 border border-blue-200 rounded-lg p-4">
