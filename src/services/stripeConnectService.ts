@@ -57,9 +57,43 @@ export const calculateCommissionsSinceDate = async (
     let totalRevenue = 0;
     let totalCommissions = 0;
 
+    console.log('🔍 DÉBOGAGE - Date de référence (sinceDate):', sinceDate);
+    console.log('🔍 DÉBOGAGE - Nombre total de conversions:', conversionsSnapshot.docs.length);
+
     conversionsSnapshot.docs.forEach(doc => {
       const conversion = doc.data() as Conversion;
-      const conversionDate = conversion.timestamp;
+      
+      // CORRECTION : Gérer correctement les différents types de timestamp
+      let conversionDate: Date;
+      if (conversion.timestamp && typeof conversion.timestamp === 'object') {
+        // Si c'est un Timestamp Firestore
+        if ('toDate' in conversion.timestamp) {
+          conversionDate = conversion.timestamp.toDate();
+        } 
+        // Si c'est déjà un objet Date
+        else if (conversion.timestamp instanceof Date) {
+          conversionDate = conversion.timestamp;
+        }
+        // Si c'est un objet avec seconds/nanoseconds
+        else if ('seconds' in conversion.timestamp) {
+          conversionDate = new Date(conversion.timestamp.seconds * 1000);
+        }
+        else {
+          conversionDate = new Date(conversion.timestamp);
+        }
+      } else {
+        // Si c'est un string ou number
+        conversionDate = new Date(conversion.timestamp);
+      }
+
+      console.log('🔍 DÉBOGAGE - Conversion:', {
+        id: doc.id,
+        rawTimestamp: conversion.timestamp,
+        convertedDate: conversionDate,
+        amount: conversion.amount,
+        commission: conversion.commission,
+        isAfterSinceDate: conversionDate >= sinceDate
+      });
 
       if (conversionDate >= sinceDate) {
         const affiliate = affiliates[conversion.affiliateId];
@@ -69,6 +103,13 @@ export const calculateCommissionsSinceDate = async (
           
           totalRevenue += amount;
           totalCommissions += commission;
+
+          console.log('✅ DÉBOGAGE - Conversion incluse:', {
+            affiliateId: conversion.affiliateId,
+            affiliateName: affiliate.name,
+            amount,
+            commission
+          });
 
           if (!affiliateCommissions[conversion.affiliateId]) {
             affiliateCommissions[conversion.affiliateId] = {
@@ -82,7 +123,15 @@ export const calculateCommissionsSinceDate = async (
 
           affiliateCommissions[conversion.affiliateId].totalCommission += commission;
           affiliateCommissions[conversion.affiliateId].conversionsCount += 1;
+        } else {
+          console.log('⚠️ DÉBOGAGE - Affilié non trouvé pour la conversion:', conversion.affiliateId);
         }
+      } else {
+        console.log('❌ DÉBOGAGE - Conversion exclue (trop ancienne):', {
+          conversionDate,
+          sinceDate,
+          difference: sinceDate.getTime() - conversionDate.getTime()
+        });
       }
     });
 

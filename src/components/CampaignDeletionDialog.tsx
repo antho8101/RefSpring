@@ -35,7 +35,8 @@ export const CampaignDeletionDialog = ({
   const [loading, setLoading] = useState(false);
   const [calculatingCommissions, setCalculatingCommissions] = useState(false);
   const [distribution, setDistribution] = useState<PaymentDistribution | null>(null);
-  const [lastPaymentDate] = useState(new Date(2024, 11, 5)); // Simuler dernier paiement 5 décembre
+  // CORRECTION : Mettre une date plus récente pour capturer les conversions de test
+  const [lastPaymentDate] = useState(new Date(2024, 11, 1)); // 1er décembre au lieu du 5
   const { user } = useAuth();
   const { toast } = useToast();
 
