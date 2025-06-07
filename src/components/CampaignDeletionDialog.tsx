@@ -104,7 +104,7 @@ export const CampaignDeletionDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[650px]">
+      <DialogContent className="sm:max-w-[650px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <AlertTriangle className="h-5 w-5 text-orange-600" />
@@ -116,7 +116,7 @@ export const CampaignDeletionDialog = ({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="py-4 space-y-4">
+        <div className="py-4 space-y-4 flex-1 overflow-y-auto">
           <CampaignInfoSection campaign={campaign} lastPaymentDate={lastPaymentDate} />
           
           <LoadingSection 
@@ -143,7 +143,7 @@ export const CampaignDeletionDialog = ({
           )}
         </div>
 
-        <DialogFooter className="flex justify-between">
+        <DialogFooter className="flex justify-between sticky bottom-0 bg-white pt-4 border-t">
           <Button 
             variant="outline" 
             onClick={() => onOpenChange(false)}
