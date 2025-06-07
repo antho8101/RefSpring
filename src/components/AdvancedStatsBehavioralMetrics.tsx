@@ -28,7 +28,7 @@ export const AdvancedStatsBehavioralMetrics = ({ behavioralMetrics }: AdvancedSt
   return (
     <div className="mb-6 sm:mb-8">
       <h3 className="text-lg font-semibold text-slate-900 mb-4">Métriques comportementales</h3>
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-4">
         
         {/* Valeur moyenne des commandes */}
         <Card className="bg-white border-slate-200 shadow-sm hover:shadow-md transition-shadow">
