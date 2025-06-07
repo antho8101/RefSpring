@@ -259,8 +259,10 @@ const AdvancedStatsPage = () => {
                   </div>
                 </div>
 
-                {/* Effet glow externe - RefSpring colors */}
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/60 via-purple-600/60 to-indigo-700/60 blur-3xl -z-10 scale-125 animate-pulse"></div>
+                {/* Effet glow externe MEGA BOOST - RefSpring colors */}
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-400 via-purple-500 to-indigo-600 blur-2xl -z-10 scale-150 animate-pulse opacity-80"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/80 via-purple-600/80 to-indigo-700/80 blur-xl -z-10 scale-125 animate-pulse"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-600/60 via-purple-700/60 to-indigo-800/60 blur-3xl -z-10 scale-175 animate-pulse"></div>
               </div>
             </div>
           </div>
