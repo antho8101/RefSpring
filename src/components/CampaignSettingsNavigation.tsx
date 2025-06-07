@@ -51,7 +51,7 @@ export const CampaignSettingsNavigation = ({ activeTab, onTabChange, onDeleteCli
           </div>
           <button
             onClick={onDeleteClick}
-            className="w-full flex items-center justify-start gap-2 px-4 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl transition-colors text-sm font-medium"
+            className="w-full flex items-center justify-start gap-2 px-4 py-3 bg-red-50 hover:bg-red-100 text-red-700 rounded-xl transition-colors text-sm font-medium border border-red-200"
           >
             <Trash2 className="h-4 w-4" />
             Supprimer la campagne
