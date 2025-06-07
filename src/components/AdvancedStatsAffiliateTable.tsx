@@ -1,5 +1,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useState } from 'react';
 
 interface AffiliatePerformance {
   id: string;
@@ -9,12 +11,22 @@ interface AffiliatePerformance {
   conversions: number;
   commissions: number;
   conversionRate: number;
-  commissionRate: number; // Ajout du taux de commission
+  commissionRate: number;
 }
 
 interface AdvancedStatsAffiliateTableProps {
   affiliates: AffiliatePerformance[];
 }
+
+type SortOption = 
+  | 'commissions-desc' 
+  | 'commissions-asc'
+  | 'clicks-desc' 
+  | 'clicks-asc'
+  | 'conversions-desc'
+  | 'conversions-asc'
+  | 'conversion-rate-desc'
+  | 'conversion-rate-asc';
 
 const formatCurrency = (value: number) => {
   return new Intl.NumberFormat('fr-FR', {
@@ -24,22 +36,72 @@ const formatCurrency = (value: number) => {
   }).format(value);
 };
 
+const sortAffiliates = (affiliates: AffiliatePerformance[], sortBy: SortOption) => {
+  const sorted = [...affiliates];
+  
+  switch (sortBy) {
+    case 'commissions-desc':
+      return sorted.sort((a, b) => b.commissions - a.commissions);
+    case 'commissions-asc':
+      return sorted.sort((a, b) => a.commissions - b.commissions);
+    case 'clicks-desc':
+      return sorted.sort((a, b) => b.clicks - a.clicks);
+    case 'clicks-asc':
+      return sorted.sort((a, b) => a.clicks - b.clicks);
+    case 'conversions-desc':
+      return sorted.sort((a, b) => b.conversions - a.conversions);
+    case 'conversions-asc':
+      return sorted.sort((a, b) => a.conversions - b.conversions);
+    case 'conversion-rate-desc':
+      return sorted.sort((a, b) => b.conversionRate - a.conversionRate);
+    case 'conversion-rate-asc':
+      return sorted.sort((a, b) => a.conversionRate - b.conversionRate);
+    default:
+      return sorted;
+  }
+};
+
 export const AdvancedStatsAffiliateTable = ({ affiliates }: AdvancedStatsAffiliateTableProps) => {
+  const [sortBy, setSortBy] = useState<SortOption>('commissions-desc');
+
   if (affiliates.length === 0) {
     return null;
   }
 
+  const sortedAffiliates = sortAffiliates(affiliates, sortBy);
+
   return (
     <Card className="bg-white border-slate-200 shadow-sm">
       <CardHeader>
-        <CardTitle className="text-lg sm:text-xl font-bold text-slate-900">Performance détaillée des affiliés</CardTitle>
-        <CardDescription className="text-slate-600">Vue d'ensemble de tous vos affiliés</CardDescription>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <CardTitle className="text-lg sm:text-xl font-bold text-slate-900">Performance détaillée des affiliés</CardTitle>
+            <CardDescription className="text-slate-600">Vue d'ensemble de tous vos affiliés</CardDescription>
+          </div>
+          <div className="w-full sm:w-auto">
+            <Select value={sortBy} onValueChange={(value: SortOption) => setSortBy(value)}>
+              <SelectTrigger className="w-full sm:w-[250px]">
+                <SelectValue placeholder="Trier par..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="commissions-desc">Plus performants (commissions)</SelectItem>
+                <SelectItem value="commissions-asc">Moins performants (commissions)</SelectItem>
+                <SelectItem value="clicks-desc">Plus de clics</SelectItem>
+                <SelectItem value="clicks-asc">Moins de clics</SelectItem>
+                <SelectItem value="conversions-desc">Plus de conversions</SelectItem>
+                <SelectItem value="conversions-asc">Moins de conversions</SelectItem>
+                <SelectItem value="conversion-rate-desc">Meilleur taux de conversion</SelectItem>
+                <SelectItem value="conversion-rate-asc">Pire taux de conversion</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
       </CardHeader>
       <CardContent className="p-0">
         {/* Version mobile - Cards */}
         <div className="block lg:hidden">
           <div className="divide-y divide-slate-100">
-            {affiliates.map((affiliate) => (
+            {sortedAffiliates.map((affiliate) => (
               <div key={affiliate.id} className="p-4 hover:bg-slate-50 transition-colors">
                 <div className="flex justify-between items-start mb-3">
                   <div className="flex-1 min-w-0">
@@ -89,7 +151,7 @@ export const AdvancedStatsAffiliateTable = ({ affiliates }: AdvancedStatsAffilia
               </tr>
             </thead>
             <tbody>
-              {affiliates.map((affiliate, index) => (
+              {sortedAffiliates.map((affiliate, index) => (
                 <tr key={affiliate.id} className={`border-b border-slate-100 hover:bg-slate-50 transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-slate-25'}`}>
                   <td className="p-4">
                     <div className="font-medium text-slate-900">{affiliate.name}</div>
