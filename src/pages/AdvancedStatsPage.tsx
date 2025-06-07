@@ -94,10 +94,7 @@ const AdvancedStatsPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/20 relative">
-      {/* Voile d'animation en arrière-plan */}
-      <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-white/3 via-transparent to-white/3 animate-pulse z-0 pointer-events-none" style={{ animationDelay: '2s', animationDuration: '5s' }}></div>
-
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/20">
       {/* Header */}
       <header className="bg-white/80 backdrop-blur-sm border-b border-slate-200 shadow-sm sticky top-0 z-50">
         <div className="px-4 sm:px-6 lg:px-8">
@@ -168,7 +165,7 @@ const AdvancedStatsPage = () => {
       </header>
 
       {/* Main Content */}
-      <main className="w-full px-4 sm:px-6 lg:px-8 py-6 lg:py-8 relative z-10">
+      <main className="w-full px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
         {/* Message d'information si pas de données */}
         {stats.totalClicks === 0 && stats.totalConversions === 0 && (
           <div className="mb-8 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-6 shadow-sm">
