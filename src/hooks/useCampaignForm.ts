@@ -52,6 +52,7 @@ export const useCampaignForm = () => {
         ...formData,
         isDraft: true,
         paymentConfigured: false,
+        defaultCommissionRate: 10, // Valeur par défaut de 10%
       });
       
       console.log('✅ Campagne draft créée:', campaignId);
