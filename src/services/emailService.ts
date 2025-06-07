@@ -1,7 +1,12 @@
+
 import { Resend } from 'resend';
 
 // Configuration Resend avec votre clé API
 const resend = new Resend('re_gUoVo8NG_4axGbH6WaWbgF1nBmP85EBrD');
+
+// Test de la connexion Resend au démarrage
+console.log('🔧 Initialisation du service Resend...');
+console.log('🔑 Clé API configurée:', 're_gUoVo8NG_4axGbH6WaWbgF1nBmP85EBrD');
 
 export interface AffiliateCommissionEmail {
   affiliateEmail: string;
@@ -208,22 +213,58 @@ const getCommissionEmailTemplate = (data: AffiliateCommissionEmail): string => {
 export class EmailService {
   static async sendCommissionEmail(data: AffiliateCommissionEmail): Promise<boolean> {
     try {
-      console.log('📧 Envoi email commission à:', data.affiliateEmail);
+      console.log('📧 DÉBUT sendCommissionEmail - Données reçues:', data);
+      console.log('📧 Email destinataire:', data.affiliateEmail);
+      console.log('📧 Montant commission:', data.amount);
+      console.log('📧 Nom campagne:', data.campaignName);
       
-      const emailData = await resend.emails.send({
+      console.log('🚀 Tentative d\'envoi via Resend...');
+      console.log('🔗 URL du service Resend:', 'https://api.resend.com/emails');
+      
+      const emailPayload = {
         from: 'RefSpring <commissions@refspring.com>',
         to: [data.affiliateEmail],
         subject: `💰 Votre commission de ${data.amount.toFixed(2)}€ est prête !`,
         html: getCommissionEmailTemplate(data),
+      };
+      
+      console.log('📦 Payload email préparé:', {
+        from: emailPayload.from,
+        to: emailPayload.to,
+        subject: emailPayload.subject,
+        htmlLength: emailPayload.html.length
       });
 
-      console.log('✅ Email envoyé avec succès:', emailData.data?.id || 'success');
-      console.log('📧 Détails envoi:', emailData);
+      console.log('⏰ Appel resend.emails.send() en cours...');
+      const startTime = Date.now();
+      
+      const emailData = await resend.emails.send(emailPayload);
+      
+      const endTime = Date.now();
+      console.log(`⏱️ Durée de l'appel Resend: ${endTime - startTime}ms`);
+      
+      console.log('📬 Réponse complète de Resend:', emailData);
+      console.log('📬 Réponse data:', emailData.data);
+      console.log('📬 Réponse error:', emailData.error);
+      
+      if (emailData.error) {
+        console.error('❌ Erreur Resend détectée:', emailData.error);
+        return false;
+      }
+
+      console.log('✅ Email envoyé avec succès! ID:', emailData.data?.id || 'pas d\'ID');
       return true;
     } catch (error) {
-      console.error('❌ Erreur envoi email complète:', error);
-      console.error('❌ Message d\'erreur:', error.message);
-      console.error('❌ Code d\'erreur:', error.code || 'unknown');
+      console.error('❌ ERREUR CRITIQUE dans sendCommissionEmail:');
+      console.error('❌ Type erreur:', typeof error);
+      console.error('❌ Erreur complète:', error);
+      console.error('❌ Message:', error?.message || 'Pas de message');
+      console.error('❌ Stack:', error?.stack || 'Pas de stack');
+      
+      if (error?.response) {
+        console.error('❌ Réponse HTTP:', error.response);
+      }
+      
       return false;
     }
   }
