@@ -82,6 +82,7 @@ export const AccountSecuritySettings = ({ onCancel }: AccountSecuritySettingsPro
             value={currentPassword}
             onChange={(e) => setCurrentPassword(e.target.value)}
             placeholder="Entrez votre mot de passe actuel"
+            className="max-w-md"
           />
         </div>
 
@@ -93,6 +94,7 @@ export const AccountSecuritySettings = ({ onCancel }: AccountSecuritySettingsPro
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
             placeholder="Entrez votre nouveau mot de passe"
+            className="max-w-md"
           />
         </div>
 
@@ -104,6 +106,7 @@ export const AccountSecuritySettings = ({ onCancel }: AccountSecuritySettingsPro
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             placeholder="Confirmez votre nouveau mot de passe"
+            className="max-w-md"
           />
         </div>
       </div>
