@@ -2,6 +2,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Calculator as CalculatorIcon, TrendingUp, Zap } from "lucide-react";
 import { useState } from "react";
+import { useCurrencyConverter } from "@/hooks/useCurrencyConverter";
 
 interface CalculatorProps {
   variant?: 'landing' | 'pricing';
@@ -10,6 +11,7 @@ interface CalculatorProps {
 export const Calculator = ({ variant = 'landing' }: CalculatorProps) => {
   const isLanding = variant === 'landing';
   const [monthlyRevenue, setMonthlyRevenue] = useState(isLanding ? 5000 : 10000);
+  const { convertAndFormat, userCurrency } = useCurrencyConverter();
   
   const competitorsCost = (isLanding ? 199 : 299) + (monthlyRevenue * (isLanding ? 0.08 : 0.10));
   const refspringCost = monthlyRevenue >= 20 ? monthlyRevenue * 0.025 : 0;
@@ -52,7 +54,7 @@ export const Calculator = ({ variant = 'landing' }: CalculatorProps) => {
                 />
                 <div className="text-center mt-6">
                   <span className="text-4xl font-black bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                    {monthlyRevenue.toLocaleString('fr-FR')}€
+                    {convertAndFormat(monthlyRevenue)}
                   </span>
                   <span className="text-slate-500 ml-2 font-bold">par mois</span>
                 </div>
@@ -65,10 +67,10 @@ export const Calculator = ({ variant = 'landing' }: CalculatorProps) => {
                   💸 Les autres
                 </h3>
                 <div className="text-3xl font-black text-red-600 mb-1">
-                  {competitorsCost.toLocaleString('fr-FR')}€
+                  {convertAndFormat(competitorsCost)}
                 </div>
                 <p className="text-sm text-red-700 font-medium">
-                  {isLanding ? '199€/mois + 8%' : '299€/mois + 10%'}
+                  {isLanding ? `${convertAndFormat(199)}/mois + 8%` : `${convertAndFormat(299)}/mois + 10%`}
                 </p>
                 <div className="mt-3 text-xs text-red-600 font-bold">
                   Tu paies même si tu vends rien 😭
@@ -78,10 +80,10 @@ export const Calculator = ({ variant = 'landing' }: CalculatorProps) => {
               <div className="text-center p-6 bg-gradient-to-br from-green-50 to-green-100 rounded-xl border-4 border-green-300 transform hover:scale-110 transition-all shadow-lg">
                 <h3 className="font-bold text-slate-900 mb-2">🚀 RefSpring</h3>
                 <div className="text-3xl font-black text-green-600 mb-1">
-                  {refspringCost.toLocaleString('fr-FR')}€
+                  {convertAndFormat(refspringCost)}
                 </div>
                 <p className="text-sm text-green-700 font-medium">
-                  0€/mois + 2,5% seulement
+                  {convertAndFormat(0)}/mois + 2,5% seulement
                 </p>
                 <div className="mt-3 text-xs text-green-600 font-bold">
                   Tu paies que si tu gagnes 🎯
@@ -94,7 +96,7 @@ export const Calculator = ({ variant = 'landing' }: CalculatorProps) => {
                   Tes économies
                 </h3>
                 <div className="text-3xl font-black text-blue-600 mb-1">
-                  {savings.toLocaleString('fr-FR')}€
+                  {convertAndFormat(savings)}
                 </div>
                 <p className="text-sm text-blue-700 font-medium">Par mois</p>
               </div>
@@ -105,7 +107,7 @@ export const Calculator = ({ variant = 'landing' }: CalculatorProps) => {
                 💎 Économies annuelles
               </h3>
               <div className="text-5xl font-black mb-3">
-                {(savings * 12).toLocaleString('fr-FR')}€
+                {convertAndFormat(savings * 12)}
               </div>
               <p className="text-green-100 font-bold text-lg">
                 Ça fait une belle Tesla, non ? 🚗

@@ -1,5 +1,6 @@
 
 import { Users, MousePointer, DollarSign, Percent } from 'lucide-react';
+import { useCurrencyConverter } from '@/hooks/useCurrencyConverter';
 
 interface CampaignMetricsCardsProps {
   stats: {
@@ -14,6 +15,8 @@ interface CampaignMetricsCardsProps {
 }
 
 export const CampaignMetricsCards = ({ stats, loading }: CampaignMetricsCardsProps) => {
+  const { convertAndFormat, convertAndFormatCompact } = useCurrencyConverter();
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
       <div className="bg-gradient-to-br from-green-50/20 to-green-100/10 p-4 rounded-xl border border-green-100/20">
@@ -65,12 +68,12 @@ export const CampaignMetricsCards = ({ stats, loading }: CampaignMetricsCardsPro
           <span className="text-sm font-medium">CA Net Généré</span>
         </div>
         <div className="text-lg font-bold text-slate-900 mb-1">
-          {loading ? '...' : `${stats.netRevenue.toFixed(2)}€`}
+          {loading ? '...' : convertAndFormatCompact(stats.netRevenue)}
         </div>
         <p className="text-xs text-slate-500">
           {loading ? 'Calcul...' : 
             stats.totalCost === 0 ? 'Aucun coût' : 
-            `après ${stats.totalCost.toFixed(2)}€ de coûts totaux`
+            `après ${convertAndFormat(stats.totalCost)} de coûts totaux`
           }
         </p>
       </div>

@@ -1,6 +1,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { BarChart3, Users, TrendingUp } from 'lucide-react';
+import { useCurrencyConverter } from '@/hooks/useCurrencyConverter';
 
 interface AffiliateStats {
   clicks: number;
@@ -13,15 +14,8 @@ interface AffiliateStatsDisplayProps {
   loading: boolean;
 }
 
-const formatCurrency = (value: number) => {
-  return new Intl.NumberFormat('fr-FR', {
-    style: 'currency',
-    currency: 'EUR',
-    minimumFractionDigits: 2,
-  }).format(value);
-};
-
 export const AffiliateStatsDisplay = ({ stats, loading }: AffiliateStatsDisplayProps) => {
+  const { convertAndFormat } = useCurrencyConverter();
   const conversionRate = stats.clicks > 0 ? ((stats.conversions / stats.clicks) * 100) : 0;
 
   return (
@@ -65,7 +59,7 @@ export const AffiliateStatsDisplay = ({ stats, loading }: AffiliateStatsDisplayP
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-purple-900">
-              {loading ? '...' : formatCurrency(stats.commissions)}
+              {loading ? '...' : convertAndFormat(stats.commissions)}
             </div>
             <p className="text-xs text-purple-600">
               Gains générés
@@ -105,7 +99,7 @@ export const AffiliateStatsDisplay = ({ stats, loading }: AffiliateStatsDisplayP
                 <div className="text-sm text-blue-700 space-y-1">
                   <p>• {stats.clicks} clic{stats.clicks > 1 ? 's' : ''} généré{stats.clicks > 1 ? 's' : ''}</p>
                   <p>• {stats.conversions} conversion{stats.conversions > 1 ? 's' : ''} réalisée{stats.conversions > 1 ? 's' : ''}</p>
-                  <p>• {formatCurrency(stats.commissions)} de commissions gagnées</p>
+                  <p>• {convertAndFormat(stats.commissions)} de commissions gagnées</p>
                   <p>• Taux de conversion: {conversionRate.toFixed(1)}%</p>
                 </div>
               </div>

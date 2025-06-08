@@ -1,5 +1,6 @@
 
 import { useAffiliateStats } from '@/hooks/useAffiliateStats';
+import { useCurrencyConverter } from '@/hooks/useCurrencyConverter';
 
 interface AffiliateStatsCellProps {
   affiliateId: string;
@@ -8,15 +9,8 @@ interface AffiliateStatsCellProps {
 
 export const AffiliateStatsCell = ({ affiliateId, commissionRate }: AffiliateStatsCellProps) => {
   const { stats, loading } = useAffiliateStats(affiliateId);
+  const { convertAndFormat } = useCurrencyConverter();
   
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('fr-FR', {
-      style: 'currency',
-      currency: 'EUR',
-      minimumFractionDigits: 2,
-    }).format(value);
-  };
-
   if (loading) {
     return <div className="text-xs text-slate-500">Chargement...</div>;
   }
@@ -30,7 +24,7 @@ export const AffiliateStatsCell = ({ affiliateId, commissionRate }: AffiliateSta
         Taux: <span className="font-medium">{conversionRate.toFixed(1)}%</span>
       </div>
       <div className="text-xs text-slate-600">
-        CA: <span className="font-medium">{formatCurrency(totalRevenue)}</span>
+        CA: <span className="font-medium">{convertAndFormat(totalRevenue)}</span>
       </div>
     </div>
   );
