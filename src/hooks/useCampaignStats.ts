@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
@@ -39,13 +38,17 @@ export const useCampaignStats = (campaignId: string) => {
       setLoading(true);
       
       try {
-        console.log('📊 CAMPAIGN STATS - Chargement OPTIMISÉ pour campagne:', campaignId);
+        console.log('📊 CAMPAIGN STATS - Chargement pour campagne:', campaignId);
         
-        // OPTIMISATION : Toutes les requêtes en parallèle
+        // Toutes les requêtes en parallèle
         const [affiliatesSnapshot, clicksSnapshot, conversionsSnapshot] = await Promise.all([
           getDocs(query(collection(db, 'affiliates'), where('campaignId', '==', campaignId))),
           getDocs(query(collection(db, 'clicks'), where('campaignId', '==', campaignId))),
-          getDocs(query(collection(db, 'conversions'), where('campaignId', '==', campaignId)))
+          // IMPORTANT: Ne compter que les conversions validées
+          getDocs(query(collection(db, 'conversions'), 
+            where('campaignId', '==', campaignId),
+            where('status', '==', 'verified')
+          ))
         ]);
 
         const affiliatesCount = affiliatesSnapshot.size;
@@ -55,52 +58,33 @@ export const useCampaignStats = (campaignId: string) => {
         let totalRevenue = 0;
         let totalCommissions = 0;
 
+        // Ne traiter que les conversions validées
         conversionsSnapshot.docs.forEach(doc => {
           const data = doc.data();
           const amount = parseFloat(data.amount) || 0;
-          const commissionRate = parseFloat(data.commissionRate) || 0;
-          
-          // CORRECTION : Recalculer la commission si nécessaire
-          const calculatedCommission = (amount * commissionRate) / 100;
-          const storedCommission = parseFloat(data.commission) || 0;
-          
-          // Utiliser la commission calculée pour être sûr
-          const finalCommission = Math.abs(calculatedCommission - storedCommission) < 0.01 
-            ? storedCommission 
-            : calculatedCommission;
+          const commission = parseFloat(data.commission) || 0;
           
           totalConversions++;
           totalRevenue += amount;
-          totalCommissions += finalCommission;
-          
-          console.log('📊 CAMPAIGN STATS - Conversion:', {
-            amount,
-            commissionRate,
-            storedCommission,
-            calculatedCommission,
-            finalCommission
-          });
+          totalCommissions += commission;
         });
 
-        // NOUVEAU : Calculer la commission RefSpring (2.5% du CA total)
+        // Calculer la commission RefSpring (2.5% du CA total)
         const platformFee = totalRevenue * 0.025;
         
-        // NOUVEAU : Calculer le coût total (commissions affiliés + commission RefSpring)
+        // Calculer le coût total (commissions affiliés + commission RefSpring)
         const totalCost = totalCommissions + platformFee;
         
-        // NOUVEAU : Déduire le coût total du CA pour avoir le vrai CA net
+        // CA net après déduction des coûts
         const netRevenue = totalRevenue - totalCost;
         
         const conversionRate = totalClicks > 0 ? (totalConversions / totalClicks) * 100 : 0;
 
-        console.log('📊 CAMPAIGN STATS - Stats calculées avec TRANSPARENCE TOTALE:', {
+        console.log('📊 CAMPAIGN STATS - Stats SIMPLIFIÉES calculées:', {
           affiliatesCount,
           totalClicks,
-          totalConversions,
+          totalConversions: `${totalConversions} (validées uniquement)`,
           totalRevenue,
-          totalCommissions,
-          platformFee: platformFee.toFixed(2),
-          totalCost: totalCost.toFixed(2),
           netRevenue: netRevenue.toFixed(2),
           conversionRate: conversionRate.toFixed(2)
         });
@@ -117,7 +101,7 @@ export const useCampaignStats = (campaignId: string) => {
           conversionRate,
         });
       } catch (error) {
-        console.error('❌ CAMPAIGN STATS - Erreur lors du chargement des stats:', error);
+        console.error('❌ CAMPAIGN STATS - Erreur lors du chargement:', error);
         setStats({
           totalClicks: 0,
           totalConversions: 0,
