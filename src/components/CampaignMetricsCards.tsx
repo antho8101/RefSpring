@@ -18,7 +18,7 @@ export const CampaignMetricsCards = ({ stats, loading }: CampaignMetricsCardsPro
   const { convertAndFormat, convertAndFormatCompact } = useCurrencyConverter();
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
       <div className="bg-gradient-to-br from-green-50/20 to-green-100/10 p-4 rounded-xl border border-green-100/20">
         <div className="flex items-center gap-2 text-green-600 mb-2">
           <Users className="h-4 w-4" />
@@ -50,19 +50,31 @@ export const CampaignMetricsCards = ({ stats, loading }: CampaignMetricsCardsPro
         <div className="text-2xl font-bold text-slate-900">
           {loading ? '...' : stats.totalConversions}
         </div>
-        <p className="text-xs text-slate-500 mt-1">validés</p>
+      </div>
+
+      <div className="bg-gradient-to-br from-purple-50/20 to-purple-100/10 p-4 rounded-xl border border-purple-100/20">
+        <div className="flex items-center gap-2 text-purple-600 mb-2">
+          <Percent className="h-4 w-4" />
+          <span className="text-sm font-medium">Taux Conversion</span>
+        </div>
+        <div className="text-2xl font-bold text-slate-900">
+          {loading ? '...' : `${stats.conversionRate.toFixed(1)}%`}
+        </div>
       </div>
 
       <div className="bg-gradient-to-br from-emerald-50/20 to-emerald-100/10 p-4 rounded-xl border border-emerald-100/20">
         <div className="flex items-center gap-2 text-emerald-600 mb-2">
           <DollarSign className="h-4 w-4" />
-          <span className="text-sm font-medium">CA Généré</span>
+          <span className="text-sm font-medium">CA Net Généré</span>
         </div>
         <div className="text-lg font-bold text-slate-900 mb-1">
           {loading ? '...' : convertAndFormatCompact(stats.netRevenue)}
         </div>
         <p className="text-xs text-slate-500">
-          {loading ? 'Calcul...' : 'chiffre d\'affaires'}
+          {loading ? 'Calcul...' : 
+            stats.totalCost === 0 ? 'Aucun coût' : 
+            `après ${convertAndFormat(stats.totalCost)} de coûts totaux`
+          }
         </p>
       </div>
     </div>

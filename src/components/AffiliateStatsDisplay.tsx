@@ -20,7 +20,7 @@ export const AffiliateStatsDisplay = ({ stats, loading }: AffiliateStatsDisplayP
 
   return (
     <>
-      {/* Stats Cards Simplifiées */}
+      {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -32,14 +32,14 @@ export const AffiliateStatsDisplay = ({ stats, loading }: AffiliateStatsDisplayP
               {loading ? '...' : stats.clicks.toLocaleString()}
             </div>
             <p className="text-xs text-blue-600">
-              Visiteurs générés
+              Visiteurs uniques tracés
             </p>
           </CardContent>
         </Card>
 
         <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-green-800">Paiements</CardTitle>
+            <CardTitle className="text-sm font-medium text-green-800">Conversions</CardTitle>
             <TrendingUp className="h-4 w-4 text-green-600" />
           </CardHeader>
           <CardContent>
@@ -83,24 +83,24 @@ export const AffiliateStatsDisplay = ({ stats, loading }: AffiliateStatsDisplayP
         </Card>
       )}
 
-      {/* Résumé simple */}
+      {/* Placeholder pour futurs graphiques */}
       {!loading && (stats.clicks > 0 || stats.conversions > 0) && (
         <Card>
           <CardHeader>
-            <CardTitle>Résumé de vos performances</CardTitle>
+            <CardTitle>Évolution des performances</CardTitle>
             <CardDescription>
-              Vue d'ensemble de votre activité d'affiliation
+              Aperçu de vos données d'affiliation
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               <div className="bg-blue-50 p-4 rounded-lg">
-                <h4 className="font-medium text-blue-900 mb-2">Votre activité</h4>
+                <h4 className="font-medium text-blue-900 mb-2">Résumé des performances</h4>
                 <div className="text-sm text-blue-700 space-y-1">
-                  <p>• {stats.clicks} visiteur{stats.clicks > 1 ? 's' : ''} envoyé{stats.clicks > 1 ? 's' : ''}</p>
-                  <p>• {stats.conversions} paiement{stats.conversions > 1 ? 's' : ''} généré{stats.conversions > 1 ? 's' : ''}</p>
+                  <p>• {stats.clicks} clic{stats.clicks > 1 ? 's' : ''} généré{stats.clicks > 1 ? 's' : ''}</p>
+                  <p>• {stats.conversions} conversion{stats.conversions > 1 ? 's' : ''} réalisée{stats.conversions > 1 ? 's' : ''}</p>
                   <p>• {convertAndFormat(stats.commissions)} de commissions gagnées</p>
-                  <p>• Performance: {conversionRate.toFixed(1)}% de conversion</p>
+                  <p>• Taux de conversion: {conversionRate.toFixed(1)}%</p>
                 </div>
               </div>
             </div>
