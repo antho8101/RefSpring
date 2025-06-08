@@ -4,12 +4,10 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAuth } from '@/hooks/useAuth';
-import { useCurrencyFormatter, SUPPORTED_CURRENCIES } from '@/hooks/useCurrencyFormatter';
-import { useExchangeRates } from '@/hooks/useExchangeRates';
+import { SUPPORTED_CURRENCIES, useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { useToast } from '@/hooks/use-toast';
-import { updateDoc, doc } from 'firebase/firestore';
+import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { RefreshCw, TrendingUp } from 'lucide-react';
 
 interface CurrencySettingsProps {
   onCancel: () => void;
@@ -17,110 +15,84 @@ interface CurrencySettingsProps {
 
 export const CurrencySettings = ({ onCancel }: CurrencySettingsProps) => {
   const { user } = useAuth();
-  const { userCurrency, formatCurrency } = useCurrencyFormatter();
-  const { rates, loading: ratesLoading, lastUpdated, refreshRates } = useExchangeRates();
+  const { userCurrency } = useCurrencyFormatter();
   const { toast } = useToast();
   const [selectedCurrency, setSelectedCurrency] = useState(userCurrency);
-  const [saving, setSaving] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleSaveCurrency = async () => {
-    if (!user) return;
+  const handleSave = async () => {
+    if (!user || selectedCurrency === userCurrency) {
+      onCancel();
+      return;
+    }
 
-    setSaving(true);
+    setLoading(true);
     try {
-      await updateDoc(doc(db, 'users', user.uid), {
+      const userDocRef = doc(db, 'users', user.uid);
+      await updateDoc(userDocRef, {
         currency: selectedCurrency
       });
 
       toast({
         title: "Devise mise à jour",
-        description: `Votre devise préférée a été changée vers ${SUPPORTED_CURRENCIES[selectedCurrency].name}`,
+        description: `Votre devise a été changée vers ${SUPPORTED_CURRENCIES[selectedCurrency].name}`,
       });
-    } catch (error) {
+
+      // Recharger la page pour appliquer le changement
+      window.location.reload();
+    } catch (error: any) {
       toast({
         title: "Erreur",
-        description: "Impossible de mettre à jour votre devise",
+        description: "Impossible de mettre à jour la devise",
         variant: "destructive",
       });
     } finally {
-      setSaving(false);
+      setLoading(false);
     }
   };
-
-  const previewAmount = 1234.56;
 
   return (
     <div className="space-y-6">
       <div>
-        <h4 className="text-lg font-medium text-slate-900 mb-2">Devise préférée</h4>
+        <h4 className="text-lg font-medium text-slate-900">Devise préférée</h4>
         <p className="text-sm text-slate-600">
-          Choisissez la devise dans laquelle vous souhaitez voir tous les montants affichés
+          Choisissez la devise dans laquelle vous souhaitez afficher les montants.
+          Les taux de change sont mis à jour automatiquement.
         </p>
       </div>
-
-      <div className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="currency">Devise</Label>
-          <Select value={selectedCurrency} onValueChange={setSelectedCurrency}>
-            <SelectTrigger className="w-full max-w-md">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {Object.entries(SUPPORTED_CURRENCIES).map(([code, info]) => (
-                <SelectItem key={code} value={code}>
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono text-sm">{info.symbol}</span>
-                    <span>{info.name}</span>
-                    <span className="text-slate-500 text-sm">({code})</span>
-                  </div>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Aperçu du formatage */}
-        <div className="bg-slate-50 p-4 rounded-lg">
-          <div className="flex items-center gap-2 mb-3">
-            <TrendingUp className="h-4 w-4 text-blue-600" />
-            <span className="font-medium text-slate-900">Aperçu</span>
-          </div>
-          <div className="text-2xl font-bold text-slate-900">
-            {formatCurrency(previewAmount, selectedCurrency)}
-          </div>
-          <p className="text-sm text-slate-600 mt-1">
-            Montant d'exemple avec votre devise sélectionnée
+      
+      <div className="space-y-3">
+        <Label htmlFor="currency">Devise</Label>
+        <Select value={selectedCurrency} onValueChange={setSelectedCurrency}>
+          <SelectTrigger className="max-w-md">
+            <SelectValue placeholder="Sélectionnez une devise" />
+          </SelectTrigger>
+          <SelectContent className="bg-white border border-slate-200 shadow-lg">
+            {Object.entries(SUPPORTED_CURRENCIES).map(([code, info]) => (
+              <SelectItem key={code} value={code} className="hover:bg-slate-50">
+                <div className="flex items-center gap-2">
+                  <span className="font-medium">{info.symbol}</span>
+                  <span>{info.name}</span>
+                  <span className="text-sm text-slate-500">({code})</span>
+                </div>
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        
+        {selectedCurrency !== userCurrency && (
+          <p className="text-sm text-amber-600">
+            ⚠️ Les montants seront convertis automatiquement selon les taux de change actuels.
           </p>
-        </div>
-
-        {/* Statut des taux de change */}
-        <div className="flex items-center justify-between bg-blue-50 p-3 rounded-lg">
-          <div className="text-sm">
-            <span className="font-medium text-blue-900">Taux de change:</span>
-            <span className="text-blue-700 ml-2">
-              {ratesLoading ? 'Mise à jour...' : 
-               lastUpdated ? `Mis à jour ${lastUpdated.toLocaleTimeString()}` : 
-               'Non disponible'}
-            </span>
-          </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={refreshRates}
-            disabled={ratesLoading}
-            className="text-blue-600 hover:text-blue-700"
-          >
-            <RefreshCw className={`h-4 w-4 ${ratesLoading ? 'animate-spin' : ''}`} />
-          </Button>
-        </div>
+        )}
       </div>
 
       <div className="flex gap-3">
         <Button 
-          onClick={handleSaveCurrency} 
-          disabled={saving || selectedCurrency === userCurrency}
+          onClick={handleSave} 
+          disabled={loading || selectedCurrency === userCurrency}
         >
-          {saving ? 'Sauvegarde...' : 'Sauvegarder'}
+          {loading ? 'Sauvegarde...' : 'Sauvegarder'}
         </Button>
         <Button variant="outline" onClick={onCancel}>
           Annuler
