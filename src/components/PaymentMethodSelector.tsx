@@ -115,7 +115,7 @@ export const PaymentMethodSelector = ({
             <Button 
               onClick={handleConfirm}
               disabled={!selectedCardId || loading}
-              className="flex-1"
+              className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl hover:scale-105 transition-all"
             >
               {loading ? 'Configuration...' : 'Confirmer'}
             </Button>
