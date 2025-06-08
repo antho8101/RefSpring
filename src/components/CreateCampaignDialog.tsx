@@ -39,13 +39,7 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
   const onSubmit = async (e: React.FormEvent) => {
     try {
       await handleSubmit(e);
-      // Si aucune modale de sélection n'est affichée, on ferme le dialog
-      if (!showPaymentSelector) {
-        toast({
-          title: "Redirection vers la page de paiement",
-          description: "Vous allez être redirigé vers la page de configuration du paiement.",
-        });
-      }
+      // Plus de toast de redirection ici - il était inutile et confus
     } catch (error: any) {
       toast({
         title: "Erreur",
