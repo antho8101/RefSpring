@@ -1,6 +1,6 @@
+
 import { FileText, CreditCard, Users, Code, Trash2 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
-import { Button } from '@/components/ui/button';
 
 interface CampaignSettingsNavigationProps {
   activeTab: string;
@@ -51,7 +51,10 @@ export const CampaignSettingsNavigation = ({ activeTab, onTabChange, onDeleteCli
           </div>
           <button
             onClick={onDeleteClick}
-            className="w-full flex items-center justify-start gap-2 px-4 py-3 bg-red-50 hover:bg-red-100 text-red-700 rounded-xl transition-colors text-sm font-medium border border-red-200"
+            disabled={!onDeleteClick}
+            className={`w-full flex items-center justify-start gap-2 px-4 py-3 bg-red-50 hover:bg-red-100 text-red-700 rounded-xl transition-colors text-sm font-medium border border-red-200 ${
+              !onDeleteClick ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-sm'
+            }`}
           >
             <Trash2 className="h-4 w-4" />
             Supprimer la campagne

@@ -81,6 +81,7 @@ export const CampaignSettingsDialog = ({ campaign }: CampaignSettingsDialogProps
   };
 
   const handleDeleteClick = () => {
+    console.log('🗑️ SECURITY - Delete button clicked for campaign:', campaign.id);
     setOpen(false);
     setDeletionDialogOpen(true);
   };
@@ -173,6 +174,7 @@ export const CampaignSettingsDialog = ({ campaign }: CampaignSettingsDialogProps
             <CampaignSettingsNavigation 
               activeTab={activeTab} 
               onTabChange={setActiveTab} 
+              onDeleteClick={handleDeleteClick}
             />
 
             <div className="flex-1 flex flex-col">
