@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -183,7 +182,11 @@ export const CampaignGeneralSettings = ({
             )}
           </div>
           
-          <div className="flex items-center justify-between py-4 px-4 bg-slate-50 rounded-lg">
+          <div className={`flex items-center justify-between py-4 px-4 rounded-lg transition-colors ${
+            formData.isActive 
+              ? 'bg-green-50 border border-green-200' 
+              : 'bg-orange-50 border border-orange-200'
+          }`}>
             <div className="space-y-0.5">
               <Label htmlFor="isActive">Campagne active</Label>
               <p className="text-sm text-muted-foreground">
