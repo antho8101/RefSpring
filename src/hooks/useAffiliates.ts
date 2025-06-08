@@ -41,6 +41,8 @@ export const useAffiliates = (campaignId?: string) => {
 
     console.log('👥 SECURITY - Auth OK, starting secure Firestore query for user:', user.uid);
 
+    let unsubscribe: (() => void) | undefined;
+
     const loadAffiliates = async () => {
       try {
         // Si pas de campaignId spécifique, on vérifie d'abord quelles campagnes existent encore
@@ -73,7 +75,7 @@ export const useAffiliates = (campaignId?: string) => {
             orderBy('createdAt', 'desc')
           );
 
-          const unsubscribe = onSnapshot(q, (snapshot) => {
+          unsubscribe = onSnapshot(q, (snapshot) => {
             console.log('👥 SECURITY - Firestore snapshot received, docs:', snapshot.docs.length);
             
             const affiliatesData = snapshot.docs.map(doc => {
@@ -99,8 +101,6 @@ export const useAffiliates = (campaignId?: string) => {
             console.error('👥 SECURITY - Firestore error:', error);
             setLoading(false);
           });
-
-          return unsubscribe;
           
         } else {
           // Mode campagne spécifique (comportement original)
@@ -112,7 +112,7 @@ export const useAffiliates = (campaignId?: string) => {
             orderBy('createdAt', 'desc')
           );
 
-          const unsubscribe = onSnapshot(q, (snapshot) => {
+          unsubscribe = onSnapshot(q, (snapshot) => {
             console.log('👥 SECURITY - Firestore snapshot received, docs:', snapshot.docs.length);
             
             const affiliatesData = snapshot.docs.map(doc => {
@@ -138,8 +138,6 @@ export const useAffiliates = (campaignId?: string) => {
             console.error('👥 SECURITY - Firestore error:', error);
             setLoading(false);
           });
-
-          return unsubscribe;
         }
       } catch (error) {
         console.error('👥 SECURITY - Error loading affiliates:', error);
@@ -147,9 +145,11 @@ export const useAffiliates = (campaignId?: string) => {
       }
     };
 
-    const unsubscribe = loadAffiliates();
+    loadAffiliates();
+
+    // Cleanup function
     return () => {
-      if (unsubscribe && typeof unsubscribe === 'function') {
+      if (unsubscribe) {
         unsubscribe();
       }
     };
