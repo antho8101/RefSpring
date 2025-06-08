@@ -14,7 +14,7 @@ export const AccountSettingsNavigation = ({ activeTab, onTabChange, onDeleteClic
     { id: 'security', label: 'Sécurité', icon: Shield },
     { id: 'currency', label: 'Devise', icon: Currency },
     { id: 'billing', label: 'Moyen de paiement', icon: CreditCard },
-    { id: 'invoices', label: 'Historique', icon: Receipt },
+    { id: 'invoices', label: 'Historique de facturation', icon: Receipt },
   ];
 
   return (
