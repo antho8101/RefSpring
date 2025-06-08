@@ -20,6 +20,7 @@ import { AccountSettings } from '@/components/AccountSettings';
 import { AccountBillingSettings } from '@/components/AccountBillingSettings';
 import { AccountSecuritySettings } from '@/components/AccountSecuritySettings';
 import { CurrencySettings } from '@/components/CurrencySettings';
+import { BillingHistorySettings } from '@/components/BillingHistorySettings';
 
 interface AccountSettingsDialogProps {
   children?: React.ReactNode;
@@ -82,6 +83,8 @@ export const AccountSettingsDialog = ({ children }: AccountSettingsDialogProps) 
         return 'Devise préférée';
       case 'billing':
         return 'Facturation';
+      case 'invoices':
+        return 'Historique de facturation';
       default:
         return 'Paramètres';
     }
@@ -97,6 +100,8 @@ export const AccountSettingsDialog = ({ children }: AccountSettingsDialogProps) 
         return 'Choisissez votre devise préférée';
       case 'billing':
         return 'Consultez vos informations de facturation';
+      case 'invoices':
+        return 'Consultez vos factures et prélèvements mensuels';
       default:
         return '';
     }
@@ -112,6 +117,8 @@ export const AccountSettingsDialog = ({ children }: AccountSettingsDialogProps) 
         return <CurrencySettings onCancel={() => setOpen(false)} />;
       case 'billing':
         return <AccountBillingSettings onCancel={() => setOpen(false)} />;
+      case 'invoices':
+        return <BillingHistorySettings onCancel={() => setOpen(false)} />;
       default:
         return null;
     }
