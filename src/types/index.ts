@@ -38,6 +38,14 @@ export interface Conversion {
   commission: number; // Commission calculée
   timestamp: Date;
   verified: boolean;
+  // Nouveaux champs pour la vérification
+  status: 'pending' | 'verified' | 'rejected' | 'suspicious';
+  verificationNotes?: string;
+  verifiedBy?: string; // ID de l'admin qui a vérifié
+  verifiedAt?: Date;
+  riskScore?: number; // Score de 0 à 100
+  webhookValidated?: boolean;
+  auditTrail: ConversionAuditLog[];
 }
 
 export interface Click {
@@ -47,6 +55,49 @@ export interface Click {
   timestamp: Date;
   userAgent?: string;
   referrer?: string;
+}
+
+// Nouvelle interface pour les logs d'audit
+export interface ConversionAuditLog {
+  id: string;
+  conversionId: string;
+  action: 'created' | 'status_changed' | 'amount_updated' | 'verified' | 'rejected' | 'webhook_received';
+  oldValue?: any;
+  newValue?: any;
+  performedBy: string; // 'system' ou ID de l'utilisateur
+  timestamp: Date;
+  notes?: string;
+  metadata?: Record<string, any>;
+}
+
+// Interface pour la queue de vérification
+export interface ConversionVerificationQueue {
+  id: string;
+  conversionId: string;
+  campaignId: string;
+  affiliateId: string;
+  priority: 'low' | 'medium' | 'high' | 'urgent';
+  status: 'pending' | 'processing' | 'completed' | 'failed';
+  assignedTo?: string; // ID de l'admin assigné
+  createdAt: Date;
+  processedAt?: Date;
+  retryCount: number;
+  nextRetryAt?: Date;
+  metadata?: Record<string, any>;
+}
+
+// Interface pour les webhooks de validation
+export interface ConversionWebhook {
+  id: string;
+  conversionId: string;
+  webhookUrl: string;
+  status: 'pending' | 'sent' | 'success' | 'failed' | 'timeout';
+  responseCode?: number;
+  responseBody?: string;
+  sentAt?: Date;
+  receivedAt?: Date;
+  retryCount: number;
+  maxRetries: number;
 }
 
 // Nouvelles interfaces pour la facturation

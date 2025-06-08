@@ -2,9 +2,11 @@
 import { collection, addDoc, doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { useAntifraud } from './useAntifraud';
+import { useConversionVerification } from './useConversionVerification';
 
 export const useTracking = () => {
   const { validateClick } = useAntifraud();
+  const { createConversion } = useConversionVerification();
 
   const recordClick = async (affiliateId: string, campaignId: string, targetUrl: string) => {
     try {
@@ -117,22 +119,30 @@ export const useTracking = () => {
         console.log('⚠️ TRACKING - Could not fetch affiliate, using default commission');
       }
 
-      const conversionData = {
-        affiliateId,
-        campaignId,
-        amount: parseFloat(amount.toString()),
-        commissionRate: commissionRate,
-        commission: calculatedCommission,
-        timestamp: new Date(),
-        verified: true,
+      // Utiliser le nouveau système de vérification
+      console.log('🔍 TRACKING - Création conversion avec système de vérification');
+      
+      // Métadonnées pour l'analyse de risque
+      const metadata = {
+        userAgent: navigator.userAgent,
+        referrer: document.referrer,
+        timestamp: new Date().toISOString(),
+        // Détecter comportements suspects
+        rapid_succession: false, // À implémenter si besoin
+        suspicious_amount: amount > 50000 // Plus de 500€
       };
 
-      console.log('💰 TRACKING - FINAL CONVERSION DATA TO SAVE:', conversionData);
+      const conversionId = await createConversion(
+        affiliateId,
+        campaignId,
+        parseFloat(amount.toString()),
+        calculatedCommission,
+        metadata
+      );
+
+      console.log('✅ TRACKING - Conversion created with verification system:', conversionId);
       
-      const docRef = await addDoc(collection(db, 'conversions'), conversionData);
-      console.log('✅ TRACKING - Conversion recorded with ID:', docRef.id);
-      
-      return docRef.id;
+      return conversionId;
     } catch (error) {
       console.error('❌ TRACKING - Error recording conversion:', error);
       return null;
