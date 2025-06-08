@@ -109,7 +109,26 @@ export const CampaignGeneralSettings = ({
         'warning'
       );
     } else {
+      saveStatusChange(isActive);
+    }
+  };
+
+  const saveStatusChange = async (isActive: boolean) => {
+    try {
       onFormDataChange({ ...formData, isActive });
+      
+      // Utiliser directement updateCampaign depuis les props ou le contexte parent
+      // Pour l'instant, on met à jour le formData et on déclenche la sauvegarde
+      const updatedData = { ...formData, isActive };
+      
+      // Créer un événement de soumission artificiel pour déclencher la sauvegarde
+      const fakeEvent = { preventDefault: () => {} } as React.FormEvent;
+      await onSubmit(fakeEvent);
+      
+    } catch (error) {
+      console.error('Erreur lors de la sauvegarde du statut:', error);
+      // En cas d'erreur, revenir à l'état précédent
+      onFormDataChange({ ...formData, isActive: campaign.isActive });
     }
   };
 
