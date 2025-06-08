@@ -55,6 +55,14 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
     }
   };
 
+  const handleCardSelectionWrapper = async (cardId: string) => {
+    const result = await handleCardSelection(cardId);
+    // Si la campagne a été créée avec succès, fermer la modale principale
+    if (result?.success) {
+      setOpen(false);
+    }
+  };
+
   return (
     <>
       <Dialog open={open} onOpenChange={(isOpen) => {
@@ -118,7 +126,7 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
         open={showPaymentSelector}
         onOpenChange={setShowPaymentSelector}
         paymentMethods={paymentMethods}
-        onSelectCard={handleCardSelection}
+        onSelectCard={handleCardSelectionWrapper}
         onAddNewCard={handleAddNewCard}
         loading={loading || paymentLoading}
       />

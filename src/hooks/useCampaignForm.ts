@@ -129,6 +129,9 @@ export const useCampaignForm = () => {
       // Réinitialiser et fermer toutes les modales
       resetForm();
       
+      // Retourner un signal pour fermer la modale principale
+      return { success: true };
+      
     } catch (error: any) {
       console.error('❌ Erreur création campagne avec carte:', error);
       toast({
