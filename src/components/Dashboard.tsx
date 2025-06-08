@@ -6,9 +6,24 @@ import { DashboardFooter } from "@/components/DashboardFooter";
 import { DashboardBackground } from "@/components/DashboardBackground";
 import { ConfettiCelebration } from "@/components/ConfettiCelebration";
 import { useGlobalConfetti } from "@/hooks/useCampaignForm";
+import { useAuth } from "@/hooks/useAuth";
+import { useStatsFilters } from "@/hooks/useStatsFilters";
+import { signOut } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
 
 export const Dashboard = () => {
   const { showConfetti, setShowConfetti } = useGlobalConfetti();
+  const { user } = useAuth();
+  const { period, setPeriod } = useStatsFilters();
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      window.location.href = '/';
+    } catch (error) {
+      console.error('Erreur lors de la déconnexion:', error);
+    }
+  };
 
   return (
     <>
@@ -27,7 +42,12 @@ export const Dashboard = () => {
         <DashboardBackground />
         
         <div className="relative z-10 flex flex-col min-h-screen">
-          <DashboardHeader />
+          <DashboardHeader 
+            user={user}
+            onLogout={handleLogout}
+            period={period}
+            onPeriodChange={setPeriod}
+          />
           <main className="flex-1">
             <DashboardContent />
           </main>
