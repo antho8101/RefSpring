@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useCampaigns } from '@/hooks/useCampaigns';
 import { useStripePayment } from '@/hooks/useStripePayment';
@@ -13,28 +12,11 @@ export interface CampaignFormData {
   isActive: boolean;
 }
 
-// État global pour les confettis
-let globalConfettiTrigger: ((trigger: boolean) => void) | null = null;
-
-export const useGlobalConfetti = () => {
-  const [showConfetti, setShowConfetti] = useState(false);
-  
-  // Enregistrer la fonction de déclenchement globalement
-  globalConfettiTrigger = setShowConfetti;
-  
-  return { showConfetti, setShowConfetti };
-};
-
-export const triggerGlobalConfetti = () => {
-  if (globalConfettiTrigger) {
-    globalConfettiTrigger(true);
-  }
-};
-
 export const useCampaignForm = () => {
   const [loading, setLoading] = useState(false);
   const [showPaymentSelector, setShowPaymentSelector] = useState(false);
   const [pendingCampaignData, setPendingCampaignData] = useState<CampaignFormData | null>(null);
+  const [showConfetti, setShowConfetti] = useState(false);
   const [formData, setFormData] = useState<CampaignFormData>({
     name: '',
     description: '',
@@ -56,6 +38,7 @@ export const useCampaignForm = () => {
     setFormData({ name: '', description: '', targetUrl: '', isActive: true });
     setPendingCampaignData(null);
     setShowPaymentSelector(false);
+    setShowConfetti(false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -143,8 +126,8 @@ export const useCampaignForm = () => {
       
       console.log('✅ Campagne créée avec succès avec la carte existante. ID:', campaignId);
       
-      // 🎉 Déclencher les confettis globaux !
-      triggerGlobalConfetti();
+      // 🎉 Déclencher les confettis pour la création avec carte existante !
+      setShowConfetti(true);
       
       toast({
         title: "Campagne créée avec succès !",
@@ -193,11 +176,13 @@ export const useCampaignForm = () => {
     showPaymentSelector,
     paymentMethods,
     paymentMethodsLoading,
+    showConfetti,
     updateFormData,
     resetForm,
     handleSubmit,
     handleCardSelection,
     handleAddNewCard,
     setShowPaymentSelector,
+    setShowConfetti,
   };
 };
