@@ -54,7 +54,7 @@ export const CurrencySelector = ({ variant = 'default' }: CurrencySelectorProps)
   return (
     <div className="flex items-center">
       <Select value={userCurrency} onValueChange={handleCurrencyChange} disabled={loading}>
-        <SelectTrigger className={`w-[140px] ${isDark ? 'border-slate-600 bg-slate-800 text-white' : 'border-slate-200'}`}>
+        <SelectTrigger className={`w-[140px] touch-select no-touch-highlight ${isDark ? 'border-slate-600 bg-slate-800 text-white' : 'border-slate-200'}`}>
           <SelectValue>
             <div className="flex items-center gap-2">
               <span>{currentCurrency?.symbol}</span>
@@ -62,9 +62,9 @@ export const CurrencySelector = ({ variant = 'default' }: CurrencySelectorProps)
             </div>
           </SelectValue>
         </SelectTrigger>
-        <SelectContent className="bg-white border border-slate-200 shadow-lg z-50">
+        <SelectContent className="bg-white border border-slate-200 shadow-lg z-50 touch-scroll">
           {Object.entries(SUPPORTED_CURRENCIES).map(([code, info]) => (
-            <SelectItem key={code} value={code} className="hover:bg-slate-50">
+            <SelectItem key={code} value={code} className="hover:bg-slate-50 touch-menu-item no-touch-highlight">
               <div className="flex items-center gap-2">
                 <span className="font-medium">{info.symbol}</span>
                 <span>{info.name}</span>

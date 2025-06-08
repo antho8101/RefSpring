@@ -1,0 +1,184 @@
+
+/* Optimisations tactiles pour mobile */
+
+/* Zones de touch plus grandes pour les éléments interactifs */
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+  position: relative;
+}
+
+/* Pseudo-élément pour agrandir la zone de touch sans affecter l'apparence */
+.touch-target::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  min-height: 44px;
+  min-width: 44px;
+  z-index: -1;
+}
+
+/* Amélioration des boutons pour le touch */
+.touch-button {
+  min-height: 48px;
+  min-width: 48px;
+  padding: 12px 16px;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* États de touch pour les interactions */
+.touch-feedback {
+  transition: all 0.1s ease;
+  transform: scale(1);
+}
+
+.touch-feedback:active {
+  transform: scale(0.97);
+  opacity: 0.8;
+}
+
+/* Optimisation pour les swipes et scrolling */
+.touch-scroll {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+}
+
+.touch-scroll-x {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  touch-action: pan-x;
+}
+
+/* Suppression du highlight sur tap */
+.no-touch-highlight {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Amélioration des inputs pour mobile */
+.touch-input {
+  min-height: 48px;
+  padding: 12px 16px;
+  font-size: 16px; /* Empêche le zoom sur iOS */
+  touch-action: manipulation;
+}
+
+/* Cartes cliquables optimisées */
+.touch-card {
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.touch-card:active {
+  transform: scale(0.98);
+  opacity: 0.9;
+}
+
+/* Menu mobile avec de meilleures zones de touch */
+.touch-menu-item {
+  min-height: 56px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Amélioration des sélecteurs */
+.touch-select {
+  min-height: 48px;
+  touch-action: manipulation;
+}
+
+/* Feedback visuel pour les éléments draggables */
+.touch-draggable {
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.touch-draggable:active {
+  transform: scale(1.05);
+  opacity: 0.9;
+  z-index: 1000;
+}
+
+/* Optimisation pour les toggles et switches */
+.touch-toggle {
+  min-width: 48px;
+  min-height: 28px;
+  touch-action: manipulation;
+}
+
+/* Amélioration des zones de drop pour drag & drop */
+.touch-drop-zone {
+  min-height: 100px;
+  border: 2px dashed transparent;
+  transition: all 0.2s ease;
+}
+
+.touch-drop-zone.drag-over {
+  border-color: #3b82f6;
+  background-color: rgba(59, 130, 246, 0.1);
+}
+
+/* Espacement mobile approprié */
+@media (max-width: 768px) {
+  .mobile-spacing {
+    padding: 16px;
+  }
+  
+  .mobile-gap {
+    gap: 16px;
+  }
+  
+  .mobile-touch-safe {
+    margin: 8px 0;
+  }
+}
+
+/* Optimisation pour les appareils avec écrans haute densité */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .high-dpi-touch {
+    border-width: 0.5px;
+  }
+}
+
+/* Support pour les gestes de navigation */
+.gesture-navigation {
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+/* Amélioration pour les modales et overlays */
+.touch-modal {
+  touch-action: none;
+  overscroll-behavior: contain;
+}
+
+/* Optimisation pour les listes longues */
+.touch-list {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+.touch-list-item {
+  min-height: 56px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #e2e8f0;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.touch-list-item:active {
+  background-color: rgba(0, 0, 0, 0.05);
+}
