@@ -1,7 +1,5 @@
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Users } from 'lucide-react';
 import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
@@ -10,6 +8,11 @@ import { useAffiliateStats } from '@/hooks/useAffiliateStats';
 import { AffiliateSelector } from '@/components/AffiliateSelector';
 import { TrackingLinkGenerator } from '@/components/TrackingLinkGenerator';
 import { AffiliateStatsDisplay } from '@/components/AffiliateStatsDisplay';
+import { PublicDashboardHeader } from '@/components/PublicDashboardHeader';
+import { PublicDashboardWelcome } from '@/components/PublicDashboardWelcome';
+import { PublicDashboardEmptyState } from '@/components/PublicDashboardEmptyState';
+import { PublicDashboardFooter } from '@/components/PublicDashboardFooter';
+import { Card, CardContent } from '@/components/ui/card';
 
 const AffiliatePage = () => {
   const { campaignId } = useParams();
@@ -23,10 +26,8 @@ const AffiliatePage = () => {
   const [error, setError] = useState<string | null>(null);
   const [targetUrl, setTargetUrl] = useState('');
   
-  // Utiliser le hook pour les vraies statistiques
   const { stats, loading: statsLoading } = useAffiliateStats(selectedAffiliate);
 
-  // Récupérer les infos de la campagne et ses affiliés
   useEffect(() => {
     const fetchCampaignData = async () => {
       if (!campaignId) {
@@ -109,97 +110,82 @@ const AffiliatePage = () => {
   // Error display with more helpful message for public access
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Card className="max-w-md">
-          <CardContent className="p-6">
-            <div className="text-center">
-              <h3 className="text-lg font-medium mb-2 text-red-600">Accès restreint</h3>
-              <p className="text-gray-600">{error}</p>
-              <p className="text-sm text-gray-400 mt-4">
-                Cette campagne nécessite peut-être une configuration spéciale pour l'accès public.
-              </p>
-              <p className="text-xs text-gray-400 mt-2">ID: {campaignId}</p>
-            </div>
-          </CardContent>
-        </Card>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+        <PublicDashboardHeader campaignName="Accès restreint" loading={false} />
+        <div className="flex items-center justify-center py-20">
+          <Card className="max-w-md border-red-200 bg-red-50/50">
+            <CardContent className="p-8">
+              <div className="text-center">
+                <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Users className="h-6 w-6 text-red-500" />
+                </div>
+                <h3 className="text-lg font-semibold mb-3 text-red-700">Accès restreint</h3>
+                <p className="text-red-600 mb-4">{error}</p>
+                <p className="text-sm text-red-500/80 mb-4">
+                  Cette campagne nécessite peut-être une configuration spéciale pour l'accès public.
+                </p>
+                <p className="text-xs text-red-400 font-mono bg-red-100/50 px-3 py-2 rounded-lg">
+                  ID: {campaignId}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+        <PublicDashboardFooter />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div>
-              <h1 className="text-2xl font-bold text-blue-600">RefSpring</h1>
-              <p className="text-sm text-gray-600">Dashboard Public</p>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      {/* Background decorations */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-20 right-10 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 left-10 w-48 h-48 bg-purple-500/5 rounded-full blur-3xl"></div>
+      </div>
+
+      <div className="relative">
+        <PublicDashboardHeader campaignName={campaignName} loading={loading} />
+
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <PublicDashboardWelcome campaignName={campaignName} loading={loading} />
+
+          {loading ? (
+            <div className="text-center py-20">
+              <div className="w-12 h-12 border-4 border-blue-200 border-t-blue-500 rounded-full animate-spin mx-auto mb-4"></div>
+              <p className="text-slate-600 font-medium">Chargement de vos données...</p>
             </div>
-            <Badge variant="outline">
-              {loading ? 'Chargement...' : (campaignName || 'Campagne')}
-            </Badge>
-          </div>
-        </div>
-      </header>
+          ) : (
+            <>
+              <AffiliateSelector
+                affiliates={affiliates}
+                selectedAffiliate={selectedAffiliate}
+                onAffiliateChange={setSelectedAffiliate}
+                loading={loading}
+              />
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-2">
-            {loading ? 'Chargement...' : (campaignName || 'Campagne')} - Dashboard Affilié
-          </h2>
-          <p className="text-gray-600">
-            Générez vos liens de tracking et suivez vos performances
-          </p>
-        </div>
+              {selectedAffiliate && campaignId ? (
+                <>
+                  <TrackingLinkGenerator
+                    campaignId={campaignId}
+                    affiliateId={selectedAffiliate}
+                    targetUrl={targetUrl}
+                  />
 
-        {loading ? (
-          <div className="text-center py-10">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="mt-4 text-gray-600">Chargement des données...</p>
-          </div>
-        ) : (
-          <>
-            <AffiliateSelector
-              affiliates={affiliates}
-              selectedAffiliate={selectedAffiliate}
-              onAffiliateChange={setSelectedAffiliate}
-              loading={loading}
-            />
+                  <AffiliateStatsDisplay
+                    stats={stats}
+                    loading={statsLoading}
+                  />
+                </>
+              ) : (
+                <PublicDashboardEmptyState hasAffiliates={affiliates.length > 0} />
+              )}
+            </>
+          )}
+        </main>
 
-            {selectedAffiliate && campaignId ? (
-              <>
-                <TrackingLinkGenerator
-                  campaignId={campaignId}
-                  affiliateId={selectedAffiliate}
-                  targetUrl={targetUrl}
-                />
-
-                <AffiliateStatsDisplay
-                  stats={stats}
-                  loading={statsLoading}
-                />
-              </>
-            ) : (
-              <Card>
-                <CardContent className="py-10">
-                  <div className="text-center">
-                    <Users className="h-12 w-12 mx-auto mb-4 text-gray-400" />
-                    <h3 className="text-lg font-medium mb-2">Sélectionnez un affilié</h3>
-                    <p className="text-gray-500">
-                      {affiliates.length > 0 
-                        ? "Choisissez un affilié dans le menu déroulant pour voir ses statistiques et générer ses liens de tracking"
-                        : "Aucun affilié trouvé pour cette campagne"
-                      }
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-          </>
-        )}
-      </main>
+        <PublicDashboardFooter />
+      </div>
     </div>
   );
 };
