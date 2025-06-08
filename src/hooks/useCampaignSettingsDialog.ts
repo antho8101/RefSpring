@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useCampaigns } from '@/hooks/useCampaigns';
 import { useToast } from '@/hooks/use-toast';
@@ -26,7 +25,7 @@ export const useCampaignSettingsDialog = (campaign: Campaign) => {
     defaultCommissionRate: campaign.defaultCommissionRate,
   });
 
-  const { updateCampaign, deleteCampaign, refreshCampaigns } = useCampaigns();
+  const { updateCampaign, deleteCampaign } = useCampaigns();
   const { toast } = useToast();
 
   useEffect(() => {
@@ -82,17 +81,9 @@ export const useCampaignSettingsDialog = (campaign: Campaign) => {
   };
 
   const handlePaymentMethodChange = async () => {
-    console.log('🔄 Méthode de paiement changée, rafraîchissement des campagnes...');
-    try {
-      // Rafraîchir les données des campagnes pour récupérer les modifications
-      await refreshCampaigns();
-      toast({
-        title: "🔄 Données actualisées",
-        description: "Les informations de la campagne ont été mises à jour",
-      });
-    } catch (error) {
-      console.error('❌ Erreur rafraîchissement:', error);
-    }
+    console.log('🔄 Méthode de paiement changée, simple callback sans rafraîchissement');
+    // On supprime le rafraîchissement automatique car il causait des erreurs
+    // Les données seront mises à jour lors du prochain rechargement de la page
   };
 
   return {

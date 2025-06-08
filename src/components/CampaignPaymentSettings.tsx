@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { CreditCard } from 'lucide-react';
@@ -80,7 +79,10 @@ export const CampaignPaymentSettings = ({ campaign, onPaymentMethodChange }: Cam
     handleSetupPayment();
   };
 
-  const hasPaymentMethod = Boolean(campaign.stripeCustomerId);
+  const hasPaymentMethod = Boolean(campaign.stripePaymentMethodId);
+  
+  // Trouver la carte associée à cette campagne
+  const associatedCard = paymentMethods.find(pm => pm.id === campaign.stripePaymentMethodId);
 
   return (
     <>
@@ -90,9 +92,11 @@ export const CampaignPaymentSettings = ({ campaign, onPaymentMethodChange }: Cam
             <div>
               <p className="font-medium text-slate-900 text-lg">Carte de paiement configurée</p>
               <p className="text-slate-600 mt-1">
-                {campaign.stripeCustomerId ? 
-                  "Une méthode de paiement est associée à cette campagne" : 
-                  "Aucune méthode de paiement configurée"
+                {hasPaymentMethod && associatedCard ? 
+                  `Carte ${associatedCard.brand} •••• ${associatedCard.last4}` : 
+                  hasPaymentMethod ? 
+                    "Une méthode de paiement est associée à cette campagne" :
+                    "Aucune méthode de paiement configurée"
                 }
               </p>
             </div>
