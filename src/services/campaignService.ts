@@ -29,14 +29,15 @@ export const campaignService = {
         name: data.name,
         isActive: data.isActive,
         isDraft: data.isDraft,
-        paymentConfigured: data.paymentConfigured
+        paymentConfigured: data.paymentConfigured,
+        stripePaymentMethodId: data.stripePaymentMethodId
       });
       
       return {
         id: doc.id,
         name: data.name || 'Campagne sans nom',
-        // CORRECTION: Utiliser directement le champ isActive de la campagne
         isActive: data.isActive === true,
+        // CORRECTION: Utiliser stripePaymentMethodId comme référence de la carte
         paymentMethodId: data.stripePaymentMethodId,
       };
     }) as CampaignSummary[];

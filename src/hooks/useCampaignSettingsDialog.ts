@@ -26,7 +26,7 @@ export const useCampaignSettingsDialog = (campaign: Campaign) => {
     defaultCommissionRate: campaign.defaultCommissionRate,
   });
 
-  const { updateCampaign, deleteCampaign } = useCampaigns();
+  const { updateCampaign, deleteCampaign, refreshCampaigns } = useCampaigns();
   const { toast } = useToast();
 
   useEffect(() => {
@@ -81,11 +81,18 @@ export const useCampaignSettingsDialog = (campaign: Campaign) => {
     setDeletionDialogOpen(true);
   };
 
-  const handlePaymentMethodChange = () => {
-    toast({
-      title: "🚧 Bientôt disponible !",
-      description: "Cette super fonctionnalité arrive très prochainement ! Restez connecté 😉",
-    });
+  const handlePaymentMethodChange = async () => {
+    console.log('🔄 Méthode de paiement changée, rafraîchissement des campagnes...');
+    try {
+      // Rafraîchir les données des campagnes pour récupérer les modifications
+      await refreshCampaigns();
+      toast({
+        title: "🔄 Données actualisées",
+        description: "Les informations de la campagne ont été mises à jour",
+      });
+    } catch (error) {
+      console.error('❌ Erreur rafraîchissement:', error);
+    }
   };
 
   return {

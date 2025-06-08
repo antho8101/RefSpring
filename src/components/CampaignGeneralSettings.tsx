@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,6 +8,8 @@ import { Switch } from '@/components/ui/switch';
 import { AlertTriangle } from 'lucide-react';
 import { Campaign } from '@/types';
 import { CriticalActionConfirmDialog } from '@/components/CriticalActionConfirmDialog';
+import { useCampaigns } from '@/hooks/useCampaigns';
+import { useToast } from '@/hooks/use-toast';
 
 interface CampaignGeneralSettingsProps {
   campaign: Campaign;
@@ -47,6 +50,9 @@ export const CampaignGeneralSettings = ({
     description: '',
     action: () => {},
   });
+
+  const { updateCampaign } = useCampaigns();
+  const { toast } = useToast();
 
   const hasTargetUrlChanged = formData.targetUrl !== initialTargetUrl;
   const hasCommissionChanged = formData.defaultCommissionRate !== campaign.defaultCommissionRate;
@@ -115,18 +121,30 @@ export const CampaignGeneralSettings = ({
 
   const saveStatusChange = async (isActive: boolean) => {
     try {
+      console.log('🔄 Sauvegarde automatique du statut:', { campaignId: campaign.id, isActive });
+      
+      // Utiliser directement updateCampaign pour une sauvegarde immédiate
+      await updateCampaign(campaign.id, { isActive });
+      
+      // Mettre à jour le formData local
       onFormDataChange({ ...formData, isActive });
       
-      // Utiliser directement updateCampaign depuis les props ou le contexte parent
-      // Pour l'instant, on met à jour le formData et on déclenche la sauvegarde
-      const updatedData = { ...formData, isActive };
-      
-      // Créer un événement de soumission artificiel pour déclencher la sauvegarde
-      const fakeEvent = { preventDefault: () => {} } as React.FormEvent;
-      await onSubmit(fakeEvent);
+      toast({
+        title: isActive ? "✅ Campagne activée" : "⏸️ Campagne désactivée",
+        description: isActive ? 
+          "Votre campagne est maintenant active et accepte les nouveaux clics !" :
+          "Votre campagne est maintenant en pause.",
+      });
       
     } catch (error) {
-      console.error('Erreur lors de la sauvegarde du statut:', error);
+      console.error('❌ Erreur lors de la sauvegarde du statut:', error);
+      
+      toast({
+        title: "❌ Erreur",
+        description: "Impossible de modifier le statut de la campagne",
+        variant: "destructive",
+      });
+      
       // En cas d'erreur, revenir à l'état précédent
       onFormDataChange({ ...formData, isActive: campaign.isActive });
     }
