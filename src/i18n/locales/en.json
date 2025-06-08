@@ -198,5 +198,23 @@
     "subtitle": "While others pay monthly fees for uncertain results, smart companies are already earning with RefSpring's performance-based model. Don't let them get ahead.",
     "startEarning": "Start earning now",
     "seeDemo": "See live demo"
+  },
+  "errors": {
+    "titles": {
+      "critical": "🚨 Critical problem!",
+      "high": "⚠️ Important error",
+      "medium": "🤔 Something's wrong",
+      "low": "💡 Information",
+      "default": "❌ Error"
+    },
+    "types": {
+      "network": "Connection problem. Check your network.",
+      "auth": "Authentication problem. Please log in again.",
+      "permission": "You don't have the necessary permissions.",
+      "notFound": "Item not found.",
+      "validation": "Invalid data.",
+      "server": "Server error. Please try again later.",
+      "unknown": "An unexpected error occurred."
+    }
   }
 }

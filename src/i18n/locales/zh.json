@@ -1,3 +1,4 @@
+
 {
   "auth": {
     "title": "RefSpring",
@@ -145,5 +146,23 @@
     "subtitle": "当其他人为不确定的结果支付月费时，聪明的公司已经在用RefSpring基于绩效的模式赚钱了。不要让他们领先。",
     "startEarning": "立即开始赚钱",
     "seeDemo": "查看实时演示"
+  },
+  "errors": {
+    "titles": {
+      "critical": "🚨 严重问题！",
+      "high": "⚠️ 重要错误",
+      "medium": "🤔 出现问题",
+      "low": "💡 信息",
+      "default": "❌ 错误"
+    },
+    "types": {
+      "network": "连接问题。请检查您的网络。",
+      "auth": "身份验证问题。请重新登录。",
+      "permission": "您没有必要的权限。",
+      "notFound": "找不到项目。",
+      "validation": "无效数据。",
+      "server": "服务器错误。请稍后重试。",
+      "unknown": "发生了意外错误。"
+    }
   }
 }

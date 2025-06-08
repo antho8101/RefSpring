@@ -198,5 +198,23 @@
     "subtitle": "Mientras otros pagan tarifas mensuales por resultados inciertos, las empresas inteligentes ya están ganando con el modelo basado en rendimiento de RefSpring. No las dejes tomar ventaja.",
     "startEarning": "Empezar a ganar ahora",
     "seeDemo": "Ver demo en vivo"
+  },
+  "errors": {
+    "titles": {
+      "critical": "🚨 ¡Problema crítico!",
+      "high": "⚠️ Error importante",
+      "medium": "🤔 Algo no está bien",
+      "low": "💡 Información",
+      "default": "❌ Error"
+    },
+    "types": {
+      "network": "Problema de conexión. Verifica tu red.",
+      "auth": "Problema de autenticación. Por favor inicia sesión de nuevo.",
+      "permission": "No tienes los permisos necesarios.",
+      "notFound": "Elemento no encontrado.",
+      "validation": "Datos inválidos.",
+      "server": "Error del servidor. Por favor intenta de nuevo más tarde.",
+      "unknown": "Ocurrió un error inesperado."
+    }
   }
 }

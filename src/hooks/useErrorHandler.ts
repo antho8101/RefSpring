@@ -1,8 +1,8 @@
 
-
 import { useCallback } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { AppError, ErrorSeverity } from '@/types/errors';
+import { useTranslation } from 'react-i18next';
+import { AppError, ErrorSeverity, ErrorType } from '@/types/errors';
 import { mapGenericError } from '@/utils/errorMapper';
 
 interface ErrorHandlerOptions {
@@ -13,6 +13,7 @@ interface ErrorHandlerOptions {
 
 export const useErrorHandler = () => {
   const { toast } = useToast();
+  const { t } = useTranslation();
 
   const handleError = useCallback((
     error: unknown,
@@ -49,7 +50,7 @@ export const useErrorHandler = () => {
       toast({
         variant,
         title: getErrorTitle(appError.severity),
-        description: appError.userMessage,
+        description: getUserMessage(appError.type, appError.userMessage),
         duration: appError.severity === ErrorSeverity.LOW ? 3000 : 5000,
       });
     }
@@ -60,23 +61,45 @@ export const useErrorHandler = () => {
     }
 
     return appError;
-  }, [toast]);
+  }, [toast, t]);
 
   const getErrorTitle = (severity: ErrorSeverity): string => {
     switch (severity) {
       case ErrorSeverity.CRITICAL:
-        return '🚨 Oups, problème critique !';
+        return t('errors.titles.critical');
       case ErrorSeverity.HIGH:
-        return '⚠️ Attention, erreur importante';
+        return t('errors.titles.high');
       case ErrorSeverity.MEDIUM:
-        return '🤔 Quelque chose ne va pas';
+        return t('errors.titles.medium');
       case ErrorSeverity.LOW:
-        return '💡 Information';
+        return t('errors.titles.low');
       default:
-        return '❌ Erreur';
+        return t('errors.titles.default');
+    }
+  };
+
+  const getUserMessage = (type: ErrorType, fallbackMessage?: string): string => {
+    if (fallbackMessage) {
+      return fallbackMessage;
+    }
+
+    switch (type) {
+      case ErrorType.NETWORK:
+        return t('errors.types.network');
+      case ErrorType.AUTH:
+        return t('errors.types.auth');
+      case ErrorType.PERMISSION:
+        return t('errors.types.permission');
+      case ErrorType.NOT_FOUND:
+        return t('errors.types.notFound');
+      case ErrorType.VALIDATION:
+        return t('errors.types.validation');
+      case ErrorType.SERVER:
+        return t('errors.types.server');
+      default:
+        return t('errors.types.unknown');
     }
   };
 
   return { handleError };
 };
-
