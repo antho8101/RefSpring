@@ -82,7 +82,7 @@ export const AccountSettingsDialog = ({ children }: AccountSettingsDialogProps) 
       case 'currency':
         return 'Devise préférée';
       case 'billing':
-        return 'Facturation';
+        return 'Moyen de paiement';
       case 'invoices':
         return 'Historique de facturation';
       default:
