@@ -1,3 +1,4 @@
+
 {
   "auth": {
     "title": "RefSpring",
@@ -26,6 +27,58 @@
   "dashboard": {
     "title": "Tableau de bord",
     "logout": "Déconnexion"
+  },
+  "publicDashboard": {
+    "header": {
+      "title": "RefSpring",
+      "subtitle": "Dashboard Affilié",
+      "loading": "Chargement...",
+      "campaign": "Campagne"
+    },
+    "welcome": {
+      "title": "Bienvenue sur {{campaignName}} !",
+      "subtitle": "Suivez vos performances en temps réel ✨",
+      "description": "Sélectionnez votre profil d'affilié pour générer vos liens de tracking personnalisés et consulter vos statistiques détaillées. Tout est transparent, tout est en temps réel !",
+      "features": {
+        "realTime": "Tracking en temps réel",
+        "analytics": "Analytics détaillées"
+      }
+    },
+    "emptyState": {
+      "noAffiliates": {
+        "title": "Aucun affilié pour le moment",
+        "description": "Cette campagne n'a pas encore d'affiliés configurés. L'administrateur peut en ajouter depuis son dashboard RefSpring !"
+      },
+      "selectAffiliate": {
+        "title": "Choisissez votre profil d'affilié",
+        "description": "Sélectionnez votre nom dans le menu déroulant ci-dessus pour accéder à votre espace personnalisé avec vos liens de tracking et vos statistiques de performance !",
+        "features": {
+          "customLinks": "Liens personnalisés",
+          "realTimeStats": "Stats temps réel",
+          "preciseTracking": "Tracking précis"
+        }
+      }
+    },
+    "footer": {
+      "poweredBy": "Propulsé par RefSpring",
+      "subtitle": "0€ d'abonnement, que du gagnant-gagnant",
+      "performanceBased": "100% basé sur vos performances",
+      "createCampaign": "Créer ma campagne",
+      "links": {
+        "privacy": "Politique de confidentialité",
+        "terms": "Conditions d'utilisation",
+        "legal": "Mentions légales",
+        "contact": "Contact"
+      },
+      "copyright": "© {{year}} RefSpring"
+    },
+    "errors": {
+      "accessRestricted": "Accès restreint",
+      "needsAuth": "Cette campagne nécessite une authentification pour afficher les données des affiliés",
+      "notPublic": "Cette campagne n'est pas accessible publiquement",
+      "specialConfig": "Cette campagne nécessite peut-être une configuration spéciale pour l'accès public.",
+      "loading": "Chargement de vos données..."
+    }
   },
   "affiliateSelector": {
     "label": "Sélectionner un affilié:",

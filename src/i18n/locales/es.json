@@ -1,3 +1,4 @@
+
 {
   "auth": {
     "title": "RefSpring",
@@ -26,6 +27,58 @@
   "dashboard": {
     "title": "Panel de Control",
     "logout": "Cerrar Sesión"
+  },
+  "publicDashboard": {
+    "header": {
+      "title": "RefSpring",
+      "subtitle": "Dashboard de Afiliados",
+      "loading": "Cargando...",
+      "campaign": "Campaña"
+    },
+    "welcome": {
+      "title": "¡Bienvenido a {{campaignName}}!",
+      "subtitle": "Sigue tu rendimiento en tiempo real ✨",
+      "description": "Selecciona tu perfil de afiliado para generar tus enlaces de seguimiento personalizados y consultar tus estadísticas detalladas. ¡Todo es transparente, todo es en tiempo real!",
+      "features": {
+        "realTime": "Seguimiento en tiempo real",
+        "analytics": "Analytics detallados"
+      }
+    },
+    "emptyState": {
+      "noAffiliates": {
+        "title": "Aún no hay afiliados",
+        "description": "¡Esta campaña aún no tiene afiliados configurados. El administrador puede agregarlos desde su dashboard de RefSpring!"
+      },
+      "selectAffiliate": {
+        "title": "Elige tu perfil de afiliado",
+        "description": "¡Selecciona tu nombre del menú desplegable arriba para acceder a tu espacio personalizado con tus enlaces de seguimiento y estadísticas de rendimiento!",
+        "features": {
+          "customLinks": "Enlaces personalizados",
+          "realTimeStats": "Estadísticas en tiempo real",
+          "preciseTracking": "Seguimiento preciso"
+        }
+      }
+    },
+    "footer": {
+      "poweredBy": "Impulsado por RefSpring",
+      "subtitle": "€0 de suscripción, puro ganar-ganar",
+      "performanceBased": "100% basado en rendimiento",
+      "createCampaign": "Crear mi campaña",
+      "links": {
+        "privacy": "Política de Privacidad",
+        "terms": "Términos de Servicio",
+        "legal": "Aviso Legal",
+        "contact": "Contacto"
+      },
+      "copyright": "© {{year}} RefSpring"
+    },
+    "errors": {
+      "accessRestricted": "Acceso restringido",
+      "needsAuth": "Esta campaña requiere autenticación para mostrar datos de afiliados",
+      "notPublic": "Esta campaña no es públicamente accesible",
+      "specialConfig": "Esta campaña puede requerir configuración especial para acceso público.",
+      "loading": "Cargando tus datos..."
+    }
   },
   "affiliateSelector": {
     "label": "Seleccionar un afiliado:",

@@ -1,4 +1,3 @@
-
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { Users } from 'lucide-react';
@@ -14,11 +13,14 @@ import { PublicDashboardWelcome } from '@/components/PublicDashboardWelcome';
 import { PublicDashboardEmptyState } from '@/components/PublicDashboardEmptyState';
 import { PublicDashboardFooter } from '@/components/PublicDashboardFooter';
 import { Card, CardContent } from '@/components/ui/card';
+import { useTranslation } from 'react-i18next';
 
 const AffiliatePage = () => {
   const { campaignId } = useParams();
   const [searchParams] = useSearchParams();
   const refCode = searchParams.get('ref');
+  
+  const { t } = useTranslation();
   
   const [campaignName, setCampaignName] = useState('');
   const [selectedAffiliate, setSelectedAffiliate] = useState<string | null>(null);
@@ -112,7 +114,7 @@ const AffiliatePage = () => {
   if (error) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex flex-col">
-        <PublicDashboardHeader campaignName="Accès restreint" loading={false} />
+        <PublicDashboardHeader campaignName={t('publicDashboard.errors.accessRestricted')} loading={false} />
         <div className="flex-1 flex items-center justify-center py-20 px-4 sm:px-6 lg:px-8">
           <Card className="max-w-md border-red-200 bg-red-50/50">
             <CardContent className="p-8">
@@ -120,10 +122,10 @@ const AffiliatePage = () => {
                 <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Users className="h-6 w-6 text-red-500" />
                 </div>
-                <h3 className="text-lg font-semibold mb-3 text-red-700">Accès restreint</h3>
+                <h3 className="text-lg font-semibold mb-3 text-red-700">{t('publicDashboard.errors.accessRestricted')}</h3>
                 <p className="text-red-600 mb-4">{error}</p>
                 <p className="text-sm text-red-500/80 mb-4">
-                  Cette campagne nécessite peut-être une configuration spéciale pour l'accès public.
+                  {t('publicDashboard.errors.specialConfig')}
                 </p>
                 <p className="text-xs text-red-400 font-mono bg-red-100/50 px-3 py-2 rounded-lg">
                   ID: {campaignId}
@@ -154,7 +156,7 @@ const AffiliatePage = () => {
           {loading ? (
             <div className="text-center py-20">
               <div className="w-12 h-12 border-4 border-blue-200 border-t-blue-500 rounded-full animate-spin mx-auto mb-4"></div>
-              <p className="text-slate-600 font-medium">Chargement de vos données...</p>
+              <p className="text-slate-600 font-medium">{t('publicDashboard.errors.loading')}</p>
             </div>
           ) : (
             <>

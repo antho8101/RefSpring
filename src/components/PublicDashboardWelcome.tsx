@@ -1,5 +1,6 @@
 
 import { TrendingUp, Zap, Eye } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface PublicDashboardWelcomeProps {
   campaignName: string;
@@ -7,6 +8,8 @@ interface PublicDashboardWelcomeProps {
 }
 
 export const PublicDashboardWelcome = ({ campaignName, loading }: PublicDashboardWelcomeProps) => {
+  const { t } = useTranslation();
+  
   return (
     <div className="relative mb-8 overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-blue-500/5 rounded-2xl"></div>
@@ -19,25 +22,24 @@ export const PublicDashboardWelcome = ({ campaignName, loading }: PublicDashboar
               </div>
               <div>
                 <h2 className="text-2xl font-bold text-slate-900">
-                  {loading ? 'Chargement...' : `Bienvenue sur ${campaignName || 'votre campagne'} !`}
+                  {loading ? t('loading') : t('publicDashboard.welcome.title', { campaignName: campaignName || t('publicDashboard.header.campaign') })}
                 </h2>
-                <p className="text-slate-600 font-medium">Suivez vos performances en temps réel ✨</p>
+                <p className="text-slate-600 font-medium">{t('publicDashboard.welcome.subtitle')}</p>
               </div>
             </div>
             
             <p className="text-slate-700 leading-relaxed mb-4">
-              Sélectionnez votre profil d'affilié pour générer vos liens de tracking personnalisés 
-              et consulter vos statistiques détaillées. Tout est transparent, tout est en temps réel !
+              {t('publicDashboard.welcome.description')}
             </p>
             
             <div className="flex flex-wrap items-center gap-4 text-sm">
               <div className="flex items-center gap-2 text-blue-600">
                 <Zap className="h-4 w-4" />
-                <span className="font-medium">Tracking en temps réel</span>
+                <span className="font-medium">{t('publicDashboard.welcome.features.realTime')}</span>
               </div>
               <div className="flex items-center gap-2 text-purple-600">
                 <Eye className="h-4 w-4" />
-                <span className="font-medium">Analytics détaillées</span>
+                <span className="font-medium">{t('publicDashboard.welcome.features.analytics')}</span>
               </div>
             </div>
           </div>

@@ -1,3 +1,4 @@
+
 {
   "auth": {
     "title": "RefSpring",
@@ -26,6 +27,58 @@
   "dashboard": {
     "title": "Dashboard",
     "logout": "Logout"
+  },
+  "publicDashboard": {
+    "header": {
+      "title": "RefSpring",
+      "subtitle": "Affiliate Dashboard",
+      "loading": "Loading...",
+      "campaign": "Campaign"
+    },
+    "welcome": {
+      "title": "Welcome to {{campaignName}}!",
+      "subtitle": "Track your performance in real-time ✨",
+      "description": "Select your affiliate profile to generate your personalized tracking links and view your detailed statistics. Everything is transparent, everything is real-time!",
+      "features": {
+        "realTime": "Real-time tracking",
+        "analytics": "Detailed analytics"
+      }
+    },
+    "emptyState": {
+      "noAffiliates": {
+        "title": "No affiliates yet",
+        "description": "This campaign doesn't have any configured affiliates yet. The administrator can add them from their RefSpring dashboard!"
+      },
+      "selectAffiliate": {
+        "title": "Choose your affiliate profile",
+        "description": "Select your name from the dropdown menu above to access your personalized space with your tracking links and performance statistics!",
+        "features": {
+          "customLinks": "Custom links",
+          "realTimeStats": "Real-time stats",
+          "preciseTracking": "Precise tracking"
+        }
+      }
+    },
+    "footer": {
+      "poweredBy": "Powered by RefSpring",
+      "subtitle": "€0 subscription, pure win-win",
+      "performanceBased": "100% performance-based",
+      "createCampaign": "Create my campaign",
+      "links": {
+        "privacy": "Privacy Policy",
+        "terms": "Terms of Service",
+        "legal": "Legal Notice",
+        "contact": "Contact"
+      },
+      "copyright": "© {{year}} RefSpring"
+    },
+    "errors": {
+      "accessRestricted": "Access restricted",
+      "needsAuth": "This campaign requires authentication to display affiliate data",
+      "notPublic": "This campaign is not publicly accessible",
+      "specialConfig": "This campaign may require special configuration for public access.",
+      "loading": "Loading your data..."
+    }
   },
   "affiliateSelector": {
     "label": "Select an affiliate:",
