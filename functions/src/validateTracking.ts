@@ -98,7 +98,7 @@ export const validateTracking = onCall(
         validated: true
       };
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ TRACKING - Erreur:', error);
       if (error instanceof HttpsError) {
         throw error;

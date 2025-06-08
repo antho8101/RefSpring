@@ -74,7 +74,7 @@ export const validateCampaignData = onCall(
         }
       };
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ VALIDATION - Erreur:', error);
       if (error instanceof HttpsError) {
         throw error;

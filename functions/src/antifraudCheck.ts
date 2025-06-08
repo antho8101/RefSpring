@@ -1,3 +1,4 @@
+
 import { onCall, HttpsError } from 'firebase-functions/v2/https';
 import * as admin from 'firebase-admin';
 
@@ -5,6 +6,27 @@ interface FraudCheckRequest {
   campaignId?: string;
   affiliateId?: string;
   days?: number;
+}
+
+interface SuspiciousActivity {
+  type: string;
+  severity: 'low' | 'medium' | 'high';
+  description: string;
+  data: Record<string, unknown>;
+}
+
+interface ClickData {
+  ip?: string;
+  timestamp?: admin.firestore.Timestamp;
+  campaignId?: string;
+  affiliateId?: string;
+}
+
+interface ConversionData {
+  amount?: number;
+  timestamp?: admin.firestore.Timestamp;
+  campaignId?: string;
+  affiliateId?: string;
 }
 
 export const antifraudCheck = onCall(
@@ -25,7 +47,7 @@ export const antifraudCheck = onCall(
 
       console.log('🛡️ ANTIFRAUD - Paramètres:', { campaignId, affiliateId, days });
 
-      const suspiciousActivities: any[] = [];
+      const suspiciousActivities: SuspiciousActivity[] = [];
 
       // 1. Détecter les clics excessifs
       await detectExcessiveClicks(campaignId, affiliateId, startDate, suspiciousActivities);
@@ -58,7 +80,7 @@ export const antifraudCheck = onCall(
         analysisPeriod: { days, startDate: startDate.toISOString() }
       };
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ ANTIFRAUD - Erreur:', error);
       if (error instanceof HttpsError) {
         throw error;
@@ -72,20 +94,20 @@ async function detectExcessiveClicks(
   campaignId?: string, 
   affiliateId?: string, 
   startDate?: Date, 
-  suspiciousActivities?: any[]
+  suspiciousActivities?: SuspiciousActivity[]
 ) {
   let clicksQuery = admin.firestore().collection('clicks');
 
-  if (campaignId) clicksQuery = clicksQuery.where('campaignId', '==', campaignId) as any;
-  if (affiliateId) clicksQuery = clicksQuery.where('affiliateId', '==', affiliateId) as any;
-  if (startDate) clicksQuery = clicksQuery.where('timestamp', '>=', startDate) as any;
+  if (campaignId) clicksQuery = clicksQuery.where('campaignId', '==', campaignId) as admin.firestore.Query;
+  if (affiliateId) clicksQuery = clicksQuery.where('affiliateId', '==', affiliateId) as admin.firestore.Query;
+  if (startDate) clicksQuery = clicksQuery.where('timestamp', '>=', startDate) as admin.firestore.Query;
 
   const clicksSnapshot = await clicksQuery.get();
 
   // Grouper par IP
   const clicksByIP: { [key: string]: number } = {};
   clicksSnapshot.docs.forEach(doc => {
-    const data = doc.data();
+    const data = doc.data() as ClickData;
     const ip = data.ip || 'unknown';
     clicksByIP[ip] = (clicksByIP[ip] || 0) + 1;
   });
@@ -107,18 +129,18 @@ async function detectSuspiciousConversions(
   campaignId?: string, 
   affiliateId?: string, 
   startDate?: Date, 
-  suspiciousActivities?: any[]
+  suspiciousActivities?: SuspiciousActivity[]
 ) {
   let conversionsQuery = admin.firestore().collection('conversions');
 
-  if (campaignId) conversionsQuery = conversionsQuery.where('campaignId', '==', campaignId) as any;
-  if (affiliateId) conversionsQuery = conversionsQuery.where('affiliateId', '==', affiliateId) as any;
-  if (startDate) conversionsQuery = conversionsQuery.where('timestamp', '>=', startDate) as any;
+  if (campaignId) conversionsQuery = conversionsQuery.where('campaignId', '==', campaignId) as admin.firestore.Query;
+  if (affiliateId) conversionsQuery = conversionsQuery.where('affiliateId', '==', affiliateId) as admin.firestore.Query;
+  if (startDate) conversionsQuery = conversionsQuery.where('timestamp', '>=', startDate) as admin.firestore.Query;
 
   const conversionsSnapshot = await conversionsQuery.get();
 
   conversionsSnapshot.docs.forEach(doc => {
-    const data = doc.data();
+    const data = doc.data() as ConversionData;
     const amount = data.amount || 0;
 
     // Conversion trop élevée
@@ -137,20 +159,20 @@ async function detectTimePatterns(
   campaignId?: string, 
   affiliateId?: string, 
   startDate?: Date, 
-  suspiciousActivities?: any[]
+  suspiciousActivities?: SuspiciousActivity[]
 ) {
   let clicksQuery = admin.firestore().collection('clicks');
 
-  if (campaignId) clicksQuery = clicksQuery.where('campaignId', '==', campaignId) as any;
-  if (affiliateId) clicksQuery = clicksQuery.where('affiliateId', '==', affiliateId) as any;
-  if (startDate) clicksQuery = clicksQuery.where('timestamp', '>=', startDate) as any;
+  if (campaignId) clicksQuery = clicksQuery.where('campaignId', '==', campaignId) as admin.firestore.Query;
+  if (affiliateId) clicksQuery = clicksQuery.where('affiliateId', '==', affiliateId) as admin.firestore.Query;
+  if (startDate) clicksQuery = clicksQuery.where('timestamp', '>=', startDate) as admin.firestore.Query;
 
   const clicksSnapshot = await clicksQuery.get();
 
   // Analyser les patterns temporels
   const hourlyClicks: { [key: number]: number } = {};
   clicksSnapshot.docs.forEach(doc => {
-    const data = doc.data();
+    const data = doc.data() as ClickData;
     if (data.timestamp && data.timestamp.toDate) {
       const hour = data.timestamp.toDate().getHours();
       hourlyClicks[hour] = (hourlyClicks[hour] || 0) + 1;
@@ -176,14 +198,14 @@ async function detectSuspiciousIPs(
   campaignId?: string, 
   affiliateId?: string, 
   startDate?: Date, 
-  suspiciousActivities?: any[]
+  suspiciousActivities?: SuspiciousActivity[]
 ) {
   // Cette fonction analyserait les patterns d'IP suspectes
   // Pour l'instant, on fait une vérification basique
   console.log('🛡️ ANTIFRAUD - Analyse IP en cours...');
 }
 
-function calculateRiskScore(suspiciousActivities: any[]): number {
+function calculateRiskScore(suspiciousActivities: SuspiciousActivity[]): number {
   let score = 0;
   
   suspiciousActivities.forEach(activity => {
@@ -204,7 +226,7 @@ function getRiskLevel(score: number): string {
   return 'MINIMAL';
 }
 
-function generateRecommendations(activities: any[], riskLevel: string): string[] {
+function generateRecommendations(activities: SuspiciousActivity[], riskLevel: string): string[] {
   const recommendations: string[] = [];
 
   if (riskLevel === 'ÉLEVÉ') {

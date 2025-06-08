@@ -8,6 +8,35 @@ interface CommissionRequest {
   endDate?: string;
 }
 
+interface ConversionData {
+  affiliateId: string;
+  amount: string | number;
+  commission: string | number;
+  timestamp: admin.firestore.Timestamp;
+}
+
+interface AffiliateData {
+  name?: string;
+  email?: string;
+  commissionRate?: number;
+}
+
+interface AffiliateCommission {
+  affiliateId: string;
+  affiliateName: string;
+  affiliateEmail: string;
+  totalRevenue: number;
+  totalCommission: number;
+  conversionCount: number;
+  commissionRate: number;
+  conversions: Array<{
+    id: string;
+    amount: number;
+    commission: number;
+    timestamp: admin.firestore.Timestamp;
+  }>;
+}
+
 export const calculateCommissions = onCall(
   { cors: true },
   async (request) => {
@@ -52,10 +81,10 @@ export const calculateCommissions = onCall(
       console.log('💰 COMMISSION - Conversions trouvées:', conversionsSnapshot.size);
 
       // Calculer les commissions par affilié
-      const affiliateCommissions: { [key: string]: any } = {};
+      const affiliateCommissions: { [key: string]: AffiliateCommission } = {};
 
       for (const doc of conversionsSnapshot.docs) {
-        const conversion = doc.data();
+        const conversion = doc.data() as ConversionData;
         const affiliateId = conversion.affiliateId;
 
         if (!affiliateCommissions[affiliateId]) {
@@ -65,7 +94,7 @@ export const calculateCommissions = onCall(
             .doc(affiliateId)
             .get();
 
-          const affiliateData = affiliateDoc.data();
+          const affiliateData = affiliateDoc.data() as AffiliateData | undefined;
           
           affiliateCommissions[affiliateId] = {
             affiliateId,
@@ -79,8 +108,8 @@ export const calculateCommissions = onCall(
           };
         }
 
-        const amount = parseFloat(conversion.amount) || 0;
-        const commission = parseFloat(conversion.commission) || 0;
+        const amount = parseFloat(conversion.amount.toString()) || 0;
+        const commission = parseFloat(conversion.commission.toString()) || 0;
 
         affiliateCommissions[affiliateId].totalRevenue += amount;
         affiliateCommissions[affiliateId].totalCommission += commission;
@@ -94,8 +123,8 @@ export const calculateCommissions = onCall(
       }
 
       const results = Object.values(affiliateCommissions);
-      const totalRevenue = results.reduce((sum: number, affiliate: any) => sum + affiliate.totalRevenue, 0);
-      const totalCommission = results.reduce((sum: number, affiliate: any) => sum + affiliate.totalCommission, 0);
+      const totalRevenue = results.reduce((sum: number, affiliate: AffiliateCommission) => sum + affiliate.totalRevenue, 0);
+      const totalCommission = results.reduce((sum: number, affiliate: AffiliateCommission) => sum + affiliate.totalCommission, 0);
 
       console.log('✅ COMMISSION - Calcul terminé:', {
         affiliateCount: results.length,
@@ -116,7 +145,7 @@ export const calculateCommissions = onCall(
         affiliateCommissions: results
       };
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ COMMISSION - Erreur:', error);
       if (error instanceof HttpsError) {
         throw error;

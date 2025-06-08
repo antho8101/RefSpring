@@ -21,9 +21,10 @@ export const processStripeWebhook = onRequest(
       // Vérifier la signature du webhook
       event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
       console.log('✅ WEBHOOK - Signature vérifiée:', event.type);
-    } catch (err: any) {
-      console.error('❌ WEBHOOK - Signature invalide:', err.message);
-      res.status(400).send(`Webhook signature verification failed: ${err.message}`);
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+      console.error('❌ WEBHOOK - Signature invalide:', errorMessage);
+      res.status(400).send(`Webhook signature verification failed: ${errorMessage}`);
       return;
     }
 
@@ -50,7 +51,7 @@ export const processStripeWebhook = onRequest(
       }
 
       res.json({ received: true });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ WEBHOOK - Erreur traitement:', error);
       res.status(500).send('Erreur traitement webhook');
     }
