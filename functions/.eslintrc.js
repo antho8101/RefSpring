@@ -16,14 +16,13 @@ module.exports = {
   },
   ignorePatterns: [
     "/lib/**/*", // Ignore built files.
-    "/generated/**/*", // Ignore generated files.
   ],
   plugins: [
     "@typescript-eslint",
     "import",
   ],
   rules: {
-    "quotes": ["error", "single"],
+    "quotes": ["error", "double"],
     "import/no-unresolved": 0,
     "indent": ["error", 2],
     "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
