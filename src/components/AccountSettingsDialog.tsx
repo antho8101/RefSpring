@@ -18,6 +18,8 @@ import { useToast } from '@/hooks/use-toast';
 import { AccountSettingsNavigation } from '@/components/AccountSettingsNavigation';
 import { AccountSettings } from '@/components/AccountSettings';
 import { AccountBillingSettings } from '@/components/AccountBillingSettings';
+import { AccountSecuritySettings } from '@/components/AccountSecuritySettings';
+import { CurrencySettings } from '@/components/CurrencySettings';
 
 interface AccountSettingsDialogProps {
   children?: React.ReactNode;
@@ -73,7 +75,11 @@ export const AccountSettingsDialog = ({ children }: AccountSettingsDialogProps) 
   const getTabTitle = () => {
     switch (activeTab) {
       case 'account':
-        return 'Gestion du compte';
+        return 'Gestion du profil';
+      case 'security':
+        return 'Sécurité';
+      case 'currency':
+        return 'Devise préférée';
       case 'billing':
         return 'Facturation';
       default:
@@ -85,6 +91,10 @@ export const AccountSettingsDialog = ({ children }: AccountSettingsDialogProps) 
     switch (activeTab) {
       case 'account':
         return 'Modifiez votre email et mot de passe';
+      case 'security':
+        return 'Gérez la sécurité de votre compte';
+      case 'currency':
+        return 'Choisissez votre devise préférée';
       case 'billing':
         return 'Consultez vos informations de facturation';
       default:
@@ -96,6 +106,10 @@ export const AccountSettingsDialog = ({ children }: AccountSettingsDialogProps) 
     switch (activeTab) {
       case 'account':
         return <AccountSettings onCancel={() => setOpen(false)} />;
+      case 'security':
+        return <AccountSecuritySettings onCancel={() => setOpen(false)} />;
+      case 'currency':
+        return <CurrencySettings onCancel={() => setOpen(false)} />;
       case 'billing':
         return <AccountBillingSettings onCancel={() => setOpen(false)} />;
       default:

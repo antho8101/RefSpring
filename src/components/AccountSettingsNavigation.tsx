@@ -1,5 +1,5 @@
 
-import { User, CreditCard, Trash2 } from 'lucide-react';
+import { User, CreditCard, Trash2, Shield, Currency } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 
 interface AccountSettingsNavigationProps {
@@ -10,7 +10,9 @@ interface AccountSettingsNavigationProps {
 
 export const AccountSettingsNavigation = ({ activeTab, onTabChange, onDeleteClick }: AccountSettingsNavigationProps) => {
   const navigationItems = [
-    { id: 'account', label: 'Compte', icon: User },
+    { id: 'account', label: 'Profil', icon: User },
+    { id: 'security', label: 'Sécurité', icon: Shield },
+    { id: 'currency', label: 'Devise', icon: Currency },
     { id: 'billing', label: 'Facturation', icon: CreditCard },
   ];
 
