@@ -6,6 +6,7 @@ import { Plus, CreditCard, Loader2 } from 'lucide-react';
 import { useCampaignForm } from '@/hooks/useCampaignForm';
 import { CampaignFormFields } from '@/components/CampaignFormFields';
 import { PaymentMethodSelector } from '@/components/PaymentMethodSelector';
+import { ConfettiCelebration } from '@/components/ConfettiCelebration';
 import { useToast } from '@/hooks/use-toast';
 
 interface CreateCampaignDialogProps {
@@ -23,12 +24,14 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
     showPaymentSelector,
     paymentMethods,
     paymentMethodsLoading,
+    showConfetti,
     updateFormData,
     resetForm,
     handleSubmit,
     handleCardSelection,
     handleAddNewCard,
     setShowPaymentSelector,
+    setShowConfetti,
   } = useCampaignForm();
 
   const resetDialog = () => {
@@ -59,6 +62,12 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
 
   return (
     <>
+      {/* Confettis pour la création avec carte existante */}
+      <ConfettiCelebration 
+        trigger={showConfetti} 
+        onComplete={() => setShowConfetti(false)} 
+      />
+      
       <Dialog open={open} onOpenChange={(isOpen) => {
         if (!isOpen) resetDialog();
         else setOpen(true);
