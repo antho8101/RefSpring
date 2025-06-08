@@ -5,7 +5,6 @@ import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { DollarSign } from 'lucide-react';
 import { useState } from 'react';
 
 interface CurrencySelectorProps {
@@ -53,8 +52,7 @@ export const CurrencySelector = ({ variant = 'default' }: CurrencySelectorProps)
   const currentCurrency = SUPPORTED_CURRENCIES[userCurrency];
 
   return (
-    <div className="flex items-center gap-2">
-      <DollarSign className={`h-4 w-4 ${isDark ? 'text-white' : 'text-slate-600'}`} />
+    <div className="flex items-center">
       <Select value={userCurrency} onValueChange={handleCurrencyChange} disabled={loading}>
         <SelectTrigger className={`w-[140px] ${isDark ? 'border-slate-600 bg-slate-800 text-white' : 'border-slate-200'}`}>
           <SelectValue>
