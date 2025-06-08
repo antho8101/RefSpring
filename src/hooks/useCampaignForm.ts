@@ -120,6 +120,7 @@ export const useCampaignForm = () => {
         isDraft: false,
         paymentConfigured: true,
         defaultCommissionRate: 10,
+        stripePaymentMethodId: cardId, // Ajouter l'ID de la carte sélectionnée
       });
       
       console.log('✅ Campagne créée avec succès avec la carte existante. ID:', campaignId);
