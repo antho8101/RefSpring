@@ -1,4 +1,3 @@
-
 import { onCall, HttpsError } from 'firebase-functions/v2/https';
 import * as admin from 'firebase-admin';
 
@@ -20,6 +19,8 @@ interface ClickData {
   timestamp?: admin.firestore.Timestamp;
   campaignId?: string;
   affiliateId?: string;
+  userAgent?: string;
+  antifraudFlags?: string[];
 }
 
 interface ConversionData {
@@ -60,6 +61,9 @@ export const antifraudCheck = onCall(
 
       // 4. Détecter les IPs suspectes
       await detectSuspiciousIPs(campaignId, affiliateId, startDate, suspiciousActivities);
+
+      // 5. NOUVEAU - Détecter les bots et user-agents suspects
+      await detectBotsAndSuspiciousUserAgents(campaignId, affiliateId, startDate, suspiciousActivities);
 
       const riskScore = calculateRiskScore(suspiciousActivities);
       const riskLevel = getRiskLevel(riskScore);
@@ -200,9 +204,119 @@ async function detectSuspiciousIPs(
   startDate?: Date, 
   suspiciousActivities?: SuspiciousActivity[]
 ) {
-  // Cette fonction analyserait les patterns d'IP suspectes
-  // Pour l'instant, on fait une vérification basique
-  console.log('🛡️ ANTIFRAUD - Analyse IP en cours...');
+  console.log('🛡️ ANTIFRAUD - Analyse IP et blacklist...');
+  
+  let clicksQuery = admin.firestore().collection('clicks');
+  
+  if (campaignId) clicksQuery = clicksQuery.where('campaignId', '==', campaignId) as admin.firestore.Query;
+  if (affiliateId) clicksQuery = clicksQuery.where('affiliateId', '==', affiliateId) as admin.firestore.Query;
+  if (startDate) clicksQuery = clicksQuery.where('timestamp', '>=', startDate) as admin.firestore.Query;
+  
+  const clicksSnapshot = await clicksQuery.get();
+  
+  // Analyser les IPs avec des clics marqués comme non validés
+  const suspiciousIPs: { [key: string]: number } = {};
+  
+  clicksSnapshot.docs.forEach(doc => {
+    const data = doc.data() as ClickData;
+    const ip = data.ip || 'unknown';
+    const hasFlags = data.antifraudFlags && data.antifraudFlags.length > 0;
+    
+    if (hasFlags || data.validated === false) {
+      suspiciousIPs[ip] = (suspiciousIPs[ip] || 0) + 1;
+    }
+  });
+  
+  // Reporter les IPs avec plusieurs incidents
+  Object.entries(suspiciousIPs).forEach(([ip, count]) => {
+    if (count >= 5) {
+      suspiciousActivities?.push({
+        type: 'suspicious_ip_pattern',
+        severity: 'high',
+        description: `IP ${ip} avec ${count} incidents anti-fraude`,
+        data: { ip, incidentCount: count }
+      });
+    }
+  });
+}
+
+async function detectBotsAndSuspiciousUserAgents(
+  campaignId?: string, 
+  affiliateId?: string, 
+  startDate?: Date, 
+  suspiciousActivities?: SuspiciousActivity[]
+) {
+  console.log('🛡️ ANTIFRAUD - Détection bots et user-agents...');
+  
+  let clicksQuery = admin.firestore().collection('clicks');
+  
+  if (campaignId) clicksQuery = clicksQuery.where('campaignId', '==', campaignId) as admin.firestore.Query;
+  if (affiliateId) clicksQuery = clicksQuery.where('affiliateId', '==', affiliateId) as admin.firestore.Query;
+  if (startDate) clicksQuery = clicksQuery.where('timestamp', '>=', startDate) as admin.firestore.Query;
+  
+  const clicksSnapshot = await clicksQuery.get();
+  
+  const suspiciousUserAgents: { [key: string]: number } = {};
+  let botClicks = 0;
+  let emptyUserAgents = 0;
+  
+  clicksSnapshot.docs.forEach(doc => {
+    const data = doc.data() as ClickData;
+    const userAgent = data.userAgent || '';
+    
+    // Compter les user-agents vides
+    if (!userAgent) {
+      emptyUserAgents++;
+      return;
+    }
+    
+    // Détecter les bots
+    const botPatterns = [
+      /bot/i, /crawler/i, /spider/i, /scraper/i,
+      /headless/i, /phantom/i, /selenium/i, /puppeteer/i
+    ];
+    
+    if (botPatterns.some(pattern => pattern.test(userAgent))) {
+      botClicks++;
+      suspiciousUserAgents[userAgent] = (suspiciousUserAgents[userAgent] || 0) + 1;
+    }
+    
+    // Détecter les user-agents suspects (trop courts, génériques)
+    if (userAgent.length < 10 || userAgent === 'Mozilla/5.0') {
+      suspiciousUserAgents[userAgent] = (suspiciousUserAgents[userAgent] || 0) + 1;
+    }
+  });
+  
+  // Reporter les résultats
+  if (botClicks > 0) {
+    suspiciousActivities?.push({
+      type: 'bot_detection',
+      severity: 'high',
+      description: `${botClicks} clics de bots détectés`,
+      data: { botClickCount: botClicks }
+    });
+  }
+  
+  if (emptyUserAgents > 10) {
+    suspiciousActivities?.push({
+      type: 'missing_user_agents',
+      severity: 'medium',
+      description: `${emptyUserAgents} clics sans user-agent`,
+      data: { emptyUserAgentCount: emptyUserAgents }
+    });
+  }
+  
+  // Reporter les user-agents suspects fréquents
+  Object.entries(suspiciousUserAgents).forEach(([userAgent, count]) => {
+    if (count >= 10) {
+      suspiciousActivities?.push({
+        type: 'suspicious_user_agent',
+        severity: 'medium',
+        description: `User-agent suspect utilisé ${count} fois`,
+        data: { userAgent: userAgent.substring(0, 50), count }
+      });
+    }
+  });
 }
 
 function calculateRiskScore(suspiciousActivities: SuspiciousActivity[]): number {
@@ -232,6 +346,7 @@ function generateRecommendations(activities: SuspiciousActivity[], riskLevel: st
   if (riskLevel === 'ÉLEVÉ') {
     recommendations.push('Suspendre temporairement les paiements');
     recommendations.push('Analyser manuellement les conversions récentes');
+    recommendations.push('Activer la validation manuelle des clics');
   }
 
   if (activities.some(a => a.type === 'excessive_clicks')) {
@@ -240,6 +355,19 @@ function generateRecommendations(activities: SuspiciousActivity[], riskLevel: st
 
   if (activities.some(a => a.type === 'high_value_conversion')) {
     recommendations.push('Vérifier manuellement les conversions élevées');
+  }
+
+  if (activities.some(a => a.type === 'bot_detection')) {
+    recommendations.push('Bloquer les user-agents de bots connus');
+    recommendations.push('Implémenter un CAPTCHA pour les clics suspects');
+  }
+
+  if (activities.some(a => a.type === 'suspicious_ip_pattern')) {
+    recommendations.push('Ajouter les IPs suspectes à la blacklist');
+  }
+
+  if (activities.some(a => a.type === 'missing_user_agents')) {
+    recommendations.push('Rejeter les requêtes sans user-agent');
   }
 
   if (recommendations.length === 0) {

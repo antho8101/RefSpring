@@ -1,8 +1,11 @@
 
 import { collection, addDoc, doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+import { useAntifraud } from './useAntifraud';
 
 export const useTracking = () => {
+  const { validateClick } = useAntifraud();
+
   const recordClick = async (affiliateId: string, campaignId: string, targetUrl: string) => {
     try {
       // Clé basée uniquement sur l'affilié pour cette session - PAS sur la campagne
@@ -24,6 +27,22 @@ export const useTracking = () => {
         return alreadyRecorded;
       }
 
+      // Validation anti-fraude
+      const antifraudData = {
+        ip: null, // Sera récupéré côté serveur si besoin
+        userAgent: navigator.userAgent,
+        affiliateId,
+        campaignId
+      };
+
+      console.log('🛡️ TRACKING - Validation anti-fraude...');
+      const validation = await validateClick(antifraudData);
+      
+      if (!validation.valid) {
+        console.log('🚫 TRACKING - Clic rejeté par anti-fraude:', validation.reasons);
+        // On enregistre quand même le clic mais on le marque comme suspect
+      }
+
       const clickData = {
         affiliateId,
         campaignId,
@@ -32,6 +51,8 @@ export const useTracking = () => {
         referrer: document.referrer || null,
         targetUrl,
         ip: null,
+        antifraudFlags: validation.valid ? [] : validation.reasons,
+        validated: validation.valid
       };
 
       console.log('📊 TRACKING - Enregistrement du PREMIER clic:', clickData);
