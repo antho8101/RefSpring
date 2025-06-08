@@ -1,3 +1,4 @@
+
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { Users } from 'lucide-react';
@@ -110,9 +111,9 @@ const AffiliatePage = () => {
   // Error display with more helpful message for public access
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex flex-col">
         <PublicDashboardHeader campaignName="Accès restreint" loading={false} />
-        <div className="flex items-center justify-center py-20 px-4 sm:px-6 lg:px-8">
+        <div className="flex-1 flex items-center justify-center py-20 px-4 sm:px-6 lg:px-8">
           <Card className="max-w-md border-red-200 bg-red-50/50">
             <CardContent className="p-8">
               <div className="text-center">
@@ -137,17 +138,17 @@ const AffiliatePage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex flex-col">
       {/* Background decorations */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <div className="absolute top-20 right-10 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl"></div>
         <div className="absolute bottom-20 left-10 w-48 h-48 bg-purple-500/5 rounded-full blur-3xl"></div>
       </div>
 
-      <div className="relative">
+      <div className="relative flex flex-col flex-1">
         <PublicDashboardHeader campaignName={campaignName} loading={loading} />
 
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
           <PublicDashboardWelcome campaignName={campaignName} loading={loading} />
 
           {loading ? (
