@@ -1,4 +1,3 @@
-
 import { useState, useCallback } from 'react';
 import { collection, addDoc, query, where, getDocs, orderBy, limit } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
@@ -85,7 +84,7 @@ export const useAntifraud = () => {
       console.error('❌ ANTIFRAUD - Erreur vérification blacklist:', error);
       return false;
     }
-  }, [blackIP, blacklistedIPs]);
+  }, [hashIP, blacklistedIPs]);
 
   // Ajouter une IP à la blacklist
   const addToBlacklist = useCallback(async (ip: string, reason: string): Promise<void> => {
