@@ -7,6 +7,7 @@ import { useToast } from '@/hooks/use-toast';
 import { CheckCircle, AlertCircle, Loader2, TestTube } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ConfettiCelebration } from '@/components/ConfettiCelebration';
 
 export const PaymentSuccessPage = () => {
   const [searchParams] = useSearchParams();
@@ -16,6 +17,7 @@ export const PaymentSuccessPage = () => {
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [message, setMessage] = useState('');
   const [countdown, setCountdown] = useState(3);
+  const [showConfetti, setShowConfetti] = useState(false);
 
   const setupIntentId = searchParams.get('setup_intent');
   const campaignId = searchParams.get('campaign_id');
@@ -56,6 +58,9 @@ export const PaymentSuccessPage = () => {
             ? 'Votre campagne a été créée avec succès (mode simulation) !'
             : 'Votre campagne a été créée avec succès !'
           );
+          
+          // 🎉 Déclencher les confettis après la validation du paiement !
+          setShowConfetti(true);
           
           toast({
             title: "Campagne créée !",
@@ -107,6 +112,9 @@ export const PaymentSuccessPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50/50 via-white to-purple-50/50 flex items-center justify-center p-4">
+      {/* Confettis déclenchés après validation du paiement */}
+      <ConfettiCelebration trigger={showConfetti} />
+      
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="w-16 h-16 mx-auto mb-4">
