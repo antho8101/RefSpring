@@ -64,7 +64,7 @@ export const validateTracking = onCall(
       // Détection anti-fraude
       const fraudCheck = await performFraudCheck(trackingData, clientIP);
       if (!fraudCheck.valid) {
-        errors.push(fraudCheck.reason);
+        errors.push(fraudCheck.reason || 'Échec de la vérification anti-fraude');
       }
 
       if (errors.length > 0) {

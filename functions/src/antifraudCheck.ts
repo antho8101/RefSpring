@@ -1,4 +1,3 @@
-
 import { onCall, HttpsError } from 'firebase-functions/v2/https';
 import * as admin from 'firebase-admin';
 
@@ -20,7 +19,6 @@ export const antifraudCheck = onCall(
       }
 
       const { campaignId, affiliateId, days = 7 } = request.data as FraudCheckRequest;
-      const uid = request.auth.uid;
 
       // Date de début pour l'analyse
       const startDate = new Date(Date.now() - (days * 24 * 60 * 60 * 1000));
