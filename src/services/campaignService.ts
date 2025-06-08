@@ -24,15 +24,24 @@ export const campaignService = {
     
     const campaignsData = campaignsSnapshot.docs.map(doc => {
       const data = doc.data();
+      console.log('🎯 Campaign status check:', {
+        id: doc.id,
+        name: data.name,
+        isActive: data.isActive,
+        isDraft: data.isDraft,
+        paymentConfigured: data.paymentConfigured
+      });
+      
       return {
         id: doc.id,
         name: data.name || 'Campagne sans nom',
-        isActive: !data.isDraft && data.paymentConfigured,
+        // CORRECTION: Utiliser directement le champ isActive de la campagne
+        isActive: data.isActive === true,
         paymentMethodId: data.stripePaymentMethodId,
       };
     }) as CampaignSummary[];
     
-    console.log('✅ Campagnes chargées:', campaignsData.length);
+    console.log('✅ Campagnes chargées avec statuts corrects:', campaignsData.length);
     return campaignsData;
   }
 };
