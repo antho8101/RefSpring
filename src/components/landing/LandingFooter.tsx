@@ -1,6 +1,7 @@
+
 import { Globe, TrendingUp, Github } from "lucide-react";
 import { Link } from "react-router-dom";
-import { LanguageSelector } from "@/components/LanguageSelector";
+import { CurrencySelector } from "@/components/CurrencySelector";
 import { useTranslation } from 'react-i18next';
 import { RefSpringLogo } from "@/components/RefSpringLogo";
 
@@ -66,7 +67,7 @@ export const LandingFooter = () => {
           <p className="text-slate-400">&copy; 2024 RefSpring. All rights reserved.</p>
           <div className="flex flex-col sm:flex-row items-center gap-4">
             <div className="bg-slate-800 rounded-xl p-3 shadow-lg border border-slate-700">
-              <LanguageSelector variant="dark" />
+              <CurrencySelector variant="dark" />
             </div>
             <div className="flex gap-6">
               <Link to="/privacy" className="text-slate-400 hover:text-white transition-colors">Privacy</Link>

@@ -1,7 +1,7 @@
 
 import { RefSpringLogo } from "@/components/RefSpringLogo";
 import { Badge } from "@/components/ui/badge";
-import { LanguageSelector } from "@/components/LanguageSelector";
+import { CurrencySelector } from "@/components/CurrencySelector";
 import { useTranslation } from "react-i18next";
 
 interface PublicDashboardHeaderProps {
@@ -29,7 +29,7 @@ export const PublicDashboardHeader = ({ campaignName, loading }: PublicDashboard
           </div>
           
           <div className="flex items-center gap-4">
-            <LanguageSelector />
+            <CurrencySelector />
             <Badge 
               variant="outline" 
               className="bg-white/80 border-blue-200 text-blue-700 font-medium px-4 py-2"
