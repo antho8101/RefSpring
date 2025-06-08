@@ -1,6 +1,6 @@
 
 import { useSearchParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { CheckCircle, ArrowLeft } from 'lucide-react';
@@ -11,6 +11,7 @@ const TestThankYouPage = () => {
   const { recordConversion } = useTracking();
   const [conversionRecorded, setConversionRecorded] = useState(false);
   const [conversionId, setConversionId] = useState<string | null>(null);
+  const hasProcessedRef = useRef(false);
   
   const product = searchParams.get('product');
   const price = searchParams.get('price');
@@ -24,14 +25,16 @@ const TestThankYouPage = () => {
 
   useEffect(() => {
     const handleConversion = async () => {
-      if (!ref || !campaign || !price || conversionRecorded) {
-        console.log('🎯 THANK YOU PAGE - Conditions pour conversion non remplies:', {
-          ref, campaign, price, conversionRecorded
+      // PROTECTION ABSOLUE contre les doubles conversions
+      if (!ref || !campaign || !price || conversionRecorded || hasProcessedRef.current) {
+        console.log('🎯 THANK YOU PAGE - Conditions pour conversion non remplies ou déjà traité:', {
+          ref, campaign, price, conversionRecorded, hasProcessed: hasProcessedRef.current
         });
         return;
       }
 
-      console.log('💰 THANK YOU PAGE - Début enregistrement conversion');
+      hasProcessedRef.current = true;
+      console.log('💰 THANK YOU PAGE - TRAITEMENT UNIQUE - Début enregistrement conversion');
       console.log('💰 Paramètres:', { ref, campaign, product, price });
       
       try {
@@ -39,7 +42,6 @@ const TestThankYouPage = () => {
         
         console.log('💰 Enregistrement conversion avec montant:', amount);
         
-        // Le hook recordConversion va maintenant calculer automatiquement la commission
         const newConversionId = await recordConversion(ref, campaign, amount);
         
         if (newConversionId) {
@@ -48,14 +50,16 @@ const TestThankYouPage = () => {
           setConversionId(newConversionId);
         } else {
           console.log('❌ Échec enregistrement conversion');
+          hasProcessedRef.current = false; // Permettre un retry
         }
       } catch (error) {
         console.error('❌ Erreur lors de l\'enregistrement de la conversion:', error);
+        hasProcessedRef.current = false; // Permettre un retry
       }
     };
 
     handleConversion();
-  }, [ref, campaign, price, product, recordConversion, conversionRecorded]);
+  }, []); // DÉPENDANCES VIDES pour éviter les re-exécutions
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 py-8">
@@ -162,6 +166,7 @@ const TestThankYouPage = () => {
                 <p><strong>Campaign:</strong> {campaign || 'Non détecté'}</p>
                 <p><strong>Conversion enregistrée:</strong> {conversionRecorded ? 'Oui' : 'Non'}</p>
                 <p><strong>ID Conversion:</strong> {conversionId || 'Non disponible'}</p>
+                <p><strong>Protection activée:</strong> {hasProcessedRef.current ? 'Oui' : 'Non'}</p>
               </div>
             </div>
           </CardContent>

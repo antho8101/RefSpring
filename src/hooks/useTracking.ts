@@ -76,9 +76,18 @@ export const useTracking = () => {
     try {
       console.log('💰 TRACKING - Starting conversion recording:', { affiliateId, campaignId, amount, providedCommission });
       
+      // PROTECTION ANTI-DOUBLE CONVERSION
+      const conversionKey = `conversion_recorded_${affiliateId}_${campaignId}_${amount}`;
+      const alreadyRecorded = sessionStorage.getItem(conversionKey);
+      
+      if (alreadyRecorded) {
+        console.log('🚫 TRACKING - Conversion déjà enregistrée dans cette session, ignoré');
+        return alreadyRecorded;
+      }
+      
       // Récupérer le taux de commission de l'affilié
-      let commissionRate = 10; // Valeur par défaut
-      let calculatedCommission = amount * 0.1;
+      let commissionRate = 10; // Valeur par défaut en pourcentage
+      let calculatedCommission = (amount * 10) / 100; // 10% par défaut
       
       try {
         const affiliateDoc = await getDoc(doc(db, 'affiliates', affiliateId));
@@ -86,31 +95,23 @@ export const useTracking = () => {
           const affiliateData = affiliateDoc.data();
           const rawCommissionRate = affiliateData.commissionRate;
           
-          console.log('💰 TRACKING - RAW COMMISSION RATE FROM DB:', rawCommissionRate, typeof rawCommissionRate);
+          console.log('💰 TRACKING - Commission rate récupéré:', rawCommissionRate, typeof rawCommissionRate);
           
-          // CORRECTION CRITIQUE : Gérer les différents formats possibles
           if (typeof rawCommissionRate === 'string') {
             commissionRate = parseFloat(rawCommissionRate);
           } else if (typeof rawCommissionRate === 'number') {
             commissionRate = rawCommissionRate;
           }
           
-          // Si le taux est > 1, c'est probablement un pourcentage (99 au lieu de 0.99)
-          if (commissionRate > 1) {
-            console.log('💰 TRACKING - Commission rate is > 1, treating as percentage');
-            calculatedCommission = (amount * commissionRate) / 100;
-          } else {
-            console.log('💰 TRACKING - Commission rate is <= 1, treating as decimal');
-            calculatedCommission = amount * commissionRate;
-          }
+          // CORRECTION CRITIQUE : Le taux est TOUJOURS en pourcentage dans la DB
+          calculatedCommission = (amount * commissionRate) / 100;
           
-          console.log('💰 TRACKING - COMMISSION CALCULATION DEBUG:', {
+          console.log('💰 TRACKING - CALCUL COMMISSION CORRIGÉ:', {
             affiliateId,
-            rawCommissionRate,
-            parsedCommissionRate: commissionRate,
             amount,
+            commissionRate: `${commissionRate}%`,
             calculatedCommission,
-            isPercentage: commissionRate > 1
+            formula: `${amount} * ${commissionRate} / 100 = ${calculatedCommission}`
           });
         } else {
           console.log('⚠️ TRACKING - Affiliate not found, using default 10%');
@@ -127,8 +128,7 @@ export const useTracking = () => {
         userAgent: navigator.userAgent,
         referrer: document.referrer,
         timestamp: new Date().toISOString(),
-        // Détecter comportements suspects
-        rapid_succession: false, // À implémenter si besoin
+        rapid_succession: false,
         suspicious_amount: amount > 50000 // Plus de 500€
       };
 
@@ -141,6 +141,9 @@ export const useTracking = () => {
       );
 
       console.log('✅ TRACKING - Conversion created with verification system:', conversionId);
+      
+      // Marquer cette conversion comme enregistrée
+      sessionStorage.setItem(conversionKey, conversionId);
       
       return conversionId;
     } catch (error) {
