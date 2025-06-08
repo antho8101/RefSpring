@@ -25,6 +25,18 @@ export const LandingHeader = ({ onRedirectToDashboard, currentPage = 'landing' }
     }
   };
 
+  const handleNavClick = (targetId: string) => {
+    const element = document.getElementById(targetId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      // Si on n'est pas sur la landing page, y aller d'abord
+      if (window.location.pathname !== '/') {
+        window.location.href = `/#${targetId}`;
+      }
+    }
+  };
+
   return (
     <header className="fixed top-0 w-full border-b border-slate-200/80 bg-white/90 backdrop-blur-xl z-50 transition-all">
       <div className="w-full px-4 sm:px-6 lg:px-8">
@@ -35,9 +47,12 @@ export const LandingHeader = ({ onRedirectToDashboard, currentPage = 'landing' }
           </Link>
           
           <nav className="absolute left-1/2 transform -translate-x-1/2 hidden md:flex space-x-8" role="navigation" aria-label="Navigation principale">
-            <Link to="/#features" className="text-slate-600 hover:text-slate-900 font-medium transition-all hover:scale-105">
+            <button 
+              onClick={() => handleNavClick('features')}
+              className="text-slate-600 hover:text-slate-900 font-medium transition-all hover:scale-105 cursor-pointer"
+            >
               Fonctionnalités
-            </Link>
+            </button>
             <Link 
               to="/pricing" 
               className={`font-medium transition-all hover:scale-105 ${
@@ -46,12 +61,18 @@ export const LandingHeader = ({ onRedirectToDashboard, currentPage = 'landing' }
             >
               Tarifs
             </Link>
-            <Link to="/#dashboard" className="text-slate-600 hover:text-slate-900 font-medium transition-all hover:scale-105">
+            <button 
+              onClick={() => handleNavClick('dashboard')}
+              className="text-slate-600 hover:text-slate-900 font-medium transition-all hover:scale-105 cursor-pointer"
+            >
               Dashboard
-            </Link>
-            <Link to="/#testimonials" className="text-slate-600 hover:text-slate-900 font-medium transition-all hover:scale-105">
+            </button>
+            <button 
+              onClick={() => handleNavClick('testimonials')}
+              className="text-slate-600 hover:text-slate-900 font-medium transition-all hover:scale-105 cursor-pointer"
+            >
               Témoignages
-            </Link>
+            </button>
           </nav>
           
           <div className="flex items-center gap-3">

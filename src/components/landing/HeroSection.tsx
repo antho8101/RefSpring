@@ -31,6 +31,16 @@ export const HeroSection = ({ scrollY, onRedirectToDashboard }: HeroSectionProps
     }
   };
 
+  const handleViewDashboard = () => {
+    const dashboardElement = document.getElementById('dashboard');
+    if (dashboardElement) {
+      dashboardElement.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      // Si l'élément n'existe pas, rediriger vers le dashboard
+      onRedirectToDashboard();
+    }
+  };
+
   return (
     <section className="relative min-h-screen flex flex-col justify-between px-4 sm:px-6 lg:px-8 overflow-hidden">
       {/* Simple Background Elements */}
@@ -89,7 +99,7 @@ export const HeroSection = ({ scrollY, onRedirectToDashboard }: HeroSectionProps
             size="lg" 
             variant="outline" 
             className="text-lg px-12 py-6 border-2 border-slate-300 text-slate-700 hover:bg-slate-50 hover:border-slate-400 shadow-lg hover:shadow-xl transition-all hover:scale-105 group"
-            onClick={() => document.getElementById('dashboard')?.scrollIntoView({ behavior: 'smooth' })}
+            onClick={handleViewDashboard}
           >
             <span className="flex items-center gap-2">
               Voir le dashboard
@@ -115,7 +125,7 @@ export const HeroSection = ({ scrollY, onRedirectToDashboard }: HeroSectionProps
             🎯 On gagne seulement si vous gagnez !
           </div>
         </div>
-        <div className="group text-center hover:scale-110 transition-transform cursor-default">
+        <div className="group text-center hover:scale-110 transition-transform cursor-default" onClick={handleEasterEggClick}>
           <div className="text-4xl font-bold text-purple-600 mb-2 group-hover:animate-spin">2.5%</div>
           <div className="text-slate-600">Notre commission sur vos ventes générées</div>
           <div className="text-xs text-slate-500 mt-1">

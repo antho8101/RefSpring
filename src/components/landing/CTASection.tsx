@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Clock } from "lucide-react";
+import { ArrowRight, Clock, Eye } from "lucide-react";
 import { useTranslation } from 'react-i18next';
 
 interface CTASectionProps {
@@ -9,6 +9,16 @@ interface CTASectionProps {
 
 export const CTASection = ({ onRedirectToDashboard }: CTASectionProps) => {
   const { t } = useTranslation();
+
+  const handleViewDashboard = () => {
+    const dashboardElement = document.getElementById('dashboard');
+    if (dashboardElement) {
+      dashboardElement.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      // Si l'élément n'existe pas, rediriger vers le dashboard
+      onRedirectToDashboard();
+    }
+  };
 
   return (
     <section className="py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 relative overflow-hidden">
@@ -37,8 +47,9 @@ export const CTASection = ({ onRedirectToDashboard }: CTASectionProps) => {
             size="lg" 
             variant="outline" 
             className="text-lg px-12 py-6 border-2 border-white text-white hover:bg-white hover:text-slate-900 hover:scale-105 transition-all" 
-            onClick={onRedirectToDashboard}
+            onClick={handleViewDashboard}
           >
+            <Eye className="mr-2 h-5 w-5" />
             {t('cta.seeDemo')}
           </Button>
         </div>

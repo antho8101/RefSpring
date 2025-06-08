@@ -1,12 +1,22 @@
 
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Zap, Star } from "lucide-react";
+import { ArrowRight, Zap, Star, Eye } from "lucide-react";
 
 interface PricingCTAProps {
   onGetStarted: () => void;
 }
 
 export const PricingCTA = ({ onGetStarted }: PricingCTAProps) => {
+  const handleViewDashboard = () => {
+    const dashboardElement = document.getElementById('dashboard');
+    if (dashboardElement) {
+      dashboardElement.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      // Si l'élément n'existe pas, rediriger vers la landing page
+      window.location.href = '/#dashboard';
+    }
+  };
+
   return (
     <section className="py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 relative overflow-hidden">
       {/* Animated Background Elements */}
@@ -46,8 +56,9 @@ export const PricingCTA = ({ onGetStarted }: PricingCTAProps) => {
             size="lg" 
             variant="outline" 
             className="text-xl px-12 py-6 border-4 border-white text-white hover:bg-white hover:text-slate-900 hover:scale-110 transition-all font-bold backdrop-blur-sm"
-            onClick={() => document.getElementById('dashboard')?.scrollIntoView({ behavior: 'smooth' })}
+            onClick={handleViewDashboard}
           >
+            <Eye className="mr-2 h-5 w-5" />
             👀 Voir le dashboard
           </Button>
         </div>
