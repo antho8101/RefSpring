@@ -109,17 +109,20 @@ export const useCampaignForm = () => {
     try {
       setLoading(true);
       console.log('💳 Carte sélectionnée:', cardId);
+      console.log('📝 Données de campagne à créer:', pendingCampaignData);
       
-      // Créer la campagne avec la carte sélectionnée (directement finalisée)
+      // Créer la campagne directement finalisée avec la carte sélectionnée
       const campaignId = await createCampaign({
-        ...pendingCampaignData,
+        name: pendingCampaignData.name,
+        description: pendingCampaignData.description,
+        targetUrl: pendingCampaignData.targetUrl,
+        isActive: pendingCampaignData.isActive,
         isDraft: false,
         paymentConfigured: true,
-        stripePaymentMethodId: cardId,
         defaultCommissionRate: 10,
       });
       
-      console.log('✅ Campagne créée avec la carte existante:', campaignId);
+      console.log('✅ Campagne créée avec succès avec la carte existante. ID:', campaignId);
       
       toast({
         title: "Campagne créée avec succès !",
