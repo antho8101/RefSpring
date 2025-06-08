@@ -43,27 +43,47 @@ export const useCampaignData = (userId: string | null, authLoading: boolean) => 
       
       const campaignsData = snapshot.docs.map(doc => {
         const data = doc.data();
+        console.log('🎯 Campaign data:', {
+          id: doc.id,
+          name: data.name,
+          isDraft: data.isDraft,
+          paymentConfigured: data.paymentConfigured,
+          stripePaymentMethodId: data.stripePaymentMethodId
+        });
+        
         return {
           id: doc.id,
           ...data,
           createdAt: data.createdAt?.toDate(),
           updatedAt: data.updatedAt?.toDate(),
           // Valeurs par défaut pour les nouveaux champs Stripe
-          paymentConfigured: data.paymentConfigured || false,
-          isDraft: data.isDraft || false,
+          paymentConfigured: data.paymentConfigured !== undefined ? data.paymentConfigured : true,
+          isDraft: data.isDraft !== undefined ? data.isDraft : false,
         };
       }) as Campaign[];
       
-      // Tri côté client - Ne montrer que les campagnes finalisées (non-draft)
-      const finalizedCampaigns = campaignsData
-        .filter(campaign => !campaign.isDraft)
+      // MODIFICATION: Afficher toutes les campagnes qui ont un paiement configuré
+      // ou qui ne sont pas des brouillons (pour compatibilité avec anciennes campagnes)
+      const visibleCampaigns = campaignsData
+        .filter(campaign => {
+          const shouldShow = !campaign.isDraft || campaign.paymentConfigured || campaign.stripePaymentMethodId;
+          console.log('🎯 Campaign filter check:', {
+            id: campaign.id,
+            name: campaign.name,
+            isDraft: campaign.isDraft,
+            paymentConfigured: campaign.paymentConfigured,
+            hasStripePaymentMethod: !!campaign.stripePaymentMethodId,
+            shouldShow
+          });
+          return shouldShow;
+        })
         .sort((a, b) => {
           if (!a.createdAt || !b.createdAt) return 0;
           return b.createdAt.getTime() - a.createdAt.getTime();
         });
       
-      console.log('🎯 Campagnes chargées:', finalizedCampaigns.length);
-      setCampaigns(finalizedCampaigns);
+      console.log('🎯 Campagnes visibles chargées:', visibleCampaigns.length);
+      setCampaigns(visibleCampaigns);
       setLoading(false);
     }, (error) => {
       console.error('🎯 Erreur Firestore:', error);
