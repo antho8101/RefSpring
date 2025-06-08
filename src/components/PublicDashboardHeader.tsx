@@ -1,7 +1,6 @@
 
 import { RefSpringLogo } from "@/components/RefSpringLogo";
 import { Badge } from "@/components/ui/badge";
-import { Sparkles } from "lucide-react";
 
 interface PublicDashboardHeaderProps {
   campaignName: string;
@@ -22,10 +21,6 @@ export const PublicDashboardHeader = ({ campaignName, loading }: PublicDashboard
                 </h1>
                 <p className="text-sm text-slate-600 font-medium">Dashboard Affilié</p>
               </div>
-            </div>
-            <div className="hidden sm:flex items-center gap-2 text-amber-600">
-              <Sparkles className="h-4 w-4" />
-              <span className="text-sm font-medium">Powered by RefSpring</span>
             </div>
           </div>
           
