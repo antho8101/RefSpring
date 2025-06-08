@@ -9,8 +9,8 @@ interface PublicDashboardHeaderProps {
 
 export const PublicDashboardHeader = ({ campaignName, loading }: PublicDashboardHeaderProps) => {
   return (
-    <header className="bg-gradient-to-r from-blue-50 via-white to-purple-50 border-b border-slate-200/80 shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <header className="w-full bg-gradient-to-r from-blue-50 via-white to-purple-50 border-b border-slate-200/80 shadow-sm">
+      <div className="w-full px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-3">

@@ -112,7 +112,7 @@ const AffiliatePage = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
         <PublicDashboardHeader campaignName="Accès restreint" loading={false} />
-        <div className="flex items-center justify-center py-20">
+        <div className="flex items-center justify-center py-20 px-4 sm:px-6 lg:px-8">
           <Card className="max-w-md border-red-200 bg-red-50/50">
             <CardContent className="p-8">
               <div className="text-center">
