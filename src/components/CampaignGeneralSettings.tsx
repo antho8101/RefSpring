@@ -1,11 +1,11 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
-import { AlertTriangle } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { AlertTriangle, Pause } from 'lucide-react';
 import { Campaign } from '@/types';
 import { CriticalActionConfirmDialog } from '@/components/CriticalActionConfirmDialog';
 import { useCampaigns } from '@/hooks/useCampaigns';
@@ -154,6 +154,17 @@ export const CampaignGeneralSettings = ({
     <>
       <form onSubmit={onSubmit} className="space-y-8 h-full flex flex-col">
         <div className="flex-1 space-y-6">
+          {/* Bandeau d'alerte pour campagne en pause */}
+          {!formData.isActive && (
+            <Alert className="border-orange-200 bg-orange-50">
+              <Pause className="h-4 w-4 text-orange-600" />
+              <AlertDescription className="text-orange-800">
+                <strong>Campagne en pause</strong> - Les liens de tracking n'acceptent plus de nouveaux clics. 
+                Activez la campagne pour reprendre le tracking des conversions.
+              </AlertDescription>
+            </Alert>
+          )}
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="space-y-2">
               <Label htmlFor="name">Nom de la campagne</Label>
