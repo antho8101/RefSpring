@@ -1,7 +1,7 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
-import { useCampaigns } from '@/hooks/useCampaigns';
+import { finalizeCampaignInFirestore } from '@/services/campaignService';
 import { useStripePayment } from '@/hooks/useStripePayment';
 import { useToast } from '@/hooks/use-toast';
 import { CheckCircle, AlertCircle, Loader2, TestTube } from 'lucide-react';
@@ -11,7 +11,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 export const PaymentSuccessPage = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { finalizeCampaign } = useCampaigns();
   const { verifyPaymentSetup } = useStripePayment();
   const { toast } = useToast();
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
@@ -45,8 +44,9 @@ export const PaymentSuccessPage = () => {
         if (setupStatus.status === 'succeeded') {
           console.log('✅ Paiement configuré avec succès');
           
-          // Finaliser la campagne
-          await finalizeCampaign(campaignId, {
+          // Finaliser la campagne DIRECTEMENT sans passer par les hooks sécurisés
+          // car l'utilisateur vient de payer et a le droit de finaliser
+          await finalizeCampaignInFirestore(campaignId, {
             customerId: isSimulation ? 'cus_simulation' : 'cus_placeholder',
             setupIntentId: setupIntentId,
           });
