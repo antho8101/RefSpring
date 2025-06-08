@@ -110,7 +110,7 @@ export const useCampaignForm = () => {
       setLoading(true);
       console.log('💳 Carte sélectionnée:', cardId);
       
-      // Créer la campagne avec la carte sélectionnée
+      // Créer la campagne avec la carte sélectionnée (directement finalisée)
       const campaignId = await createCampaign({
         ...pendingCampaignData,
         isDraft: false,
@@ -126,7 +126,7 @@ export const useCampaignForm = () => {
         description: "Votre campagne est maintenant active avec la carte sélectionnée.",
       });
       
-      // Réinitialiser et fermer
+      // Réinitialiser et fermer toutes les modales
       resetForm();
       
     } catch (error: any) {
