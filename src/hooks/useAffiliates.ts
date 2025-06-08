@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { 
   collection, 
@@ -42,54 +41,118 @@ export const useAffiliates = (campaignId?: string) => {
 
     console.log('👥 SECURITY - Auth OK, starting secure Firestore query for user:', user.uid);
 
-    const affiliatesRef = collection(db, 'affiliates');
-    let q;
-    
-    if (campaignId) {
-      console.log('👥 SECURITY - Query for specific campaign:', campaignId);
-      q = query(
-        affiliatesRef, 
-        where('campaignId', '==', campaignId), 
-        where('userId', '==', user.uid),
-        orderBy('createdAt', 'desc')
-      );
-    } else {
-      console.log('👥 SECURITY - Query all affiliates for user:', user.uid);
-      q = query(
-        affiliatesRef, 
-        where('userId', '==', user.uid), 
-        orderBy('createdAt', 'desc')
-      );
-    }
+    const loadAffiliates = async () => {
+      try {
+        // Si pas de campaignId spécifique, on vérifie d'abord quelles campagnes existent encore
+        if (!campaignId) {
+          console.log('👥 SECURITY - Loading all affiliates, checking existing campaigns first');
+          
+          // Récupérer d'abord toutes les campagnes existantes de l'utilisateur
+          const campaignsQuery = query(
+            collection(db, 'campaigns'),
+            where('userId', '==', user.uid)
+          );
+          const campaignsSnapshot = await getDocs(campaignsQuery);
+          const existingCampaignIds = campaignsSnapshot.docs.map(doc => doc.id);
+          
+          console.log('👥 SECURITY - Existing campaigns:', existingCampaignIds.length);
+          
+          if (existingCampaignIds.length === 0) {
+            console.log('👥 SECURITY - No campaigns exist, no affiliates to show');
+            setAffiliates([]);
+            setLoading(false);
+            return;
+          }
 
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      console.log('👥 SECURITY - Firestore snapshot received, docs:', snapshot.docs.length);
-      
-      const affiliatesData = snapshot.docs.map(doc => {
-        const data = doc.data();
-        
-        // VÉRIFICATION DE SÉCURITÉ : s'assurer que l'affilié appartient bien à l'utilisateur
-        if (data.userId !== user.uid) {
-          console.log('👥 SECURITY - Blocking affiliate not owned by user:', doc.id);
-          return null;
+          // Maintenant récupérer seulement les affiliés des campagnes qui existent encore
+          const affiliatesRef = collection(db, 'affiliates');
+          const q = query(
+            affiliatesRef, 
+            where('campaignId', 'in', existingCampaignIds),
+            where('userId', '==', user.uid),
+            orderBy('createdAt', 'desc')
+          );
+
+          const unsubscribe = onSnapshot(q, (snapshot) => {
+            console.log('👥 SECURITY - Firestore snapshot received, docs:', snapshot.docs.length);
+            
+            const affiliatesData = snapshot.docs.map(doc => {
+              const data = doc.data();
+              
+              // VÉRIFICATION DE SÉCURITÉ : s'assurer que l'affilié appartient bien à l'utilisateur
+              if (data.userId !== user.uid) {
+                console.log('👥 SECURITY - Blocking affiliate not owned by user:', doc.id);
+                return null;
+              }
+              
+              return {
+                id: doc.id,
+                ...data,
+                createdAt: data.createdAt?.toDate(),
+              };
+            }).filter(Boolean) as Affiliate[];
+            
+            console.log('👥 SECURITY - Secured affiliates loaded (filtered by existing campaigns):', affiliatesData.length);
+            setAffiliates(affiliatesData);
+            setLoading(false);
+          }, (error) => {
+            console.error('👥 SECURITY - Firestore error:', error);
+            setLoading(false);
+          });
+
+          return unsubscribe;
+          
+        } else {
+          // Mode campagne spécifique (comportement original)
+          const affiliatesRef = collection(db, 'affiliates');
+          const q = query(
+            affiliatesRef, 
+            where('campaignId', '==', campaignId), 
+            where('userId', '==', user.uid),
+            orderBy('createdAt', 'desc')
+          );
+
+          const unsubscribe = onSnapshot(q, (snapshot) => {
+            console.log('👥 SECURITY - Firestore snapshot received, docs:', snapshot.docs.length);
+            
+            const affiliatesData = snapshot.docs.map(doc => {
+              const data = doc.data();
+              
+              // VÉRIFICATION DE SÉCURITÉ : s'assurer que l'affilié appartient bien à l'utilisateur
+              if (data.userId !== user.uid) {
+                console.log('👥 SECURITY - Blocking affiliate not owned by user:', doc.id);
+                return null;
+              }
+              
+              return {
+                id: doc.id,
+                ...data,
+                createdAt: data.createdAt?.toDate(),
+              };
+            }).filter(Boolean) as Affiliate[];
+            
+            console.log('👥 SECURITY - Secured affiliates loaded:', affiliatesData.length);
+            setAffiliates(affiliatesData);
+            setLoading(false);
+          }, (error) => {
+            console.error('👥 SECURITY - Firestore error:', error);
+            setLoading(false);
+          });
+
+          return unsubscribe;
         }
-        
-        return {
-          id: doc.id,
-          ...data,
-          createdAt: data.createdAt?.toDate(),
-        };
-      }).filter(Boolean) as Affiliate[];
-      
-      console.log('👥 SECURITY - Secured affiliates loaded:', affiliatesData.length);
-      setAffiliates(affiliatesData);
-      setLoading(false);
-    }, (error) => {
-      console.error('👥 SECURITY - Firestore error:', error);
-      setLoading(false);
-    });
+      } catch (error) {
+        console.error('👥 SECURITY - Error loading affiliates:', error);
+        setLoading(false);
+      }
+    };
 
-    return unsubscribe;
+    const unsubscribe = loadAffiliates();
+    return () => {
+      if (unsubscribe && typeof unsubscribe === 'function') {
+        unsubscribe();
+      }
+    };
   }, [user, authLoading, campaignId]);
 
   const generateTrackingCode = () => {
