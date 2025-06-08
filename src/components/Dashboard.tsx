@@ -3,6 +3,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useCampaigns } from '@/hooks/useCampaigns';
 import { useAffiliates } from '@/hooks/useAffiliates';
 import { useStatsFilters } from '@/hooks/useStatsFilters';
+import { useAuthGuard } from '@/hooks/useAuthGuard';
 import { DashboardBackground } from '@/components/DashboardBackground';
 import { DashboardHeader } from '@/components/DashboardHeader';
 import { DashboardContent } from '@/components/DashboardContent';
@@ -37,25 +38,33 @@ const DashboardStats = ({ activeCampaigns, totalCampaigns, totalAffiliates, user
     conversionRate: 0,
   });
   const [loading, setLoading] = useState(true);
+  const { requireAuthentication } = useAuthGuard();
 
   useEffect(() => {
     const loadGlobalStats = async () => {
-      if (!userId) return;
+      if (!userId) {
+        console.log('📊 SECURITY - No userId provided for stats');
+        return;
+      }
       
       try {
-        console.log(`📊 DASHBOARD - Chargement des stats globales ${periodLabel} pour:`, userId);
+        // Vérification de sécurité
+        requireAuthentication('consulter les statistiques');
         
-        // Récupérer les campagnes de l'utilisateur
+        console.log(`📊 SECURITY - Loading secured global stats ${periodLabel} for:`, userId);
+        
+        // Récupérer les campagnes de l'utilisateur avec vérification de propriété
         const campaignsQuery = query(collection(db, 'campaigns'), where('userId', '==', userId));
         const campaignsSnapshot = await getDocs(campaignsQuery);
         const campaignIds = campaignsSnapshot.docs.map(doc => doc.id);
         
         if (campaignIds.length === 0) {
+          console.log('📊 SECURITY - No campaigns found for user');
           setLoading(false);
           return;
         }
 
-        // Récupérer tous les clics et conversions en parallèle
+        // Récupérer tous les clics et conversions en parallèle avec vérification de sécurité
         const [clicksSnapshot, conversionsSnapshot] = await Promise.all([
           getDocs(query(collection(db, 'clicks'), where('campaignId', 'in', campaignIds))),
           getDocs(query(collection(db, 'conversions'), where('campaignId', 'in', campaignIds)))
@@ -97,7 +106,7 @@ const DashboardStats = ({ activeCampaigns, totalCampaigns, totalAffiliates, user
 
         const conversionRate = totalClicks > 0 ? (totalConversions / totalClicks) * 100 : 0;
 
-        console.log(`📊 DASHBOARD - Stats calculées ${periodLabel}:`, {
+        console.log(`📊 SECURITY - Secured stats calculated ${periodLabel}:`, {
           totalClicks,
           totalConversions,
           totalRevenue,
@@ -113,14 +122,14 @@ const DashboardStats = ({ activeCampaigns, totalCampaigns, totalAffiliates, user
           conversionRate,
         });
       } catch (error) {
-        console.error('❌ DASHBOARD - Erreur chargement stats:', error);
+        console.error('❌ SECURITY - Error loading secured stats:', error);
       }
       
       setLoading(false);
     };
 
     loadGlobalStats();
-  }, [userId, filterDate, periodLabel]);
+  }, [userId, filterDate, periodLabel, requireAuthentication]);
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('fr-FR', {
@@ -203,16 +212,26 @@ const DashboardStats = ({ activeCampaigns, totalCampaigns, totalAffiliates, user
 
 export const Dashboard = memo(() => {
   const { user } = useAuth();
+  const { isAuthenticated, requireAuthentication } = useAuthGuard();
   const { campaigns, loading: campaignsLoading } = useCampaigns();
   const { affiliates, loading: affiliatesLoading } = useAffiliates();
   const { period, setPeriod, getDateFilter, getPeriodLabel } = useStatsFilters();
 
+  // Vérification de sécurité au montage
+  useEffect(() => {
+    console.log('📊 SECURITY - Dashboard mounted, checking authentication');
+    requireAuthentication('accéder au dashboard');
+  }, [requireAuthentication]);
+
   const handleLogout = useCallback(async () => {
     try {
+      console.log('🔐 SECURITY - User logout initiated');
       await auth.signOut();
       localStorage.removeItem('auth_user');
+      sessionStorage.clear(); // Nettoyer toutes les données de session
+      console.log('🔐 SECURITY - User logged out successfully');
     } catch (error) {
-      console.error('Erreur logout:', error);
+      console.error('🔐 SECURITY - Logout error:', error);
     }
   }, []);
 
@@ -225,10 +244,14 @@ export const Dashboard = memo(() => {
     };
   }, [campaigns, affiliates]);
 
-  if (campaignsLoading || affiliatesLoading) {
+  // Affichage du loader si pas encore authentifié ou données en cours de chargement
+  if (!isAuthenticated || campaignsLoading || affiliatesLoading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+        <div className="text-center">
+          <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">Chargement sécurisé du dashboard...</p>
+        </div>
       </div>
     );
   }
@@ -236,7 +259,7 @@ export const Dashboard = memo(() => {
   return (
     <TooltipProvider>
       <Helmet>
-        <title>RefSpring - Dashboard</title>
+        <title>RefSpring - Dashboard Sécurisé</title>
       </Helmet>
 
       <NetworkStatus />
@@ -277,4 +300,4 @@ export const Dashboard = memo(() => {
   );
 });
 
-Dashboard.displayName = 'Dashboard';
+Dashboard.displayName = 'SecuredDashboard';

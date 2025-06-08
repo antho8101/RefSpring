@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import { 
   collection, 
@@ -13,15 +14,17 @@ import {
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { useAuth } from '@/hooks/useAuth';
+import { useAuthGuard } from '@/hooks/useAuthGuard';
 import { Affiliate } from '@/types';
 
 export const useAffiliates = (campaignId?: string) => {
   const [affiliates, setAffiliates] = useState<Affiliate[]>([]);
   const [loading, setLoading] = useState(true);
   const { user, loading: authLoading } = useAuth();
+  const { requireAuthentication, requireOwnership } = useAuthGuard();
 
   useEffect(() => {
-    console.log('👥 useAffiliates - Effect triggered');
+    console.log('👥 useAffiliates - Effect triggered with security checks');
     console.log('👥 authLoading:', authLoading, 'user:', !!user, 'campaignId:', campaignId);
     
     // PROTECTION STRICTE : Aucune requête avant auth complète
@@ -31,19 +34,19 @@ export const useAffiliates = (campaignId?: string) => {
     }
     
     if (!user) {
-      console.log('👥 Pas d\'utilisateur, nettoyage des affiliés');
+      console.log('👥 SECURITY - No user, clearing affiliates and blocking requests');
       setAffiliates([]);
       setLoading(false);
       return;
     }
 
-    console.log('👥 Auth OK, démarrage requête Firestore pour user:', user.uid);
+    console.log('👥 SECURITY - Auth OK, starting secure Firestore query for user:', user.uid);
 
     const affiliatesRef = collection(db, 'affiliates');
     let q;
     
     if (campaignId) {
-      console.log('👥 Requête pour campagne spécifique:', campaignId);
+      console.log('👥 SECURITY - Query for specific campaign:', campaignId);
       q = query(
         affiliatesRef, 
         where('campaignId', '==', campaignId), 
@@ -51,7 +54,7 @@ export const useAffiliates = (campaignId?: string) => {
         orderBy('createdAt', 'desc')
       );
     } else {
-      console.log('👥 Requête tous affiliés pour user:', user.uid);
+      console.log('👥 SECURITY - Query all affiliates for user:', user.uid);
       q = query(
         affiliatesRef, 
         where('userId', '==', user.uid), 
@@ -60,109 +63,136 @@ export const useAffiliates = (campaignId?: string) => {
     }
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      console.log('👥 Firestore snapshot reçu, docs:', snapshot.docs.length);
+      console.log('👥 SECURITY - Firestore snapshot received, docs:', snapshot.docs.length);
       
       const affiliatesData = snapshot.docs.map(doc => {
         const data = doc.data();
+        
+        // VÉRIFICATION DE SÉCURITÉ : s'assurer que l'affilié appartient bien à l'utilisateur
+        if (data.userId !== user.uid) {
+          console.log('👥 SECURITY - Blocking affiliate not owned by user:', doc.id);
+          return null;
+        }
+        
         return {
           id: doc.id,
           ...data,
           createdAt: data.createdAt?.toDate(),
         };
-      }) as Affiliate[];
+      }).filter(Boolean) as Affiliate[];
       
-      console.log('👥 Affiliés chargés:', affiliatesData.length);
+      console.log('👥 SECURITY - Secured affiliates loaded:', affiliatesData.length);
       setAffiliates(affiliatesData);
       setLoading(false);
     }, (error) => {
-      console.error('👥 Erreur Firestore:', error);
+      console.error('👥 SECURITY - Firestore error:', error);
       setLoading(false);
     });
 
     return unsubscribe;
-  }, [user, authLoading, campaignId]); // Dépendance sur authLoading aussi
+  }, [user, authLoading, campaignId]);
 
   const generateTrackingCode = () => {
     return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
   };
 
   const createAffiliate = async (affiliateData: Omit<Affiliate, 'id' | 'createdAt' | 'userId' | 'trackingCode'>) => {
-    if (!user) throw new Error('User not authenticated');
+    requireAuthentication('créer un affilié');
+    
+    console.log('👥 SECURITY - Creating affiliate for authenticated user:', user?.uid);
     
     const newAffiliate = {
       ...affiliateData,
-      userId: user.uid,
+      userId: user!.uid,
       trackingCode: generateTrackingCode(),
       createdAt: new Date(),
     };
 
     const docRef = await addDoc(collection(db, 'affiliates'), newAffiliate);
+    console.log('👥 SECURITY - Affiliate created securely:', docRef.id);
     return docRef.id;
   };
 
   const updateAffiliate = async (id: string, updates: Partial<Affiliate>) => {
+    requireAuthentication('modifier un affilié');
+    
+    // Vérifier que l'affilié appartient à l'utilisateur
+    const affiliate = affiliates.find(a => a.id === id);
+    if (affiliate) {
+      requireOwnership(affiliate.userId, 'affilié');
+    }
+    
+    console.log('👥 SECURITY - Updating affiliate:', id);
     const affiliateRef = doc(db, 'affiliates', id);
     await updateDoc(affiliateRef, updates);
   };
 
   const deleteAffiliate = async (id: string) => {
-    console.log('🗑️ Début suppression affilié:', id);
+    requireAuthentication('supprimer un affilié');
+    
+    // Vérifier que l'affilié appartient à l'utilisateur
+    const affiliate = affiliates.find(a => a.id === id);
+    if (affiliate) {
+      requireOwnership(affiliate.userId, 'affilié');
+    }
+    
+    console.log('👥 SECURITY - Starting secure cascade deletion for affiliate:', id);
     
     try {
       // 1. Supprimer tous les clics de cet affilié
-      console.log('🗑️ Suppression des clics de l\'affilié...');
+      console.log('👥 SECURITY - Deleting affiliate clicks...');
       const clicksQuery = query(
         collection(db, 'clicks'),
         where('affiliateId', '==', id)
       );
       const clicksSnapshot = await getDocs(clicksQuery);
-      console.log('🗑️ Clics trouvés pour l\'affilié:', clicksSnapshot.size);
+      console.log('👥 SECURITY - Clicks found for affiliate:', clicksSnapshot.size);
       
       const deleteClicksPromises = clicksSnapshot.docs.map(doc => {
-        console.log('🗑️ Suppression clic affilié:', doc.id);
+        console.log('👥 SECURITY - Deleting affiliate click:', doc.id);
         return deleteDoc(doc.ref);
       });
       await Promise.all(deleteClicksPromises);
 
       // 2. Supprimer tous les liens courts de cet affilié
-      console.log('🗑️ Suppression des liens courts de l\'affilié...');
+      console.log('👥 SECURITY - Deleting affiliate short links...');
       const shortLinksQuery = query(
         collection(db, 'shortLinks'),
         where('affiliateId', '==', id)
       );
       const shortLinksSnapshot = await getDocs(shortLinksQuery);
-      console.log('🗑️ Liens courts trouvés pour l\'affilié:', shortLinksSnapshot.size);
+      console.log('👥 SECURITY - Short links found for affiliate:', shortLinksSnapshot.size);
       
       const deleteShortLinksPromises = shortLinksSnapshot.docs.map(doc => {
-        console.log('🗑️ Suppression lien court affilié:', doc.id);
+        console.log('👥 SECURITY - Deleting affiliate short link:', doc.id);
         return deleteDoc(doc.ref);
       });
       await Promise.all(deleteShortLinksPromises);
 
       // 3. Supprimer toutes les conversions de cet affilié
-      console.log('🗑️ Suppression des conversions de l\'affilié...');
+      console.log('👥 SECURITY - Deleting affiliate conversions...');
       const conversionsQuery = query(
         collection(db, 'conversions'),
         where('affiliateId', '==', id)
       );
       const conversionsSnapshot = await getDocs(conversionsQuery);
-      console.log('🗑️ Conversions trouvées pour l\'affilié:', conversionsSnapshot.size);
+      console.log('👥 SECURITY - Conversions found for affiliate:', conversionsSnapshot.size);
       
       const deleteConversionsPromises = conversionsSnapshot.docs.map(doc => {
-        console.log('🗑️ Suppression conversion affilié:', doc.id);
+        console.log('👥 SECURITY - Deleting affiliate conversion:', doc.id);
         return deleteDoc(doc.ref);
       });
       await Promise.all(deleteConversionsPromises);
 
       // 4. Finalement, supprimer l'affilié lui-même
-      console.log('🗑️ Suppression de l\'affilié...');
+      console.log('👥 SECURITY - Deleting affiliate...');
       const affiliateRef = doc(db, 'affiliates', id);
       await deleteDoc(affiliateRef);
       
-      console.log('✅ Suppression complète terminée pour l\'affilié:', id);
+      console.log('✅ SECURITY - Secure cascade deletion completed for affiliate:', id);
       
     } catch (error) {
-      console.error('❌ Erreur lors de la suppression en cascade de l\'affilié:', error);
+      console.error('❌ SECURITY - Error during secure cascade deletion:', error);
       throw error;
     }
   };
