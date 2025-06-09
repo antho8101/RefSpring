@@ -46,7 +46,7 @@ export const HeroSection = ({ scrollY, onRedirectToDashboard }: HeroSectionProps
       {/* Simple Background Elements */}
       <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-purple-50"></div>
       
-      <div className="max-w-6xl mx-auto text-center relative z-20 flex-grow flex flex-col justify-center">
+      <div className="max-w-[75rem] mx-auto text-center relative z-20 flex-grow flex flex-col justify-center">
         {/* Clear explanation badge */}
         <div className="mb-8 animate-bounce-in" style={{ animationDelay: '0.2s' }}>
           <span className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-100 to-purple-100 border-2 border-blue-300 rounded-full text-blue-800 font-bold text-lg shadow-lg hover:shadow-xl transition-all hover:scale-105">
