@@ -4,6 +4,7 @@ import { useAffiliates } from '@/hooks/useAffiliates';
 import { useStatsFilters } from '@/hooks/useStatsFilters';
 import { useAuthGuard } from '@/hooks/useAuthGuard';
 import { useTawkTo } from '@/hooks/useTawkTo';
+import { useGuidedTour } from '@/hooks/useGuidedTour';
 import { DashboardBackground } from '@/components/DashboardBackground';
 import { DashboardHeader } from '@/components/DashboardHeader';
 import { DashboardContent } from '@/components/DashboardContent';
@@ -11,6 +12,7 @@ import { DashboardFooter } from '@/components/DashboardFooter';
 import { NetworkStatus } from '@/components/NetworkStatus';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { PaymentNotificationBanner } from '@/components/PaymentNotificationBanner';
+import { GuidedTourOverlay } from '@/components/GuidedTourOverlay';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { Helmet } from 'react-helmet-async';
 import { memo, useCallback, useMemo, useEffect, useState } from 'react';
@@ -216,6 +218,7 @@ export const Dashboard = memo(() => {
   const { campaigns, loading: campaignsLoading } = useCampaigns();
   const { affiliates, loading: affiliatesLoading } = useAffiliates();
   const { period, setPeriod, getDateFilter, getPeriodLabel } = useStatsFilters();
+  const { tourCompleted, startTour } = useGuidedTour();
 
   // Intégration Tawk.to - SEULEMENT pour les utilisateurs authentifiés
   useTawkTo({ enabled: isAuthenticated });
@@ -225,6 +228,19 @@ export const Dashboard = memo(() => {
     console.log('📊 SECURITY - Dashboard mounted, checking authentication');
     requireAuthentication('accéder au dashboard');
   }, [requireAuthentication]);
+
+  // Démarrer l'onboarding si l'utilisateur est connecté et n'a pas encore fait le tour
+  useEffect(() => {
+    if (isAuthenticated && !tourCompleted && !campaignsLoading && !affiliatesLoading) {
+      // Attendre un peu que le dashboard soit rendu
+      const timer = setTimeout(() => {
+        console.log('🎯 Starting guided tour for new user');
+        startTour();
+      }, 1000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [isAuthenticated, tourCompleted, campaignsLoading, affiliatesLoading, startTour]);
 
   const handleLogout = useCallback(async () => {
     try {
@@ -268,12 +284,14 @@ export const Dashboard = memo(() => {
       <NetworkStatus />
       <div className="min-h-screen bg-gradient-to-br from-blue-50/50 via-white to-purple-50/50 relative overflow-hidden flex flex-col">
         <DashboardBackground />
-        <DashboardHeader 
-          user={user} 
-          onLogout={handleLogout}
-          period={period}
-          onPeriodChange={setPeriod}
-        />
+        <div data-tour="header">
+          <DashboardHeader 
+            user={user} 
+            onLogout={handleLogout}
+            period={period}
+            onPeriodChange={setPeriod}
+          />
+        </div>
 
         <main className="relative z-10 max-w-6xl mx-auto w-full px-3 sm:px-4 lg:px-8 py-4 sm:py-6 lg:py-8 flex-1 min-w-0">
           {/* Bandeau de notifications de paiement */}
@@ -281,24 +299,31 @@ export const Dashboard = memo(() => {
             <PaymentNotificationBanner />
           </ErrorBoundary>
 
-          <ErrorBoundary fallback={<div>Erreur stats</div>}>
-            <DashboardStats 
-              activeCampaigns={dashboardMetrics.activeCampaigns}
-              totalCampaigns={dashboardMetrics.totalCampaigns}
-              totalAffiliates={dashboardMetrics.totalAffiliates}
-              userId={user?.uid}
-              filterDate={getDateFilter()}
-              periodLabel={getPeriodLabel()}
-            />
-          </ErrorBoundary>
+          <div data-tour="stats">
+            <ErrorBoundary fallback={<div>Erreur stats</div>}>
+              <DashboardStats 
+                activeCampaigns={dashboardMetrics.activeCampaigns}
+                totalCampaigns={dashboardMetrics.totalCampaigns}
+                totalAffiliates={dashboardMetrics.totalAffiliates}
+                userId={user?.uid}
+                filterDate={getDateFilter()}
+                periodLabel={getPeriodLabel()}
+              />
+            </ErrorBoundary>
+          </div>
 
           <ErrorBoundary fallback={<div>Erreur contenu</div>}>
             <DashboardContent />
           </ErrorBoundary>
         </main>
 
-        <DashboardFooter />
+        <div data-tour="footer">
+          <DashboardFooter />
+        </div>
       </div>
+
+      {/* Guided Tour Overlay */}
+      <GuidedTourOverlay />
     </TooltipProvider>
   );
 });

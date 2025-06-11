@@ -56,7 +56,9 @@ export const DashboardHeader = ({ user, onLogout, period, onPeriodChange }: Dash
               </button>
             </AccountSettingsDialog>
             
-            <StatsPeriodToggle period={period} onPeriodChange={onPeriodChange} />
+            <div data-tour="period-toggle">
+              <StatsPeriodToggle period={period} onPeriodChange={onPeriodChange} />
+            </div>
             
             <Button 
               variant="outline" 
@@ -91,7 +93,7 @@ export const DashboardHeader = ({ user, onLogout, period, onPeriodChange }: Dash
                 </button>
               </AccountSettingsDialog>
               
-              <div className="flex justify-center px-2">
+              <div className="flex justify-center px-2" data-tour="period-toggle">
                 <StatsPeriodToggle period={period} onPeriodChange={onPeriodChange} />
               </div>
               

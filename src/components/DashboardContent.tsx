@@ -10,12 +10,12 @@ export const DashboardContent = () => {
           <h2 className="text-xl sm:text-2xl font-bold text-slate-900 mb-2 truncate">Mes Campagnes</h2>
           <p className="text-slate-600 text-sm sm:text-base truncate">Gérez vos campagnes d'affiliation en temps réel</p>
         </div>
-        <div className="flex-shrink-0 w-full sm:w-auto">
+        <div className="flex-shrink-0 w-full sm:w-auto" data-tour="create-campaign">
           <CreateCampaignDialog />
         </div>
       </div>
       
-      <div className="relative min-w-0">
+      <div className="relative min-w-0" data-tour="campaigns-list">
         <CampaignsList />
       </div>
     </div>
