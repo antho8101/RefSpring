@@ -1,6 +1,7 @@
 
 import { useAuth } from '@/hooks/useAuth';
 import { useTawkTo } from '@/hooks/useTawkTo';
+import { useStatsFilters } from '@/hooks/useStatsFilters';
 import { DashboardHeader } from './DashboardHeader';
 import { PublicDashboardHeader } from './PublicDashboardHeader';
 import { DashboardBackground } from './DashboardBackground';
@@ -12,6 +13,7 @@ import { useState } from 'react';
 export const Dashboard = () => {
   const { user, loading } = useAuth();
   const [showAuthDialog, setShowAuthDialog] = useState(!user && !loading);
+  const { period, setPeriod } = useStatsFilters();
   
   // Initialiser Tawk.to uniquement dans le dashboard privé
   useTawkTo(!!user);
@@ -47,8 +49,8 @@ export const Dashboard = () => {
       <DashboardHeader 
         user={user}
         onLogout={async () => {}}
-        period="7d"
-        onPeriodChange={() => {}}
+        period={period}
+        onPeriodChange={setPeriod}
       />
       <DashboardBackground />
       <DashboardContent />

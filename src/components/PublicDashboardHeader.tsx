@@ -4,7 +4,12 @@ import { LogIn } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { RefSpringLogo } from '@/components/RefSpringLogo';
 
-export const PublicDashboardHeader = () => {
+interface PublicDashboardHeaderProps {
+  campaignName?: string;
+  loading?: boolean;
+}
+
+export const PublicDashboardHeader = ({ campaignName, loading }: PublicDashboardHeaderProps = {}) => {
   return (
     <header className="relative z-50 border-b border-slate-200/80 bg-white/90 backdrop-blur-xl shadow-lg">
       <div className="w-full px-3 sm:px-4 lg:px-8">
@@ -17,7 +22,9 @@ export const PublicDashboardHeader = () => {
                 <h1 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent truncate">
                   RefSpring
                 </h1>
-                <p className="text-xs sm:text-sm text-slate-600 font-medium truncate">Dashboard</p>
+                <p className="text-xs sm:text-sm text-slate-600 font-medium truncate">
+                  {loading ? "Chargement..." : (campaignName || "Dashboard")}
+                </p>
               </div>
             </div>
           </Link>
