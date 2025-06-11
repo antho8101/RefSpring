@@ -40,9 +40,17 @@ export const AdminDashboard = () => {
     try {
       console.log('🔒 ADMIN - Loading global platform stats');
 
-      // Récupérer toutes les campagnes
+      // Récupérer toutes les campagnes avec leurs données complètes
       const campaignsSnapshot = await getDocs(collection(db, 'campaigns'));
-      const campaigns = campaignsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const campaigns = campaignsSnapshot.docs.map(doc => {
+        const data = doc.data();
+        return { 
+          id: doc.id, 
+          userId: data.userId,
+          isActive: data.isActive,
+          ...data 
+        };
+      });
       
       // Récupérer tous les affiliés
       const affiliatesSnapshot = await getDocs(collection(db, 'affiliates'));
