@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -124,10 +125,10 @@ export const CampaignDeletionDialog = ({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <AlertTriangle className="h-5 w-5 text-orange-600" />
-            Facturation de suppression de campagne
+            Paiement de suppression de campagne
           </DialogTitle>
           <DialogDescription>
-            Cette suppression génère des frais qui seront facturés automatiquement.
+            Cette suppression génère des frais qui vous seront débités automatiquement.
             Consultez le détail ci-dessous avant de confirmer.
           </DialogDescription>
         </DialogHeader>
@@ -176,7 +177,7 @@ export const CampaignDeletionDialog = ({
             disabled={loading || calculatingCommissions || !distribution}
             className="bg-red-600 hover:bg-red-700 text-white"
           >
-            {loading ? 'Facturation en cours...' : `Facturer ${totalToDistribute.toFixed(2)}€ et supprimer`}
+            {loading ? 'Paiement en cours...' : `Payer ${totalToDistribute.toFixed(2)}€ et supprimer`}
           </Button>
         </DialogFooter>
       </DialogContent>
