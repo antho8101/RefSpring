@@ -49,7 +49,16 @@ const TourTooltip = ({
       if (!targetElement || !tooltipRef.current) return;
 
       const targetRect = target === 'body' 
-        ? { top: window.innerHeight / 2, left: window.innerWidth / 2, width: 0, height: 0 }
+        ? { 
+            top: window.innerHeight / 2, 
+            left: window.innerWidth / 2, 
+            width: 0, 
+            height: 0,
+            bottom: window.innerHeight / 2,
+            right: window.innerWidth / 2,
+            x: window.innerWidth / 2,
+            y: window.innerHeight / 2
+          }
         : targetElement.getBoundingClientRect();
       
       const tooltipRect = tooltipRef.current.getBoundingClientRect();
