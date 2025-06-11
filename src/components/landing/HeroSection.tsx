@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Sparkles, Zap, MousePointer, Eye } from "lucide-react";
+import { ArrowRight, Zap, MousePointer, Eye } from "lucide-react";
 import { useTranslation } from 'react-i18next';
 import { useState, useEffect } from 'react';
 
@@ -91,7 +91,6 @@ export const HeroSection = ({ scrollY, onRedirectToDashboard }: HeroSectionProps
             <span className="relative flex items-center gap-2">
               Créer mon programme d'affiliation
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              <Sparkles className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity animate-spin" />
             </span>
           </Button>
           
