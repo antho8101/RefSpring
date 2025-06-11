@@ -11,6 +11,17 @@ interface CampaignFormFieldsProps {
 }
 
 export const CampaignFormFields = ({ formData, onUpdateFormData }: CampaignFormFieldsProps) => {
+  const handleTargetUrlChange = (value: string) => {
+    let normalizedUrl = value.trim();
+    
+    // Si l'URL n'est pas vide et ne commence pas par http:// ou https://
+    if (normalizedUrl && !normalizedUrl.startsWith('http://') && !normalizedUrl.startsWith('https://')) {
+      normalizedUrl = 'https://' + normalizedUrl;
+    }
+    
+    onUpdateFormData({ targetUrl: normalizedUrl });
+  };
+
   return (
     <div className="grid gap-4 py-4">
       <div className="space-y-2">
@@ -40,10 +51,13 @@ export const CampaignFormFields = ({ formData, onUpdateFormData }: CampaignFormF
         <Input
           id="targetUrl"
           value={formData.targetUrl}
-          onChange={(e) => onUpdateFormData({ targetUrl: e.target.value })}
-          placeholder="https://monsite.com/produit"
+          onChange={(e) => handleTargetUrlChange(e.target.value)}
+          placeholder="nomdusite.com/produit"
           required
         />
+        <p className="text-xs text-slate-500">
+          Vous pouvez taper juste "nomdusite.com" - https:// sera ajouté automatiquement
+        </p>
       </div>
       
       <div className="flex items-center space-x-2">
