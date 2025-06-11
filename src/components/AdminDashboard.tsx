@@ -1,7 +1,7 @@
-
 import { useEffect, useState } from 'react';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { useServiceHealth } from '@/hooks/useServiceHealth';
+import { useFirestoreMonitoring } from '@/hooks/useFirestoreMonitoring';
 import { collection, getDocs, getCountFromServer } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { AdminHeader } from './admin/AdminHeader';
@@ -9,6 +9,7 @@ import { SystemStatusCard } from './admin/SystemStatusCard';
 import { SystemMetricsGrid } from './admin/SystemMetricsGrid';
 import { ServiceHealthList } from './admin/ServiceHealthList';
 import { AdminActions } from './admin/AdminActions';
+import { FirestoreMetricsCard } from './admin/FirestoreMetricsCard';
 
 interface SystemStats {
   totalCollections: number;
@@ -28,6 +29,7 @@ interface SystemHealth {
 export const AdminDashboard = () => {
   const { currentEmail, adminEmail } = useAdminAuth();
   const { healthChecks, isChecking, lastUpdate, runHealthChecks } = useServiceHealth();
+  const { metrics: firestoreMetrics, isLoading: isFirestoreLoading, refreshMetrics } = useFirestoreMonitoring();
   const [systemStats, setSystemStats] = useState<SystemStats>({
     totalCollections: 0,
     totalDocuments: 0,
@@ -162,6 +164,12 @@ export const AdminDashboard = () => {
         />
         
         <SystemMetricsGrid systemStats={systemStats} />
+        
+        <FirestoreMetricsCard 
+          metrics={firestoreMetrics}
+          isLoading={isFirestoreLoading}
+          onRefresh={refreshMetrics}
+        />
         
         <ServiceHealthList healthChecks={healthChecks} />
         
