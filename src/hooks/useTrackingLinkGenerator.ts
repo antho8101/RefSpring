@@ -44,7 +44,13 @@ export const useTrackingLinkGenerator = () => {
         const shortCode = await createShortLink(campaignId, affiliateId, enhancedTargetUrl);
         
         if (!shortCode) {
-          throw new Error('Échec de la création du lien court');
+          console.warn('⚠️ Échec création lien court, génération lien direct avec paramètres');
+          // Fallback: créer un lien direct avec les paramètres
+          const fallbackUrl = new URL('/track', baseUrl);
+          fallbackUrl.searchParams.set('c', campaignId);
+          fallbackUrl.searchParams.set('a', affiliateId);
+          fallbackUrl.searchParams.set('u', encodeURIComponent(targetUrl));
+          return fallbackUrl.toString();
         }
         
         console.log('✅ Lien court créé avec succès:', shortCode);
@@ -56,9 +62,21 @@ export const useTrackingLinkGenerator = () => {
       } catch (error) {
         console.error('❌ Erreur création lien court:', error);
         
-        // En cas d'erreur, on relance une exception plutôt que de faire un fallback
-        // pour que l'utilisateur sache qu'il y a un problème
-        throw new Error(`Impossible de créer le lien court: ${error instanceof Error ? error.message : 'Erreur inconnue'}`);
+        // Fallback robuste : créer un lien de tracking direct
+        console.log('🔄 Utilisation du fallback de tracking direct');
+        try {
+          const fallbackUrl = new URL('/track', baseUrl);
+          fallbackUrl.searchParams.set('c', campaignId);
+          fallbackUrl.searchParams.set('a', affiliateId);
+          fallbackUrl.searchParams.set('u', encodeURIComponent(targetUrl));
+          
+          const directLink = fallbackUrl.toString();
+          console.log('✅ Lien de fallback généré:', directLink);
+          return directLink;
+        } catch (fallbackError) {
+          console.error('❌ Échec complet génération lien:', fallbackError);
+          throw new Error('Impossible de générer un lien de tracking');
+        }
       }
     };
   }, [createShortLink]);

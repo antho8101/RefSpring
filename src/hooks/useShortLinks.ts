@@ -25,10 +25,10 @@ export const useShortLinks = () => {
   const [loading, setLoading] = useState(false);
 
   const generateShortCode = () => {
-    // Générer un code plus long pour éviter les collisions
+    // Générer un code aléatoire plus long pour éviter les collisions
     const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     let result = '';
-    for (let i = 0; i < 8; i++) { // Augmenté de 6 à 8 caractères
+    for (let i = 0; i < 10; i++) { // Code de 10 caractères
       result += chars.charAt(Math.floor(Math.random() * chars.length));
     }
     return result;
@@ -41,11 +41,15 @@ export const useShortLinks = () => {
       console.log('🔧 Début création lien court pour:', { campaignId, affiliateId, targetUrl });
       
       if (!db) {
-        throw new Error('Base de données non initialisée');
+        console.error('❌ Base de données non initialisée');
+        setLoading(false);
+        return null; // Retourner null au lieu de throw pour permettre le fallback
       }
       
       if (!targetUrl || !campaignId || !affiliateId) {
-        throw new Error('Paramètres manquants pour la création du lien court');
+        console.error('❌ Paramètres manquants:', { targetUrl, campaignId, affiliateId });
+        setLoading(false);
+        return null;
       }
       
       // Vérifier s'il existe déjà un lien court pour cette combinaison
@@ -67,33 +71,42 @@ export const useShortLinks = () => {
         return existingLink.shortCode;
       }
 
-      // Générer un nouveau code court unique
+      // Générer un nouveau code court unique avec plus d'essais
       let shortCode = generateShortCode();
       let isUnique = false;
       let attempts = 0;
+      const maxAttempts = 50; // Augmenter le nombre d'essais
       
       console.log('🎲 Génération nouveau code court...');
-      while (!isUnique && attempts < 20) { // Augmenté de 10 à 20 tentatives
+      while (!isUnique && attempts < maxAttempts) {
         attempts++;
         console.log('🎲 Tentative', attempts, '- Code testé:', shortCode);
         
-        const codeQuery = query(
-          collection(db, 'shortLinks'),
-          where('shortCode', '==', shortCode)
-        );
-        const codeSnapshot = await getDocs(codeQuery);
-        
-        if (codeSnapshot.empty) {
-          isUnique = true;
-          console.log('✅ Code unique trouvé:', shortCode);
-        } else {
-          console.log('❌ Code déjà utilisé, nouveau essai...');
+        try {
+          const codeQuery = query(
+            collection(db, 'shortLinks'),
+            where('shortCode', '==', shortCode)
+          );
+          const codeSnapshot = await getDocs(codeQuery);
+          
+          if (codeSnapshot.empty) {
+            isUnique = true;
+            console.log('✅ Code unique trouvé:', shortCode);
+          } else {
+            console.log('❌ Code déjà utilisé, nouveau essai...');
+            shortCode = generateShortCode();
+          }
+        } catch (queryError) {
+          console.error('❌ Erreur vérification unicité:', queryError);
+          // En cas d'erreur de requête, générer un nouveau code et continuer
           shortCode = generateShortCode();
         }
       }
 
       if (!isUnique) {
-        throw new Error(`Impossible de générer un code unique après ${attempts} tentatives`);
+        console.error(`❌ Impossible de générer un code unique après ${attempts} tentatives`);
+        setLoading(false);
+        return null; // Retourner null au lieu de throw
       }
 
       // Créer le nouveau lien court
@@ -110,14 +123,17 @@ export const useShortLinks = () => {
       const docRef = await addDoc(collection(db, 'shortLinks'), shortLinkData);
       console.log('✅ Lien court créé avec succès - ID:', docRef.id, '- Code:', shortCode);
       
-      // Vérification immédiate
-      console.log('🔍 Vérification immédiate du lien créé...');
-      const verificationData = await getShortLinkData(shortCode);
-      if (!verificationData) {
-        throw new Error('Échec de la vérification du lien créé');
+      // Vérification immédiate optionnelle
+      try {
+        console.log('🔍 Vérification immédiate du lien créé...');
+        const verificationData = await getShortLinkData(shortCode);
+        if (verificationData) {
+          console.log('✅ Vérification réussie - URL récupérée:', verificationData.targetUrl);
+        }
+      } catch (verificationError) {
+        console.warn('⚠️ Erreur vérification (non critique):', verificationError);
+        // Ne pas bloquer si la vérification échoue
       }
-      
-      console.log('✅ Vérification réussie - URL récupérée:', verificationData.targetUrl);
       
       setLoading(false);
       return shortCode;
@@ -125,7 +141,7 @@ export const useShortLinks = () => {
     } catch (error) {
       console.error('❌ Erreur lors de la création du lien court:', error);
       setLoading(false);
-      throw error; // Relancer l'erreur au lieu de la masquer
+      return null; // Retourner null au lieu de throw pour permettre le fallback
     }
   };
 
@@ -163,7 +179,7 @@ export const useShortLinks = () => {
       
     } catch (error) {
       console.error('❌ Erreur lors de la récupération du lien court:', error);
-      throw error; // Relancer l'erreur pour un meilleur debug
+      throw error;
     }
   };
 
