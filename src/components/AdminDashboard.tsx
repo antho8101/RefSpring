@@ -5,16 +5,16 @@ import { Button } from '@/components/ui/button';
 import { Shield, Server, Database, Activity, TrendingUp, AlertTriangle, Zap, Clock } from 'lucide-react';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { useServiceHealth } from '@/hooks/useServiceHealth';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, getCountFromServer } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 
 interface SystemStats {
   totalCollections: number;
-  databaseSize: number;
-  activeConnections: number;
-  systemUptime: number;
-  errorRate: number;
-  responseTime: number;
+  totalDocuments: number;
+  averageResponseTime: number;
+  healthyServices: number;
+  totalServices: number;
+  lastUpdateTime: Date;
 }
 
 interface SystemHealth {
@@ -28,11 +28,11 @@ export const AdminDashboard = () => {
   const { healthChecks, isChecking, lastUpdate, runHealthChecks } = useServiceHealth();
   const [systemStats, setSystemStats] = useState<SystemStats>({
     totalCollections: 0,
-    databaseSize: 0,
-    activeConnections: 0,
-    systemUptime: 0,
-    errorRate: 0,
-    responseTime: 0,
+    totalDocuments: 0,
+    averageResponseTime: 0,
+    healthyServices: 0,
+    totalServices: 0,
+    lastUpdateTime: new Date(),
   });
   const [systemHealth, setSystemHealth] = useState<SystemHealth>({
     status: 'healthy',
@@ -48,33 +48,45 @@ export const AdminDashboard = () => {
 
   const loadSystemStats = async () => {
     try {
-      console.log('🔒 ADMIN - Loading system statistics');
+      console.log('🔒 ADMIN - Loading real system statistics');
 
-      // Compter les collections principales
+      // Compter les documents dans les collections principales
       const collections = ['campaigns', 'affiliates', 'clicks', 'conversions'];
       let totalDocs = 0;
       
       for (const collectionName of collections) {
-        const snapshot = await getDocs(collection(db, collectionName));
-        totalDocs += snapshot.size;
+        try {
+          const countQuery = await getCountFromServer(collection(db, collectionName));
+          totalDocs += countQuery.data().count;
+        } catch (error) {
+          console.warn(`Could not count ${collectionName}, falling back to getDocs`);
+          const snapshot = await getDocs(collection(db, collectionName));
+          totalDocs += snapshot.size;
+        }
       }
 
-      // Simuler des métriques système (en production, ces données viendraient de Firebase Analytics)
-      const uptime = Math.floor((Date.now() - new Date().setHours(0, 0, 0, 0)) / 1000);
+      // Calculer les vraies métriques basées sur les health checks
       const avgResponseTime = healthChecks.length > 0 
         ? Math.round(healthChecks.reduce((sum, check) => sum + check.responseTime, 0) / healthChecks.length)
         : 0;
 
+      const healthyServices = healthChecks.filter(check => check.status === 'operational').length;
+      
       setSystemStats({
         totalCollections: collections.length,
-        databaseSize: totalDocs,
-        activeConnections: Math.floor(Math.random() * 50) + 10, // Simulé
-        systemUptime: uptime,
-        errorRate: Math.random() * 2, // Simulé
-        responseTime: avgResponseTime,
+        totalDocuments: totalDocs,
+        averageResponseTime: avgResponseTime,
+        healthyServices,
+        totalServices: healthChecks.length,
+        lastUpdateTime: new Date(),
       });
 
-      console.log('✅ ADMIN - System stats loaded');
+      console.log('✅ ADMIN - Real system stats loaded:', {
+        totalDocuments: totalDocs,
+        avgResponseTime,
+        healthyServices,
+        totalServices: healthChecks.length
+      });
     } catch (error) {
       console.error('❌ ADMIN - Error loading system stats:', error);
     } finally {
@@ -86,7 +98,7 @@ export const AdminDashboard = () => {
     const issues: string[] = [];
     let status: 'healthy' | 'warning' | 'critical' = 'healthy';
 
-    // Analyser les health checks
+    // Analyser les health checks réels
     healthChecks.forEach(check => {
       if (check.status === 'outage') {
         issues.push(`${check.name}: Service indisponible`);
@@ -100,12 +112,16 @@ export const AdminDashboard = () => {
       }
     });
 
-    // Vérifier les métriques système
-    if (systemStats.errorRate > 5) {
-      issues.push(`Taux d'erreur élevé: ${systemStats.errorRate.toFixed(1)}%`);
+    // Vérifier la disponibilité des services
+    const serviceAvailability = systemStats.totalServices > 0 
+      ? (systemStats.healthyServices / systemStats.totalServices) * 100 
+      : 100;
+
+    if (serviceAvailability < 80) {
+      issues.push(`Disponibilité des services faible: ${serviceAvailability.toFixed(1)}%`);
       status = 'critical';
-    } else if (systemStats.errorRate > 2) {
-      issues.push(`Taux d'erreur modéré: ${systemStats.errorRate.toFixed(1)}%`);
+    } else if (serviceAvailability < 95) {
+      issues.push(`Disponibilité des services réduite: ${serviceAvailability.toFixed(1)}%`);
       if (status === 'healthy') status = 'warning';
     }
 
@@ -116,10 +132,12 @@ export const AdminDashboard = () => {
     });
   };
 
-  const formatUptime = (seconds: number) => {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    return `${hours}h ${minutes}m`;
+  const formatUptime = (lastUpdate: Date) => {
+    const now = new Date();
+    const diffMinutes = Math.floor((now.getTime() - lastUpdate.getTime()) / (1000 * 60));
+    if (diffMinutes < 60) return `${diffMinutes}m`;
+    const diffHours = Math.floor(diffMinutes / 60);
+    return `${diffHours}h ${diffMinutes % 60}m`;
   };
 
   const getStatusColor = (status: string) => {
@@ -138,6 +156,11 @@ export const AdminDashboard = () => {
       case 'critical': return <AlertTriangle className="h-5 w-5 text-red-600" />;
       default: return <Clock className="h-5 w-5 text-gray-600" />;
     }
+  };
+
+  const getServiceAvailability = () => {
+    if (systemStats.totalServices === 0) return 100;
+    return ((systemStats.healthyServices / systemStats.totalServices) * 100).toFixed(1);
   };
 
   if (loading && healthChecks.length === 0) {
@@ -231,7 +254,7 @@ export const AdminDashboard = () => {
           </CardContent>
         </Card>
 
-        {/* Métriques système */}
+        {/* Métriques système réelles */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -239,9 +262,9 @@ export const AdminDashboard = () => {
               <Zap className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{systemStats.responseTime}ms</div>
+              <div className="text-2xl font-bold">{systemStats.averageResponseTime}ms</div>
               <p className="text-xs text-muted-foreground">
-                Moyenne des services
+                Moyenne des services actifs
               </p>
             </CardContent>
           </Card>
@@ -252,35 +275,35 @@ export const AdminDashboard = () => {
               <Database className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{systemStats.databaseSize}</div>
+              <div className="text-2xl font-bold">{systemStats.totalDocuments}</div>
               <p className="text-xs text-muted-foreground">
-                Documents totaux
+                Documents totaux ({systemStats.totalCollections} collections)
               </p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Uptime</CardTitle>
+              <CardTitle className="text-sm font-medium">Disponibilité</CardTitle>
               <Server className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{formatUptime(systemStats.systemUptime)}</div>
+              <div className="text-2xl font-bold">{getServiceAvailability()}%</div>
               <p className="text-xs text-muted-foreground">
-                Aujourd'hui
+                {systemStats.healthyServices}/{systemStats.totalServices} services
               </p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Taux d'Erreur</CardTitle>
+              <CardTitle className="text-sm font-medium">Dernière MàJ</CardTitle>
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{systemStats.errorRate.toFixed(1)}%</div>
+              <div className="text-2xl font-bold">{formatUptime(systemStats.lastUpdateTime)}</div>
               <p className="text-xs text-muted-foreground">
-                Dernières 24h
+                Il y a
               </p>
             </CardContent>
           </Card>
