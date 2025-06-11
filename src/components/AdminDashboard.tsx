@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { useServiceHealth } from '@/hooks/useServiceHealth';
 import { useFirestoreMonitoring } from '@/hooks/useFirestoreMonitoring';
+import { useProductionDBMonitoring } from '@/hooks/useProductionDBMonitoring';
 import { collection, getDocs, getCountFromServer } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { AdminHeader } from './admin/AdminHeader';
@@ -10,6 +11,7 @@ import { SystemMetricsGrid } from './admin/SystemMetricsGrid';
 import { ServiceHealthList } from './admin/ServiceHealthList';
 import { AdminActions } from './admin/AdminActions';
 import { FirestoreMetricsCard } from './admin/FirestoreMetricsCard';
+import { ProductionDBCard } from './admin/ProductionDBCard';
 
 interface SystemStats {
   totalCollections: number;
@@ -30,6 +32,7 @@ export const AdminDashboard = () => {
   const { currentEmail, adminEmail } = useAdminAuth();
   const { healthChecks, isChecking, lastUpdate, runHealthChecks } = useServiceHealth();
   const { metrics: firestoreMetrics, isLoading: isFirestoreLoading, refreshMetrics } = useFirestoreMonitoring();
+  const { metrics: productionMetrics, isLoading: isProductionLoading, refreshMetrics: refreshProductionMetrics } = useProductionDBMonitoring();
   const [systemStats, setSystemStats] = useState<SystemStats>({
     totalCollections: 0,
     totalDocuments: 0,
@@ -139,6 +142,7 @@ export const AdminDashboard = () => {
   const handleRefresh = () => {
     runHealthChecks();
     loadSystemStats();
+    refreshProductionMetrics();
   };
 
   if (loading && healthChecks.length === 0) {
@@ -164,6 +168,12 @@ export const AdminDashboard = () => {
         />
         
         <SystemMetricsGrid systemStats={systemStats} />
+        
+        <ProductionDBCard 
+          metrics={productionMetrics}
+          isLoading={isProductionLoading}
+          onRefresh={refreshProductionMetrics}
+        />
         
         <FirestoreMetricsCard 
           metrics={firestoreMetrics}
