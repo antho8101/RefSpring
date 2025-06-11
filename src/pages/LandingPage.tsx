@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { LandingHeader } from "@/components/landing/LandingHeader";
@@ -31,13 +30,13 @@ const LandingPage = () => {
     "name": "RefSpring",
     "applicationCategory": "Business Software",
     "operatingSystem": "Web Browser",
-    "description": "Plateforme d'affiliation révolutionnaire sans frais mensuels. Modèle basé sur les revenus : nous gagnons seulement quand vous gagnez.",
+    "description": "Créez votre programme d'affiliation en quelques minutes et ne payez que quand vos affiliés vous ramènent des ventes. Fini les 99-299€/mois !",
     "url": "https://refspring.com",
     "offers": {
       "@type": "Offer",
       "price": "0",
       "priceCurrency": "EUR",
-      "description": "Accès gratuit - Rémunération basée sur les performances"
+      "description": "Gratuit au démarrage - Seulement 2,5% sur les ventes générées"
     },
     "aggregateRating": {
       "@type": "AggregateRating",
@@ -45,27 +44,27 @@ const LandingPage = () => {
       "reviewCount": "847"
     },
     "features": [
-      "Gestion d'affiliés intelligente",
-      "Analytics en temps réel", 
-      "Protection anti-fraude",
-      "API complète"
+      "Création de programme d'affiliation en 3 minutes",
+      "Suivi des ventes en temps réel", 
+      "Aucun frais mensuel fixe",
+      "Commission uniquement sur résultats"
     ]
   };
 
   return (
     <>
       <Helmet>
-        <title>RefSpring - Plateforme d'Affiliation Sans Frais Mensuels | Modèle Basé sur les Revenus</title>
-        <meta name="description" content="RefSpring révolutionne l'affiliation : 0€ de frais mensuels, accès complet gratuit. Nous gagnons seulement quand vous gagnez. +50M€ générés, 0€ d'avance." />
+        <title>RefSpring - Créez votre programme d'affiliation et ne payez que quand ça marche !</title>
+        <meta name="description" content="Créez votre programme d'affiliation en 3 minutes et ne payez que 2,5% sur les ventes générées. Fini les 99-299€/mois ! Nous gagnons seulement quand vous gagnez." />
         
-        <meta name="keywords" content="affiliation, plateforme affiliation, marketing affiliation, commission affiliation, programme affiliation, revenus passifs, SaaS affiliation, tracking affiliation" />
+        <meta name="keywords" content="programme affiliation, créer affiliation, commission vente, affiliation gratuite, plateforme affiliation, revenus affiliation, marketing affiliation, vente en ligne" />
         
         <script type="application/ld+json">
           {JSON.stringify(structuredData)}
         </script>
         
-        <meta property="og:title" content="RefSpring - La Plateforme d'Affiliation qui Paie pour Elle-Même" />
-        <meta property="og:description" content="Contrairement aux plateformes à 99-299€/mois, RefSpring utilise un modèle basé sur les revenus : 100% gratuit, nous gagnons seulement quand vous gagnez." />
+        <meta property="og:title" content="RefSpring - Créez votre programme d'affiliation et ne payez que quand ça marche !" />
+        <meta property="og:description" content="Fini les plateformes à 99-299€/mois ! Créez votre programme d'affiliation gratuitement et ne payez que 2,5% sur les ventes générées. Simple, transparent, honnête." />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://refspring.com" />
         <meta property="og:image" content="https://refspring.com/og-image.jpg" />
@@ -77,8 +76,8 @@ const LandingPage = () => {
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content="@refspring" />
         <meta name="twitter:creator" content="@refspring" />
-        <meta name="twitter:title" content="RefSpring - Plateforme d'Affiliation Sans Frais" />
-        <meta name="twitter:description" content="0€ de frais mensuels, 100% gratuit. Nous gagnons seulement quand vous gagnez. +50M€ générés." />
+        <meta name="twitter:title" content="RefSpring - Programme d'affiliation qui marche" />
+        <meta name="twitter:description" content="Créez votre programme d'affiliation en 3 minutes. Ne payez que 2,5% sur les ventes générées. Fini les frais mensuels !" />
         <meta name="twitter:image" content="https://refspring.com/og-image.jpg" />
         
         <link rel="canonical" href="https://refspring.com" />
