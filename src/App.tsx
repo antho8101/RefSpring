@@ -24,6 +24,7 @@ import PaymentSuccessPage from '@/pages/PaymentSuccessPage';
 import TrackingPage from '@/pages/TrackingPage';
 import ShortLinkPage from '@/pages/ShortLinkPage';
 import TrackingJsRoute from '@/pages/TrackingJsRoute';
+import AdminPage from '@/pages/AdminPage';
 
 const Index = lazy(() => import('@/pages/Index'));
 const AdvancedStatsPage = lazy(() => import('@/pages/AdvancedStatsPage'));
@@ -61,6 +62,7 @@ function App() {
                     <Route path="/contact" element={<ContactPage />} />
                     <Route path="/app" element={<Index />} />
                     <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/admin" element={<AdminPage />} />
                     <Route path="/campaign/:campaignId" element={<AdvancedStatsPage />} />
                     <Route path="/affiliate/:affiliateId" element={<AffiliatePage />} />
                     <Route path="/r/:campaignId" element={<AffiliatePage />} />
