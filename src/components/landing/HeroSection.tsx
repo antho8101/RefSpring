@@ -51,7 +51,7 @@ export const HeroSection = ({ scrollY, onRedirectToDashboard }: HeroSectionProps
         <div className="mb-8 animate-bounce-in" style={{ animationDelay: '0.2s' }}>
           <span className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-100 to-purple-100 border-2 border-blue-300 rounded-full text-blue-800 font-bold text-lg shadow-lg hover:shadow-xl transition-all hover:scale-105">
             <Zap className="w-6 h-6 animate-pulse text-yellow-500" />
-            PLATEFORME D'AFFILIATION QUI CHANGE TOUT
+            LA PLATEFORME D'AFFILIATION QUI CHANGE TOUT
             <Eye className="w-5 h-5 animate-bounce" />
           </span>
         </div>
