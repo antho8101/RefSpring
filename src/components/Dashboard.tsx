@@ -1,13 +1,17 @@
+
 import { useAuth } from '@/hooks/useAuth';
 import { useTawkTo } from '@/hooks/useTawkTo';
 import { DashboardHeader } from './DashboardHeader';
+import { PublicDashboardHeader } from './PublicDashboardHeader';
 import { DashboardBackground } from './DashboardBackground';
 import { DashboardContent } from './DashboardContent';
 import { DashboardFooter } from './DashboardFooter';
 import { AuthRequiredDialog } from './AuthRequiredDialog';
+import { useState } from 'react';
 
 export const Dashboard = () => {
   const { user, loading } = useAuth();
+  const [showAuthDialog, setShowAuthDialog] = useState(!user && !loading);
   
   // Initialiser Tawk.to uniquement dans le dashboard privé
   useTawkTo(!!user);
@@ -26,9 +30,13 @@ export const Dashboard = () => {
   if (!user) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-        <DashboardHeader />
+        <PublicDashboardHeader />
         <DashboardBackground />
-        <AuthRequiredDialog />
+        <AuthRequiredDialog 
+          open={showAuthDialog} 
+          onOpenChange={setShowAuthDialog}
+          action="accéder au tableau de bord"
+        />
         <DashboardFooter />
       </div>
     );
@@ -36,7 +44,12 @@ export const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      <DashboardHeader />
+      <DashboardHeader 
+        user={user}
+        onLogout={async () => {}}
+        period="7d"
+        onPeriodChange={() => {}}
+      />
       <DashboardBackground />
       <DashboardContent />
       <DashboardFooter />
