@@ -1,12 +1,20 @@
-import { STRIPE_SECRET_KEY } from '@/utils/stripeUtils';
-
-// Service pour gérer les appels backend Stripe
+// Service pour gérer les appels backend Stripe avec variables d'environnement sécurisées
 class StripeBackendService {
+  private getStripeSecretKey(): string {
+    // En production, cette clé sera récupérée côté serveur via les variables d'environnement
+    // Ce service sera remplacé par des API routes sécurisées
+    const secretKey = import.meta.env.STRIPE_SECRET_KEY;
+    if (!secretKey) {
+      throw new Error('STRIPE_SECRET_KEY non configurée dans les variables d\'environnement');
+    }
+    return secretKey;
+  }
+
   private async callStripeAPI(endpoint: string, options: RequestInit = {}) {
     const response = await fetch(`https://api.stripe.com/v1${endpoint}`, {
       ...options,
       headers: {
-        'Authorization': `Bearer ${STRIPE_SECRET_KEY}`,
+        'Authorization': `Bearer ${this.getStripeSecretKey()}`,
         'Content-Type': 'application/x-www-form-urlencoded',
         ...options.headers,
       },
@@ -20,7 +28,6 @@ class StripeBackendService {
     return response.json();
   }
 
-  // Créer ou récupérer un client Stripe
   async createOrGetCustomer(email: string, name?: string) {
     console.log('🔍 Recherche client Stripe pour:', email);
     
@@ -51,14 +58,13 @@ class StripeBackendService {
     return customer;
   }
 
-  // Créer une session de checkout pour la configuration de paiement
   async createCheckoutSession(customerId: string, campaignName: string, campaignId: string) {
     console.log('🔄 Création session checkout pour client:', customerId);
     
     const formData = new URLSearchParams();
     formData.append('customer', customerId);
     formData.append('mode', 'setup');
-    formData.append('currency', 'eur'); // Obligatoire pour les sessions setup
+    formData.append('currency', 'eur');
     formData.append('success_url', `${window.location.origin}/payment-success?setup_intent={CHECKOUT_SESSION_ID}&campaign_id=${campaignId}`);
     formData.append('cancel_url', `${window.location.origin}/dashboard`);
     formData.append('metadata[campaign_name]', campaignName);
@@ -73,7 +79,6 @@ class StripeBackendService {
     return session;
   }
 
-  // Créer un SetupIntent pour configurer un moyen de paiement
   async createSetupIntent(customerId: string, campaignName: string) {
     console.log('🔄 Création SetupIntent pour client:', customerId);
     
@@ -91,19 +96,16 @@ class StripeBackendService {
     return setupIntent;
   }
 
-  // Récupérer le statut d'un SetupIntent
   async getSetupIntent(setupIntentId: string) {
     console.log('🔍 Récupération SetupIntent:', setupIntentId);
     return this.callStripeAPI(`/setup_intents/${setupIntentId}`);
   }
 
-  // Récupérer une session de checkout
   async getCheckoutSession(sessionId: string) {
     console.log('🔍 Récupération session checkout:', sessionId);
     return this.callStripeAPI(`/checkout/sessions/${sessionId}`);
   }
 
-  // Créer un Payment Link pour un affilié (CORRIGÉ pour éviter les erreurs de précision)
   async createPaymentLink(amount: number, currency: string, affiliateEmail: string, campaignName: string) {
     console.log('💰 Création Payment Link:', { amount, currency, affiliateEmail });
     
@@ -119,15 +121,13 @@ class StripeBackendService {
 
     console.log('✅ Produit créé:', product.id);
 
-    // CORRECTION : Calculer le montant en centimes avec Math.round pour éviter les erreurs de précision
     const unitAmountInCents = Math.round(amount * 100);
     console.log('💰 Montant original:', amount, '€, en centimes:', unitAmountInCents);
 
-    // Ensuite, créer un prix pour ce produit
     const priceData = new URLSearchParams();
     priceData.append('currency', currency);
     priceData.append('product', product.id);
-    priceData.append('unit_amount', unitAmountInCents.toString()); // Utiliser Math.round et toString()
+    priceData.append('unit_amount', unitAmountInCents.toString());
 
     const price = await this.callStripeAPI('/prices', {
       method: 'POST',
@@ -136,7 +136,6 @@ class StripeBackendService {
 
     console.log('✅ Prix créé:', price.id);
 
-    // Enfin, créer le Payment Link avec le prix
     const paymentLinkData = new URLSearchParams();
     paymentLinkData.append('line_items[0][price]', price.id);
     paymentLinkData.append('line_items[0][quantity]', '1');
@@ -153,7 +152,6 @@ class StripeBackendService {
     return paymentLink;
   }
 
-  // Définir une méthode de paiement par défaut pour un client
   async setDefaultPaymentMethod(customerId: string, paymentMethodId: string) {
     console.log('⭐ Définition de la méthode de paiement par défaut:', { customerId, paymentMethodId });
     
@@ -169,7 +167,6 @@ class StripeBackendService {
     return result;
   }
 
-  // Récupérer les méthodes de paiement d'un client
   async getCustomerPaymentMethods(customerId: string) {
     console.log('🔍 Récupération des méthodes de paiement pour client:', customerId);
     
@@ -183,12 +180,10 @@ class StripeBackendService {
     return paymentMethods.data;
   }
 
-  // Détacher une méthode de paiement
   async detachPaymentMethod(paymentMethodId: string) {
     console.log('🗑️ Détachement de la méthode de paiement:', paymentMethodId);
     
     const formData = new URLSearchParams();
-    // Pas de données supplémentaires nécessaires pour détacher
     
     const result = await this.callStripeAPI(`/payment_methods/${paymentMethodId}/detach`, {
       method: 'POST',

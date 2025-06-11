@@ -1,6 +1,6 @@
-// Clés Stripe test - vos vraies clés
-export const STRIPE_PUBLIC_KEY = 'pk_test_51RWK0X4bg54RW2vEox1ilBvJP7snu2jCKn0DGCkvnHPc8nlegKUftmWBwUvWf1jPlbOYYv3KANwQ2BwjeEbeBZ6M00MX8WGMuZ';
-export const STRIPE_SECRET_KEY = 'sk_test_51RWK0X4bg54RW2vEGdcZGBE6JDmCI8Zd2cWSEb7M0q8DLFoU1W4qgRgfJsrH7BqSAeKbQcAKXELfkpQk4zFlQJ5b00GxsK33ov';
+
+// Configuration Stripe sécurisée via variables d'environnement
+export const STRIPE_PUBLIC_KEY = import.meta.env.VITE_STRIPE_PUBLIC_KEY || '';
 
 export interface CreatePaymentSetupRequest {
   campaignId: string;
@@ -33,7 +33,7 @@ export const createPaymentSetup = async (data: CreatePaymentSetupRequest): Promi
     };
   }
 
-  // Implémentation réelle avec vos clés Stripe test
+  // Implémentation réelle avec variables d'environnement sécurisées
   console.log('🔄 Création réelle du setup de paiement pour:', data.campaignName);
   
   try {
