@@ -1,9 +1,9 @@
-
 import { useAuth } from '@/hooks/useAuth';
 import { useCampaigns } from '@/hooks/useCampaigns';
 import { useAffiliates } from '@/hooks/useAffiliates';
 import { useStatsFilters } from '@/hooks/useStatsFilters';
 import { useAuthGuard } from '@/hooks/useAuthGuard';
+import { useTawkTo } from '@/hooks/useTawkTo';
 import { DashboardBackground } from '@/components/DashboardBackground';
 import { DashboardHeader } from '@/components/DashboardHeader';
 import { DashboardContent } from '@/components/DashboardContent';
@@ -216,6 +216,9 @@ export const Dashboard = memo(() => {
   const { campaigns, loading: campaignsLoading } = useCampaigns();
   const { affiliates, loading: affiliatesLoading } = useAffiliates();
   const { period, setPeriod, getDateFilter, getPeriodLabel } = useStatsFilters();
+
+  // Intégration Tawk.to - SEULEMENT pour les utilisateurs authentifiés
+  useTawkTo({ enabled: isAuthenticated });
 
   // Vérification de sécurité au montage
   useEffect(() => {
