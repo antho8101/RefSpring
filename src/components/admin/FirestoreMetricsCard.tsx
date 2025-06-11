@@ -117,7 +117,7 @@ export const FirestoreMetricsCard = ({ metrics, isLoading, onRefresh }: Firestor
           <div>
             <h4 className="font-medium text-gray-900 mb-3 flex items-center gap-2">
               <AlertTriangle className="h-4 w-4 text-yellow-600" />
-              Requêtes Lentes (>2s)
+              Requêtes Lentes (&gt;2s)
             </h4>
             <div className="space-y-2">
               {metrics.slowQueries.map((query, index) => (
