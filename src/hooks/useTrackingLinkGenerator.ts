@@ -22,6 +22,12 @@ export const useTrackingLinkGenerator = () => {
       
       console.log('🔗 Base URL déterminée:', baseUrl);
       
+      // Vérifier d'abord que l'URL de destination est valide
+      if (!targetUrl || !targetUrl.startsWith('http')) {
+        console.error('❌ URL de destination invalide:', targetUrl);
+        throw new Error('URL de destination invalide');
+      }
+      
       try {
         console.log('🔗 Tentative création lien court...');
         
@@ -33,23 +39,26 @@ export const useTrackingLinkGenerator = () => {
         
         console.log('🔗 URL ORIGINALE:', targetUrl);
         console.log('🔗 URL ENRICHIE avec paramètres affiliation:', enhancedTargetUrl);
-        console.log('🔗 Paramètre ref ajouté:', url.searchParams.get('ref'));
-        console.log('🔗 Paramètre campaign ajouté:', url.searchParams.get('campaign'));
         
         // Créer un lien court avec l'URL enrichie
         const shortCode = await createShortLink(campaignId, affiliateId, enhancedTargetUrl);
-        console.log('✅ Lien court créé:', shortCode);
+        
+        if (!shortCode) {
+          throw new Error('Échec de la création du lien court');
+        }
+        
+        console.log('✅ Lien court créé avec succès:', shortCode);
         const finalLink = `${baseUrl}/s/${shortCode}`;
-        console.log('✅ Lien final:', finalLink);
-        console.log('🔍 VÉRIFICATION: Le lien court devrait rediriger vers:', enhancedTargetUrl);
+        console.log('✅ Lien final généré:', finalLink);
+        
         return finalLink;
+        
       } catch (error) {
         console.error('❌ Erreur création lien court:', error);
-        console.log('🔄 Fallback vers lien long...');
-        // Fallback vers le lien long en cas d'erreur
-        const fallbackLink = `${baseUrl}/track/${campaignId}/${affiliateId}?url=${encodeURIComponent(targetUrl)}`;
-        console.log('🔄 Lien fallback:', fallbackLink);
-        return fallbackLink;
+        
+        // En cas d'erreur, on relance une exception plutôt que de faire un fallback
+        // pour que l'utilisateur sache qu'il y a un problème
+        throw new Error(`Impossible de créer le lien court: ${error instanceof Error ? error.message : 'Erreur inconnue'}`);
       }
     };
   }, [createShortLink]);
