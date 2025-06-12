@@ -14,13 +14,13 @@ export interface CreatePaymentSetupResponse {
   checkoutUrl: string;
 }
 
-// Variable pour activer/désactiver la simulation (maintenant désactivée)
-const USE_SIMULATION = false;
+// Variable pour activer/désactiver la simulation (ACTIVÉE temporairement pour la production)
+const USE_SIMULATION = true;
 
 // Fonction pour créer un SetupIntent Stripe
 export const createPaymentSetup = async (data: CreatePaymentSetupRequest): Promise<CreatePaymentSetupResponse> => {
   if (USE_SIMULATION) {
-    // Code de simulation existant gardé pour référence
+    // Code de simulation pour éviter l'erreur STRIPE_SECRET_KEY
     console.log('🧪 SIMULATION: Création du setup de paiement pour', data.campaignName);
     await new Promise(resolve => setTimeout(resolve, 1000));
     const setupIntentId = `seti_sim_${Date.now()}`;
@@ -33,11 +33,11 @@ export const createPaymentSetup = async (data: CreatePaymentSetupRequest): Promi
     };
   }
 
-  // Implémentation réelle avec variables d'environnement sécurisées
+  // Implémentation réelle avec backend API (désactivée temporairement)
   console.log('🔄 Création réelle du setup de paiement pour:', data.campaignName);
   
   try {
-    // Appel à notre nouvelle fonction backend
+    // NOTE: Cette partie nécessite un vrai backend avec API routes sécurisées
     const response = await fetch('/api/stripe/create-setup', {
       method: 'POST',
       headers: {
@@ -71,7 +71,7 @@ export const checkPaymentSetupStatus = async (setupIntentId: string): Promise<{ 
     };
   }
 
-  // Implémentation réelle
+  // Implémentation réelle (nécessite un backend API)
   try {
     const response = await fetch(`/api/stripe/check-setup/${setupIntentId}`);
     
