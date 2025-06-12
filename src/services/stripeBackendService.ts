@@ -1,5 +1,5 @@
 
-// Service temporairement désactivé pour éviter l'accès dangereux à STRIPE_SECRET_KEY côté frontend
+// Service temporairement en mode simulation pour éviter l'accès dangereux à STRIPE_SECRET_KEY côté frontend
 // Ce service sera remplacé par de vraies API routes backend sécurisées
 
 class StripeBackendService {
@@ -14,39 +14,96 @@ class StripeBackendService {
   }
 
   async createOrGetCustomer(email: string, name?: string) {
-    throw new Error('Service désactivé - Utilisez une API backend sécurisée');
+    console.log('🧪 SIMULATION: createOrGetCustomer pour', email);
+    // Retourner un objet simulé au lieu d'une erreur
+    return {
+      id: `cus_sim_${Date.now()}`,
+      email: email,
+      name: name || 'Utilisateur Simulé'
+    };
   }
 
   async createCheckoutSession(customerId: string, campaignName: string, campaignId: string) {
-    throw new Error('Service désactivé - Utilisez une API backend sécurisée');
+    console.log('🧪 SIMULATION: createCheckoutSession pour', campaignName);
+    // Retourner un objet simulé
+    return {
+      id: `cs_sim_${Date.now()}`,
+      url: `${window.location.origin}/payment-success?setup_intent=seti_sim_${Date.now()}&campaign_id=${campaignId}&simulation=true`,
+      customer: customerId
+    };
   }
 
   async createSetupIntent(customerId: string, campaignName: string) {
-    throw new Error('Service désactivé - Utilisez une API backend sécurisée');
+    console.log('🧪 SIMULATION: createSetupIntent pour', campaignName);
+    return {
+      id: `seti_sim_${Date.now()}`,
+      status: 'requires_payment_method',
+      client_secret: `seti_sim_${Date.now()}_secret`
+    };
   }
 
   async getSetupIntent(setupIntentId: string) {
-    throw new Error('Service désactivé - Utilisez une API backend sécurisée');
+    console.log('🧪 SIMULATION: getSetupIntent pour', setupIntentId);
+    return {
+      id: setupIntentId,
+      status: 'succeeded',
+      payment_method: `pm_sim_${Date.now()}`
+    };
   }
 
   async getCheckoutSession(sessionId: string) {
-    throw new Error('Service désactivé - Utilisez une API backend sécurisée');
+    console.log('🧪 SIMULATION: getCheckoutSession pour', sessionId);
+    return {
+      id: sessionId,
+      status: 'complete',
+      setup_intent: `seti_sim_${Date.now()}`,
+      customer: `cus_sim_${Date.now()}`
+    };
   }
 
   async createPaymentLink(amount: number, currency: string, affiliateEmail: string, campaignName: string) {
-    throw new Error('Service désactivé - Utilisez une API backend sécurisée');
+    console.log('🧪 SIMULATION: createPaymentLink pour', affiliateEmail);
+    return {
+      id: `plink_sim_${Date.now()}`,
+      url: `https://buy.stripe.com/simulation/${Date.now()}`,
+      active: true
+    };
   }
 
   async setDefaultPaymentMethod(customerId: string, paymentMethodId: string) {
-    throw new Error('Service désactivé - Utilisez une API backend sécurisée');
+    console.log('🧪 SIMULATION: setDefaultPaymentMethod', paymentMethodId, 'pour', customerId);
+    return {
+      id: customerId,
+      invoice_settings: {
+        default_payment_method: paymentMethodId
+      }
+    };
   }
 
   async getCustomerPaymentMethods(customerId: string) {
-    throw new Error('Service désactivé - Utilisez une API backend sécurisée');
+    console.log('🧪 SIMULATION: getCustomerPaymentMethods pour', customerId);
+    // Retourner un tableau simulé
+    return [
+      {
+        id: `pm_sim_${Date.now()}`,
+        type: 'card',
+        card: {
+          last4: '4242',
+          brand: 'visa',
+          exp_month: 12,
+          exp_year: 2028
+        },
+        created: Date.now() / 1000
+      }
+    ];
   }
 
   async detachPaymentMethod(paymentMethodId: string) {
-    throw new Error('Service désactivé - Utilisez une API backend sécurisée');
+    console.log('🧪 SIMULATION: detachPaymentMethod', paymentMethodId);
+    return {
+      id: paymentMethodId,
+      object: 'payment_method'
+    };
   }
 }
 
