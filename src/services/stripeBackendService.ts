@@ -2,6 +2,9 @@
 // Service temporairement en mode simulation pour éviter l'accès dangereux à STRIPE_SECRET_KEY côté frontend
 // Ce service sera remplacé par de vraies API routes backend sécurisées
 
+// Stockage en mémoire des cartes supprimées pour éviter qu'elles réapparaissent
+const deletedPaymentMethods = new Set<string>();
+
 class StripeBackendService {
   private getStripeSecretKey(): string {
     // SÉCURITÉ: Ne jamais exposer la clé secrète Stripe côté frontend !
@@ -82,7 +85,18 @@ class StripeBackendService {
 
   async getCustomerPaymentMethods(customerId: string) {
     console.log('🧪 SIMULATION: getCustomerPaymentMethods pour', customerId);
-    // Retourner un tableau simulé
+    
+    // Vérifier si on a des cartes supprimées pour ce client
+    const userKey = `user_${customerId}`;
+    const deletedForUser = Array.from(deletedPaymentMethods).filter(id => id.includes(userKey));
+    
+    // Si l'utilisateur a supprimé sa carte, ne pas en retourner de nouvelle
+    if (deletedForUser.length > 0) {
+      console.log('🧪 SIMULATION: Aucune carte retournée (utilisateur a supprimé sa carte)');
+      return [];
+    }
+    
+    // Sinon, retourner une carte simulée
     return [
       {
         id: `pm_sim_${Date.now()}`,
@@ -100,6 +114,14 @@ class StripeBackendService {
 
   async detachPaymentMethod(paymentMethodId: string) {
     console.log('🧪 SIMULATION: detachPaymentMethod', paymentMethodId);
+    
+    // Ajouter cette carte à la liste des cartes supprimées
+    // On utilise un pattern pour identifier l'utilisateur
+    const userKey = `user_${Date.now()}`;
+    deletedPaymentMethods.add(`${userKey}_${paymentMethodId}`);
+    
+    console.log('🧪 SIMULATION: Carte marquée comme supprimée définitivement');
+    
     return {
       id: paymentMethodId,
       object: 'payment_method'
