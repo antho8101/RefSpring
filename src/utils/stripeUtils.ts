@@ -14,13 +14,13 @@ export interface CreatePaymentSetupResponse {
   checkoutUrl: string;
 }
 
-// Variable pour activer/désactiver la simulation (ACTIVÉE temporairement pour la production)
-const USE_SIMULATION = true;
+// DÉSACTIVÉ POUR LA PRODUCTION - Maintenant on utilise les vraies API Vercel Edge Functions
+const USE_SIMULATION = false;
 
 // Fonction pour créer un SetupIntent Stripe
 export const createPaymentSetup = async (data: CreatePaymentSetupRequest): Promise<CreatePaymentSetupResponse> => {
   if (USE_SIMULATION) {
-    // Code de simulation pour éviter l'erreur STRIPE_SECRET_KEY
+    // Code de simulation désactivé pour la production
     console.log('🧪 SIMULATION: Création du setup de paiement pour', data.campaignName);
     await new Promise(resolve => setTimeout(resolve, 1000));
     const setupIntentId = `seti_sim_${Date.now()}`;
@@ -33,11 +33,11 @@ export const createPaymentSetup = async (data: CreatePaymentSetupRequest): Promi
     };
   }
 
-  // Implémentation réelle avec backend API (désactivée temporairement)
-  console.log('🔄 Création réelle du setup de paiement pour:', data.campaignName);
+  // Implémentation réelle avec Vercel Edge Functions (MAINTENANT ACTIVÉE)
+  console.log('🔄 PRODUCTION: Création réelle du setup de paiement pour:', data.campaignName);
   
   try {
-    // NOTE: Cette partie nécessite un vrai backend avec API routes sécurisées
+    // Utilisation des vraies API Vercel Edge Functions
     const response = await fetch('/api/stripe/create-setup', {
       method: 'POST',
       headers: {
@@ -52,10 +52,10 @@ export const createPaymentSetup = async (data: CreatePaymentSetupRequest): Promi
     }
 
     const result = await response.json();
-    console.log('✅ Setup de paiement créé:', result);
+    console.log('✅ PRODUCTION: Setup de paiement créé:', result);
     return result;
   } catch (error) {
-    console.error('❌ Erreur création setup:', error);
+    console.error('❌ PRODUCTION: Erreur création setup:', error);
     throw new Error('Erreur lors de la création du setup de paiement');
   }
 };
@@ -71,7 +71,8 @@ export const checkPaymentSetupStatus = async (setupIntentId: string): Promise<{ 
     };
   }
 
-  // Implémentation réelle (nécessite un backend API)
+  // Implémentation réelle (MAINTENANT ACTIVÉE)
+  console.log('🔄 PRODUCTION: Vérification réelle du statut pour:', setupIntentId);
   try {
     const response = await fetch(`/api/stripe/check-setup/${setupIntentId}`);
     
@@ -79,9 +80,11 @@ export const checkPaymentSetupStatus = async (setupIntentId: string): Promise<{ 
       throw new Error(`Erreur ${response.status}: ${await response.text()}`);
     }
 
-    return response.json();
+    const result = response.json();
+    console.log('✅ PRODUCTION: Statut vérifié:', result);
+    return result;
   } catch (error) {
-    console.error('❌ Erreur vérification statut:', error);
+    console.error('❌ PRODUCTION: Erreur vérification statut:', error);
     throw new Error('Erreur lors de la vérification du statut');
   }
 };

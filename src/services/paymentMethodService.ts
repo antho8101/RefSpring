@@ -1,6 +1,5 @@
 
-import { stripeBackendService } from '@/services/stripeBackendService';
-
+// PRODUCTION STRIPE SERVICE - Utilise maintenant les vraies API Vercel Edge Functions
 export interface PaymentMethod {
   id: string;
   type: string;
@@ -13,45 +12,75 @@ export interface PaymentMethod {
 
 export const paymentMethodService = {
   async getPaymentMethods(userEmail: string): Promise<PaymentMethod[]> {
-    console.log('🔍 Chargement des cartes bancaires pour:', userEmail);
+    console.log('🔍 PRODUCTION: Chargement des cartes bancaires pour:', userEmail);
     
-    // 1. Récupérer le client Stripe
-    const customer = await stripeBackendService.createOrGetCustomer(userEmail);
-    console.log('✅ Client Stripe trouvé:', customer.id);
-    
-    // 2. Récupérer les méthodes de paiement du client
-    const paymentMethodsData = await stripeBackendService.getCustomerPaymentMethods(customer.id);
-    console.log('💳 Méthodes de paiement trouvées:', paymentMethodsData.length);
-    
-    // 3. Formater les données
-    const formattedPaymentMethods = paymentMethodsData.map((pm: any, index: number) => ({
-      id: pm.id,
-      type: pm.type,
-      last4: pm.card?.last4 || '****',
-      brand: pm.card?.brand || 'unknown',
-      exp_month: pm.card?.exp_month || 0,
-      exp_year: pm.card?.exp_year || 0,
-      isDefault: index === 0, // La première carte est considérée comme par défaut pour l'instant
-    }));
-    
-    return formattedPaymentMethods;
+    try {
+      // Appel à l'API Vercel Edge Function pour récupérer les cartes
+      const response = await fetch('/api/stripe/get-payment-methods', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userEmail }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erreur ${response.status}: ${await response.text()}`);
+      }
+
+      const result = await response.json();
+      console.log('✅ PRODUCTION: Cartes bancaires chargées:', result.paymentMethods?.length || 0);
+      
+      return result.paymentMethods || [];
+    } catch (error) {
+      console.error('❌ PRODUCTION: Erreur chargement cartes:', error);
+      return [];
+    }
   },
 
   async deletePaymentMethod(paymentMethodId: string): Promise<void> {
-    console.log(`🗑️ Suppression de la carte ${paymentMethodId}`);
-    await stripeBackendService.detachPaymentMethod(paymentMethodId);
-    console.log('✅ Carte supprimée de Stripe');
+    console.log(`🗑️ PRODUCTION: Suppression de la carte ${paymentMethodId}`);
+    
+    try {
+      const response = await fetch('/api/stripe/delete-payment-method', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ paymentMethodId }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erreur ${response.status}: ${await response.text()}`);
+      }
+
+      console.log('✅ PRODUCTION: Carte supprimée de Stripe');
+    } catch (error) {
+      console.error('❌ PRODUCTION: Erreur suppression carte:', error);
+      throw error;
+    }
   },
 
   async setDefaultPaymentMethod(userEmail: string, paymentMethodId: string): Promise<void> {
-    console.log(`⭐ Définition de la carte par défaut ${paymentMethodId} pour ${userEmail}`);
+    console.log(`⭐ PRODUCTION: Définition de la carte par défaut ${paymentMethodId} pour ${userEmail}`);
     
-    // Récupérer le client Stripe
-    const customer = await stripeBackendService.createOrGetCustomer(userEmail);
-    
-    // Mettre à jour la carte par défaut du client
-    await stripeBackendService.setDefaultPaymentMethod(customer.id, paymentMethodId);
-    
-    console.log('✅ Carte par défaut mise à jour');
+    try {
+      const response = await fetch('/api/stripe/set-default-payment-method', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userEmail, paymentMethodId }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erreur ${response.status}: ${await response.text()}`);
+      }
+
+      console.log('✅ PRODUCTION: Carte par défaut mise à jour');
+    } catch (error) {
+      console.error('❌ PRODUCTION: Erreur définition carte par défaut:', error);
+      throw error;
+    }
   }
 };
