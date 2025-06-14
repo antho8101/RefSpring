@@ -140,8 +140,8 @@ export const useCampaignForm = () => {
     
     try {
       setLoading(true);
-      console.log('💳 Carte sélectionnée:', cardId);
-      console.log('📝 Données de campagne à créer:', pendingCampaignData);
+      console.log('💳 🐛 DEBUG: Carte sélectionnée:', cardId);
+      console.log('💳 🐛 DEBUG: Données de campagne à créer:', pendingCampaignData);
       
       // Créer la campagne directement finalisée avec la carte sélectionnée
       const campaignId = await createCampaign({
@@ -155,14 +155,24 @@ export const useCampaignForm = () => {
         stripePaymentMethodId: cardId,
       });
       
-      console.log('✅ Campagne créée avec succès avec la carte existante. ID:', campaignId);
+      console.log('✅ 🐛 DEBUG: Campagne créée avec succès avec la carte existante. ID:', campaignId);
       
       // 🎉 Déclencher les confettis pour la création avec carte existante !
+      console.log('🎉 🐛 DEBUG: Déclenchement des confettis...');
       setShowConfetti(true);
       
       // 📋 NOUVEAU : Afficher la modale avec les scripts d'intégration
+      console.log('📋 🐛 DEBUG: Configuration de la modale de succès...');
+      console.log('📋 🐛 DEBUG: createdCampaign sera défini avec:', { id: campaignId, name: pendingCampaignData.name });
       setCreatedCampaign({ id: campaignId, name: pendingCampaignData.name });
+      
+      console.log('📋 🐛 DEBUG: Affichage de la modale de succès...');
       setShowSuccessModal(true);
+      
+      console.log('📋 🐛 DEBUG: État après définition:', {
+        showSuccessModal: true,
+        createdCampaign: { id: campaignId, name: pendingCampaignData.name }
+      });
       
       toast({
         title: "Campagne créée avec succès !",
@@ -170,13 +180,15 @@ export const useCampaignForm = () => {
       });
       
       // Fermer le sélecteur de paiement
+      console.log('💳 🐛 DEBUG: Fermeture du sélecteur de paiement...');
       setShowPaymentSelector(false);
       
       // Retourner un signal pour fermer la modale principale
+      console.log('💳 🐛 DEBUG: Retour du signal de succès...');
       return { success: true };
       
     } catch (error: any) {
-      console.error('❌ Erreur création campagne avec carte:', error);
+      console.error('❌ 🐛 DEBUG: Erreur création campagne avec carte:', error);
       toast({
         title: "Erreur",
         description: error.message || "Impossible de créer la campagne",

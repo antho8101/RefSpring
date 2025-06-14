@@ -38,6 +38,14 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
     setShowSuccessModal,
   } = useCampaignForm();
 
+  // 🐛 DEBUG: Logger les changements d'état
+  console.log('🐛 CreateCampaignDialog - État actuel:', {
+    showSuccessModal,
+    createdCampaign,
+    showPaymentSelector,
+    showConfetti
+  });
+
   const resetDialog = () => {
     resetForm();
     setOpen(false);
@@ -57,14 +65,19 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
   };
 
   const handleCardSelectionWrapper = async (cardId: string) => {
+    console.log('🐛 CreateCampaignDialog - handleCardSelectionWrapper appelé avec:', cardId);
     const result = await handleCardSelection(cardId);
+    console.log('🐛 CreateCampaignDialog - Résultat de handleCardSelection:', result);
+    
     // Si la campagne a été créée avec succès, fermer la modale principale
     if (result?.success) {
+      console.log('🐛 CreateCampaignDialog - Fermeture de la modale principale...');
       setOpen(false);
     }
   };
 
   const handleSuccessModalClose = () => {
+    console.log('🐛 CreateCampaignDialog - handleSuccessModalClose appelé');
     setShowSuccessModal(false);
     resetForm();
   };
@@ -145,12 +158,19 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
 
       {/* 📋 NOUVEAU : Modale avec les scripts d'intégration */}
       {createdCampaign && (
-        <CampaignSuccessModal
-          open={showSuccessModal}
-          onOpenChange={handleSuccessModalClose}
-          campaignId={createdCampaign.id}
-          campaignName={createdCampaign.name}
-        />
+        <>
+          {console.log('🐛 CreateCampaignDialog - Rendu de CampaignSuccessModal avec:', {
+            open: showSuccessModal,
+            campaignId: createdCampaign.id,
+            campaignName: createdCampaign.name
+          })}
+          <CampaignSuccessModal
+            open={showSuccessModal}
+            onOpenChange={handleSuccessModalClose}
+            campaignId={createdCampaign.id}
+            campaignName={createdCampaign.name}
+          />
+        </>
       )}
     </>
   );
