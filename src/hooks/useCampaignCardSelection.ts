@@ -46,7 +46,7 @@ export const useCampaignCardSelection = (
       console.log('🎉 🐛 DEBUG: Déclenchement des confettis...');
       setShowConfetti(true);
       
-      // 📋 CORRECTION CRITIQUE : Définir les états manuellement au lieu d'utiliser triggerSuccessModal
+      // 📋 CORRECTION CRITIQUE : Définir les états manuellement et attendre un peu
       console.log('📋 🐛 DEBUG: Définition manuelle des états de succès...');
       setCreatedCampaign({ id: campaignId, name: pendingCampaignData.name });
       setShowSuccessModal(true);
@@ -56,9 +56,10 @@ export const useCampaignCardSelection = (
         description: "Votre campagne est maintenant active avec la carte sélectionnée.",
       });
       
-      // Retourner un signal pour fermer la modale principale
-      console.log('💳 🐛 DEBUG: Retour du signal de succès...');
-      return { success: true };
+      // 🚨 CORRECTION CRITIQUE : NE PAS fermer la modale principale tout de suite
+      // Retourner un signal SANS fermer la modale pour que la modale de succès puisse s'afficher
+      console.log('💳 🐛 DEBUG: Retour du signal de succès SANS fermeture...');
+      return { success: true, keepMainModalOpen: true };
       
     } catch (error: any) {
       console.error('❌ 🐛 DEBUG: Erreur création campagne avec carte:', error);

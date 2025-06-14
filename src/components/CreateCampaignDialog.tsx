@@ -1,4 +1,3 @@
-
 import { useState, ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -69,10 +68,12 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
     const result = await handleCardSelection(cardId);
     console.log('🐛 CreateCampaignDialog - Résultat de handleCardSelection:', result);
     
-    // Si la campagne a été créée avec succès, fermer la modale principale
-    if (result?.success) {
+    // 🚨 CORRECTION CRITIQUE : Ne fermer la modale principale QUE si on n'a pas keepMainModalOpen
+    if (result?.success && !result?.keepMainModalOpen) {
       console.log('🐛 CreateCampaignDialog - Fermeture de la modale principale...');
       setOpen(false);
+    } else if (result?.keepMainModalOpen) {
+      console.log('🐛 CreateCampaignDialog - Modale principale gardée ouverte pour afficher la modale de succès');
     }
   };
 
@@ -80,6 +81,8 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
     console.log('🐛 CreateCampaignDialog - handleSuccessModalClose appelé');
     setShowSuccessModal(false);
     resetForm();
+    // 🚨 MAINTENANT on peut fermer la modale principale
+    setOpen(false);
   };
 
   return (
@@ -91,8 +94,12 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
       />
       
       <Dialog open={open} onOpenChange={(isOpen) => {
-        if (!isOpen) resetDialog();
-        else setOpen(true);
+        if (!isOpen && !showSuccessModal) {
+          // Ne fermer que si la modale de succès n'est pas affichée
+          resetDialog();
+        } else if (isOpen) {
+          setOpen(true);
+        }
       }}>
         <DialogTrigger asChild>
           {children || (
