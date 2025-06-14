@@ -4,7 +4,6 @@ import { usePaymentMethods } from '@/hooks/usePaymentMethods';
 import { useCampaignFormState } from './useCampaignFormState';
 import { useCampaignFormSubmission } from './useCampaignFormSubmission';
 import { useCampaignCardSelection } from './useCampaignCardSelection';
-import { useSuccessModalState } from './useSuccessModalState';
 
 export type { CampaignFormData } from './useCampaignFormState';
 
@@ -23,18 +22,6 @@ export const useCampaignForm = () => {
     activateResetProtection,
   } = useCampaignFormState();
 
-  // State management - modale de succès isolée
-  const successModalState = useSuccessModalState();
-  console.log('🔍 CAMPAIGN FORM: État reçu de useSuccessModalState:', successModalState);
-
-  const {
-    successModalData,
-    showConfetti,
-    isSuccessModalOpen,
-    showSuccessModal: triggerSuccessModal,
-    hideSuccessModal,
-  } = successModalState;
-
   // External hooks
   const { loading: paymentLoading } = useStripePayment();
   const { paymentMethods, loading: paymentMethodsLoading } = usePaymentMethods();
@@ -47,17 +34,22 @@ export const useCampaignForm = () => {
     setLoading
   );
 
-  // Card selection logic avec la nouvelle modale de succès
+  // Fonction vide pour la compatibilité
+  const dummyTriggerSuccessModal = (campaignId: string, campaignName: string) => {
+    console.log('🔄 DUMMY: triggerSuccessModal appelé avec:', campaignId, campaignName);
+  };
+
+  // Card selection logic
   const { handleCardSelection, handleAddNewCard } = useCampaignCardSelection(
     pendingCampaignData,
     setLoading,
     setShowPaymentSelector,
     redirectToStripeForNewCard,
-    triggerSuccessModal,
+    dummyTriggerSuccessModal,
     activateResetProtection
   );
 
-  const result = {
+  return {
     formData,
     loading,
     paymentLoading,
@@ -70,19 +62,5 @@ export const useCampaignForm = () => {
     handleCardSelection,
     handleAddNewCard,
     setShowPaymentSelector,
-    
-    // Nouvelle API pour la modale de succès
-    successModalData,
-    showConfetti,
-    isSuccessModalOpen,
-    hideSuccessModal,
   };
-
-  console.log('🔍 CAMPAIGN FORM: États finaux retournés:', {
-    'successModalData': result.successModalData,
-    'isSuccessModalOpen': result.isSuccessModalOpen,
-    'showConfetti': result.showConfetti
-  });
-
-  return result;
 };

@@ -17,7 +17,7 @@ export const useCampaignCardSelection = (
   const handleCardSelection = async (cardId: string) => {
     if (!pendingCampaignData) {
       console.log('❌ CARD SELECTION: Pas de données de campagne en attente');
-      return;
+      return { success: false };
     }
     
     try {
@@ -41,24 +41,15 @@ export const useCampaignCardSelection = (
       });
       
       console.log('✅ CARD SELECTION: Campagne créée avec ID:', campaignId);
-      
-      // Fermer le sélecteur de paiement
-      setShowPaymentSelector(false);
       setLoading(false);
       
-      // Attendre que les états se stabilisent
-      await new Promise(resolve => setTimeout(resolve, 100));
-      
-      // Déclencher la modale de succès avec le nouveau système isolé
-      console.log('🚀 CARD SELECTION: Déclenchement modale de succès isolée');
-      triggerSuccessModal(campaignId, pendingCampaignData.name);
-      
-      toast({
-        title: "Campagne créée avec succès !",
-        description: "Votre campagne est maintenant active avec la carte sélectionnée.",
-      });
-      
-      return { success: true, keepMainModalOpen: true };
+      // RETOURNER LES DONNÉES POUR LE COMPOSANT PARENT
+      return { 
+        success: true, 
+        campaignId, 
+        campaignName: pendingCampaignData.name,
+        keepMainModalOpen: true 
+      };
       
     } catch (error: any) {
       console.error('❌ CARD SELECTION: Erreur création campagne:', error);
@@ -68,6 +59,7 @@ export const useCampaignCardSelection = (
         variant: "destructive",
       });
       setLoading(false);
+      return { success: false };
     }
   };
 
