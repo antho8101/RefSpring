@@ -31,25 +31,23 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
     handleCardSelection,
     handleAddNewCard,
     setShowPaymentSelector,
-    // Nouveaux états pour la modale de succès isolée
+    // ✅ UTILISER LE NOUVEAU SYSTÈME ISOLÉ
     successModalData,
     showConfetti,
     isSuccessModalOpen,
     hideSuccessModal,
   } = useCampaignForm();
 
-  // Logger les changements d'état pour debug
+  // Logger les changements d'état pour debug - SIMPLIFIÉ
   useEffect(() => {
-    console.log('🎭 DIALOG: État mis à jour:', {
+    console.log('🎭 DIALOG: États isolés:', {
       open,
       isSuccessModalOpen,
-      successModalData,
+      successModalData: successModalData ? `${successModalData.campaignName} (${successModalData.campaignId})` : null,
       showPaymentSelector,
-      showConfetti,
-      loading,
-      paymentLoading
+      showConfetti
     });
-  }, [open, isSuccessModalOpen, successModalData, showPaymentSelector, showConfetti, loading, paymentLoading]);
+  }, [open, isSuccessModalOpen, successModalData, showPaymentSelector, showConfetti]);
 
   const onSubmit = async (e: React.FormEvent) => {
     try {
@@ -86,7 +84,7 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
     resetForm();
   };
 
-  // Empêcher la fermeture si la modale de succès est active
+  // ✅ EMPÊCHER FERMETURE SI MODALE DE SUCCÈS ACTIVE
   const handleDialogOpenChange = (isOpen: boolean) => {
     console.log('🔄 DIALOG: handleDialogOpenChange appelé avec:', isOpen, 'isSuccessModalOpen:', isSuccessModalOpen);
     
@@ -101,7 +99,7 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
 
   return (
     <>
-      {/* Confettis */}
+      {/* ✅ CONFETTIS AVEC SYSTÈME ISOLÉ */}
       <ConfettiCelebration 
         trigger={showConfetti} 
         onComplete={() => {}} 
@@ -170,17 +168,17 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
         loading={loading || paymentLoading}
       />
 
-      {/* Modale de succès avec système isolé */}
+      {/* ✅ MODALE DE SUCCÈS AVEC SYSTÈME ISOLÉ - RENDU INDÉPENDANT */}
       {isSuccessModalOpen && successModalData && (
         <CampaignSuccessModal
-          open={true}
+          open={isSuccessModalOpen}
           onOpenChange={handleSuccessModalClose}
           campaignId={successModalData.campaignId}
           campaignName={successModalData.campaignName}
         />
       )}
       
-      {/* Debug info amélioré */}
+      {/* ✅ DEBUG INFO PLUS CLAIR */}
       {import.meta.env.DEV && (
         <div style={{ 
           position: 'fixed', 
@@ -195,19 +193,19 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
           borderRadius: '8px',
           maxWidth: '350px'
         }}>
-          <div style={{ marginBottom: '5px', fontSize: '14px', fontWeight: 'bold', color: '#00ff00' }}>
-            🚀 DEBUG SUCCESS MODAL ISOLÉ 🚀
+          <div style={{ marginBottom: '8px', fontSize: '14px', fontWeight: 'bold', color: '#00ff00' }}>
+            🚀 SUCCESS MODAL ISOLÉ V2 🚀
           </div>
-          <div style={{ color: isSuccessModalOpen ? '#00ff00' : '#ff6b6b' }}>
+          <div style={{ color: isSuccessModalOpen ? '#00ff00' : '#ff6b6b', marginBottom: '4px' }}>
             ✅ isSuccessModalOpen: {String(isSuccessModalOpen)}
           </div>
-          <div style={{ color: successModalData ? '#00ff00' : '#ff6b6b' }}>
+          <div style={{ color: successModalData ? '#00ff00' : '#ff6b6b', marginBottom: '4px' }}>
             🎯 successModalData: {successModalData ? `${successModalData.campaignName} (${successModalData.campaignId})` : 'null'}
           </div>
-          <div style={{ color: showConfetti ? '#00ff00' : '#ff6b6b' }}>
+          <div style={{ color: showConfetti ? '#00ff00' : '#ff6b6b', marginBottom: '4px' }}>
             🎊 showConfetti: {String(showConfetti)}
           </div>
-          <div style={{ color: open ? '#00ff00' : '#ff6b6b' }}>
+          <div style={{ color: open ? '#00ff00' : '#ff6b6b', marginBottom: '4px' }}>
             🔄 open: {String(open)}
           </div>
           <div style={{ color: showPaymentSelector ? '#00ff00' : '#ff6b6b' }}>
