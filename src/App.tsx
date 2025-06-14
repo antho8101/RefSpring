@@ -20,7 +20,7 @@ import ContactPage from '@/pages/ContactPage';
 import TestProductsPage from '@/pages/TestProductsPage';
 import TestThankYouPage from '@/pages/TestThankYouPage';
 import { Dashboard } from '@/components/Dashboard';
-import PaymentSuccessPage from '@/pages/PaymentSuccessPage';
+import { PaymentSuccessPage } from '@/pages/PaymentSuccessPage';
 import TrackingPage from '@/pages/TrackingPage';
 import ShortLinkPage from '@/pages/ShortLinkPage';
 import TrackingJsRoute from '@/pages/TrackingJsRoute';
