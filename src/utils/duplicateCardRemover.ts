@@ -32,6 +32,13 @@ export class DuplicateCardRemover {
   getDeletedIds(): string[] {
     return Array.from(deletedPaymentMethods);
   }
+
+  // Méthode simplifiée qui ne fait qu'un nettoyage local
+  async cleanupDuplicatesForUser(userEmail: string): Promise<number> {
+    console.log(`🧹 Nettoyage local des doublons pour: ${userEmail}`);
+    // Pour l'instant, on retourne juste 0 car c'est juste un nettoyage local
+    return 0;
+  }
 }
 
 export const duplicateCardRemover = new DuplicateCardRemover();

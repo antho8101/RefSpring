@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { onSnapshot, query, where, collection, orderBy } from 'firebase/firestore';
+import { onSnapshot, query, where, collection } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Campaign } from '@/types';
 
@@ -26,10 +26,10 @@ export const useCampaignData = (userId: string | null, authLoading: boolean) => 
 
     console.log('🎯 Auth OK, démarrage requête Firestore pour user:', userId);
     
+    // Requête simplifiée sans orderBy pour éviter l'erreur d'index
     const q = query(
       collection(db, 'campaigns'),
-      where('userId', '==', userId),
-      orderBy('createdAt', 'desc')
+      where('userId', '==', userId)
     );
 
     const unsubscribe = onSnapshot(q, 
@@ -45,7 +45,6 @@ export const useCampaignData = (userId: string | null, authLoading: boolean) => 
             updatedAt: data.updatedAt?.toDate() || new Date(),
           } as Campaign;
 
-          // Log des données pour debug
           console.log('🎯 Campaign data:', {
             id: campaign.id,
             name: campaign.name,
@@ -57,20 +56,23 @@ export const useCampaignData = (userId: string | null, authLoading: boolean) => 
           return campaign;
         });
 
-        // Filtrer les campagnes - MONTRER TOUTES LES CAMPAGNES (même les drafts)
-        const visibleCampaigns = campaignData.filter(campaign => {
-          const hasStripePaymentMethod = Boolean(campaign.stripePaymentMethodId);
-          
+        // Trier localement par date de création (le plus récent en premier)
+        const sortedCampaigns = campaignData.sort((a, b) => {
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        });
+
+        // Afficher toutes les campagnes actives
+        const visibleCampaigns = sortedCampaigns.filter(campaign => {
           console.log('🎯 Campaign filter check:', {
             id: campaign.id,
             name: campaign.name,
             isDraft: campaign.isDraft,
             paymentConfigured: campaign.paymentConfigured,
-            hasStripePaymentMethod,
+            hasStripePaymentMethod: Boolean(campaign.stripePaymentMethodId),
             isActive: campaign.isActive !== false
           });
 
-          // Afficher toutes les campagnes actives, peu importe si elles sont en draft ou non
+          // Afficher toutes les campagnes actives
           return campaign.isActive !== false;
         });
 

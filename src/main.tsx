@@ -1,15 +1,13 @@
 
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
+import React from 'react'
+import ReactDOM from 'react-dom/client'
 import App from './App.tsx'
-import { mockStripeBackend } from '@/services/mockStripeBackend'
+import './index.css'
 
-// Installer le mock backend Stripe pour le développement
-mockStripeBackend.install();
+console.log('🚀 Application en cours de démarrage...');
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
     <App />
-  </StrictMode>,
+  </React.StrictMode>,
 )

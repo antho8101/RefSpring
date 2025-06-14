@@ -1,7 +1,6 @@
 
 import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import { createPaymentSetup, checkPaymentSetupStatus } from '@/utils/stripeUtils';
 
 export const useStripePayment = () => {
   const [loading, setLoading] = useState(false);
@@ -17,22 +16,35 @@ export const useStripePayment = () => {
     setError(null);
 
     try {
-      console.log('🔄 Création du setup de paiement pour la campagne:', campaignId);
+      console.log('🔄 PRODUCTION: Création du setup de paiement pour la campagne:', campaignId);
       
-      const setupData = await createPaymentSetup({
-        campaignId,
-        campaignName,
-        userEmail: user.email,
+      // Appel direct à l'API Vercel Edge Function
+      const response = await fetch('/api/stripe/create-setup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          campaignId,
+          campaignName,
+          userEmail: user.email,
+        }),
       });
 
-      console.log('✅ Setup de paiement créé:', setupData);
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Erreur ${response.status}: ${errorText}`);
+      }
+
+      const setupData = await response.json();
+      console.log('✅ PRODUCTION: Setup de paiement créé:', setupData);
       
       // Rediriger vers Stripe
       window.location.href = setupData.checkoutUrl;
       
       return setupData;
     } catch (err: any) {
-      console.error('❌ Erreur setup paiement:', err);
+      console.error('❌ PRODUCTION: Erreur setup paiement:', err);
       setError(err.message);
       throw err;
     } finally {
@@ -45,9 +57,26 @@ export const useStripePayment = () => {
     setError(null);
 
     try {
-      const status = await checkPaymentSetupStatus(setupIntentId);
-      return status;
+      console.log('🔄 PRODUCTION: Vérification du statut pour:', setupIntentId);
+      
+      // Appel direct à l'API Vercel Edge Function
+      const response = await fetch(`/api/stripe/check-setup?setupIntentId=${encodeURIComponent(setupIntentId)}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Erreur ${response.status}: ${errorText}`);
+      }
+
+      const result = await response.json();
+      console.log('✅ PRODUCTION: Statut vérifié:', result);
+      return result;
     } catch (err: any) {
+      console.error('❌ PRODUCTION: Erreur vérification statut:', err);
       setError(err.message);
       throw err;
     } finally {
