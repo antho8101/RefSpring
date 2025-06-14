@@ -24,10 +24,23 @@ export const PaymentSuccessPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [createdCampaign, setCreatedCampaign] = useState<{ id: string; name: string } | null>(null);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [countdown, setCountdown] = useState(3);
   
   // Protection absolue contre les doubles exécutions
   const hasProcessedRef = useRef(false);
   const processingRef = useRef(false);
+
+  // Redirection automatique après succès
+  useEffect(() => {
+    if (success && !showSuccessModal && countdown > 0) {
+      const timer = setTimeout(() => {
+        setCountdown(prev => prev - 1);
+      }, 1000);
+      return () => clearTimeout(timer);
+    } else if (success && !showSuccessModal && countdown === 0) {
+      navigate('/');
+    }
+  }, [success, showSuccessModal, countdown, navigate]);
 
   useEffect(() => {
     const setupIntentId = searchParams.get('setup_intent');
@@ -195,12 +208,20 @@ export const PaymentSuccessPage = () => {
               }
             </p>
             
+            {!showSuccessModal && (
+              <div className="text-center">
+                <p className="text-sm text-slate-500 mb-3">
+                  Redirection automatique dans {countdown} seconde{countdown > 1 ? 's' : ''}...
+                </p>
+              </div>
+            )}
+            
             <Button 
               onClick={handleBackToDashboard} 
               className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
             >
               <ArrowRight className="h-4 w-4 mr-2" />
-              Aller au tableau de bord
+              Aller au tableau de bord {!showSuccessModal && `(${countdown}s)`}
             </Button>
           </CardContent>
         </Card>
