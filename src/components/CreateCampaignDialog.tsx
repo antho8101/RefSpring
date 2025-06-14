@@ -38,8 +38,7 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
     setShowSuccessModal,
   } = useCampaignForm();
 
-  // 🐛 DEBUG: Logger les changements d'état
-  console.log('🐛 CreateCampaignDialog - État actuel:', {
+  console.log('🔥 FINAL: CreateCampaignDialog - État actuel:', {
     showSuccessModal,
     createdCampaign,
     showPaymentSelector,
@@ -65,58 +64,44 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
   };
 
   const handleCardSelectionWrapper = async (cardId: string) => {
-    console.log('🐛 CreateCampaignDialog - handleCardSelectionWrapper appelé avec:', cardId);
+    console.log('🔥 FINAL: handleCardSelectionWrapper appelé avec:', cardId);
     const result = await handleCardSelection(cardId);
-    console.log('🐛 CreateCampaignDialog - Résultat de handleCardSelection:', result);
+    console.log('🔥 FINAL: Résultat de handleCardSelection:', result);
     
-    // 🚨 IMPORTANT : Ne jamais fermer la modale principale si on a keepMainModalOpen
-    if (result?.success && result?.keepMainModalOpen) {
-      console.log('🐛 CreateCampaignDialog - Modale principale gardée ouverte pour afficher la modale de succès');
-      // Ne rien faire, laisser la modale principale ouverte
-    } else if (result?.success) {
-      console.log('🐛 CreateCampaignDialog - Fermeture de la modale principale...');
-      setOpen(false);
+    // Plus de logique complexe ici - tout est géré par triggerSuccessModal dans useCampaignCardSelection
+    if (result?.success) {
+      console.log('🔥 FINAL: Succès détecté, la modale de succès devrait s\'afficher automatiquement');
     }
   };
 
   const handleSuccessModalClose = () => {
-    console.log('🐛 CreateCampaignDialog - handleSuccessModalClose appelé');
+    console.log('🔥 FINAL: handleSuccessModalClose appelé');
     
-    // 🚨 ÉTAPE 1 : Fermer la modale de succès
+    // Fermer tout et reset
     setShowSuccessModal(false);
-    
-    // 🚨 ÉTAPE 2 : Arrêter les confettis
     setShowConfetti(false);
-    
-    // 🚨 ÉTAPE 3 : Attendre un peu puis reset et fermer
-    setTimeout(() => {
-      resetForm();
-      setOpen(false);
-    }, 100);
+    resetForm();
+    setOpen(false);
   };
 
-  // 🔧 LOGIQUE CRITIQUE : Empêcher la fermeture prématurée de la modale
+  // 🔥 FINAL: Logique simplifiée - on laisse la modale se fermer naturellement sauf si showSuccessModal est true
   const handleDialogOpenChange = (isOpen: boolean) => {
-    console.log('🐛 CreateCampaignDialog - onOpenChange appelé avec:', isOpen, 'showSuccessModal:', showSuccessModal);
+    console.log('🔥 FINAL: onOpenChange appelé avec:', isOpen, 'showSuccessModal:', showSuccessModal);
     
+    if (!isOpen && showSuccessModal) {
+      console.log('🔥 FINAL: Empêcher fermeture car modale de succès active');
+      return; // Ne pas fermer si la modale de succès est active
+    }
+    
+    setOpen(isOpen);
     if (!isOpen) {
-      // 🚨 PROTECTION RENFORCÉE : Vérifier si une modale de succès DOIT s'afficher
-      if (showSuccessModal || createdCampaign) {
-        console.log('🐛 CreateCampaignDialog - Fermeture bloquée car modale de succès affichée ou campagne créée');
-        // FORCER la modale à rester ouverte
-        setTimeout(() => setOpen(true), 0);
-        return;
-      }
-      console.log('🐛 CreateCampaignDialog - Fermeture autorisée');
       resetDialog();
-    } else {
-      setOpen(true);
     }
   };
 
   return (
     <>
-      {/* Confettis pour la création avec carte existante */}
+      {/* Confettis */}
       <ConfettiCelebration 
         trigger={showConfetti} 
         onComplete={() => setShowConfetti(false)} 
@@ -185,21 +170,14 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
         loading={loading || paymentLoading}
       />
 
-      {/* 📋 Modale de succès avec protection contre la fermeture prématurée */}
+      {/* 🔥 FINAL: Modale de succès rendue conditionnellement */}
       {createdCampaign && showSuccessModal && (
-        <>
-          {console.log('🐛 CreateCampaignDialog - Rendu de CampaignSuccessModal avec:', {
-            open: showSuccessModal,
-            campaignId: createdCampaign.id,
-            campaignName: createdCampaign.name
-          })}
-          <CampaignSuccessModal
-            open={showSuccessModal}
-            onOpenChange={handleSuccessModalClose}
-            campaignId={createdCampaign.id}
-            campaignName={createdCampaign.name}
-          />
-        </>
+        <CampaignSuccessModal
+          open={showSuccessModal}
+          onOpenChange={handleSuccessModalClose}
+          campaignId={createdCampaign.id}
+          campaignName={createdCampaign.name}
+        />
       )}
     </>
   );

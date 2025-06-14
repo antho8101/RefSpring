@@ -1,4 +1,3 @@
-
 import { useCampaigns } from '@/hooks/useCampaigns';
 import { useToast } from '@/hooks/use-toast';
 import { CampaignFormData } from './useCampaignFormState';
@@ -21,54 +20,39 @@ export const useCampaignCardSelection = (
     
     try {
       setLoading(true);
-      console.log('💳 🐛 DEBUG: Carte sélectionnée:', cardId);
-      console.log('💳 🐛 DEBUG: Données de campagne à créer:', pendingCampaignData);
+      console.log('💳 🔥 FINAL: Carte sélectionnée:', cardId);
       
-      // 🔧 CORRECTION : Créer la campagne directement finalisée avec la carte sélectionnée
+      // Créer la campagne
       const campaignId = await createCampaign({
         name: pendingCampaignData.name,
         description: pendingCampaignData.description,
         targetUrl: pendingCampaignData.targetUrl,
         isActive: pendingCampaignData.isActive,
-        isDraft: false, // ✅ Campagne finalisée
-        paymentConfigured: true, // ✅ Paiement configuré
+        isDraft: false,
+        paymentConfigured: true,
         defaultCommissionRate: 10,
-        stripePaymentMethodId: cardId, // ✅ Carte associée
+        stripePaymentMethodId: cardId,
       });
       
-      console.log('✅ 🐛 DEBUG: Campagne créée avec succès avec la carte existante. ID:', campaignId);
+      console.log('🔥 FINAL: Campagne créée avec ID:', campaignId);
       
-      // 🎉 ÉTAPE 1 : Fermer le sélecteur de paiement IMMÉDIATEMENT
-      console.log('💳 🐛 DEBUG: Fermeture du sélecteur de paiement...');
+      // ÉTAPE 1: Fermer immédiatement le sélecteur
       setShowPaymentSelector(false);
       
-      // 🎉 ÉTAPE 2 : Définir les données de campagne créée AVEC DÉLAI pour éviter les race conditions
-      console.log('📋 🐛 DEBUG: Définition des données de campagne créée...');
-      setTimeout(() => {
-        setCreatedCampaign({ id: campaignId, name: pendingCampaignData.name });
-        
-        // 🎉 ÉTAPE 3 : Déclencher les confettis
-        console.log('🎉 🐛 DEBUG: Déclenchement des confettis...');
-        setShowConfetti(true);
-        
-        // 🎉 ÉTAPE 4 : Afficher la modale de succès AVEC UN DÉLAI SUPPLÉMENTAIRE
-        console.log('📋 🐛 DEBUG: Affichage de la modale de succès...');
-        setTimeout(() => {
-          setShowSuccessModal(true);
-        }, 100);
-      }, 100);
+      // ÉTAPE 2: Déclencher la modale de succès via triggerSuccessModal
+      console.log('🔥 FINAL: Déclenchement via triggerSuccessModal');
+      triggerSuccessModal(campaignId, pendingCampaignData.name);
       
       toast({
         title: "Campagne créée avec succès !",
         description: "Votre campagne est maintenant active avec la carte sélectionnée.",
       });
       
-      // 🚨 CORRECTION CRITIQUE : Retourner le signal pour garder la modale principale ouverte
-      console.log('💳 🐛 DEBUG: Retour du signal de succès AVEC modale principale ouverte...');
-      return { success: true, keepMainModalOpen: true };
+      // Retourner un signal de succès SANS keepMainModalOpen car on gère tout via triggerSuccessModal
+      return { success: true };
       
     } catch (error: any) {
-      console.error('❌ 🐛 DEBUG: Erreur création campagne avec carte:', error);
+      console.error('❌ 🔥 FINAL: Erreur création campagne:', error);
       toast({
         title: "Erreur",
         description: error.message || "Impossible de créer la campagne",
