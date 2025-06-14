@@ -44,7 +44,11 @@ const slides = [
   }
 ];
 
-export const OnboardingCarousel = () => {
+interface OnboardingCarouselProps {
+  onComplete?: () => void;
+}
+
+export const OnboardingCarousel = ({ onComplete }: OnboardingCarouselProps) => {
   const [currentSlide, setCurrentSlide] = useState(0);
 
   // Protection contre les erreurs de DOM
@@ -109,8 +113,17 @@ export const OnboardingCarousel = () => {
         ))}
       </div>
       
-      {/* Log pour debug total slides */}
-      {console.log('Total slides detected:', slides.length)}
+      {/* Bouton pour terminer l'onboarding */}
+      {onComplete && (
+        <div className="flex justify-center mt-6">
+          <button
+            onClick={onComplete}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors"
+          >
+            Commencer
+          </button>
+        </div>
+      )}
     </div>
   );
 };
