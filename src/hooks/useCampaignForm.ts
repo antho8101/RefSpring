@@ -57,8 +57,14 @@ export const useCampaignForm = () => {
         throw new Error('L\'URL de destination est requise');
       }
 
-      // Vérifier s'il y a des cartes existantes
+      // **ÉTAPE CRITIQUE** : Rafraîchir les cartes avant de décider
+      console.log('🔄 CRITICAL: Vérification des cartes avant création...');
       await refreshPaymentMethods();
+      
+      // Attendre un petit délai pour s'assurer que les données sont synchronisées
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      console.log('💳 CRITICAL: Cartes disponibles après refresh:', paymentMethods.length);
       
       if (paymentMethods.length > 0) {
         console.log('💳 Cartes existantes trouvées, affichage du sélecteur');
@@ -68,6 +74,7 @@ export const useCampaignForm = () => {
         return;
       }
 
+      console.log('💳 Aucune carte trouvée, redirection vers Stripe...');
       // Pas de cartes existantes, créer la campagne et rediriger vers Stripe
       await createCampaignWithPayment(formData);
       

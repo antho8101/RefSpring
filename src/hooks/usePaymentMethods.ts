@@ -14,6 +14,10 @@ export const usePaymentMethods = () => {
   useEffect(() => {
     if (user) {
       loadPaymentMethods();
+    } else {
+      // Réinitialiser les données si l'utilisateur n'est pas connecté
+      setPaymentMethods([]);
+      setCampaigns([]);
     }
   }, [user]);
 
@@ -22,17 +26,21 @@ export const usePaymentMethods = () => {
     
     setLoading(true);
     try {
+      console.log('🔄 REFRESH: Rechargement des cartes bancaires...');
+      
       // 1. Charger les méthodes de paiement
       const methods = await paymentMethodService.getPaymentMethods(user.email);
       setPaymentMethods(methods);
+      console.log('💳 REFRESH: Cartes chargées:', methods.length);
       
       // 2. Charger les campagnes
       const campaignsData = await campaignService.getCampaigns(user.uid);
       setCampaigns(campaignsData);
+      console.log('🎯 REFRESH: Campagnes chargées:', campaignsData.length);
       
-      console.log('✅ Cartes bancaires et campagnes chargées avec succès');
+      console.log('✅ Cartes bancaires et campagnes rechargées avec succès');
     } catch (error) {
-      console.error('❌ Erreur lors du chargement des cartes:', error);
+      console.error('❌ Erreur lors du rechargement des cartes:', error);
       setPaymentMethods([]);
       setCampaigns([]);
     } finally {
@@ -79,30 +87,17 @@ export const usePaymentMethods = () => {
 
     setLoading(true);
     try {
+      console.log('🗑️ DELETION: Suppression de la carte:', paymentMethodId);
+      
       // 1. Supprimer la carte chez Stripe
       await paymentMethodService.deletePaymentMethod(paymentMethodId);
+      console.log('✅ DELETION: Carte supprimée de Stripe');
       
-      // 2. Mettre à jour l'état local des campagnes
-      setCampaigns(prev => 
-        prev.map(campaign => 
-          campaign.paymentMethodId === paymentMethodId
-            ? { ...campaign, isActive: false, paymentMethodId: undefined }
-            : campaign
-        )
-      );
+      // 2. **IMPORTANT: Recharger complètement les données depuis Stripe**
+      await loadPaymentMethods();
+      console.log('✅ DELETION: Données rechargées depuis Stripe');
       
-      // 3. Supprimer la carte de l'état local
-      setPaymentMethods(prev => 
-        prev.filter(pm => pm.id !== paymentMethodId)
-      );
-      
-      // 4. Recharger les campagnes pour s'assurer de la cohérence
-      if (user?.uid) {
-        const campaignsData = await campaignService.getCampaigns(user.uid);
-        setCampaigns(campaignsData);
-      }
-      
-      console.log(`✅ Carte ${paymentMethodId} supprimée et campagnes associées mises à jour`);
+      console.log(`✅ Carte ${paymentMethodId} supprimée et données synchronisées`);
     } catch (error) {
       console.error('❌ Erreur lors de la suppression:', error);
       throw error;
