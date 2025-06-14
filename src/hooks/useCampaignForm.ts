@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useCampaigns } from '@/hooks/useCampaigns';
 import { useStripePayment } from '@/hooks/useStripePayment';
@@ -87,21 +88,27 @@ export const useCampaignForm = () => {
     // Créer la campagne
     const campaignId = await createCampaign({
       ...campaignData,
-      isDraft: false,
+      isDraft: true, // Créer en draft d'abord
       paymentConfigured: false,
       defaultCommissionRate: 10,
     });
     
     console.log('✅ Campagne créée:', campaignId);
     
-    // Rediriger vers Stripe pour la configuration de paiement (sans confettis ici)
-    const setupData = await setupPaymentForCampaign(campaignId, campaignData.name);
-    console.log('✅ Redirection vers la page de paiement:', setupData.checkoutUrl);
-    
-    // Rediriger l'utilisateur vers la page de paiement
-    window.location.href = setupData.checkoutUrl;
-    
-    return setupData;
+    try {
+      // Rediriger vers Stripe pour la configuration de paiement
+      await setupPaymentForCampaign(campaignId, campaignData.name);
+      console.log('✅ Redirection vers Stripe en cours...');
+    } catch (error) {
+      console.error('❌ Erreur lors de la redirection vers Stripe:', error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de vous rediriger vers Stripe. Veuillez réessayer.",
+        variant: "destructive",
+      });
+      setLoading(false);
+      throw error;
+    }
   };
 
   const handleCardSelection = async (cardId: string) => {
