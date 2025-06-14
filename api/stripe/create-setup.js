@@ -57,7 +57,6 @@ export default async function handler(req, res) {
       customer: customerId, // FORCER le customer
       mode: 'setup',
       currency: 'eur',
-      payment_method_collection: 'always', // S'assurer que la méthode de paiement est collectée
       success_url: `${baseUrl}/payment-success?setup_intent={CHECKOUT_SESSION_ID}&campaign_id=${campaignId}`,
       cancel_url: `${baseUrl}/dashboard`,
       metadata: {
