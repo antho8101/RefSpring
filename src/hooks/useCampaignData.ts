@@ -45,13 +45,14 @@ export const useCampaignData = (userId: string | null, authLoading: boolean) => 
             updatedAt: data.updatedAt?.toDate() || new Date(),
           } as Campaign;
 
-          console.log('🎯 Campaign data:', {
+          console.log('🎯 RAW Campaign data:', {
             id: campaign.id,
             name: campaign.name,
             isDraft: campaign.isDraft,
             paymentConfigured: campaign.paymentConfigured,
             stripePaymentMethodId: campaign.stripePaymentMethodId,
-            isActive: campaign.isActive
+            isActive: campaign.isActive,
+            userId: campaign.userId
           });
 
           return campaign;
@@ -62,24 +63,33 @@ export const useCampaignData = (userId: string | null, authLoading: boolean) => 
           return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
         });
 
-        // CORRECTION : Afficher toutes les campagnes finalisées, MÊME celles désactivées
-        // Les campagnes désactivées doivent rester visibles pour pouvoir être réactivées !
-        const visibleCampaigns = sortedCampaigns.filter(campaign => {
-          console.log('🎯 Campaign filter check:', {
+        console.log('🎯 AVANT FILTRAGE - Total campaigns:', sortedCampaigns.length);
+        
+        // DÉBOGAGE : Afficher TOUTES les campagnes avant filtrage
+        sortedCampaigns.forEach((campaign, index) => {
+          console.log(`🎯 Campaign ${index + 1}:`, {
             id: campaign.id,
             name: campaign.name,
             isDraft: campaign.isDraft,
             paymentConfigured: campaign.paymentConfigured,
             hasStripePaymentMethod: Boolean(campaign.stripePaymentMethodId),
-            isActive: campaign.isActive
+            isActive: campaign.isActive,
+            willBeVisible: !campaign.isDraft && campaign.paymentConfigured
           });
-
-          // Afficher toutes les campagnes finalisées (non-brouillon) avec paiement configuré
-          // INDÉPENDAMMENT de leur statut actif/inactif
-          return !campaign.isDraft && campaign.paymentConfigured;
         });
 
-        console.log('🎯 Campagnes visibles chargées:', visibleCampaigns.length);
+        // CORRECTION TEMPORAIRE : Afficher TOUTES les campagnes pour diagnostic
+        // Au lieu de filtrer, on affiche tout pour voir ce qui se passe
+        const visibleCampaigns = sortedCampaigns; // Pas de filtre temporairement
+
+        console.log('🎯 APRÈS FILTRAGE - Campagnes visibles:', visibleCampaigns.length);
+        console.log('🎯 Campagnes finales à afficher:', visibleCampaigns.map(c => ({
+          id: c.id,
+          name: c.name,
+          isDraft: c.isDraft,
+          paymentConfigured: c.paymentConfigured
+        })));
+
         setCampaigns(visibleCampaigns);
         setLoading(false);
       },
