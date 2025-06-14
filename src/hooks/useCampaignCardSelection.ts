@@ -10,7 +10,8 @@ export const useCampaignCardSelection = (
   setCreatedCampaign: (campaign: { id: string; name: string } | null) => void,
   setShowSuccessModal: (show: boolean) => void,
   setShowPaymentSelector: (show: boolean) => void,
-  createCampaignWithPayment: (data: CampaignFormData) => Promise<void>
+  createCampaignWithPayment: (data: CampaignFormData) => Promise<void>,
+  triggerSuccessModal: (campaignId: string, campaignName: string) => void
 ) => {
   const { createCampaign } = useCampaigns();
   const { toast } = useToast();
@@ -41,18 +42,9 @@ export const useCampaignCardSelection = (
       console.log('🎉 🐛 DEBUG: Déclenchement des confettis...');
       setShowConfetti(true);
       
-      // 📋 NOUVEAU : Afficher la modale avec les scripts d'intégration
-      console.log('📋 🐛 DEBUG: Configuration de la modale de succès...');
-      console.log('📋 🐛 DEBUG: createdCampaign sera défini avec:', { id: campaignId, name: pendingCampaignData.name });
-      setCreatedCampaign({ id: campaignId, name: pendingCampaignData.name });
-      
-      console.log('📋 🐛 DEBUG: Affichage de la modale de succès...');
-      setShowSuccessModal(true);
-      
-      console.log('📋 🐛 DEBUG: État après définition:', {
-        showSuccessModal: true,
-        createdCampaign: { id: campaignId, name: pendingCampaignData.name }
-      });
+      // 📋 UTILISER triggerSuccessModal au lieu de définir manuellement les états
+      console.log('📋 🐛 DEBUG: Utilisation de triggerSuccessModal...');
+      triggerSuccessModal(campaignId, pendingCampaignData.name);
       
       toast({
         title: "Campagne créée avec succès !",

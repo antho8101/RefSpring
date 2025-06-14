@@ -48,7 +48,8 @@ export const useCampaignForm = () => {
     setCreatedCampaign,
     setShowSuccessModal,
     setShowPaymentSelector,
-    createCampaignWithPayment
+    createCampaignWithPayment,
+    triggerSuccessModal // 📋 CORRECTION: Passer triggerSuccessModal
   );
 
   return {
