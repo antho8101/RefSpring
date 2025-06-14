@@ -17,11 +17,15 @@ export const useCampaignCardSelection = (
   const { toast } = useToast();
 
   const handleCardSelection = async (cardId: string) => {
-    if (!pendingCampaignData) return;
+    if (!pendingCampaignData) {
+      console.log('❌ CARD SELECTION: Pas de données de campagne en attente');
+      return;
+    }
     
     try {
       setLoading(true);
-      console.log('💳 NOUVEAU FLOW: Création campagne MAINTENANT avec carte sélectionnée:', cardId);
+      console.log('💳 CARD SELECTION: Début création campagne avec carte:', cardId);
+      console.log('💳 CARD SELECTION: Données campagne:', pendingCampaignData);
       
       // Créer la campagne directement finalisée car la carte est validée
       const campaignId = await createCampaign({
@@ -35,13 +39,23 @@ export const useCampaignCardSelection = (
         stripePaymentMethodId: cardId,
       });
       
-      console.log('✅ NOUVEAU FLOW: Campagne créée APRÈS sélection carte:', campaignId);
+      console.log('✅ CARD SELECTION: Campagne créée avec ID:', campaignId);
       
-      // Fermer le sélecteur
+      // Fermer le sélecteur AVANT de déclencher la modale de succès
       setShowPaymentSelector(false);
+      console.log('🔄 CARD SELECTION: Sélecteur fermé');
       
-      // Déclencher la modale de succès
+      // Attendre un peu pour que le DOM se mette à jour
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      // Déclencher la modale de succès avec logs détaillés
+      console.log('🎉 CARD SELECTION: DÉCLENCHEMENT triggerSuccessModal avec:', { campaignId, name: pendingCampaignData.name });
       triggerSuccessModal(campaignId, pendingCampaignData.name);
+      
+      // Vérifier que les états sont bien mis à jour
+      setTimeout(() => {
+        console.log('🔍 CARD SELECTION: Vérification états après 200ms');
+      }, 200);
       
       toast({
         title: "Campagne créée avec succès !",
@@ -51,7 +65,7 @@ export const useCampaignCardSelection = (
       return { success: true, keepMainModalOpen: true };
       
     } catch (error: any) {
-      console.error('❌ NOUVEAU FLOW: Erreur création campagne:', error);
+      console.error('❌ CARD SELECTION: Erreur création campagne:', error);
       toast({
         title: "Erreur",
         description: error.message || "Impossible de créer la campagne",

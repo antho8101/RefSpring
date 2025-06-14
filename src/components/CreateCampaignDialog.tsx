@@ -38,25 +38,28 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
     setShowSuccessModal,
   } = useCampaignForm();
 
-  // Logger les changements d'état
+  // Logger TOUS les changements d'état pour débugger
   useEffect(() => {
-    console.log('🔥 FINAL: CreateCampaignDialog - État mis à jour:', {
+    console.log('🔥 DIALOG: État complet mis à jour:', {
+      open,
       showSuccessModal,
       createdCampaign,
       showPaymentSelector,
       showConfetti,
-      open
+      loading,
+      paymentLoading
     });
-  }, [showSuccessModal, createdCampaign, showPaymentSelector, showConfetti, open]);
+  }, [open, showSuccessModal, createdCampaign, showPaymentSelector, showConfetti, loading, paymentLoading]);
 
   const resetDialog = () => {
+    console.log('🔄 DIALOG: resetDialog appelé');
     resetForm();
     setOpen(false);
   };
 
   const onSubmit = async (e: React.FormEvent) => {
     try {
-      // 🔥 CORRECTION: Plus besoin de gérer le retour ici, tout passe par le sélecteur
+      console.log('📝 DIALOG: onSubmit appelé');
       await handleSubmit(e);
     } catch (error: any) {
       toast({
@@ -68,24 +71,24 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
   };
 
   const handleCardSelectionWrapper = async (cardId: string) => {
-    console.log('🔥 FINAL: handleCardSelectionWrapper appelé avec:', cardId);
-    const result = await handleCardSelection(cardId);
-    console.log('🔥 FINAL: Résultat de handleCardSelection:', result);
+    console.log('💳 DIALOG: handleCardSelectionWrapper appelé avec:', cardId);
+    console.log('💳 DIALOG: État AVANT sélection carte:', { showSuccessModal, createdCampaign });
     
-    // Si le résultat indique de garder la modale principale ouverte, ne pas la fermer
-    if (result?.keepMainModalOpen) {
-      console.log('🔥 FINAL: Modale principale gardée ouverte pour afficher la modale de succès');
-      // Ne pas faire setOpen(false) ici !
-      return;
-    }
+    const result = await handleCardSelection(cardId);
+    console.log('💳 DIALOG: Résultat handleCardSelection:', result);
+    
+    // Attendre un peu pour que les états se propagent
+    setTimeout(() => {
+      console.log('💳 DIALOG: État APRÈS sélection carte (500ms):', { showSuccessModal, createdCampaign });
+    }, 500);
     
     if (result?.success) {
-      console.log('🔥 FINAL: Succès détecté, la modale de succès devrait s\'afficher automatiquement');
+      console.log('🎉 DIALOG: Succès confirmé, modale de succès devrait être visible');
     }
   };
 
   const handleSuccessModalClose = () => {
-    console.log('🔥 FINAL: handleSuccessModalClose appelé');
+    console.log('🔄 DIALOG: handleSuccessModalClose appelé');
     
     // Fermer tout et reset
     setShowSuccessModal(false);
@@ -94,20 +97,25 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
     setOpen(false);
   };
 
-  // 🔥 FINAL: Empêcher la fermeture si la modale de succès est visible
+  // 🔥 EMPÊCHER LA FERMETURE si la modale de succès est visible
   const handleDialogOpenChange = (isOpen: boolean) => {
-    console.log('🔥 FINAL: onOpenChange appelé avec:', isOpen, 'showSuccessModal:', showSuccessModal);
+    console.log('🔄 DIALOG: handleDialogOpenChange appelé avec:', isOpen, 'showSuccessModal:', showSuccessModal);
     
     if (!isOpen && showSuccessModal) {
-      console.log('🔥 FINAL: Empêcher fermeture car modale de succès active');
-      return; // Ne pas fermer si la modale de succès est active
+      console.log('🚫 DIALOG: Fermeture bloquée car modale de succès active');
+      return; // BLOQUER la fermeture
     }
     
+    console.log('✅ DIALOG: Changement autorisé vers:', isOpen);
     setOpen(isOpen);
     if (!isOpen) {
       resetDialog();
     }
   };
+
+  // Vérification des conditions de rendu de la modale de succès
+  const shouldShowSuccessModal = Boolean(createdCampaign && showSuccessModal);
+  console.log('🎭 DIALOG: shouldShowSuccessModal:', shouldShowSuccessModal, { createdCampaign, showSuccessModal });
 
   return (
     <>
@@ -180,25 +188,33 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
         loading={loading || paymentLoading}
       />
 
-      {/* 🔥 FINAL: Modale de succès avec logs détaillés */}
-      {(() => {
-        console.log('🔥 FINAL: Rendu conditionnel - createdCampaign:', createdCampaign, 'showSuccessModal:', showSuccessModal);
-        
-        if (createdCampaign && showSuccessModal) {
-          console.log('🔥 FINAL: Conditions remplies - rendu de CampaignSuccessModal');
-          return (
-            <CampaignSuccessModal
-              open={showSuccessModal}
-              onOpenChange={handleSuccessModalClose}
-              campaignId={createdCampaign.id}
-              campaignName={createdCampaign.name}
-            />
-          );
-        } else {
-          console.log('🔥 FINAL: Conditions NON remplies - PAS de rendu de CampaignSuccessModal');
-          return null;
-        }
-      })()}
+      {/* 🎭 MODALE DE SUCCÈS avec conditions renforcées */}
+      {shouldShowSuccessModal && (
+        <CampaignSuccessModal
+          open={true}
+          onOpenChange={handleSuccessModalClose}
+          campaignId={createdCampaign!.id}
+          campaignName={createdCampaign!.name}
+        />
+      )}
+      
+      {/* Debug info en mode dev */}
+      {import.meta.env.DEV && (
+        <div style={{ 
+          position: 'fixed', 
+          bottom: '10px', 
+          right: '10px', 
+          background: 'black', 
+          color: 'white', 
+          padding: '10px', 
+          fontSize: '12px',
+          zIndex: 9999
+        }}>
+          <div>showSuccessModal: {String(showSuccessModal)}</div>
+          <div>createdCampaign: {createdCampaign ? createdCampaign.name : 'null'}</div>
+          <div>shouldShow: {String(shouldShowSuccessModal)}</div>
+        </div>
+      )}
     </>
   );
 };
