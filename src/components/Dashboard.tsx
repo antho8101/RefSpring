@@ -224,6 +224,10 @@ export const Dashboard = memo(() => {
   const { period, setPeriod, getDateFilter, getPeriodLabel } = useStatsFilters();
   const { tourCompleted, startTour } = useGuidedTour();
 
+  // État pour la modale de succès de campagne
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [newCampaignData, setNewCampaignData] = useState<{id: string, name: string} | null>(null);
+
   // Intégration Tawk.to - SEULEMENT pour les utilisateurs authentifiés
   useTawkTo({ enabled: isAuthenticated });
 
@@ -236,6 +240,31 @@ export const Dashboard = memo(() => {
       }
     }
   }, [requireAuthentication, isLoading]);
+
+  // 🆕 Détecter une nouvelle campagne créée et afficher la modale
+  useEffect(() => {
+    const checkForNewCampaign = () => {
+      const newCampaignCreated = localStorage.getItem('newCampaignCreated');
+      if (newCampaignCreated) {
+        try {
+          const campaignData = JSON.parse(newCampaignCreated);
+          console.log('🎉 DASHBOARD: Nouvelle campagne détectée:', campaignData);
+          
+          setNewCampaignData(campaignData);
+          setShowSuccessModal(true);
+          
+          // Nettoyer immédiatement pour éviter les répétitions
+          localStorage.removeItem('newCampaignCreated');
+        } catch (error) {
+          console.error('❌ DASHBOARD: Erreur parsing newCampaignCreated:', error);
+          localStorage.removeItem('newCampaignCreated');
+        }
+      }
+    };
+
+    // Vérifier au montage du dashboard
+    checkForNewCampaign();
+  }, []);
 
   // Démarrer l'onboarding si l'utilisateur est connecté et n'a pas encore fait le tour
   useEffect(() => {
@@ -343,6 +372,21 @@ export const Dashboard = memo(() => {
 
       {/* Guided Tour Overlay */}
       <GuidedTourOverlay />
+
+      {/* 🆕 Modale de succès de campagne */}
+      {newCampaignData && (
+        <CampaignSuccessModal
+          open={showSuccessModal}
+          onOpenChange={(open) => {
+            setShowSuccessModal(open);
+            if (!open) {
+              setNewCampaignData(null);
+            }
+          }}
+          campaignId={newCampaignData.id}
+          campaignName={newCampaignData.name}
+        />
+      )}
     </TooltipProvider>
   );
 });
