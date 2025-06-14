@@ -94,7 +94,10 @@ export const CampaignSuccessModal = ({
         </div>
 
         <div className="flex justify-end">
-          <Button onClick={() => onOpenChange(false)}>
+          <Button 
+            onClick={() => onOpenChange(false)}
+            className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all"
+          >
             C'est parti ! 🎊
           </Button>
         </div>
