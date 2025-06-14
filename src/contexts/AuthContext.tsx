@@ -24,23 +24,60 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    console.log('🔐 AUTH: Initialisation du contexte d\'authentification');
+    
     const unsubscribe = onAuthStateChanged(auth, (user) => {
+      console.log('🔐 AUTH: Changement d\'état d\'authentification:', user ? 'connecté' : 'déconnecté');
       setUser(user);
       setLoading(false);
+      
+      // Sauvegarder l'état d'authentification dans localStorage pour la persistance
+      if (user) {
+        localStorage.setItem('auth_user', JSON.stringify({
+          uid: user.uid,
+          email: user.email,
+          timestamp: Date.now()
+        }));
+        console.log('🔐 AUTH: Session sauvegardée dans localStorage');
+      } else {
+        localStorage.removeItem('auth_user');
+        console.log('🔐 AUTH: Session supprimée du localStorage');
+      }
     });
+
+    // Vérifier si on a une session sauvegardée au démarrage
+    const savedUser = localStorage.getItem('auth_user');
+    if (savedUser) {
+      try {
+        const userData = JSON.parse(savedUser);
+        // Vérifier que la session n'est pas trop ancienne (24h max)
+        if (Date.now() - userData.timestamp < 24 * 60 * 60 * 1000) {
+          console.log('🔐 AUTH: Session locale trouvée, attente de la vérification Firebase');
+        } else {
+          console.log('🔐 AUTH: Session locale expirée, suppression');
+          localStorage.removeItem('auth_user');
+        }
+      } catch (error) {
+        console.error('🔐 AUTH: Erreur lecture session locale:', error);
+        localStorage.removeItem('auth_user');
+      }
+    }
 
     return unsubscribe;
   }, []);
 
   const signInWithEmail = async (email: string, password: string) => {
+    console.log('🔐 AUTH: Tentative de connexion avec email');
     return await signInWithEmailAndPassword(auth, email, password);
   };
 
   const signUpWithEmail = async (email: string, password: string) => {
+    console.log('🔐 AUTH: Tentative d\'inscription avec email');
     return await createUserWithEmailAndPassword(auth, email, password);
   };
 
   const signInWithGoogle = async () => {
+    console.log('🔐 AUTH: Tentative de connexion avec Google');
     return await signInWithPopup(auth, googleProvider);
   };
 

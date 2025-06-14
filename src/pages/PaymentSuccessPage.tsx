@@ -1,7 +1,9 @@
+
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { finalizeCampaignInFirestore } from '@/services/campaignService';
 import { useStripePayment } from '@/hooks/useStripePayment';
+import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { CheckCircle, AlertCircle, Loader2, TestTube, CreditCard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -12,8 +14,9 @@ export const PaymentSuccessPage = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { verifyPaymentSetup } = useStripePayment();
+  const { user, loading: authLoading } = useAuth();
   const { toast } = useToast();
-  const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
+  const [status, setStatus] = useState<'loading' | 'success' | 'error' | 'auth-required'>('loading');
   const [message, setMessage] = useState('');
   const [countdown, setCountdown] = useState(3);
   const [showConfetti, setShowConfetti] = useState(false);
@@ -35,6 +38,23 @@ export const PaymentSuccessPage = () => {
         setMessage('Paramètres de paiement manquants');
         return;
       }
+
+      // Attendre que l'authentification soit vérifiée
+      if (authLoading) {
+        console.log('🔐 PAYMENT-SUCCESS: Attente de la vérification d\'authentification');
+        setMessage('Vérification de l\'authentification...');
+        return;
+      }
+
+      // Si pas d'utilisateur après le chargement, demander une reconnexion
+      if (!user) {
+        console.log('🔐 PAYMENT-SUCCESS: Utilisateur non authentifié après retour de Stripe');
+        setStatus('auth-required');
+        setMessage('Authentification requise pour finaliser le paiement');
+        return;
+      }
+
+      console.log('🔐 PAYMENT-SUCCESS: Utilisateur authentifié, traitement du paiement');
 
       try {
         // Si c'est un ID de simulation ou que le paramètre simulation est présent
@@ -71,14 +91,14 @@ export const PaymentSuccessPage = () => {
           }
         } else {
           // Traitement réel pour les vrais setupIntentId
-          console.log('🔄 Vérification du statut de paiement réel...');
+          console.log('🔄 PAYMENT-SUCCESS: Vérification du statut de paiement réel...');
           setMessage(isCardAddition ? 'Vérification de la carte...' : 'Vérification du paiement...');
           
           // Vérifier le statut du SetupIntent réel
           const setupStatus = await verifyPaymentSetup(setupIntentId);
           
           if (setupStatus.status === 'succeeded') {
-            console.log('✅ Paiement configuré avec succès');
+            console.log('✅ PAYMENT-SUCCESS: Paiement configuré avec succès');
             
             if (isCardAddition) {
               setStatus('success');
@@ -91,7 +111,7 @@ export const PaymentSuccessPage = () => {
             } else if (campaignId) {
               // Finaliser une vraie campagne
               await finalizeCampaignInFirestore(campaignId, {
-                customerId: 'cus_from_stripe', // Sera récupéré du vrai Stripe
+                customerId: setupStatus.customerId || 'cus_from_stripe',
                 setupIntentId: setupIntentId,
               });
               
@@ -112,7 +132,7 @@ export const PaymentSuccessPage = () => {
         setShowConfetti(true);
         
       } catch (error: any) {
-        console.error('❌ Erreur lors de la finalisation:', error);
+        console.error('❌ PAYMENT-SUCCESS: Erreur lors de la finalisation:', error);
         setStatus('error');
         setMessage(error.message || 'Une erreur est survenue');
         
@@ -127,7 +147,7 @@ export const PaymentSuccessPage = () => {
     };
 
     processPaymentSuccess();
-  }, [setupIntentId, campaignId, isSimulation, isSimulationId, isCardAddition]);
+  }, [setupIntentId, campaignId, isSimulation, isSimulationId, isCardAddition, user, authLoading]);
 
   // Effet pour le countdown et redirection automatique
   useEffect(() => {
@@ -148,6 +168,10 @@ export const PaymentSuccessPage = () => {
 
   const handleBackToDashboard = () => {
     navigate('/dashboard');
+  };
+
+  const handleReconnect = () => {
+    navigate('/app');
   };
 
   return (
@@ -173,7 +197,7 @@ export const PaymentSuccessPage = () => {
                 )}
               </div>
             )}
-            {status === 'error' && (
+            {(status === 'error' || status === 'auth-required') && (
               <AlertCircle className="w-16 h-16 text-red-600" />
             )}
           </div>
@@ -185,6 +209,7 @@ export const PaymentSuccessPage = () => {
                 : ((isSimulation || isSimulationId) ? 'Campagne créée (simulation) !' : 'Campagne créée !')
             )}
             {status === 'error' && 'Erreur'}
+            {status === 'auth-required' && 'Reconnexion requise'}
           </CardTitle>
         </CardHeader>
         <CardContent className="text-center space-y-4">
@@ -194,6 +219,14 @@ export const PaymentSuccessPage = () => {
             <p className="text-sm text-blue-600">
               Redirection automatique dans {countdown} seconde{countdown > 1 ? 's' : ''}...
             </p>
+          )}
+
+          {status === 'auth-required' && (
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+              <p className="text-sm text-yellow-700">
+                Votre session a expiré pendant le processus de paiement. Veuillez vous reconnecter pour finaliser votre campagne.
+              </p>
+            </div>
           )}
           
           {(isSimulation || isSimulationId) && status === 'success' && (
@@ -211,7 +244,16 @@ export const PaymentSuccessPage = () => {
             </div>
           )}
           
-          {status !== 'loading' && (
+          {status === 'auth-required' && (
+            <Button 
+              onClick={handleReconnect}
+              className="w-full"
+            >
+              Se reconnecter
+            </Button>
+          )}
+          
+          {status !== 'loading' && status !== 'auth-required' && (
             <Button 
               onClick={handleBackToDashboard}
               className="w-full"
