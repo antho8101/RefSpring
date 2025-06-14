@@ -10,6 +10,7 @@ import { CampaignStatusSection } from '@/components/CampaignStatusSection';
 import { usePaymentVerification } from '@/hooks/usePaymentVerification';
 import { useCriticalActionConfirm } from '@/hooks/useCriticalActionConfirm';
 import { useCampaignFormHandlers } from '@/hooks/useCampaignFormHandlers';
+import { useStripePayment } from '@/hooks/useStripePayment';
 
 interface CampaignGeneralSettingsProps {
   campaign: Campaign;
@@ -44,8 +45,9 @@ export const CampaignGeneralSettings = ({
     paymentMethodsLoading,
     verifyPaymentForReactivation,
     handleCardSelection,
-    handleAddNewCard,
   } = usePaymentVerification();
+
+  const { setupPaymentForCampaign } = useStripePayment();
 
   const {
     confirmDialog,
@@ -93,6 +95,18 @@ export const CampaignGeneralSettings = ({
 
   const handleCardSelectionWrapper = async (cardId: string) => {
     await handleCardSelection(cardId, campaign.id, formData, onFormDataChange);
+  };
+
+  const handleAddNewCard = async () => {
+    try {
+      console.log('🔄 RÉACTIVATION: Redirection vers Stripe pour nouvelle carte');
+      setShowPaymentSelector(false);
+      
+      // Utiliser le système de redirection Stripe existant
+      await setupPaymentForCampaign(campaign.id, campaign.name);
+    } catch (error: any) {
+      console.error('❌ Erreur redirection Stripe:', error);
+    }
   };
 
   return (
