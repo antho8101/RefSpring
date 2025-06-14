@@ -1,4 +1,6 @@
 
+import Stripe from 'stripe';
+
 export default async function handler(req, res) {
   // Handle CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -20,7 +22,7 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Email utilisateur requis' });
     }
 
-    const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
     // Trouver le client Stripe
     const customers = await stripe.customers.list({
