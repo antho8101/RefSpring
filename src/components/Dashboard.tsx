@@ -51,7 +51,9 @@ const DashboardStats = ({ activeCampaigns, totalCampaigns, totalAffiliates, user
       
       try {
         // Vérification de sécurité
-        requireAuthentication('consulter les statistiques');
+        if (!requireAuthentication('consulter les statistiques')) {
+          return; // Sortir si l'auth n'est pas prête
+        }
         
         console.log(`📊 SECURITY - Loading secured global stats ${periodLabel} for:`, userId);
         
@@ -214,7 +216,7 @@ const DashboardStats = ({ activeCampaigns, totalCampaigns, totalAffiliates, user
 
 export const Dashboard = memo(() => {
   const { user } = useAuth();
-  const { isAuthenticated, requireAuthentication } = useAuthGuard();
+  const { isAuthenticated, isLoading, requireAuthentication } = useAuthGuard();
   const { campaigns, loading: campaignsLoading } = useCampaigns();
   const { affiliates, loading: affiliatesLoading } = useAffiliates();
   const { period, setPeriod, getDateFilter, getPeriodLabel } = useStatsFilters();
@@ -223,11 +225,15 @@ export const Dashboard = memo(() => {
   // Intégration Tawk.to - SEULEMENT pour les utilisateurs authentifiés
   useTawkTo({ enabled: isAuthenticated });
 
-  // Vérification de sécurité au montage
+  // CORRECTION: Vérification de sécurité au montage SEULEMENT quand l'auth est prête
   useEffect(() => {
-    console.log('📊 SECURITY - Dashboard mounted, checking authentication');
-    requireAuthentication('accéder au dashboard');
-  }, [requireAuthentication]);
+    if (!isLoading) {
+      console.log('📊 SECURITY - Dashboard mounted, checking authentication');
+      if (!requireAuthentication('accéder au dashboard')) {
+        console.log('📊 SECURITY - Auth not ready or failed, will retry when ready');
+      }
+    }
+  }, [requireAuthentication, isLoading]);
 
   // Démarrer l'onboarding si l'utilisateur est connecté et n'a pas encore fait le tour
   useEffect(() => {
@@ -263,13 +269,24 @@ export const Dashboard = memo(() => {
     };
   }, [campaigns, affiliates]);
 
-  // Affichage du loader si pas encore authentifié ou données en cours de chargement
-  if (!isAuthenticated || campaignsLoading || affiliatesLoading) {
+  // CORRECTION: Affichage du loader si l'authentification est encore en cours
+  if (isLoading || campaignsLoading || affiliatesLoading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
           <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-gray-600">Chargement sécurisé du dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Vérification finale : si pas authentifié après le chargement, ne pas afficher le dashboard
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600">Redirection vers la page de connexion...</p>
         </div>
       </div>
     );

@@ -42,6 +42,12 @@ export const useAuthGuard = (options: UseAuthGuardOptions = {}) => {
 
   // Fonction pour vérifier l'autorisation d'une action
   const requireAuthentication = useCallback((action: string = 'cette action') => {
+    // CORRECTION: Ne pas lancer d'exception si l'authentification est encore en cours de chargement
+    if (loading) {
+      console.log(`🔐 SECURITY - Auth still loading for action: ${action}`);
+      return false; // Retourner false au lieu de lancer une exception
+    }
+    
     if (!user) {
       console.log(`🔐 SECURITY - Blocked unauthorized attempt: ${action}`);
       throw new Error(`Authentification requise pour ${action}`);
@@ -49,11 +55,19 @@ export const useAuthGuard = (options: UseAuthGuardOptions = {}) => {
     
     console.log(`🔐 SECURITY - Authorized action: ${action} for user:`, user.uid);
     return true;
-  }, [user]);
+  }, [user, loading]);
 
   // Fonction pour vérifier la propriété d'une ressource
   const requireOwnership = useCallback((resourceUserId: string, resourceType: string = 'ressource') => {
-    requireAuthentication(`accéder à cette ${resourceType}`);
+    // CORRECTION: Vérifier d'abord que l'authentification est terminée
+    if (loading) {
+      console.log(`🔐 SECURITY - Auth still loading for ownership check: ${resourceType}`);
+      return false;
+    }
+    
+    if (!requireAuthentication(`accéder à cette ${resourceType}`)) {
+      return false;
+    }
     
     if (user?.uid !== resourceUserId) {
       console.log(`🔐 SECURITY - Blocked unauthorized access to ${resourceType}:`, {
@@ -64,7 +78,7 @@ export const useAuthGuard = (options: UseAuthGuardOptions = {}) => {
     }
     
     return true;
-  }, [user, requireAuthentication]);
+  }, [user, requireAuthentication, loading]);
 
   return {
     isAuthenticated: !!user && !loading,
