@@ -39,6 +39,8 @@ export const PaymentSuccessPage = () => {
     }
 
     const handlePaymentSuccess = async () => {
+      console.log('🔥 PAYMENT SUCCESS: Vérification et création campagne après Stripe');
+      
       // PROTECTION ABSOLUE : Vérifier si déjà traité ou en cours de traitement
       if (hasProcessedRef.current || processingRef.current) {
         console.log('🔒 PAYMENT SUCCESS: Déjà traité ou en cours, ignoré');
@@ -123,7 +125,7 @@ export const PaymentSuccessPage = () => {
     };
 
     handlePaymentSuccess();
-  }, [setupIntentId, authLoading, user]); // Dépendances spécifiques pour éviter les boucles
+  }, [searchParams, authLoading, user, verifyPaymentSetup, createCampaign, toast]);
 
   const handleBackToDashboard = () => {
     navigate('/');
