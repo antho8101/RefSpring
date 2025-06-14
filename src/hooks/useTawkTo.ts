@@ -47,30 +47,57 @@ export const useTawkTo = (config: TawkToConfig = {}) => {
     const positionWidget = () => {
       const widget = document.querySelector('#tawkchat-iframe-container, .tawk-messenger-container, [id*="tawk"]');
       if (widget && widget instanceof HTMLElement) {
-        // Positionner le chat au-dessus du footer
-        widget.style.bottom = '120px'; // Espace pour le footer
+        // Positionner le chat bien au-dessus du footer
+        widget.style.bottom = '140px'; // Plus d'espace pour éviter le chevauchement
         widget.style.right = '20px';
-        widget.style.zIndex = '1000'; // En dessous du footer
-        console.log('🗨️ Tawk.to widget positioned above footer');
+        widget.style.zIndex = '999'; // En dessous du footer mais visible
+        console.log('🗨️ Tawk.to widget positioned above footer with proper spacing');
       }
     };
 
-    // Attendre que le widget soit chargé
+    // Attendre que le widget soit chargé et le repositionner
+    const checkAndPositionWidget = () => {
+      if (window.Tawk_API) {
+        // Utiliser onLoad si disponible
+        if (window.Tawk_API.onLoad) {
+          window.Tawk_API.onLoad = function() {
+            setTimeout(positionWidget, 500);
+            // Repositionner également lors du redimensionnement
+            window.addEventListener('resize', positionWidget);
+          };
+        }
+        
+        // Repositionner aussi quand le widget change d'état
+        if (window.Tawk_API.onChatMaximized) {
+          window.Tawk_API.onChatMaximized = function() {
+            setTimeout(positionWidget, 100);
+          };
+        }
+        
+        if (window.Tawk_API.onChatMinimized) {
+          window.Tawk_API.onChatMinimized = function() {
+            setTimeout(positionWidget, 100);
+          };
+        }
+      }
+      
+      // Fallback: repositionner après un délai
+      setTimeout(positionWidget, 2000);
+      setTimeout(positionWidget, 4000); // Double vérification
+    };
+
+    // Vérifier périodiquement que le widget est chargé
     const checkWidget = setInterval(() => {
-      if (window.Tawk_API && window.Tawk_API.onLoad) {
-        window.Tawk_API.onLoad = function() {
-          setTimeout(positionWidget, 500);
-        };
+      if (window.Tawk_API) {
+        checkAndPositionWidget();
         clearInterval(checkWidget);
-      } else {
-        // Fallback si onLoad n'est pas disponible
-        setTimeout(positionWidget, 2000);
       }
     }, 500);
 
     // Cleanup function
     return () => {
       clearInterval(checkWidget);
+      window.removeEventListener('resize', positionWidget);
       if (window.Tawk_API && window.Tawk_API.onLoaded) {
         console.log('🗨️ Tawk.to cleanup');
       }
