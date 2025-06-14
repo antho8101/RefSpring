@@ -50,7 +50,8 @@ export const useCampaignData = (userId: string | null, authLoading: boolean) => 
             name: campaign.name,
             isDraft: campaign.isDraft,
             paymentConfigured: campaign.paymentConfigured,
-            stripePaymentMethodId: campaign.stripePaymentMethodId
+            stripePaymentMethodId: campaign.stripePaymentMethodId,
+            isActive: campaign.isActive
           });
 
           return campaign;
@@ -61,8 +62,8 @@ export const useCampaignData = (userId: string | null, authLoading: boolean) => 
           return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
         });
 
-        // CORRECTION : Afficher seulement les campagnes finalisées avec paiement configuré
-        // Les brouillons sans paiement configuré ne devraient pas être visibles
+        // CORRECTION : Afficher toutes les campagnes finalisées, MÊME celles désactivées
+        // Les campagnes désactivées doivent rester visibles pour pouvoir être réactivées !
         const visibleCampaigns = sortedCampaigns.filter(campaign => {
           console.log('🎯 Campaign filter check:', {
             id: campaign.id,
@@ -70,11 +71,12 @@ export const useCampaignData = (userId: string | null, authLoading: boolean) => 
             isDraft: campaign.isDraft,
             paymentConfigured: campaign.paymentConfigured,
             hasStripePaymentMethod: Boolean(campaign.stripePaymentMethodId),
-            isActive: campaign.isActive !== false
+            isActive: campaign.isActive
           });
 
-          // Afficher seulement les campagnes finalisées (non-brouillon) avec paiement configuré
-          return !campaign.isDraft && campaign.paymentConfigured && campaign.isActive !== false;
+          // Afficher toutes les campagnes finalisées (non-brouillon) avec paiement configuré
+          // INDÉPENDAMMENT de leur statut actif/inactif
+          return !campaign.isDraft && campaign.paymentConfigured;
         });
 
         console.log('🎯 Campagnes visibles chargées:', visibleCampaigns.length);
