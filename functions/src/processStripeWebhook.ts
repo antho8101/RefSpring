@@ -72,10 +72,19 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       if (setupIntent.payment_method && session.customer) {
         console.log('💳 WEBHOOK - Attachement de la méthode de paiement au client');
         
-        // S'assurer que la méthode de paiement est attachée au client
-        await stripe.paymentMethods.attach(setupIntent.payment_method as string, {
-          customer: session.customer as string,
-        });
+        // Forcer l'attachement de la méthode de paiement au client
+        try {
+          await stripe.paymentMethods.attach(setupIntent.payment_method as string, {
+            customer: session.customer as string,
+          });
+          console.log('✅ WEBHOOK - Méthode de paiement attachée au client');
+        } catch (attachError: any) {
+          // Si déjà attachée, continuer
+          if (attachError.code !== 'resource_already_exists') {
+            throw attachError;
+          }
+          console.log('✅ WEBHOOK - Méthode de paiement déjà attachée');
+        }
         
         // Définir comme méthode par défaut
         await stripe.customers.update(session.customer as string, {
@@ -84,11 +93,11 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
           },
         });
         
-        console.log('✅ WEBHOOK - Méthode de paiement attachée et définie par défaut');
+        console.log('✅ WEBHOOK - Méthode de paiement définie par défaut');
       }
     } catch (attachError) {
       console.error('❌ WEBHOOK - Erreur lors de l\'attachement:', attachError);
-      // Continuer même si l'attachement échoue
+      // Ne pas faire échouer le webhook pour cette erreur
     }
     
     // Configuration de paiement réussie
@@ -128,10 +137,19 @@ async function handleSetupIntentSucceeded(setupIntent: Stripe.SetupIntent) {
   
   if (setupIntent.customer && setupIntent.payment_method) {
     try {
-      // S'assurer que la méthode de paiement est attachée
-      await stripe.paymentMethods.attach(setupIntent.payment_method as string, {
-        customer: setupIntent.customer as string,
-      });
+      // Forcer l'attachement de la méthode de paiement
+      try {
+        await stripe.paymentMethods.attach(setupIntent.payment_method as string, {
+          customer: setupIntent.customer as string,
+        });
+        console.log('✅ WEBHOOK - Méthode de paiement attachée via SetupIntent');
+      } catch (attachError: any) {
+        // Si déjà attachée, continuer
+        if (attachError.code !== 'resource_already_exists') {
+          throw attachError;
+        }
+        console.log('✅ WEBHOOK - Méthode de paiement déjà attachée via SetupIntent');
+      }
       
       // Mettre à jour la méthode de paiement par défaut
       await stripe.customers.update(setupIntent.customer as string, {
@@ -140,7 +158,7 @@ async function handleSetupIntentSucceeded(setupIntent: Stripe.SetupIntent) {
         },
       });
       
-      console.log('✅ WEBHOOK - Méthode de paiement attachée et définie par défaut via SetupIntent');
+      console.log('✅ WEBHOOK - Méthode de paiement définie par défaut via SetupIntent');
     } catch (error) {
       console.error('❌ WEBHOOK - Erreur lors de l\'attachement via SetupIntent:', error);
     }

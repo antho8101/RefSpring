@@ -57,6 +57,11 @@ export default async function handler(req, res) {
       customer: customerId, // FORCER le customer
       mode: 'setup',
       currency: 'eur',
+      payment_method_options: {
+        card: {
+          setup_future_usage: 'off_session'
+        }
+      },
       success_url: `${baseUrl}/payment-success?setup_intent={CHECKOUT_SESSION_ID}&campaign_id=${campaignId}`,
       cancel_url: `${baseUrl}/dashboard`,
       metadata: {
