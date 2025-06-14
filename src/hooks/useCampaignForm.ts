@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useCampaigns } from '@/hooks/useCampaigns';
 import { useStripePayment } from '@/hooks/useStripePayment';
@@ -17,6 +18,8 @@ export const useCampaignForm = () => {
   const [showPaymentSelector, setShowPaymentSelector] = useState(false);
   const [pendingCampaignData, setPendingCampaignData] = useState<CampaignFormData | null>(null);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [createdCampaign, setCreatedCampaign] = useState<{ id: string; name: string } | null>(null);
   const [formData, setFormData] = useState<CampaignFormData>({
     name: '',
     description: '',
@@ -39,6 +42,8 @@ export const useCampaignForm = () => {
     setPendingCampaignData(null);
     setShowPaymentSelector(false);
     setShowConfetti(false);
+    setShowSuccessModal(false);
+    setCreatedCampaign(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -155,13 +160,17 @@ export const useCampaignForm = () => {
       // 🎉 Déclencher les confettis pour la création avec carte existante !
       setShowConfetti(true);
       
+      // 📋 NOUVEAU : Afficher la modale avec les scripts d'intégration
+      setCreatedCampaign({ id: campaignId, name: pendingCampaignData.name });
+      setShowSuccessModal(true);
+      
       toast({
         title: "Campagne créée avec succès !",
         description: "Votre campagne est maintenant active avec la carte sélectionnée.",
       });
       
-      // Réinitialiser et fermer toutes les modales
-      resetForm();
+      // Fermer le sélecteur de paiement
+      setShowPaymentSelector(false);
       
       // Retourner un signal pour fermer la modale principale
       return { success: true };
@@ -195,6 +204,13 @@ export const useCampaignForm = () => {
     }
   };
 
+  // 📋 NOUVEAU : Fonction pour déclencher la modale après retour de Stripe
+  const triggerSuccessModal = (campaignId: string, campaignName: string) => {
+    setCreatedCampaign({ id: campaignId, name: campaignName });
+    setShowSuccessModal(true);
+    setShowConfetti(true);
+  };
+
   return {
     formData,
     loading,
@@ -203,6 +219,8 @@ export const useCampaignForm = () => {
     paymentMethods,
     paymentMethodsLoading,
     showConfetti,
+    showSuccessModal,
+    createdCampaign,
     updateFormData,
     resetForm,
     handleSubmit,
@@ -210,5 +228,7 @@ export const useCampaignForm = () => {
     handleAddNewCard,
     setShowPaymentSelector,
     setShowConfetti,
+    setShowSuccessModal,
+    triggerSuccessModal,
   };
 };

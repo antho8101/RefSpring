@@ -7,6 +7,7 @@ import { useCampaignForm } from '@/hooks/useCampaignForm';
 import { CampaignFormFields } from '@/components/CampaignFormFields';
 import { PaymentMethodSelector } from '@/components/PaymentMethodSelector';
 import { ConfettiCelebration } from '@/components/ConfettiCelebration';
+import { CampaignSuccessModal } from '@/components/CampaignSuccessModal';
 import { useToast } from '@/hooks/use-toast';
 
 interface CreateCampaignDialogProps {
@@ -25,6 +26,8 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
     paymentMethods,
     paymentMethodsLoading,
     showConfetti,
+    showSuccessModal,
+    createdCampaign,
     updateFormData,
     resetForm,
     handleSubmit,
@@ -32,6 +35,7 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
     handleAddNewCard,
     setShowPaymentSelector,
     setShowConfetti,
+    setShowSuccessModal,
   } = useCampaignForm();
 
   const resetDialog = () => {
@@ -58,6 +62,11 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
     if (result?.success) {
       setOpen(false);
     }
+  };
+
+  const handleSuccessModalClose = () => {
+    setShowSuccessModal(false);
+    resetForm();
   };
 
   return (
@@ -133,6 +142,16 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
         onAddNewCard={handleAddNewCard}
         loading={loading || paymentLoading}
       />
+
+      {/* 📋 NOUVEAU : Modale avec les scripts d'intégration */}
+      {createdCampaign && (
+        <CampaignSuccessModal
+          open={showSuccessModal}
+          onOpenChange={handleSuccessModalClose}
+          campaignId={createdCampaign.id}
+          campaignName={createdCampaign.name}
+        />
+      )}
     </>
   );
 };

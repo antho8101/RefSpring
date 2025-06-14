@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { finalizeCampaignInFirestore } from '@/services/campaignService';
@@ -8,6 +9,7 @@ import { CheckCircle, AlertCircle, Loader2, TestTube, CreditCard } from 'lucide-
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ConfettiCelebration } from '@/components/ConfettiCelebration';
+import { CampaignSuccessModal } from '@/components/CampaignSuccessModal';
 
 export const PaymentSuccessPage = () => {
   const [searchParams] = useSearchParams();
@@ -17,8 +19,10 @@ export const PaymentSuccessPage = () => {
   const { toast } = useToast();
   const [status, setStatus] = useState<'loading' | 'success' | 'error' | 'auth-required'>('loading');
   const [message, setMessage] = useState('');
-  const [countdown, setCountdown] = useState(3);
+  const [countdown, setCountdown] = useState(10);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [createdCampaign, setCreatedCampaign] = useState<{ id: string; name: string } | null>(null);
 
   const setupIntentId = searchParams.get('setup_intent');
   const campaignId = searchParams.get('campaign_id');
@@ -84,6 +88,10 @@ export const PaymentSuccessPage = () => {
             setStatus('success');
             setMessage('Votre campagne a été créée avec succès (mode simulation) !');
             
+            // 📋 NOUVEAU : Afficher la modale avec les scripts après retour de Stripe
+            setCreatedCampaign({ id: campaignId, name: 'Campagne créée via Stripe' });
+            setShowSuccessModal(true);
+            
             toast({
               title: "Campagne créée !",
               description: "Mode simulation: Votre campagne est maintenant active.",
@@ -120,6 +128,10 @@ export const PaymentSuccessPage = () => {
               setStatus('success');
               setMessage('Votre campagne a été créée avec succès !');
               
+              // 📋 NOUVEAU : Afficher la modale avec les scripts après retour de Stripe
+              setCreatedCampaign({ id: campaignId, name: 'Campagne créée via Stripe' });
+              setShowSuccessModal(true);
+              
               toast({
                 title: "Campagne créée !",
                 description: "Votre mode de paiement a été configuré et votre campagne est maintenant active.",
@@ -153,7 +165,7 @@ export const PaymentSuccessPage = () => {
 
   // Effet pour le countdown et redirection automatique
   useEffect(() => {
-    if (status === 'success') {
+    if (status === 'success' && !showSuccessModal) {
       const timer = setInterval(() => {
         setCountdown((prev) => {
           if (prev <= 1) {
@@ -166,7 +178,7 @@ export const PaymentSuccessPage = () => {
 
       return () => clearInterval(timer);
     }
-  }, [status, navigate]);
+  }, [status, navigate, showSuccessModal]);
 
   const handleBackToDashboard = () => {
     navigate('/dashboard');
@@ -174,6 +186,11 @@ export const PaymentSuccessPage = () => {
 
   const handleReconnect = () => {
     navigate('/app');
+  };
+
+  const handleSuccessModalClose = () => {
+    setShowSuccessModal(false);
+    navigate('/dashboard');
   };
 
   return (
@@ -217,7 +234,7 @@ export const PaymentSuccessPage = () => {
         <CardContent className="text-center space-y-4">
           <p className="text-gray-600">{message}</p>
           
-          {status === 'success' && (
+          {status === 'success' && !showSuccessModal && (
             <p className="text-sm text-blue-600">
               Redirection automatique dans {countdown} seconde{countdown > 1 ? 's' : ''}...
             </p>
@@ -255,7 +272,7 @@ export const PaymentSuccessPage = () => {
             </Button>
           )}
           
-          {status !== 'loading' && status !== 'auth-required' && (
+          {status !== 'loading' && status !== 'auth-required' && !showSuccessModal && (
             <Button 
               onClick={handleBackToDashboard}
               className="w-full"
@@ -266,6 +283,16 @@ export const PaymentSuccessPage = () => {
           )}
         </CardContent>
       </Card>
+
+      {/* 📋 NOUVEAU : Modale avec les scripts d'intégration après retour de Stripe */}
+      {createdCampaign && (
+        <CampaignSuccessModal
+          open={showSuccessModal}
+          onOpenChange={handleSuccessModalClose}
+          campaignId={createdCampaign.id}
+          campaignName={createdCampaign.name}
+        />
+      )}
     </div>
   );
 };
