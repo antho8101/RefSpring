@@ -1,3 +1,4 @@
+
 import { useAuth } from '@/hooks/useAuth';
 import { useCampaigns } from '@/hooks/useCampaigns';
 import { useAffiliates } from '@/hooks/useAffiliates';
@@ -299,7 +300,7 @@ export const Dashboard = memo(() => {
       </Helmet>
 
       <NetworkStatus />
-      <div className="min-h-screen bg-gradient-to-br from-blue-50/50 via-white to-purple-50/50 relative overflow-hidden flex flex-col pb-32">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50/50 via-white to-purple-50/50 relative overflow-hidden flex flex-col">
         <DashboardBackground />
         <div data-tour="header">
           <DashboardHeader 
@@ -310,7 +311,7 @@ export const Dashboard = memo(() => {
           />
         </div>
 
-        <main className="relative z-10 max-w-6xl mx-auto w-full px-3 sm:px-4 lg:px-8 py-4 sm:py-6 lg:py-8 flex-1 min-w-0">
+        <main className="relative z-10 max-w-6xl mx-auto w-full px-3 sm:px-4 lg:px-8 py-4 sm:py-6 lg:py-8 flex-1 min-w-0 pb-32">
           {/* Bandeau de notifications de paiement */}
           <ErrorBoundary fallback={<div>Erreur notifications</div>}>
             <PaymentNotificationBanner />
