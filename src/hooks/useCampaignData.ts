@@ -61,7 +61,8 @@ export const useCampaignData = (userId: string | null, authLoading: boolean) => 
           return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
         });
 
-        // Afficher toutes les campagnes actives
+        // CORRECTION : Afficher seulement les campagnes finalisées avec paiement configuré
+        // Les brouillons sans paiement configuré ne devraient pas être visibles
         const visibleCampaigns = sortedCampaigns.filter(campaign => {
           console.log('🎯 Campaign filter check:', {
             id: campaign.id,
@@ -72,8 +73,8 @@ export const useCampaignData = (userId: string | null, authLoading: boolean) => 
             isActive: campaign.isActive !== false
           });
 
-          // Afficher toutes les campagnes actives
-          return campaign.isActive !== false;
+          // Afficher seulement les campagnes finalisées (non-brouillon) avec paiement configuré
+          return !campaign.isDraft && campaign.paymentConfigured && campaign.isActive !== false;
         });
 
         console.log('🎯 Campagnes visibles chargées:', visibleCampaigns.length);
