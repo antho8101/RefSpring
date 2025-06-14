@@ -8,7 +8,7 @@ import { useToast } from '@/hooks/use-toast';
 import { CampaignCard } from '@/components/CampaignCard';
 import { CompactCampaignCard } from '@/components/CompactCampaignCard';
 import { useState, useCallback, memo } from 'react';
-import { CreateCampaignDialogSimple } from '@/components/CreateCampaignDialogSimple';
+import { CreateCampaignDialog } from '@/components/CreateCampaignDialog';
 
 export const CampaignsList = memo(() => {
   const { campaigns, loading } = useCampaigns();
@@ -62,7 +62,7 @@ export const CampaignsList = memo(() => {
             Créez votre première campagne pour commencer à gérer vos affiliés et générer des revenus.
           </p>
           <div className="mt-6">
-            <CreateCampaignDialogSimple>
+            <CreateCampaignDialog>
               <Button 
                 size="lg" 
                 className="text-base lg:text-lg px-6 py-3 lg:px-8 lg:py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-110 border-0 text-white group relative overflow-hidden" 
@@ -80,7 +80,7 @@ export const CampaignsList = memo(() => {
                 <Plus className="h-4 w-4 mr-2 relative z-10" />
                 <span className="relative z-10">Lancer ma première campagne</span>
               </Button>
-            </CreateCampaignDialogSimple>
+            </CreateCampaignDialog>
           </div>
         </CardContent>
       </Card>
@@ -96,12 +96,12 @@ export const CampaignsList = memo(() => {
           <h2 className="text-2xl font-bold text-slate-900">Mes Campagnes</h2>
           <p className="text-slate-600 mt-1">Gérez vos campagnes d'affiliation</p>
         </div>
-        <CreateCampaignDialogSimple>
+        <CreateCampaignDialog>
           <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl hover:scale-105 transition-all">
             <Plus className="h-4 w-4 mr-2" />
             Nouvelle Campagne
           </Button>
-        </CreateCampaignDialogSimple>
+        </CreateCampaignDialog>
       </div>
 
       {/* Sélecteur de mode d'affichage */}
