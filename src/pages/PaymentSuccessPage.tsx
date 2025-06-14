@@ -7,8 +7,6 @@ import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { CheckCircle, Loader2, AlertCircle, ArrowRight } from 'lucide-react';
-import { ConfettiCelebration } from '@/components/ConfettiCelebration';
-import { CampaignSuccessModal } from '@/components/CampaignSuccessModal';
 import { useToast } from '@/hooks/use-toast';
 
 export const PaymentSuccessPage = () => {
@@ -20,27 +18,11 @@ export const PaymentSuccessPage = () => {
   const { toast } = useToast();
   
   const [loading, setLoading] = useState(true);
-  const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [createdCampaign, setCreatedCampaign] = useState<{ id: string; name: string } | null>(null);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [countdown, setCountdown] = useState(3);
   
   // Protection absolue contre les doubles exécutions
   const hasProcessedRef = useRef(false);
   const processingRef = useRef(false);
-
-  // Redirection automatique vers le DASHBOARD après succès
-  useEffect(() => {
-    if (success && !showSuccessModal && countdown > 0) {
-      const timer = setTimeout(() => {
-        setCountdown(prev => prev - 1);
-      }, 1000);
-      return () => clearTimeout(timer);
-    } else if (success && !showSuccessModal && countdown === 0) {
-      navigate('/dashboard'); // CORRECTION: Redirection vers le dashboard !
-    }
-  }, [success, showSuccessModal, countdown, navigate]);
 
   useEffect(() => {
     const setupIntentId = searchParams.get('setup_intent');
@@ -105,25 +87,31 @@ export const PaymentSuccessPage = () => {
             
             console.log('✅ CAMPAGNE CRÉÉE APRÈS VALIDATION STRIPE:', newCampaignId);
             
-            // Nettoyer le localStorage
+            // Nettoyer le localStorage des données de campagne
             localStorage.removeItem('pendingCampaignData');
+            
+            // Stocker les infos pour afficher la modale dans le dashboard
+            localStorage.setItem('newCampaignCreated', JSON.stringify({
+              id: newCampaignId,
+              name: pendingData.name,
+              showModal: true
+            }));
             
             // Marquer comme traité avec succès
             hasProcessedRef.current = true;
             
-            // Afficher le succès
-            setCreatedCampaign({ id: newCampaignId, name: pendingData.name });
-            setShowSuccessModal(true);
-            setSuccess(true);
-            
             toast({
               title: "Campagne créée avec succès !",
-              description: "Votre carte a été validée et votre campagne est maintenant active.",
+              description: "Redirection vers le dashboard...",
             });
+
+            // Redirection immédiate vers le dashboard
+            navigate('/dashboard');
           } else {
             console.log('⚠️ Aucune donnée de campagne en attente trouvée');
             hasProcessedRef.current = true;
-            setSuccess(true); // Juste confirmer le paiement
+            // Redirection vers dashboard même sans campagne
+            navigate('/dashboard');
           }
         } else {
           throw new Error(`Échec de la vérification: ${verificationResult.status}`);
@@ -131,17 +119,17 @@ export const PaymentSuccessPage = () => {
       } catch (err: any) {
         console.error('❌ Erreur lors de la vérification:', err);
         setError(err.message);
+        setLoading(false);
       } finally {
         processingRef.current = false;
-        setLoading(false);
       }
     };
 
     handlePaymentSuccess();
-  }, [searchParams, authLoading, user, verifyPaymentSetup, createCampaign, toast]);
+  }, [searchParams, authLoading, user, verifyPaymentSetup, createCampaign, toast, navigate]);
 
   const handleBackToDashboard = () => {
-    navigate('/dashboard'); // CORRECTION: Redirection vers le dashboard !
+    navigate('/dashboard');
   };
 
   if (loading) {
@@ -188,54 +176,6 @@ export const PaymentSuccessPage = () => {
     );
   }
 
-  return (
-    <>
-      <ConfettiCelebration trigger={success} />
-      
-      <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50 flex items-center justify-center p-4">
-        <Card className="w-full max-w-md">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-green-700">
-              <CheckCircle className="h-6 w-6" />
-              Paiement réussi !
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <p className="text-slate-600">
-              {createdCampaign 
-                ? `Votre campagne "${createdCampaign.name}" a été créée avec succès après validation de votre carte.`
-                : 'Votre méthode de paiement a été configurée avec succès.'
-              }
-            </p>
-            
-            {!showSuccessModal && (
-              <div className="text-center">
-                <p className="text-sm text-slate-500 mb-3">
-                  Redirection automatique dans {countdown} seconde{countdown > 1 ? 's' : ''}...
-                </p>
-              </div>
-            )}
-            
-            <Button 
-              onClick={handleBackToDashboard} 
-              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-            >
-              <ArrowRight className="h-4 w-4 mr-2" />
-              Aller au tableau de bord {!showSuccessModal && `(${countdown}s)`}
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Modale de succès avec codes d'intégration */}
-      {createdCampaign && showSuccessModal && (
-        <CampaignSuccessModal
-          open={showSuccessModal}
-          onOpenChange={setShowSuccessModal}
-          campaignId={createdCampaign.id}
-          campaignName={createdCampaign.name}
-        />
-      )}
-    </>
-  );
+  // Cette page ne devrait plus jamais s'afficher normalement
+  return null;
 };

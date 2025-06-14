@@ -14,6 +14,7 @@ import { NetworkStatus } from '@/components/NetworkStatus';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { PaymentNotificationBanner } from '@/components/PaymentNotificationBanner';
 import { GuidedTourOverlay } from '@/components/GuidedTourOverlay';
+import { CampaignSuccessModal } from '@/components/CampaignSuccessModal';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { Helmet } from 'react-helmet-async';
 import { memo, useCallback, useMemo, useEffect, useState } from 'react';
