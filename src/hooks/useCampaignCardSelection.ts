@@ -38,21 +38,25 @@ export const useCampaignCardSelection = (
       
       console.log('✅ 🐛 DEBUG: Campagne créée avec succès avec la carte existante. ID:', campaignId);
       
-      // 🎉 ÉTAPE 1 : Fermer le sélecteur de paiement
+      // 🎉 ÉTAPE 1 : Fermer le sélecteur de paiement IMMÉDIATEMENT
       console.log('💳 🐛 DEBUG: Fermeture du sélecteur de paiement...');
       setShowPaymentSelector(false);
       
-      // 🎉 ÉTAPE 2 : Définir immédiatement les données de campagne créée
+      // 🎉 ÉTAPE 2 : Définir les données de campagne créée AVEC DÉLAI pour éviter les race conditions
       console.log('📋 🐛 DEBUG: Définition des données de campagne créée...');
-      setCreatedCampaign({ id: campaignId, name: pendingCampaignData.name });
-      
-      // 🎉 ÉTAPE 3 : Déclencher les confettis
-      console.log('🎉 🐛 DEBUG: Déclenchement des confettis...');
-      setShowConfetti(true);
-      
-      // 🎉 ÉTAPE 4 : Afficher la modale de succès
-      console.log('📋 🐛 DEBUG: Affichage de la modale de succès...');
-      setShowSuccessModal(true);
+      setTimeout(() => {
+        setCreatedCampaign({ id: campaignId, name: pendingCampaignData.name });
+        
+        // 🎉 ÉTAPE 3 : Déclencher les confettis
+        console.log('🎉 🐛 DEBUG: Déclenchement des confettis...');
+        setShowConfetti(true);
+        
+        // 🎉 ÉTAPE 4 : Afficher la modale de succès AVEC UN DÉLAI SUPPLÉMENTAIRE
+        console.log('📋 🐛 DEBUG: Affichage de la modale de succès...');
+        setTimeout(() => {
+          setShowSuccessModal(true);
+        }, 100);
+      }, 100);
       
       toast({
         title: "Campagne créée avec succès !",

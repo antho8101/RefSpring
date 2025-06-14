@@ -1,3 +1,4 @@
+
 import { useState, ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -94,20 +95,20 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
     }, 100);
   };
 
-  // 🔧 NOUVELLE LOGIQUE : Garder la modale ouverte si la modale de succès est affichée
+  // 🔧 LOGIQUE CRITIQUE : Empêcher la fermeture prématurée de la modale
   const handleDialogOpenChange = (isOpen: boolean) => {
     console.log('🐛 CreateCampaignDialog - onOpenChange appelé avec:', isOpen, 'showSuccessModal:', showSuccessModal);
     
     if (!isOpen) {
-      // 🚨 PROTECTION : Ne fermer que si la modale de succès n'est pas affichée
-      if (!showSuccessModal) {
-        console.log('🐛 CreateCampaignDialog - Fermeture autorisée');
-        resetDialog();
-      } else {
-        console.log('🐛 CreateCampaignDialog - Fermeture bloquée car modale de succès affichée');
-        // NE PAS fermer la modale, la garder ouverte
+      // 🚨 PROTECTION RENFORCÉE : Vérifier si une modale de succès DOIT s'afficher
+      if (showSuccessModal || createdCampaign) {
+        console.log('🐛 CreateCampaignDialog - Fermeture bloquée car modale de succès affichée ou campagne créée');
+        // FORCER la modale à rester ouverte
+        setTimeout(() => setOpen(true), 0);
         return;
       }
+      console.log('🐛 CreateCampaignDialog - Fermeture autorisée');
+      resetDialog();
     } else {
       setOpen(true);
     }
