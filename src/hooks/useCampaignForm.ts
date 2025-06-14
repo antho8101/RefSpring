@@ -4,7 +4,7 @@ import { usePaymentMethods } from '@/hooks/usePaymentMethods';
 import { useCampaignFormState } from './useCampaignFormState';
 import { useCampaignFormSubmission } from './useCampaignFormSubmission';
 import { useCampaignCardSelection } from './useCampaignCardSelection';
-import { useSuccessModalState } from './useSuccessModalState';
+import { useSuccessModal } from '@/contexts/SuccessModalContext';
 
 export type { CampaignFormData } from './useCampaignFormState';
 
@@ -23,17 +23,20 @@ export const useCampaignForm = () => {
     activateResetProtection,
   } = useCampaignFormState();
 
-  // State management - modale de succès isolée
-  const successModalState = useSuccessModalState();
-  console.log('🔍 CAMPAIGN FORM: État reçu de useSuccessModalState:', successModalState);
-
+  // State management - modale de succès via contexte global
   const {
     successModalData,
     showConfetti,
     isSuccessModalOpen,
     showSuccessModal: triggerSuccessModal,
     hideSuccessModal,
-  } = successModalState;
+  } = useSuccessModal();
+
+  console.log('🔍 CAMPAIGN FORM: État reçu du contexte SuccessModal:', {
+    successModalData,
+    isSuccessModalOpen,
+    showConfetti
+  });
 
   // External hooks
   const { loading: paymentLoading } = useStripePayment();
@@ -47,7 +50,7 @@ export const useCampaignForm = () => {
     setLoading
   );
 
-  // Card selection logic avec la nouvelle modale de succès
+  // Card selection logic avec le contexte global
   const { handleCardSelection, handleAddNewCard } = useCampaignCardSelection(
     pendingCampaignData,
     setLoading,
@@ -71,7 +74,7 @@ export const useCampaignForm = () => {
     handleAddNewCard,
     setShowPaymentSelector,
     
-    // Nouvelle API pour la modale de succès
+    // API pour la modale de succès via contexte
     successModalData,
     showConfetti,
     isSuccessModalOpen,
