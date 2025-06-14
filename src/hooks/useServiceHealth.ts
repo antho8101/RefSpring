@@ -1,7 +1,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { db } from '@/lib/firebase';
-import { collection, getDocs, addDoc } from 'firebase/firestore';
+import { collection, getDocs } from 'firebase/firestore';
 
 export interface ServiceHealthCheck {
   name: string;
@@ -19,7 +19,7 @@ export const useServiceHealth = () => {
   const checkFirebaseHealth = async (): Promise<ServiceHealthCheck> => {
     const startTime = Date.now();
     try {
-      // Test simple de lecture Firestore
+      // Test simple de lecture Firestore - pas de création de document
       await getDocs(collection(db, 'campaigns'));
       const responseTime = Date.now() - startTime;
       
@@ -43,11 +43,8 @@ export const useServiceHealth = () => {
   const checkAPIHealth = async (): Promise<ServiceHealthCheck> => {
     const startTime = Date.now();
     try {
-      // Test de l'API en créant un document de test
-      await addDoc(collection(db, 'health-checks'), {
-        timestamp: new Date(),
-        type: 'api-health-check'
-      });
+      // Test de l'API sans créer de document - juste lecture
+      await getDocs(collection(db, 'campaigns'));
       const responseTime = Date.now() - startTime;
       
       return {
@@ -116,7 +113,7 @@ export const useServiceHealth = () => {
 
   const runHealthChecks = useCallback(async () => {
     setIsChecking(true);
-    console.log('🏥 Démarrage des vérifications de santé...');
+    console.log('🏥 Démarrage des vérifications de santé (sans stockage)...');
     
     try {
       const checks = await Promise.all([
