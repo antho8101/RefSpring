@@ -24,16 +24,16 @@ export const useCampaignCardSelection = (
       console.log('💳 🐛 DEBUG: Carte sélectionnée:', cardId);
       console.log('💳 🐛 DEBUG: Données de campagne à créer:', pendingCampaignData);
       
-      // Créer la campagne directement finalisée avec la carte sélectionnée
+      // 🔧 CORRECTION : Créer la campagne directement finalisée avec la carte sélectionnée
       const campaignId = await createCampaign({
         name: pendingCampaignData.name,
         description: pendingCampaignData.description,
         targetUrl: pendingCampaignData.targetUrl,
         isActive: pendingCampaignData.isActive,
-        isDraft: false,
-        paymentConfigured: true,
+        isDraft: false, // ✅ Campagne finalisée
+        paymentConfigured: true, // ✅ Paiement configuré
         defaultCommissionRate: 10,
-        stripePaymentMethodId: cardId,
+        stripePaymentMethodId: cardId, // ✅ Carte associée
       });
       
       console.log('✅ 🐛 DEBUG: Campagne créée avec succès avec la carte existante. ID:', campaignId);

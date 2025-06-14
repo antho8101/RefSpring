@@ -74,20 +74,24 @@ export const useCampaignData = (userId: string | null, authLoading: boolean) => 
             paymentConfigured: campaign.paymentConfigured,
             hasStripePaymentMethod: Boolean(campaign.stripePaymentMethodId),
             isActive: campaign.isActive,
-            willBeVisible: !campaign.isDraft && campaign.paymentConfigured
+            willBeVisible: Boolean(campaign.stripePaymentMethodId) // NOUVEAU CRITÈRE
           });
         });
 
-        // CORRECTION TEMPORAIRE : Afficher TOUTES les campagnes pour diagnostic
-        // Au lieu de filtrer, on affiche tout pour voir ce qui se passe
-        const visibleCampaigns = sortedCampaigns; // Pas de filtre temporairement
+        // 🔧 CORRECTION : Afficher les campagnes qui ont une méthode de paiement
+        // Peu importe si elles sont en draft ou pas
+        const visibleCampaigns = sortedCampaigns.filter(campaign => {
+          // Une campagne est visible si elle a une méthode de paiement Stripe
+          return Boolean(campaign.stripePaymentMethodId);
+        });
 
         console.log('🎯 APRÈS FILTRAGE - Campagnes visibles:', visibleCampaigns.length);
         console.log('🎯 Campagnes finales à afficher:', visibleCampaigns.map(c => ({
           id: c.id,
           name: c.name,
           isDraft: c.isDraft,
-          paymentConfigured: c.paymentConfigured
+          paymentConfigured: c.paymentConfigured,
+          hasStripePaymentMethod: Boolean(c.stripePaymentMethodId)
         })));
 
         setCampaigns(visibleCampaigns);
