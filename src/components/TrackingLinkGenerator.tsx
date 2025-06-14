@@ -21,6 +21,14 @@ export const TrackingLinkGenerator = ({ campaignId, affiliateId, targetUrl }: Tr
   const [error, setError] = useState<string | null>(null);
   const isGeneratingRef = useRef(false);
 
+  // CORRECTION: Réinitialiser le lien quand l'affilié ou la campagne change
+  useEffect(() => {
+    console.log('🔄 TRACKING LINK GENERATOR - Paramètres changés, réinitialisation du lien');
+    setGeneratedLink('');
+    setError(null);
+    isGeneratingRef.current = false;
+  }, [campaignId, affiliateId]);
+
   useEffect(() => {
     const generateLink = async () => {
       if (!targetUrl) {
@@ -76,7 +84,7 @@ export const TrackingLinkGenerator = ({ campaignId, affiliateId, targetUrl }: Tr
     };
 
     generateLink();
-  }, [campaignId, affiliateId, targetUrl]);
+  }, [campaignId, affiliateId, targetUrl, generatedLink, generateTrackingLink, toast]);
 
   const copyLink = async () => {
     if (!generatedLink) return;
