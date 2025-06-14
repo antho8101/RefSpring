@@ -36,6 +36,7 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
     setShowPaymentSelector,
     setShowConfetti,
     setShowSuccessModal,
+    triggerSuccessModal,
   } = useCampaignForm();
 
   // Logger les changements d'état
@@ -56,7 +57,14 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
 
   const onSubmit = async (e: React.FormEvent) => {
     try {
-      await handleSubmit(e);
+      const result = await handleSubmit(e);
+      
+      // 🔥 CORRECTION: Gérer le cas où on a créé une campagne directement
+      if (result?.success && result?.shouldShowModal) {
+        console.log('🔥 CORRECTION: Campagne créée directement, déclenchement modale de succès');
+        triggerSuccessModal(result.campaignId, result.campaignName);
+        // Ne pas fermer la modale principale pour que la modale de succès s'affiche par-dessus
+      }
     } catch (error: any) {
       toast({
         title: "Erreur",
@@ -201,4 +209,3 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
     </>
   );
 };
-

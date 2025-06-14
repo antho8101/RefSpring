@@ -114,7 +114,14 @@ export const useCampaignFormSubmission = (
         });
         
         setLoading(false);
-        return { success: true, campaignId };
+        
+        // 🔥 CORRECTION: Retourner les bonnes données pour déclencher la modale de succès
+        return { 
+          success: true, 
+          campaignId, 
+          campaignName: formData.name,
+          shouldShowModal: true 
+        };
       }
 
       console.log('💳 NOUVEAU FLOW: Plusieurs cartes → Sélecteur (PAS de création campagne)');
