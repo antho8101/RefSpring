@@ -21,7 +21,7 @@ export const useCampaignCardSelection = (
     
     try {
       setLoading(true);
-      console.log('💳 NOUVEAU FLOW: Création campagne avec carte sélectionnée (validée):', cardId);
+      console.log('💳 NOUVEAU FLOW: Création campagne MAINTENANT avec carte sélectionnée:', cardId);
       
       // Créer la campagne directement finalisée car la carte est validée
       const campaignId = await createCampaign({
@@ -29,13 +29,13 @@ export const useCampaignCardSelection = (
         description: pendingCampaignData.description,
         targetUrl: pendingCampaignData.targetUrl,
         isActive: pendingCampaignData.isActive,
-        isDraft: false, // Directement finalisée
-        paymentConfigured: true, // Paiement configuré
+        isDraft: false,
+        paymentConfigured: true,
         defaultCommissionRate: 10,
         stripePaymentMethodId: cardId,
       });
       
-      console.log('✅ NOUVEAU FLOW: Campagne créée et finalisée:', campaignId);
+      console.log('✅ NOUVEAU FLOW: Campagne créée APRÈS sélection carte:', campaignId);
       
       // Fermer le sélecteur
       setShowPaymentSelector(false);
@@ -67,7 +67,7 @@ export const useCampaignCardSelection = (
     
     try {
       setLoading(true);
-      console.log('💳 NOUVEAU FLOW: Ajout nouvelle carte → Redirection Stripe');
+      console.log('💳 NOUVEAU FLOW: Ajout nouvelle carte → Redirection Stripe (PAS de création campagne)');
       await redirectToStripeForNewCard(pendingCampaignData);
     } catch (error: any) {
       console.error('❌ Erreur ajout nouvelle carte:', error);

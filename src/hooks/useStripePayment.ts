@@ -18,6 +18,12 @@ export const useStripePayment = () => {
     try {
       console.log('🔄 STRIPE: Création du setup de paiement pour la campagne:', campaignId);
       
+      // Si c'est pour une nouvelle campagne, stocker les données en local
+      if (campaignId === 'temp_new_campaign') {
+        const pendingData = localStorage.getItem('pendingCampaignData');
+        console.log('💾 Données campagne stockées pour après validation Stripe:', pendingData);
+      }
+      
       // Appel à l'API Vercel pour créer le setup
       const response = await fetch('/api/stripe/create-setup', {
         method: 'POST',

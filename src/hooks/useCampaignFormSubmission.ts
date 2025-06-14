@@ -19,17 +19,22 @@ export const useCampaignFormSubmission = (
   const { toast } = useToast();
 
   const redirectToStripeForNewCard = async (campaignData: CampaignFormData) => {
-    console.log('🎯 Redirection vers Stripe pour nouvelle carte (campagne sera créée après validation)');
+    console.log('🎯 NOUVEAU FLOW: Redirection vers Stripe SANS créer la campagne');
     
     try {
-      // Stocker les données de campagne pour après la validation Stripe
+      // Stocker les données de campagne dans localStorage pour après validation Stripe
+      localStorage.setItem('pendingCampaignData', JSON.stringify(campaignData));
+      console.log('💾 Données campagne stockées dans localStorage');
+      
+      // Stocker aussi dans le state pour le flow normal
       setPendingCampaignData(campaignData);
       
-      // Rediriger vers Stripe avec un ID temporaire pour identifier le retour
+      // Rediriger vers Stripe avec un ID temporaire
       await setupPaymentForCampaign('temp_new_campaign', campaignData.name);
-      console.log('✅ Redirection vers Stripe en cours...');
+      console.log('✅ Redirection vers Stripe en cours (campagne PAS ENCORE créée)...');
     } catch (error) {
       console.error('❌ Erreur lors de la redirection vers Stripe:', error);
+      localStorage.removeItem('pendingCampaignData');
       setPendingCampaignData(null);
       toast({
         title: "Erreur",
@@ -47,8 +52,8 @@ export const useCampaignFormSubmission = (
     // Créer la campagne directement finalisée car la carte est déjà validée
     const campaignId = await createCampaign({
       ...campaignData,
-      isDraft: false, // Directement finalisée
-      paymentConfigured: true, // Paiement configuré
+      isDraft: false,
+      paymentConfigured: true,
       defaultCommissionRate: 10,
       stripePaymentMethodId: cardId,
     });
@@ -62,7 +67,7 @@ export const useCampaignFormSubmission = (
     setLoading(true);
 
     try {
-      console.log('🎯 NOUVEAU FLOW: Validation paiement AVANT création campagne...');
+      console.log('🎯 NOUVEAU FLOW: Validation AVANT création de campagne...');
       
       if (!formData.name) {
         throw new Error('Le nom de la campagne est requis');
@@ -94,7 +99,7 @@ export const useCampaignFormSubmission = (
       console.log('💳 Cartes disponibles:', availableCards.length);
       
       if (availableCards.length === 0) {
-        console.log('💳 NOUVEAU FLOW: Aucune carte → Redirection Stripe (campagne créée après validation)');
+        console.log('💳 NOUVEAU FLOW: Aucune carte → Redirection Stripe (PAS de création campagne)');
         await redirectToStripeForNewCard(formData);
         return;
       }
@@ -108,14 +113,11 @@ export const useCampaignFormSubmission = (
           description: "Votre campagne est maintenant active.",
         });
         
-        // Déclencher la modale de succès
-        // (sera géré par le composant parent)
-        
         setLoading(false);
-        return;
+        return { success: true, campaignId };
       }
 
-      console.log('💳 NOUVEAU FLOW: Plusieurs cartes → Sélecteur (toutes sont validées)');
+      console.log('💳 NOUVEAU FLOW: Plusieurs cartes → Sélecteur (PAS de création campagne)');
       setPendingCampaignData(formData);
       setShowPaymentSelector(true);
       setLoading(false);
@@ -124,7 +126,7 @@ export const useCampaignFormSubmission = (
       console.error('❌ Erreur dans le nouveau flow:', error);
       toast({
         title: "Erreur",
-        description: error.message || "Impossible de créer la campagne",
+        description: error.message || "Impossible de traiter la demande",
         variant: "destructive",
       });
       setLoading(false);
