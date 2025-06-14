@@ -1,3 +1,4 @@
+
 import { collection, query, where, getDocs, addDoc, updateDoc, deleteDoc, doc, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Campaign } from '@/types';
@@ -117,7 +118,14 @@ export const finalizeCampaignInFirestore = async (
     // Fallback: essayer la méthode directe Firebase
     console.log('🔄 FINALIZE: Tentative fallback avec Firebase direct...');
     
-    const updateData = {
+    const updateData: {
+      isDraft: boolean;
+      paymentConfigured: boolean;
+      stripeCustomerId: string;
+      stripeSetupIntentId: string;
+      stripePaymentMethodId?: string;
+      updatedAt: any;
+    } = {
       isDraft: false,
       paymentConfigured: true,
       stripeCustomerId: stripeData.customerId,
