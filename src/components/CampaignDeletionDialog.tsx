@@ -13,7 +13,7 @@ import {
   PaymentDistribution,
   LastPaymentInfo 
 } from '@/services/stripeConnectService';
-import { stripeInvoiceService } from '@/services/stripeInvoiceService';
+import { StripeInvoiceService } from '@/services/stripeInvoiceService';
 import { useAuth } from '@/hooks/useAuth';
 import { CampaignInfoSection } from '@/components/campaign-deletion/CampaignInfoSection';
 import { LoadingSection } from '@/components/campaign-deletion/LoadingSection';
@@ -104,7 +104,7 @@ export const CampaignDeletionDialog = ({
       if (distribution.platformFee > 0) {
         console.log('💳 Création facture Stripe pour commission RefSpring:', distribution.platformFee);
         
-        const invoiceResult = await stripeInvoiceService.createAndSendInvoice({
+        const invoiceResult = await StripeInvoiceService.createAndSendInvoice({
           userEmail: user.email!,
           amount: Math.round(distribution.platformFee * 100), // Convertir en centimes
           description: `Commission RefSpring - Suppression campagne "${campaign.name}"`,
