@@ -38,27 +38,37 @@ export const useCampaignCardSelection = (
       
       console.log('✅ 🐛 DEBUG: Campagne créée avec succès avec la carte existante. ID:', campaignId);
       
-      // 🎉 Fermer le sélecteur de paiement EN PREMIER
+      // 🎉 ÉTAPE 1 : Fermer le sélecteur de paiement EN PREMIER
       console.log('💳 🐛 DEBUG: Fermeture du sélecteur de paiement...');
       setShowPaymentSelector(false);
       
-      // 🎉 Déclencher les confettis
+      // 🎉 ÉTAPE 2 : Attendre un peu pour que la fermeture soit effective
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      // 🎉 ÉTAPE 3 : Définir les données de la campagne créée
+      console.log('📋 🐛 DEBUG: Définition des données de campagne créée...');
+      setCreatedCampaign({ id: campaignId, name: pendingCampaignData.name });
+      
+      // 🎉 ÉTAPE 4 : Attendre encore un peu
+      await new Promise(resolve => setTimeout(resolve, 50));
+      
+      // 🎉 ÉTAPE 5 : Déclencher les confettis ET la modale de succès
       console.log('🎉 🐛 DEBUG: Déclenchement des confettis...');
       setShowConfetti(true);
       
-      // 📋 CORRECTION CRITIQUE : Définir les états manuellement et attendre un peu
-      console.log('📋 🐛 DEBUG: Définition manuelle des états de succès...');
-      setCreatedCampaign({ id: campaignId, name: pendingCampaignData.name });
+      console.log('📋 🐛 DEBUG: Affichage de la modale de succès...');
       setShowSuccessModal(true);
+      
+      // 🎉 ÉTAPE 6 : Attendre que la modale soit bien affichée
+      await new Promise(resolve => setTimeout(resolve, 100));
       
       toast({
         title: "Campagne créée avec succès !",
         description: "Votre campagne est maintenant active avec la carte sélectionnée.",
       });
       
-      // 🚨 CORRECTION CRITIQUE : NE PAS fermer la modale principale tout de suite
-      // Retourner un signal SANS fermer la modale pour que la modale de succès puisse s'afficher
-      console.log('💳 🐛 DEBUG: Retour du signal de succès SANS fermeture...');
+      // 🚨 CORRECTION CRITIQUE : Retourner le signal pour garder la modale principale ouverte
+      console.log('💳 🐛 DEBUG: Retour du signal de succès AVEC modale principale ouverte...');
       return { success: true, keepMainModalOpen: true };
       
     } catch (error: any) {

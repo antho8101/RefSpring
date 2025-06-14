@@ -42,10 +42,16 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
     showSuccessModal,
     createdCampaign,
     showPaymentSelector,
-    showConfetti
+    showConfetti,
+    open
   });
 
   const resetDialog = () => {
+    // 🚨 PROTECTION : Ne pas reset si la modale de succès est affichée
+    if (showSuccessModal) {
+      console.log('🐛 CreateCampaignDialog - Reset bloqué car modale de succès affichée');
+      return;
+    }
     resetForm();
     setOpen(false);
   };
@@ -53,7 +59,6 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
   const onSubmit = async (e: React.FormEvent) => {
     try {
       await handleSubmit(e);
-      // Plus de toast de redirection ici - il était inutile et confus
     } catch (error: any) {
       toast({
         title: "Erreur",
@@ -68,21 +73,30 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
     const result = await handleCardSelection(cardId);
     console.log('🐛 CreateCampaignDialog - Résultat de handleCardSelection:', result);
     
-    // 🚨 CORRECTION CRITIQUE : Ne fermer la modale principale QUE si on n'a pas keepMainModalOpen
-    if (result?.success && !result?.keepMainModalOpen) {
+    // 🚨 IMPORTANT : Ne jamais fermer la modale principale si on a keepMainModalOpen
+    if (result?.success && result?.keepMainModalOpen) {
+      console.log('🐛 CreateCampaignDialog - Modale principale gardée ouverte pour la modale de succès');
+      // Ne rien faire, laisser la modale principale ouverte
+    } else if (result?.success) {
       console.log('🐛 CreateCampaignDialog - Fermeture de la modale principale...');
       setOpen(false);
-    } else if (result?.keepMainModalOpen) {
-      console.log('🐛 CreateCampaignDialog - Modale principale gardée ouverte pour afficher la modale de succès');
     }
   };
 
   const handleSuccessModalClose = () => {
     console.log('🐛 CreateCampaignDialog - handleSuccessModalClose appelé');
+    
+    // 🚨 ÉTAPE 1 : Fermer la modale de succès
     setShowSuccessModal(false);
-    resetForm();
-    // 🚨 MAINTENANT on peut fermer la modale principale
-    setOpen(false);
+    
+    // 🚨 ÉTAPE 2 : Arrêter les confettis
+    setShowConfetti(false);
+    
+    // 🚨 ÉTAPE 3 : Attendre un peu puis reset et fermer
+    setTimeout(() => {
+      resetForm();
+      setOpen(false);
+    }, 100);
   };
 
   return (
@@ -94,10 +108,19 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
       />
       
       <Dialog open={open} onOpenChange={(isOpen) => {
-        if (!isOpen && !showSuccessModal) {
-          // Ne fermer que si la modale de succès n'est pas affichée
-          resetDialog();
-        } else if (isOpen) {
+        console.log('🐛 CreateCampaignDialog - onOpenChange appelé avec:', isOpen, 'showSuccessModal:', showSuccessModal);
+        
+        if (!isOpen) {
+          // 🚨 PROTECTION : Ne fermer que si la modale de succès n'est pas affichée
+          if (!showSuccessModal) {
+            console.log('🐛 CreateCampaignDialog - Fermeture autorisée');
+            resetDialog();
+          } else {
+            console.log('🐛 CreateCampaignDialog - Fermeture bloquée car modale de succès affichée');
+            // Forcer la modale à rester ouverte
+            setOpen(true);
+          }
+        } else {
           setOpen(true);
         }
       }}>
@@ -163,7 +186,7 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
         loading={loading || paymentLoading}
       />
 
-      {/* 📋 NOUVEAU : Modale avec les scripts d'intégration */}
+      {/* 📋 Modale de succès avec protection contre la fermeture prématurée */}
       {createdCampaign && (
         <>
           {console.log('🐛 CreateCampaignDialog - Rendu de CampaignSuccessModal avec:', {
