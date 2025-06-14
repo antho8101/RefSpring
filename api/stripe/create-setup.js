@@ -50,28 +50,23 @@ export default async function handler(req, res) {
     const origin = req.headers.origin || req.headers.host;
     const baseUrl = origin ? (origin.startsWith('http') ? origin : `https://${origin}`) : 'https://refspring.com';
 
-    console.log('🔄 CREATE-SETUP: Création session checkout avec customer forcé');
+    console.log('🔄 CREATE-SETUP: Création session checkout simplifiée');
 
-    // Créer une session Checkout pour SetupIntent avec customer forcé
+    // Créer une session Checkout simple pour SetupIntent
     const session = await stripe.checkout.sessions.create({
-      customer: customerId, // FORCER le customer
+      customer: customerId,
       mode: 'setup',
       currency: 'eur',
-      payment_method_options: {
-        card: {
-          setup_future_usage: 'off_session'
-        }
-      },
       success_url: `${baseUrl}/payment-success?setup_intent={CHECKOUT_SESSION_ID}&campaign_id=${campaignId}`,
       cancel_url: `${baseUrl}/dashboard`,
       metadata: {
         campaign_id: campaignId,
         campaign_name: campaignName,
-        customer_id: customerId // Ajouter aussi dans les metadata
+        customer_id: customerId
       }
     });
 
-    console.log('✅ CREATE-SETUP: Session créée avec customer forcé:', {
+    console.log('✅ CREATE-SETUP: Session créée:', {
       sessionId: session.id,
       customerId: customerId,
       customerInSession: session.customer
