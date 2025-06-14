@@ -50,19 +50,14 @@ export default async function handler(req, res) {
     const origin = req.headers.origin || req.headers.host;
     const baseUrl = origin ? (origin.startsWith('http') ? origin : `https://${origin}`) : 'https://refspring.com';
 
-    console.log('🔄 CREATE-SETUP: Création session checkout avec cartes classiques forcées');
+    console.log('🔄 CREATE-SETUP: Création session checkout avec cartes classiques seulement');
 
-    // Créer une session Checkout en FORÇANT les cartes classiques
+    // Créer une session Checkout en mode setup SANS setup_future_usage
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       mode: 'setup',
       currency: 'eur',
-      payment_method_types: ['card'], // Force uniquement les cartes classiques
-      payment_method_options: {
-        card: {
-          setup_future_usage: 'off_session' // Force l'attachement pour usage futur
-        }
-      },
+      payment_method_types: ['card'], // Force uniquement les cartes classiques (pas de Link)
       success_url: `${baseUrl}/payment-success?setup_intent={CHECKOUT_SESSION_ID}&campaign_id=${campaignId}`,
       cancel_url: `${baseUrl}/dashboard`,
       metadata: {
