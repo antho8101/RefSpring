@@ -27,6 +27,7 @@ export const useCampaignFormState = () => {
   };
 
   const resetForm = () => {
+    console.log('🔥 FINAL: resetForm appelé - remise à zéro des états');
     setFormData({ name: '', description: '', targetUrl: '', isActive: true });
     setPendingCampaignData(null);
     setShowPaymentSelector(false);
@@ -36,9 +37,32 @@ export const useCampaignFormState = () => {
   };
 
   const triggerSuccessModal = (campaignId: string, campaignName: string) => {
+    console.log('🔥 FINAL: triggerSuccessModal appelé avec:', { campaignId, campaignName });
+    console.log('🔥 FINAL: États AVANT triggerSuccessModal:', {
+      showSuccessModal,
+      createdCampaign,
+      showConfetti
+    });
+    
     setCreatedCampaign({ id: campaignId, name: campaignName });
+    console.log('🔥 FINAL: setCreatedCampaign appelé avec:', { id: campaignId, name: campaignName });
+    
     setShowSuccessModal(true);
+    console.log('🔥 FINAL: setShowSuccessModal appelé avec: true');
+    
     setShowConfetti(true);
+    console.log('🔥 FINAL: setShowConfetti appelé avec: true');
+    
+    console.log('🔥 FINAL: triggerSuccessModal terminé - tous les setters appelés');
+    
+    // Forcer un re-render pour s'assurer que les changements d'état sont pris en compte
+    setTimeout(() => {
+      console.log('🔥 FINAL: Vérification post-trigger:', {
+        showSuccessModal,
+        createdCampaign,
+        showConfetti
+      });
+    }, 50);
   };
 
   return {
@@ -63,3 +87,4 @@ export const useCampaignFormState = () => {
     triggerSuccessModal,
   };
 };
+

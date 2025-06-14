@@ -1,5 +1,5 @@
 
-import { useState, ReactNode } from 'react';
+import { useState, ReactNode, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Plus, CreditCard, Loader2 } from 'lucide-react';
@@ -38,13 +38,16 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
     setShowSuccessModal,
   } = useCampaignForm();
 
-  console.log('🔥 FINAL: CreateCampaignDialog - État actuel:', {
-    showSuccessModal,
-    createdCampaign,
-    showPaymentSelector,
-    showConfetti,
-    open
-  });
+  // Logger les changements d'état
+  useEffect(() => {
+    console.log('🔥 FINAL: CreateCampaignDialog - État mis à jour:', {
+      showSuccessModal,
+      createdCampaign,
+      showPaymentSelector,
+      showConfetti,
+      open
+    });
+  }, [showSuccessModal, createdCampaign, showPaymentSelector, showConfetti, open]);
 
   const resetDialog = () => {
     resetForm();
@@ -176,15 +179,26 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
         loading={loading || paymentLoading}
       />
 
-      {/* 🔥 FINAL: Modale de succès rendue conditionnellement */}
-      {createdCampaign && showSuccessModal && (
-        <CampaignSuccessModal
-          open={showSuccessModal}
-          onOpenChange={handleSuccessModalClose}
-          campaignId={createdCampaign.id}
-          campaignName={createdCampaign.name}
-        />
-      )}
+      {/* 🔥 FINAL: Modale de succès avec logs détaillés */}
+      {(() => {
+        console.log('🔥 FINAL: Rendu conditionnel - createdCampaign:', createdCampaign, 'showSuccessModal:', showSuccessModal);
+        
+        if (createdCampaign && showSuccessModal) {
+          console.log('🔥 FINAL: Conditions remplies - rendu de CampaignSuccessModal');
+          return (
+            <CampaignSuccessModal
+              open={showSuccessModal}
+              onOpenChange={handleSuccessModalClose}
+              campaignId={createdCampaign.id}
+              campaignName={createdCampaign.name}
+            />
+          );
+        } else {
+          console.log('🔥 FINAL: Conditions NON remplies - PAS de rendu de CampaignSuccessModal');
+          return null;
+        }
+      })()}
     </>
   );
 };
+

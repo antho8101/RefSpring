@@ -1,4 +1,5 @@
 
+
 import { useCampaigns } from '@/hooks/useCampaigns';
 import { useToast } from '@/hooks/use-toast';
 import { CampaignFormData } from './useCampaignFormState';
@@ -40,11 +41,17 @@ export const useCampaignCardSelection = (
       // ÉTAPE 1: Fermer immédiatement le sélecteur
       setShowPaymentSelector(false);
       
-      // ÉTAPE 2: IMMÉDIATEMENT définir les états pour la modale de succès
-      console.log('🔥 FINAL: Définition IMMÉDIATE des états de succès');
-      setCreatedCampaign({ id: campaignId, name: pendingCampaignData.name });
-      setShowSuccessModal(true);
-      setShowConfetti(true);
+      console.log('🔥 FINAL: AVANT triggerSuccessModal - campaignId:', campaignId, 'campaignName:', pendingCampaignData.name);
+      
+      // ÉTAPE 2: Déclencher la modale de succès via triggerSuccessModal
+      console.log('🔥 FINAL: Appel de triggerSuccessModal...');
+      triggerSuccessModal(campaignId, pendingCampaignData.name);
+      console.log('🔥 FINAL: triggerSuccessModal appelé - en cours...');
+      
+      // Attendre un peu pour s'assurer que les états sont définis
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      console.log('🔥 FINAL: Après délai - États devraient être définis maintenant');
       
       toast({
         title: "Campagne créée avec succès !",
@@ -88,3 +95,4 @@ export const useCampaignCardSelection = (
     handleAddNewCard,
   };
 };
+
