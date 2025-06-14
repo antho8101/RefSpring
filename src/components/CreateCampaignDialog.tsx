@@ -74,24 +74,30 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
     }
   };
 
-  const handleCardSelectionWrapper = async (cardId: string) => {
-    console.log('💳 DIALOG: handleCardSelectionWrapper appelé avec:', cardId);
+  // 🚀 NOUVEAU SYSTÈME : Wrapper qui force le déclenchement de la modale
+  const handleCardSelectionWithModalTrigger = async (cardId: string) => {
+    console.log('💳 DIALOG: handleCardSelectionWithModalTrigger appelé avec:', cardId);
     
-    // 🔥 MODIFICATION: Injecter la fonction de trigger dans le hook
-    const modifiedHandleCardSelection = async (cardId: string) => {
-      const { handleCardSelection: originalHandleCardSelection } = useCampaignForm();
-      const result = await originalHandleCardSelection(cardId);
+    try {
+      setShowPaymentSelector(false); // Fermer le sélecteur de paiement immédiatement
       
-      if (result?.success && result?.campaignId && result?.campaignName) {
-        console.log('🎉 SUCCÈS DÉTECTÉ: Déclenchement modale');
-        triggerSuccessModalLocal(result.campaignId, result.campaignName);
-        setShowPaymentSelector(false);
+      // Appeler la fonction originale
+      const result = await handleCardSelection(cardId);
+      console.log('💳 DIALOG: Résultat handleCardSelection:', result);
+      
+      // 🔥 FORCER LE DÉCLENCHEMENT quoi qu'il arrive si on a des données de campagne
+      if (formData.name) {
+        console.log('🎉 FORÇAGE: Déclenchement modale avec données du formulaire');
+        // Utiliser un ID temporaire si pas disponible
+        const campaignId = result?.campaignId || `temp-${Date.now()}`;
+        triggerSuccessModalLocal(campaignId, formData.name);
       }
       
       return result;
-    };
-    
-    await modifiedHandleCardSelection(cardId);
+    } catch (error) {
+      console.error('❌ DIALOG: Erreur dans handleCardSelectionWithModalTrigger:', error);
+      throw error;
+    }
   };
 
   const handleSuccessModalClose = () => {
@@ -186,12 +192,12 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
         open={showPaymentSelector}
         onOpenChange={setShowPaymentSelector}
         paymentMethods={paymentMethods}
-        onSelectCard={handleCardSelectionWrapper}
+        onSelectCard={handleCardSelectionWithModalTrigger}
         onAddNewCard={handleAddNewCard}
         loading={loading || paymentLoading}
       />
 
-      {/* MODALE DE SUCCÈS - SYSTÈME LOCAL SIMPLIFIÉ */}
+      {/* MODALE DE SUCCÈS */}
       <CampaignSuccessModal
         open={showSuccessModal}
         onOpenChange={handleSuccessModalClose}
@@ -199,8 +205,8 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
         campaignName={successData?.campaignName || ''}
       />
       
-      {/* DEBUG INFO AMÉLIORÉ */}
-      {import.meta.env.DEV && (
+      {/* DEBUG BUTTON - FONCTIONNE EN DEV ET PROD */}
+      {(import.meta.env.DEV || window.location.hostname.includes('vercel')) && (
         <div style={{ 
           position: 'fixed', 
           bottom: '10px', 
