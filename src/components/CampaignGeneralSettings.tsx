@@ -1,18 +1,15 @@
 
-import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Switch } from '@/components/ui/switch';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertTriangle, Pause } from 'lucide-react';
+import { Pause } from 'lucide-react';
 import { Campaign } from '@/types';
 import { CriticalActionConfirmDialog } from '@/components/CriticalActionConfirmDialog';
 import { PaymentMethodSelector } from '@/components/PaymentMethodSelector';
-import { useCampaigns } from '@/hooks/useCampaigns';
-import { usePaymentMethods } from '@/hooks/usePaymentMethods';
-import { useToast } from '@/hooks/use-toast';
+import { CampaignBasicFields } from '@/components/CampaignBasicFields';
+import { CampaignStatusSection } from '@/components/CampaignStatusSection';
+import { usePaymentVerification } from '@/hooks/usePaymentVerification';
+import { useCriticalActionConfirm } from '@/hooks/useCriticalActionConfirm';
+import { useCampaignFormHandlers } from '@/hooks/useCampaignFormHandlers';
 
 interface CampaignGeneralSettingsProps {
   campaign: Campaign;
@@ -40,119 +37,53 @@ export const CampaignGeneralSettings = ({
   onSubmit,
   onCancel,
 }: CampaignGeneralSettingsProps) => {
-  const [confirmDialog, setConfirmDialog] = useState<{
-    open: boolean;
-    title: string;
-    description: string;
-    action: () => void;
-    confirmText?: string;
-    variant?: 'warning' | 'danger';
-  }>({
-    open: false,
-    title: '',
-    description: '',
-    action: () => {},
-  });
+  const {
+    showPaymentSelector,
+    setShowPaymentSelector,
+    paymentMethods,
+    paymentMethodsLoading,
+    verifyPaymentForReactivation,
+    handleCardSelection,
+    handleAddNewCard,
+  } = usePaymentVerification();
 
-  const [showPaymentSelector, setShowPaymentSelector] = useState(false);
+  const {
+    confirmDialog,
+    showConfirmDialog,
+    closeConfirmDialog,
+  } = useCriticalActionConfirm();
 
-  const { updateCampaign } = useCampaigns();
-  const { paymentMethods, loading: paymentMethodsLoading, refreshPaymentMethods } = usePaymentMethods();
-  const { toast } = useToast();
+  const {
+    handleTargetUrlChange,
+    handleCommissionRateChange,
+    saveStatusChange,
+  } = useCampaignFormHandlers(
+    campaign,
+    formData,
+    initialTargetUrl,
+    onFormDataChange,
+    showConfirmDialog
+  );
 
   const hasTargetUrlChanged = formData.targetUrl !== initialTargetUrl;
   const hasCommissionChanged = formData.defaultCommissionRate !== campaign.defaultCommissionRate;
   const hasStatusChanged = formData.isActive !== campaign.isActive;
 
-  const handleCriticalChange = (
-    field: string,
-    value: any,
-    title: string,
-    description: string,
-    confirmText?: string,
-    variant?: 'warning' | 'danger'
-  ) => {
-    setConfirmDialog({
-      open: true,
-      title,
-      description,
-      confirmText,
-      variant,
-      action: () => onFormDataChange({ ...formData, [field]: value })
-    });
-  };
-
-  const handleTargetUrlChange = (newUrl: string) => {
-    if (newUrl !== initialTargetUrl && initialTargetUrl) {
-      handleCriticalChange(
-        'targetUrl',
-        newUrl,
-        'Changer l\'URL de destination',
-        'Cette action va modifier l\'URL vers laquelle les affiliés redirigent leurs visiteurs. Assurez-vous d\'ajouter le script de tracking sur la nouvelle page.',
-        'Changer l\'URL'
-      );
-    } else {
-      onFormDataChange({ ...formData, targetUrl: newUrl });
-    }
-  };
-
-  const handleCommissionRateChange = (newRate: number) => {
-    if (newRate !== campaign.defaultCommissionRate) {
-      handleCriticalChange(
-        'defaultCommissionRate',
-        newRate,
-        'Modifier le taux de commission',
-        'Cette modification changera le taux de commission par défaut pour les nouveaux affiliés. Les affiliés existants conserveront leur taux actuel.',
-        'Modifier le taux'
-      );
-    } else {
-      onFormDataChange({ ...formData, defaultCommissionRate: newRate });
-    }
-  };
-
   const handleStatusChange = async (isActive: boolean) => {
     if (!isActive && campaign.isActive) {
       // Désactivation : procédure normale
-      handleCriticalChange(
-        'isActive',
-        isActive,
+      showConfirmDialog(
         'Désactiver la campagne',
         'Cette action va désactiver tous les liens de tracking de la campagne. Les affiliés ne pourront plus générer de nouveaux clics ou conversions.',
+        () => saveStatusChange(isActive),
         'Désactiver',
         'warning'
       );
     } else if (isActive && !campaign.isActive) {
       // Réactivation : VÉRIFIER LES CARTES D'ABORD !
-      console.log('🔄 Tentative de réactivation - vérification des cartes...');
-      
-      try {
-        // Actualiser les cartes disponibles
-        await refreshPaymentMethods();
-        
-        if (paymentMethods.length === 0) {
-          console.log('❌ Aucune carte disponible pour la réactivation');
-          toast({
-            title: "Impossible de réactiver",
-            description: "Vous devez d'abord ajouter une carte bancaire pour réactiver cette campagne.",
-            variant: "destructive",
-          });
-          
-          // Afficher le sélecteur de cartes pour ajouter une carte
-          setShowPaymentSelector(true);
-          return;
-        }
-        
-        console.log('✅ Cartes disponibles, réactivation possible');
-        // Procéder à la réactivation normale
+      const canReactivate = await verifyPaymentForReactivation(campaign.id, formData, onFormDataChange);
+      if (canReactivate) {
         saveStatusChange(isActive);
-        
-      } catch (error) {
-        console.error('❌ Erreur lors de la vérification des cartes:', error);
-        toast({
-          title: "Erreur",
-          description: "Impossible de vérifier les cartes bancaires",
-          variant: "destructive",
-        });
       }
     } else {
       // Pas de changement de statut
@@ -160,75 +91,8 @@ export const CampaignGeneralSettings = ({
     }
   };
 
-  const saveStatusChange = async (isActive: boolean) => {
-    try {
-      console.log('🔄 Sauvegarde du statut:', { campaignId: campaign.id, isActive });
-      
-      // Utiliser directement updateCampaign pour une sauvegarde immédiate
-      await updateCampaign(campaign.id, { isActive });
-      
-      // Mettre à jour le formData local
-      onFormDataChange({ ...formData, isActive });
-      
-      toast({
-        title: isActive ? "✅ Campagne activée" : "⏸️ Campagne désactivée",
-        description: isActive ? 
-          "Votre campagne est maintenant active et accepte les nouveaux clics !" :
-          "Votre campagne est maintenant en pause.",
-      });
-      
-    } catch (error) {
-      console.error('❌ Erreur lors de la sauvegarde du statut:', error);
-      
-      toast({
-        title: "❌ Erreur",
-        description: "Impossible de modifier le statut de la campagne",
-        variant: "destructive",
-      });
-      
-      // En cas d'erreur, revenir à l'état précédent
-      onFormDataChange({ ...formData, isActive: campaign.isActive });
-    }
-  };
-
-  const handleCardSelection = async (cardId: string) => {
-    try {
-      console.log('💳 Association de la carte', cardId, 'à la campagne', campaign.id);
-      
-      // Mettre à jour la campagne avec la nouvelle carte ET l'activer
-      await updateCampaign(campaign.id, {
-        stripePaymentMethodId: cardId,
-        isActive: true,
-      });
-      
-      // Mettre à jour le formData local
-      onFormDataChange({ ...formData, isActive: true });
-      
-      setShowPaymentSelector(false);
-      
-      toast({
-        title: "✅ Parfait !",
-        description: "La carte a été associée et la campagne a été réactivée !",
-      });
-      
-    } catch (error: any) {
-      console.error('❌ Erreur association carte:', error);
-      toast({
-        title: "Erreur",
-        description: error.message || "Impossible d'associer la carte à la campagne",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleAddNewCard = () => {
-    // Rediriger vers Stripe pour ajouter une carte
-    // TODO: Implémenter la redirection vers Stripe
-    setShowPaymentSelector(false);
-    toast({
-      title: "Redirection Stripe",
-      description: "Fonctionnalité d'ajout de carte à implémenter",
-    });
+  const handleCardSelectionWrapper = async (cardId: string) => {
+    await handleCardSelection(cardId, campaign.id, formData, onFormDataChange);
   };
 
   return (
@@ -246,94 +110,22 @@ export const CampaignGeneralSettings = ({
             </Alert>
           )}
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <Label htmlFor="name">Nom de la campagne</Label>
-              <Input
-                id="name"
-                value={formData.name}
-                onChange={(e) => onFormDataChange({ ...formData, name: e.target.value })}
-                placeholder="Ex: Programme d'affiliation 2024"
-                required
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="defaultCommissionRate">Taux de commission par défaut (%)</Label>
-              <Input
-                id="defaultCommissionRate"
-                type="number"
-                min="0"
-                max="100"
-                step="0.1"
-                value={formData.defaultCommissionRate}
-                onChange={(e) => handleCommissionRateChange(parseFloat(e.target.value))}
-                required
-              />
-              {hasCommissionChanged && (
-                <p className="text-xs text-orange-600">
-                  ⚠️ Ce changement affectera uniquement les nouveaux affiliés
-                </p>
-              )}
-            </div>
-          </div>
+          <CampaignBasicFields
+            formData={formData}
+            hasCommissionChanged={hasCommissionChanged}
+            hasTargetUrlChanged={hasTargetUrlChanged}
+            onFormDataChange={onFormDataChange}
+            onTargetUrlChange={handleTargetUrlChange}
+            onCommissionRateChange={handleCommissionRateChange}
+          />
           
-          <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
-            <Textarea
-              id="description"
-              value={formData.description}
-              onChange={(e) => onFormDataChange({ ...formData, description: e.target.value })}
-              placeholder="Description de votre campagne d'affiliation..."
-              rows={4}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="targetUrl">URL de destination</Label>
-            <Input
-              id="targetUrl"
-              value={formData.targetUrl}
-              onChange={(e) => handleTargetUrlChange(e.target.value)}
-              placeholder="https://monsite.com/produit"
-              required
-            />
-            {hasTargetUrlChanged && (
-              <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 flex items-start gap-3">
-                <AlertTriangle className="h-5 w-5 text-orange-600 mt-0.5 flex-shrink-0" />
-                <div className="text-sm">
-                  <p className="text-orange-800 font-medium">Attention - URL modifiée</p>
-                  <p className="text-orange-700">
-                    N'oubliez pas d'ajouter le script de tracking à la nouvelle page de destination pour continuer à traquer les conversions.
-                  </p>
-                </div>
-              </div>
-            )}
-          </div>
-          
-          <div className={`flex items-center justify-between py-4 px-4 rounded-lg transition-colors ${
-            formData.isActive 
-              ? 'bg-green-50 border border-green-200' 
-              : 'bg-orange-50 border border-orange-200'
-          }`}>
-            <div className="space-y-0.5">
-              <Label htmlFor="isActive">Campagne active</Label>
-              <p className="text-sm text-muted-foreground">
-                Les campagnes inactives n'acceptent plus de nouveaux clics
-              </p>
-              {hasStatusChanged && !formData.isActive && (
-                <p className="text-xs text-orange-600">
-                  ⚠️ Cette action va désactiver tous les liens de tracking
-                </p>
-              )}
-            </div>
-            <Switch
-              id="isActive"
-              checked={formData.isActive}
-              onCheckedChange={handleStatusChange}
-              disabled={paymentMethodsLoading}
-            />
-          </div>
+          <CampaignStatusSection
+            campaign={campaign}
+            formData={formData}
+            hasStatusChanged={hasStatusChanged}
+            onStatusChange={handleStatusChange}
+            paymentMethodsLoading={paymentMethodsLoading}
+          />
         </div>
 
         <div className="flex justify-end pt-6 border-t">
@@ -350,7 +142,7 @@ export const CampaignGeneralSettings = ({
 
       <CriticalActionConfirmDialog
         open={confirmDialog.open}
-        onOpenChange={(open) => setConfirmDialog(prev => ({ ...prev, open }))}
+        onOpenChange={closeConfirmDialog}
         title={confirmDialog.title}
         description={confirmDialog.description}
         confirmText={confirmDialog.confirmText}
@@ -362,7 +154,7 @@ export const CampaignGeneralSettings = ({
         open={showPaymentSelector}
         onOpenChange={setShowPaymentSelector}
         paymentMethods={paymentMethods}
-        onSelectCard={handleCardSelection}
+        onSelectCard={handleCardSelectionWrapper}
         onAddNewCard={handleAddNewCard}
         loading={paymentMethodsLoading}
       />
