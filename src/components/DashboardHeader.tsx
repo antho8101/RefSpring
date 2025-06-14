@@ -50,8 +50,8 @@ export const DashboardHeader = ({ user, onLogout, period, onPeriodChange }: Dash
           {/* Desktop Navigation - Hidden on mobile to prevent overflow */}
           <div className="hidden lg:flex items-center space-x-3 xl:space-x-4 flex-shrink-0">
             <AccountSettingsDialog>
-              <button className="flex items-center gap-2 text-sm text-slate-700 bg-white/80 backdrop-blur-sm px-3 py-2 rounded-full border border-slate-200 hover:bg-white/95 hover:border-slate-300 transition-all duration-300 hover:scale-105 hover:shadow-lg max-w-[250px] truncate">
-                <span className="truncate">Bonjour, <span className="font-semibold">{user?.displayName || user?.email}</span></span>
+              <button className="flex items-center gap-2 text-sm text-slate-700 bg-white/80 backdrop-blur-sm px-3 py-2 rounded-full border border-slate-200 hover:bg-white/95 hover:border-slate-300 transition-all duration-300 hover:scale-105 hover:shadow-lg min-w-0">
+                <span className="whitespace-nowrap">Bonjour, <span className="font-semibold">{user?.displayName || user?.email}</span></span>
                 <Settings className="h-4 w-4 text-slate-500 flex-shrink-0" />
               </button>
             </AccountSettingsDialog>
@@ -88,7 +88,7 @@ export const DashboardHeader = ({ user, onLogout, period, onPeriodChange }: Dash
             <div className="py-4 space-y-3 px-2">
               <AccountSettingsDialog>
                 <button className="flex items-center gap-2 text-sm text-slate-700 px-3 py-2 bg-slate-50 rounded-lg w-full hover:bg-slate-100 transition-colors min-w-0">
-                  <span className="truncate flex-1 text-left">Bonjour, <span className="font-semibold">{user?.displayName || user?.email}</span></span>
+                  <span className="flex-1 text-left whitespace-nowrap overflow-hidden">Bonjour, <span className="font-semibold">{user?.displayName || user?.email}</span></span>
                   <Settings className="h-4 w-4 text-slate-500 flex-shrink-0" />
                 </button>
               </AccountSettingsDialog>
