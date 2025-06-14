@@ -1,4 +1,3 @@
-
 import { collection, query, where, getDocs, addDoc, updateDoc, deleteDoc, doc, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Campaign } from '@/types';
@@ -83,21 +82,59 @@ export const updateCampaignInFirestore = async (
 };
 
 export const finalizeCampaignInFirestore = async (
-  campaignId: string,
-  stripeData: { customerId: string; setupIntentId: string }
+  campaignId: string, 
+  stripeData: { customerId: string; setupIntentId: string; paymentMethodId?: string }
 ) => {
-  console.log('🎯 Finalisation de campagne:', campaignId);
+  console.log('🔥 FINALIZE: Finalisation de la campagne:', campaignId);
+  console.log('🔥 FINALIZE: Données Stripe:', stripeData);
   
-  const campaignRef = doc(db, 'campaigns', campaignId);
-  await updateDoc(campaignRef, {
-    isDraft: false,
-    paymentConfigured: true,
-    stripeCustomerId: stripeData.customerId,
-    stripeSetupIntentId: stripeData.setupIntentId,
-    updatedAt: serverTimestamp(),
-  });
-  
-  console.log('✅ Campagne finalisée');
+  try {
+    // Utiliser l'API Vercel pour finaliser via Firebase Admin
+    const response = await fetch('/api/finalize-campaign', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        campaignId,
+        stripeCustomerId: stripeData.customerId,
+        stripePaymentMethodId: stripeData.paymentMethodId,
+        setupIntentId: stripeData.setupIntentId
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`Erreur API: ${response.status}`);
+    }
+
+    const result = await response.json();
+    console.log('✅ FINALIZE: Campagne finalisée avec succès via API');
+    
+    return result;
+  } catch (error) {
+    console.error('❌ FINALIZE: Erreur lors de la finalisation:', error);
+    
+    // Fallback: essayer la méthode directe Firebase
+    console.log('🔄 FINALIZE: Tentative fallback avec Firebase direct...');
+    
+    const updateData = {
+      isDraft: false,
+      paymentConfigured: true,
+      stripeCustomerId: stripeData.customerId,
+      stripeSetupIntentId: stripeData.setupIntentId,
+      updatedAt: serverTimestamp(),
+    };
+
+    if (stripeData.paymentMethodId) {
+      updateData.stripePaymentMethodId = stripeData.paymentMethodId;
+    }
+
+    const campaignRef = doc(db, 'campaigns', campaignId);
+    await updateDoc(campaignRef, updateData);
+    
+    console.log('✅ FINALIZE: Campagne finalisée avec fallback Firebase');
+    return { success: true, method: 'fallback' };
+  }
 };
 
 export const deleteCampaignFromFirestore = async (

@@ -75,7 +75,11 @@ export const useStripePayment = () => {
       const result = await response.json();
       console.log('✅ STRIPE: Setup vérifié et finalisé:', result);
       
-      return result;
+      // **IMPORTANT: Retourner aussi le paymentMethodId pour la finalisation**
+      return {
+        ...result,
+        paymentMethodId: result.paymentMethodId
+      };
     } catch (err: any) {
       console.error('❌ STRIPE: Erreur vérification setup:', err);
       setError(err.message);

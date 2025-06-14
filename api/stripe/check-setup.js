@@ -80,6 +80,37 @@ export default async function handler(req, res) {
         console.log('✅ CHECK-SETUP: Méthode de paiement définie par défaut');
       }
 
+      // **NOUVEAU: Sauvegarder directement dans Firebase si c'est pour une campagne**
+      const campaignId = session.metadata?.campaign_id;
+      if (campaignId && campaignId !== 'temp_payment_method') {
+        console.log('🔥 CHECK-SETUP: Sauvegarde dans Firebase pour campagne:', campaignId);
+        
+        try {
+          // Appeler l'API de finalisation de campagne côté client
+          const finalizeResponse = await fetch(`${req.headers.origin || 'https://refspring.com'}/api/finalize-campaign`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              campaignId,
+              stripeCustomerId: session.customer,
+              stripePaymentMethodId: paymentMethodId,
+              setupIntentId: setupIntent.id
+            })
+          });
+          
+          if (finalizeResponse.ok) {
+            console.log('✅ CHECK-SETUP: Campagne finalisée dans Firebase');
+          } else {
+            console.error('❌ CHECK-SETUP: Erreur finalisation Firebase:', await finalizeResponse.text());
+          }
+        } catch (firebaseError) {
+          console.error('❌ CHECK-SETUP: Erreur communication Firebase:', firebaseError);
+          // Ne pas faire échouer la réponse Stripe pour autant
+        }
+      }
+
       return res.status(200).json({
         status: 'succeeded',
         setupIntentId: setupIntent.id,

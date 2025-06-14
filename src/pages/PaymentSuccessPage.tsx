@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { finalizeCampaignInFirestore } from '@/services/campaignService';
@@ -79,6 +78,7 @@ export const PaymentSuccessPage = () => {
             await finalizeCampaignInFirestore(campaignId, {
               customerId: 'cus_simulation',
               setupIntentId: setupIntentId,
+              paymentMethodId: 'pm_simulation'
             });
             
             setStatus('success');
@@ -99,6 +99,7 @@ export const PaymentSuccessPage = () => {
           
           if (setupStatus.status === 'succeeded') {
             console.log('✅ PAYMENT-SUCCESS: Paiement configuré avec succès');
+            console.log('💳 PAYMENT-SUCCESS: PaymentMethodId reçu:', setupStatus.paymentMethodId);
             
             if (isCardAddition) {
               setStatus('success');
@@ -109,10 +110,11 @@ export const PaymentSuccessPage = () => {
                 description: "Votre carte bancaire a été configurée et est maintenant disponible.",
               });
             } else if (campaignId) {
-              // Finaliser une vraie campagne
+              // Finaliser une vraie campagne avec le paymentMethodId
               await finalizeCampaignInFirestore(campaignId, {
                 customerId: setupStatus.customerId || 'cus_from_stripe',
                 setupIntentId: setupIntentId,
+                paymentMethodId: setupStatus.paymentMethodId
               });
               
               setStatus('success');
