@@ -28,20 +28,28 @@ export const useCampaignCardSelection = (
       // Activer la protection contre les resets
       activateResetProtection();
       
-      // Créer la campagne
+      // 🔥 CORRECTION CRITIQUE: Créer la campagne FINALISÉE directement
       const campaignId = await createCampaign({
         name: pendingCampaignData.name,
         description: pendingCampaignData.description,
         targetUrl: pendingCampaignData.targetUrl,
         isActive: pendingCampaignData.isActive,
-        isDraft: false,
-        paymentConfigured: true,
+        isDraft: false, // 🔥 FORCER à false pour finaliser
+        paymentConfigured: true, // 🔥 FORCER à true
         defaultCommissionRate: 10,
         stripePaymentMethodId: cardId,
       });
       
-      console.log('✅ CARD SELECTION: Campagne créée avec ID:', campaignId);
+      console.log('✅ CARD SELECTION: Campagne créée et FINALISÉE avec ID:', campaignId);
+      console.log('🎉 DÉCLENCHEMENT IMMÉDIAT de la modale de succès');
+      
       setLoading(false);
+      
+      // 🔥 FORCER le déclenchement de la modale IMMÉDIATEMENT
+      setTimeout(() => {
+        console.log('🚀 TIMEOUT: Déclenchement modale avec:', campaignId, pendingCampaignData.name);
+        triggerSuccessModal(campaignId, pendingCampaignData.name);
+      }, 500); // Petit délai pour s'assurer que tout est bien en place
       
       // RETOURNER LES DONNÉES POUR LE COMPOSANT PARENT
       return { 

@@ -43,6 +43,24 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
     showConfetti
   });
 
+  // 🔥 FONCTION DÉDIÉE POUR DÉCLENCHER LA MODALE
+  const triggerSuccessModalLocal = (campaignId: string, campaignName: string) => {
+    console.log('🚀 TRIGGER SUCCESS MODAL LOCAL appelé avec:', { campaignId, campaignName });
+    
+    // Forcer l'état de manière synchrone
+    setSuccessData({ campaignId, campaignName });
+    setShowConfetti(true);
+    setShowSuccessModal(true);
+    
+    console.log('✅ États forcés - showSuccessModal devrait être true');
+    
+    // Toast de confirmation
+    toast({
+      title: "🎉 Campagne créée avec succès !",
+      description: `Votre campagne "${campaignName}" est maintenant active !`,
+    });
+  };
+
   const onSubmit = async (e: React.FormEvent) => {
     try {
       console.log('📝 DIALOG: onSubmit appelé');
@@ -59,28 +77,21 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
   const handleCardSelectionWrapper = async (cardId: string) => {
     console.log('💳 DIALOG: handleCardSelectionWrapper appelé avec:', cardId);
     
-    const result = await handleCardSelection(cardId);
-    console.log('💳 DIALOG: Résultat handleCardSelection:', result);
+    // 🔥 MODIFICATION: Injecter la fonction de trigger dans le hook
+    const modifiedHandleCardSelection = async (cardId: string) => {
+      const { handleCardSelection: originalHandleCardSelection } = useCampaignForm();
+      const result = await originalHandleCardSelection(cardId);
+      
+      if (result?.success && result?.campaignId && result?.campaignName) {
+        console.log('🎉 SUCCÈS DÉTECTÉ: Déclenchement modale');
+        triggerSuccessModalLocal(result.campaignId, result.campaignName);
+        setShowPaymentSelector(false);
+      }
+      
+      return result;
+    };
     
-    if (result?.success && result?.campaignId && result?.campaignName) {
-      console.log('🎉 DIALOG: Succès confirmé, déclenchement modale locale');
-      
-      // DÉCLENCHER LA MODALE DIRECTEMENT ICI
-      setSuccessData({
-        campaignId: result.campaignId,
-        campaignName: result.campaignName
-      });
-      setShowConfetti(true);
-      setShowSuccessModal(true);
-      
-      // Fermer le sélecteur de paiement
-      setShowPaymentSelector(false);
-      
-      toast({
-        title: "Campagne créée avec succès !",
-        description: "Votre campagne est maintenant active avec la carte sélectionnée.",
-      });
-    }
+    await modifiedHandleCardSelection(cardId);
   };
 
   const handleSuccessModalClose = () => {
@@ -188,7 +199,7 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
         campaignName={successData?.campaignName || ''}
       />
       
-      {/* DEBUG INFO */}
+      {/* DEBUG INFO AMÉLIORÉ */}
       {import.meta.env.DEV && (
         <div style={{ 
           position: 'fixed', 
@@ -204,7 +215,7 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
           maxWidth: '400px'
         }}>
           <div style={{ marginBottom: '8px', fontSize: '14px', fontWeight: 'bold', color: '#00ff00' }}>
-            🚀 DEBUG LOCAL SIMPLIFIÉ 🚀
+            🚀 DEBUG MODAL TRIGGER 🚀
           </div>
           <div style={{ color: showSuccessModal ? '#00ff00' : '#ff6b6b', marginBottom: '4px' }}>
             ✅ showSuccessModal: {String(showSuccessModal)}
@@ -221,6 +232,20 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
           <div style={{ color: showPaymentSelector ? '#00ff00' : '#ff6b6b' }}>
             💳 paymentSelector: {String(showPaymentSelector)}
           </div>
+          <button 
+            onClick={() => triggerSuccessModalLocal('test-id', 'Test Campaign')}
+            style={{ 
+              marginTop: '10px', 
+              padding: '5px 10px', 
+              background: '#00ff00', 
+              color: 'black', 
+              border: 'none', 
+              borderRadius: '4px',
+              cursor: 'pointer'
+            }}
+          >
+            🧪 TEST MODAL
+          </button>
         </div>
       )}
     </>
