@@ -51,7 +51,7 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
     });
   }, [open, showSuccessModal, createdCampaign, showPaymentSelector, showConfetti, loading, paymentLoading]);
 
-  // 🔥 CORRECTION: NE PAS RESET automatiquement quand le dialog se ferme !
+  // 🔥 CORRECTION: Reset manuel uniquement
   const resetDialog = () => {
     console.log('🔄 DIALOG: resetDialog appelé MANUELLEMENT');
     resetForm();
@@ -98,25 +98,28 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
     setOpen(false);
   };
 
-  // 🔥 CORRECTION CRITIQUE: Empêcher la fermeture automatique si la modale de succès est visible
+  // 🔥 CORRECTION ABSOLUE: NE JAMAIS FERMER AUTOMATIQUEMENT si success modal est visible
   const handleDialogOpenChange = (isOpen: boolean) => {
     console.log('🔄 DIALOG: handleDialogOpenChange appelé avec:', isOpen, 'showSuccessModal:', showSuccessModal);
     
-    // 🔥 EMPÊCHER LA FERMETURE si la modale de succès est visible
-    if (!isOpen && showSuccessModal) {
-      console.log('🚫 DIALOG: Fermeture bloquée car modale de succès active');
-      return; // BLOQUER la fermeture
+    // 🔥 BLOCAGE ABSOLU si la modale de succès est visible OU si createdCampaign existe
+    if (!isOpen && (showSuccessModal || createdCampaign)) {
+      console.log('🚫 DIALOG: Fermeture ABSOLUMENT BLOQUÉE car success modal actif ou campagne créée');
+      return; // EMPÊCHER TOTALEMENT la fermeture
     }
     
     console.log('✅ DIALOG: Changement autorisé vers:', isOpen);
     setOpen(isOpen);
-    
-    // 🔥 CORRECTION: NE PAS RESET automatiquement à la fermeture !
-    // Le reset ne doit se faire que manuellement via resetDialog()
   };
 
-  // Vérification des conditions de rendu de la modale de succès
-  const shouldShowSuccessModal = Boolean(createdCampaign && showSuccessModal);
+  // 🔥 CONDITIONS RENFORCÉES pour la modale de succès
+  const shouldShowSuccessModal = Boolean(
+    createdCampaign && 
+    createdCampaign.id && 
+    createdCampaign.name && 
+    showSuccessModal
+  );
+  
   console.log('🎭 DIALOG: shouldShowSuccessModal:', shouldShowSuccessModal, { createdCampaign, showSuccessModal });
 
   return (
@@ -190,7 +193,7 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
         loading={loading || paymentLoading}
       />
 
-      {/* 🎭 MODALE DE SUCCÈS avec conditions renforcées */}
+      {/* 🎭 MODALE DE SUCCÈS avec conditions ABSOLUES */}
       {shouldShowSuccessModal && (
         <CampaignSuccessModal
           open={true}
@@ -210,11 +213,14 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
           color: 'white', 
           padding: '10px', 
           fontSize: '12px',
-          zIndex: 9999
+          zIndex: 9999,
+          border: '2px solid red'
         }}>
-          <div>showSuccessModal: {String(showSuccessModal)}</div>
-          <div>createdCampaign: {createdCampaign ? createdCampaign.name : 'null'}</div>
-          <div>shouldShow: {String(shouldShowSuccessModal)}</div>
+          <div>🎭 showSuccessModal: {String(showSuccessModal)}</div>
+          <div>🎯 createdCampaign: {createdCampaign ? `${createdCampaign.name} (${createdCampaign.id})` : 'null'}</div>
+          <div>✅ shouldShow: {String(shouldShowSuccessModal)}</div>
+          <div>🔄 open: {String(open)}</div>
+          <div>💳 paymentSelector: {String(showPaymentSelector)}</div>
         </div>
       )}
     </>

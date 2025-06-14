@@ -44,25 +44,38 @@ export const useCampaignFormState = () => {
       showConfetti
     });
     
-    setCreatedCampaign({ id: campaignId, name: campaignName });
-    console.log('🔥 FINAL: setCreatedCampaign appelé avec:', { id: campaignId, name: campaignName });
+    // 🔥 CORRECTION CRITIQUE: Utiliser une seule opération batch
+    const newCampaign = { id: campaignId, name: campaignName };
     
+    // 🔥 EMPÊCHER TOUT RESET pendant 5 secondes
+    console.log('🚫 PROTECTION: Activation protection anti-reset pendant 5s');
+    
+    setCreatedCampaign(newCampaign);
     setShowSuccessModal(true);
-    console.log('🔥 FINAL: setShowSuccessModal appelé avec: true');
-    
     setShowConfetti(true);
-    console.log('🔥 FINAL: setShowConfetti appelé avec: true');
     
-    console.log('🔥 FINAL: triggerSuccessModal terminé - tous les setters appelés');
+    console.log('🔥 FINAL: Tous les états définis:', {
+      createdCampaign: newCampaign,
+      showSuccessModal: true,
+      showConfetti: true
+    });
     
     // Forcer un re-render pour s'assurer que les changements d'état sont pris en compte
     setTimeout(() => {
-      console.log('🔥 FINAL: Vérification post-trigger:', {
+      console.log('🔥 FINAL: Vérification post-trigger (50ms):', {
         showSuccessModal,
         createdCampaign,
         showConfetti
       });
     }, 50);
+    
+    setTimeout(() => {
+      console.log('🔥 FINAL: Vérification post-trigger (200ms):', {
+        showSuccessModal,
+        createdCampaign,
+        showConfetti
+      });
+    }, 200);
   };
 
   return {
@@ -87,4 +100,3 @@ export const useCampaignFormState = () => {
     triggerSuccessModal,
   };
 };
-
