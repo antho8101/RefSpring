@@ -13,6 +13,7 @@ import {
   PaymentDistribution,
   LastPaymentInfo 
 } from '@/services/stripeConnectService';
+import { stripeInvoiceService } from '@/services/stripeInvoiceService';
 import { useAuth } from '@/hooks/useAuth';
 import { CampaignInfoSection } from '@/components/campaign-deletion/CampaignInfoSection';
 import { LoadingSection } from '@/components/campaign-deletion/LoadingSection';
@@ -88,6 +89,7 @@ export const CampaignDeletionDialog = ({
     try {
       console.log('🚀 Début suppression avec paiements pour:', campaign.name);
 
+      // 1. Créer l'enregistrement de distribution
       await createPaymentDistributionRecord(
         campaign.id,
         user.uid,
@@ -95,12 +97,33 @@ export const CampaignDeletionDialog = ({
         'campaign_deletion'
       );
 
+      // 2. Envoyer les paiements aux affiliés
       await sendStripePaymentLinks(distribution, campaign.name);
+
+      // 3. NOUVEAU: Créer et envoyer la facture Stripe pour la commission RefSpring
+      if (distribution.platformFee > 0) {
+        console.log('💳 Création facture Stripe pour commission RefSpring:', distribution.platformFee);
+        
+        const invoiceResult = await stripeInvoiceService.createAndSendInvoice({
+          userEmail: user.email!,
+          amount: Math.round(distribution.platformFee * 100), // Convertir en centimes
+          description: `Commission RefSpring - Suppression campagne "${campaign.name}"`,
+          campaignName: campaign.name,
+        });
+
+        if (!invoiceResult.success) {
+          throw new Error(`Erreur facturation Stripe: ${invoiceResult.error}`);
+        }
+
+        console.log('✅ Facture Stripe créée avec succès:', invoiceResult.invoiceId);
+      }
+
+      // 4. Supprimer la campagne
       await onConfirmDeletion();
 
       toast({
         title: "Suppression terminée",
-        description: `Les commissions ont été distribuées et la campagne "${campaign.name}" a été supprimée.`,
+        description: `Les commissions ont été distribuées, la facture RefSpring envoyée, et la campagne "${campaign.name}" a été supprimée.`,
       });
 
       onOpenChange(false);
