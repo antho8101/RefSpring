@@ -16,9 +16,9 @@ export const useStripePayment = () => {
     setError(null);
 
     try {
-      console.log('🔄 PRODUCTION: Création du setup de paiement pour la campagne:', campaignId);
+      console.log('🔄 STRIPE: Création du setup de paiement pour la campagne:', campaignId);
       
-      // Appel direct à l'API Vercel Edge Function
+      // Appel à l'API Vercel pour créer le setup
       const response = await fetch('/api/stripe/create-setup', {
         method: 'POST',
         headers: {
@@ -37,14 +37,14 @@ export const useStripePayment = () => {
       }
 
       const setupData = await response.json();
-      console.log('✅ PRODUCTION: Setup de paiement créé:', setupData);
+      console.log('✅ STRIPE: Setup de paiement créé:', setupData);
       
       // Rediriger vers Stripe
       window.location.href = setupData.checkoutUrl;
       
       return setupData;
     } catch (err: any) {
-      console.error('❌ PRODUCTION: Erreur setup paiement:', err);
+      console.error('❌ STRIPE: Erreur setup paiement:', err);
       setError(err.message);
       throw err;
     } finally {
@@ -57,9 +57,9 @@ export const useStripePayment = () => {
     setError(null);
 
     try {
-      console.log('🔄 PRODUCTION: Vérification du statut pour:', setupIntentId);
+      console.log('🔄 STRIPE: Vérification du setup pour:', setupIntentId);
       
-      // Appel direct à l'API Vercel Edge Function
+      // Appel à l'API Vercel pour vérifier et finaliser le setup
       const response = await fetch(`/api/stripe/check-setup?setupIntentId=${encodeURIComponent(setupIntentId)}`, {
         method: 'GET',
         headers: {
@@ -73,10 +73,11 @@ export const useStripePayment = () => {
       }
 
       const result = await response.json();
-      console.log('✅ PRODUCTION: Statut vérifié:', result);
+      console.log('✅ STRIPE: Setup vérifié et finalisé:', result);
+      
       return result;
     } catch (err: any) {
-      console.error('❌ PRODUCTION: Erreur vérification statut:', err);
+      console.error('❌ STRIPE: Erreur vérification setup:', err);
       setError(err.message);
       throw err;
     } finally {

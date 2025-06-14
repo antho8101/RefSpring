@@ -50,27 +50,36 @@ export default async function handler(req, res) {
     const origin = req.headers.origin || req.headers.host;
     const baseUrl = origin ? (origin.startsWith('http') ? origin : `https://${origin}`) : 'https://refspring.com';
 
-    console.log('🔄 CREATE-SETUP: Création session checkout avec cartes classiques seulement');
+    console.log('🔄 CREATE-SETUP: Création session checkout avec attachement immédiat');
 
-    // Créer une session Checkout en mode setup SANS setup_future_usage
+    // Créer une session Checkout en mode setup avec attachement automatique
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       mode: 'setup',
       currency: 'eur',
-      payment_method_types: ['card'], // Force uniquement les cartes classiques (pas de Link)
+      payment_method_types: ['card'],
+      payment_method_options: {
+        card: {
+          setup_future_usage: 'off_session' // Force l'attachement immédiat
+        }
+      },
       success_url: `${baseUrl}/payment-success?setup_intent={CHECKOUT_SESSION_ID}&campaign_id=${campaignId}`,
       cancel_url: `${baseUrl}/dashboard`,
       metadata: {
         campaign_id: campaignId,
         campaign_name: campaignName,
         customer_id: customerId
+      },
+      // Configuration pour l'attachement automatique
+      automatic_payment_methods: {
+        enabled: false, // Désactiver pour forcer uniquement les cartes
       }
     });
 
-    console.log('✅ CREATE-SETUP: Session créée avec cartes forcées:', {
+    console.log('✅ CREATE-SETUP: Session créée avec attachement automatique:', {
       sessionId: session.id,
       customerId: customerId,
-      paymentMethodTypes: session.payment_method_types
+      setupIntent: session.setup_intent
     });
 
     return res.status(200).json({
