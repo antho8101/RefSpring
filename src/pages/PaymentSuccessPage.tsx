@@ -30,7 +30,7 @@ export const PaymentSuccessPage = () => {
   const hasProcessedRef = useRef(false);
   const processingRef = useRef(false);
 
-  // Redirection automatique après succès
+  // Redirection automatique vers le DASHBOARD après succès
   useEffect(() => {
     if (success && !showSuccessModal && countdown > 0) {
       const timer = setTimeout(() => {
@@ -38,7 +38,7 @@ export const PaymentSuccessPage = () => {
       }, 1000);
       return () => clearTimeout(timer);
     } else if (success && !showSuccessModal && countdown === 0) {
-      navigate('/');
+      navigate('/dashboard'); // CORRECTION: Redirection vers le dashboard !
     }
   }, [success, showSuccessModal, countdown, navigate]);
 
@@ -141,7 +141,7 @@ export const PaymentSuccessPage = () => {
   }, [searchParams, authLoading, user, verifyPaymentSetup, createCampaign, toast]);
 
   const handleBackToDashboard = () => {
-    navigate('/');
+    navigate('/dashboard'); // CORRECTION: Redirection vers le dashboard !
   };
 
   if (loading) {
