@@ -47,11 +47,6 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
   });
 
   const resetDialog = () => {
-    // 🚨 PROTECTION : Ne pas reset si la modale de succès est affichée
-    if (showSuccessModal) {
-      console.log('🐛 CreateCampaignDialog - Reset bloqué car modale de succès affichée');
-      return;
-    }
     resetForm();
     setOpen(false);
   };
@@ -75,7 +70,7 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
     
     // 🚨 IMPORTANT : Ne jamais fermer la modale principale si on a keepMainModalOpen
     if (result?.success && result?.keepMainModalOpen) {
-      console.log('🐛 CreateCampaignDialog - Modale principale gardée ouverte pour la modale de succès');
+      console.log('🐛 CreateCampaignDialog - Modale principale gardée ouverte pour afficher la modale de succès');
       // Ne rien faire, laisser la modale principale ouverte
     } else if (result?.success) {
       console.log('🐛 CreateCampaignDialog - Fermeture de la modale principale...');
@@ -99,6 +94,25 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
     }, 100);
   };
 
+  // 🔧 NOUVELLE LOGIQUE : Garder la modale ouverte si la modale de succès est affichée
+  const handleDialogOpenChange = (isOpen: boolean) => {
+    console.log('🐛 CreateCampaignDialog - onOpenChange appelé avec:', isOpen, 'showSuccessModal:', showSuccessModal);
+    
+    if (!isOpen) {
+      // 🚨 PROTECTION : Ne fermer que si la modale de succès n'est pas affichée
+      if (!showSuccessModal) {
+        console.log('🐛 CreateCampaignDialog - Fermeture autorisée');
+        resetDialog();
+      } else {
+        console.log('🐛 CreateCampaignDialog - Fermeture bloquée car modale de succès affichée');
+        // NE PAS fermer la modale, la garder ouverte
+        return;
+      }
+    } else {
+      setOpen(true);
+    }
+  };
+
   return (
     <>
       {/* Confettis pour la création avec carte existante */}
@@ -107,23 +121,7 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
         onComplete={() => setShowConfetti(false)} 
       />
       
-      <Dialog open={open} onOpenChange={(isOpen) => {
-        console.log('🐛 CreateCampaignDialog - onOpenChange appelé avec:', isOpen, 'showSuccessModal:', showSuccessModal);
-        
-        if (!isOpen) {
-          // 🚨 PROTECTION : Ne fermer que si la modale de succès n'est pas affichée
-          if (!showSuccessModal) {
-            console.log('🐛 CreateCampaignDialog - Fermeture autorisée');
-            resetDialog();
-          } else {
-            console.log('🐛 CreateCampaignDialog - Fermeture bloquée car modale de succès affichée');
-            // Forcer la modale à rester ouverte
-            setOpen(true);
-          }
-        } else {
-          setOpen(true);
-        }
-      }}>
+      <Dialog open={open} onOpenChange={handleDialogOpenChange}>
         <DialogTrigger asChild>
           {children || (
             <Button>
@@ -187,7 +185,7 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
       />
 
       {/* 📋 Modale de succès avec protection contre la fermeture prématurée */}
-      {createdCampaign && (
+      {createdCampaign && showSuccessModal && (
         <>
           {console.log('🐛 CreateCampaignDialog - Rendu de CampaignSuccessModal avec:', {
             open: showSuccessModal,

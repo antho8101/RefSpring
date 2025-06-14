@@ -38,29 +38,21 @@ export const useCampaignCardSelection = (
       
       console.log('✅ 🐛 DEBUG: Campagne créée avec succès avec la carte existante. ID:', campaignId);
       
-      // 🎉 ÉTAPE 1 : Fermer le sélecteur de paiement EN PREMIER
+      // 🎉 ÉTAPE 1 : Fermer le sélecteur de paiement
       console.log('💳 🐛 DEBUG: Fermeture du sélecteur de paiement...');
       setShowPaymentSelector(false);
       
-      // 🎉 ÉTAPE 2 : Attendre un peu pour que la fermeture soit effective
-      await new Promise(resolve => setTimeout(resolve, 100));
-      
-      // 🎉 ÉTAPE 3 : Définir les données de la campagne créée
+      // 🎉 ÉTAPE 2 : Définir immédiatement les données de campagne créée
       console.log('📋 🐛 DEBUG: Définition des données de campagne créée...');
       setCreatedCampaign({ id: campaignId, name: pendingCampaignData.name });
       
-      // 🎉 ÉTAPE 4 : Attendre encore un peu
-      await new Promise(resolve => setTimeout(resolve, 50));
-      
-      // 🎉 ÉTAPE 5 : Déclencher les confettis ET la modale de succès
+      // 🎉 ÉTAPE 3 : Déclencher les confettis
       console.log('🎉 🐛 DEBUG: Déclenchement des confettis...');
       setShowConfetti(true);
       
+      // 🎉 ÉTAPE 4 : Afficher la modale de succès
       console.log('📋 🐛 DEBUG: Affichage de la modale de succès...');
       setShowSuccessModal(true);
-      
-      // 🎉 ÉTAPE 6 : Attendre que la modale soit bien affichée
-      await new Promise(resolve => setTimeout(resolve, 100));
       
       toast({
         title: "Campagne créée avec succès !",
