@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
@@ -7,7 +8,6 @@ import { useToast } from '@/hooks/use-toast';
 import { CampaignCard } from '@/components/CampaignCard';
 import { CompactCampaignCard } from '@/components/CompactCampaignCard';
 import { useState, useCallback, memo } from 'react';
-import { CreateCampaignDialog } from '@/components/CreateCampaignDialog';
 import { CreateCampaignDialogSimple } from '@/components/CreateCampaignDialogSimple';
 
 export const CampaignsList = memo(() => {
@@ -62,7 +62,7 @@ export const CampaignsList = memo(() => {
             Créez votre première campagne pour commencer à gérer vos affiliés et générer des revenus.
           </p>
           <div className="mt-6">
-            <CreateCampaignDialog>
+            <CreateCampaignDialogSimple>
               <Button 
                 size="lg" 
                 className="text-base lg:text-lg px-6 py-3 lg:px-8 lg:py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-110 border-0 text-white group relative overflow-hidden" 
@@ -80,7 +80,7 @@ export const CampaignsList = memo(() => {
                 <Plus className="h-4 w-4 mr-2 relative z-10" />
                 <span className="relative z-10">Lancer ma première campagne</span>
               </Button>
-            </CreateCampaignDialog>
+            </CreateCampaignDialogSimple>
           </div>
         </CardContent>
       </Card>
