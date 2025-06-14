@@ -42,17 +42,9 @@ export default async function handler(req, res) {
       customerId = customer.id;
     }
 
-    // Construire l'URL de base avec le bon schéma
-    let baseUrl;
-    if (process.env.VERCEL_URL) {
-      // En production Vercel, ajouter https://
-      baseUrl = process.env.VERCEL_URL.startsWith('http') 
-        ? process.env.VERCEL_URL 
-        : `https://${process.env.VERCEL_URL}`;
-    } else {
-      // Fallback pour le développement local
-      baseUrl = 'http://localhost:5173';
-    }
+    // Construire l'URL de base correctement pour Vercel
+    const origin = req.headers.origin || req.headers.host;
+    const baseUrl = origin ? (origin.startsWith('http') ? origin : `https://${origin}`) : 'https://refspring.com';
 
     // Créer une session Checkout pour SetupIntent
     const session = await stripe.checkout.sessions.create({
