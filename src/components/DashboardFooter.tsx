@@ -6,15 +6,17 @@ export const DashboardFooter = () => {
   return (
     <footer className="border-t border-slate-200/50 bg-white/60 backdrop-blur-xl py-6 mt-8 w-full">
       <div className="w-full px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col items-center gap-6">
-          {/* Logo et nom centrés */}
-          <div className="flex items-center gap-3">
-            <RefSpringLogo width="28" height="28" />
-            <div>
-              <h3 className="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                RefSpring
-              </h3>
-              <p className="text-xs text-slate-500">Plateforme d'affiliation</p>
+        <div className="flex flex-col gap-6">
+          {/* Logo à gauche */}
+          <div className="flex justify-start">
+            <div className="flex items-center gap-3">
+              <RefSpringLogo width="28" height="28" />
+              <div>
+                <h3 className="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  RefSpring
+                </h3>
+                <p className="text-xs text-slate-500">Plateforme d'affiliation</p>
+              </div>
             </div>
           </div>
 
