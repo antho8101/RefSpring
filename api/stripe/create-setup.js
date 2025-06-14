@@ -42,12 +42,24 @@ export default async function handler(req, res) {
       customerId = customer.id;
     }
 
+    // Construire l'URL de base avec le bon schéma
+    let baseUrl;
+    if (process.env.VERCEL_URL) {
+      // En production Vercel, ajouter https://
+      baseUrl = process.env.VERCEL_URL.startsWith('http') 
+        ? process.env.VERCEL_URL 
+        : `https://${process.env.VERCEL_URL}`;
+    } else {
+      // Fallback pour le développement local
+      baseUrl = 'http://localhost:5173';
+    }
+
     // Créer une session Checkout pour SetupIntent
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       mode: 'setup',
-      success_url: `${process.env.VERCEL_URL || 'https://refspring.com'}/payment-success?setup_intent={CHECKOUT_SESSION_ID}&campaign_id=${campaignId}`,
-      cancel_url: `${process.env.VERCEL_URL || 'https://refspring.com'}/dashboard`,
+      success_url: `${baseUrl}/payment-success?setup_intent={CHECKOUT_SESSION_ID}&campaign_id=${campaignId}`,
+      cancel_url: `${baseUrl}/dashboard`,
       metadata: {
         campaign_id: campaignId,
         campaign_name: campaignName
