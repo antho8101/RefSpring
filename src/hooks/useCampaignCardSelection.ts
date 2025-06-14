@@ -1,3 +1,4 @@
+
 import { useCampaigns } from '@/hooks/useCampaigns';
 import { useToast } from '@/hooks/use-toast';
 import { CampaignFormData } from './useCampaignFormState';
@@ -39,17 +40,19 @@ export const useCampaignCardSelection = (
       // ÉTAPE 1: Fermer immédiatement le sélecteur
       setShowPaymentSelector(false);
       
-      // ÉTAPE 2: Déclencher la modale de succès via triggerSuccessModal
-      console.log('🔥 FINAL: Déclenchement via triggerSuccessModal');
-      triggerSuccessModal(campaignId, pendingCampaignData.name);
+      // ÉTAPE 2: IMMÉDIATEMENT définir les états pour la modale de succès
+      console.log('🔥 FINAL: Définition IMMÉDIATE des états de succès');
+      setCreatedCampaign({ id: campaignId, name: pendingCampaignData.name });
+      setShowSuccessModal(true);
+      setShowConfetti(true);
       
       toast({
         title: "Campagne créée avec succès !",
         description: "Votre campagne est maintenant active avec la carte sélectionnée.",
       });
       
-      // Retourner un signal de succès SANS keepMainModalOpen car on gère tout via triggerSuccessModal
-      return { success: true };
+      // Retourner un signal de succès AVEC instruction de garder la modale principale ouverte
+      return { success: true, keepMainModalOpen: true };
       
     } catch (error: any) {
       console.error('❌ 🔥 FINAL: Erreur création campagne:', error);

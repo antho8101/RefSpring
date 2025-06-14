@@ -68,7 +68,13 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
     const result = await handleCardSelection(cardId);
     console.log('🔥 FINAL: Résultat de handleCardSelection:', result);
     
-    // Plus de logique complexe ici - tout est géré par triggerSuccessModal dans useCampaignCardSelection
+    // Si le résultat indique de garder la modale principale ouverte, ne pas la fermer
+    if (result?.keepMainModalOpen) {
+      console.log('🔥 FINAL: Modale principale gardée ouverte pour afficher la modale de succès');
+      // Ne pas faire setOpen(false) ici !
+      return;
+    }
+    
     if (result?.success) {
       console.log('🔥 FINAL: Succès détecté, la modale de succès devrait s\'afficher automatiquement');
     }
@@ -84,7 +90,7 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
     setOpen(false);
   };
 
-  // 🔥 FINAL: Logique simplifiée - on laisse la modale se fermer naturellement sauf si showSuccessModal est true
+  // 🔥 FINAL: Empêcher la fermeture si la modale de succès est visible
   const handleDialogOpenChange = (isOpen: boolean) => {
     console.log('🔥 FINAL: onOpenChange appelé avec:', isOpen, 'showSuccessModal:', showSuccessModal);
     
