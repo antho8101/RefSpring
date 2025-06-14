@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { finalizeCampaignInFirestore } from '@/services/campaignService';
@@ -26,6 +25,9 @@ export const PaymentSuccessPage = () => {
   // Détecter si c'est juste un ajout de carte (pas une vraie campagne)
   const isCardAddition = campaignId === 'temp_payment_method';
 
+  // Détecter si c'est un ID de simulation basé sur le pattern
+  const isSimulationId = setupIntentId?.startsWith('seti_sim_') || setupIntentId?.startsWith('cs_sim_');
+
   useEffect(() => {
     const processPaymentSuccess = async () => {
       if (!setupIntentId) {
@@ -35,61 +37,79 @@ export const PaymentSuccessPage = () => {
       }
 
       try {
-        if (isSimulation) {
+        // Si c'est un ID de simulation ou que le paramètre simulation est présent
+        if (isSimulation || isSimulationId) {
           console.log('🧪 SIMULATION: Traitement du succès de paiement simulé');
           setMessage(isCardAddition ? 'Configuration de la carte simulée...' : 'Configuration du paiement simulée...');
-        } else {
-          console.log('🔄 Vérification du statut de paiement...');
-          setMessage(isCardAddition ? 'Vérification de la carte...' : 'Vérification du paiement...');
-        }
-        
-        // Vérifier le statut du SetupIntent (réel ou simulé)
-        const setupStatus = await verifyPaymentSetup(setupIntentId);
-        
-        if (setupStatus.status === 'succeeded') {
-          console.log('✅ Paiement configuré avec succès');
           
-          // Si c'est juste un ajout de carte, pas besoin de finaliser une campagne
+          // Simuler un délai pour la cohérence UX
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          
+          // Marquer comme succès sans appeler les API réelles
           if (isCardAddition) {
             setStatus('success');
-            setMessage(isSimulation 
-              ? 'Votre carte a été ajoutée avec succès (mode simulation) !'
-              : 'Votre carte a été ajoutée avec succès !'
-            );
+            setMessage('Votre carte a été ajoutée avec succès (mode simulation) !');
             
             toast({
               title: "Carte ajoutée !",
-              description: isSimulation 
-                ? "Mode simulation: Votre carte est maintenant disponible."
-                : "Votre carte bancaire a été configurée et est maintenant disponible.",
+              description: "Mode simulation: Votre carte est maintenant disponible.",
             });
           } else if (campaignId) {
-            // Finaliser une vraie campagne
+            // Finaliser une campagne simulée
             await finalizeCampaignInFirestore(campaignId, {
-              customerId: isSimulation ? 'cus_simulation' : 'cus_placeholder',
+              customerId: 'cus_simulation',
               setupIntentId: setupIntentId,
             });
             
             setStatus('success');
-            setMessage(isSimulation 
-              ? 'Votre campagne a été créée avec succès (mode simulation) !'
-              : 'Votre campagne a été créée avec succès !'
-            );
+            setMessage('Votre campagne a été créée avec succès (mode simulation) !');
             
             toast({
               title: "Campagne créée !",
-              description: isSimulation 
-                ? "Mode simulation: Votre campagne est maintenant active."
-                : "Votre mode de paiement a été configuré et votre campagne est maintenant active.",
+              description: "Mode simulation: Votre campagne est maintenant active.",
             });
           }
-          
-          // 🎉 Déclencher les confettis après la validation du paiement !
-          setShowConfetti(true);
-          
         } else {
-          throw new Error('Le paiement n\'a pas été configuré correctement');
+          // Traitement réel pour les vrais setupIntentId
+          console.log('🔄 Vérification du statut de paiement réel...');
+          setMessage(isCardAddition ? 'Vérification de la carte...' : 'Vérification du paiement...');
+          
+          // Vérifier le statut du SetupIntent réel
+          const setupStatus = await verifyPaymentSetup(setupIntentId);
+          
+          if (setupStatus.status === 'succeeded') {
+            console.log('✅ Paiement configuré avec succès');
+            
+            if (isCardAddition) {
+              setStatus('success');
+              setMessage('Votre carte a été ajoutée avec succès !');
+              
+              toast({
+                title: "Carte ajoutée !",
+                description: "Votre carte bancaire a été configurée et est maintenant disponible.",
+              });
+            } else if (campaignId) {
+              // Finaliser une vraie campagne
+              await finalizeCampaignInFirestore(campaignId, {
+                customerId: 'cus_from_stripe', // Sera récupéré du vrai Stripe
+                setupIntentId: setupIntentId,
+              });
+              
+              setStatus('success');
+              setMessage('Votre campagne a été créée avec succès !');
+              
+              toast({
+                title: "Campagne créée !",
+                description: "Votre mode de paiement a été configuré et votre campagne est maintenant active.",
+              });
+            }
+          } else {
+            throw new Error('Le paiement n\'a pas été configuré correctement');
+          }
         }
+        
+        // 🎉 Déclencher les confettis après la validation du paiement !
+        setShowConfetti(true);
         
       } catch (error: any) {
         console.error('❌ Erreur lors de la finalisation:', error);
@@ -107,7 +127,7 @@ export const PaymentSuccessPage = () => {
     };
 
     processPaymentSuccess();
-  }, [setupIntentId, campaignId, isSimulation, isCardAddition]);
+  }, [setupIntentId, campaignId, isSimulation, isSimulationId, isCardAddition]);
 
   // Effet pour le countdown et redirection automatique
   useEffect(() => {
@@ -148,7 +168,7 @@ export const PaymentSuccessPage = () => {
                 ) : (
                   <CheckCircle className="w-16 h-16 text-green-600" />
                 )}
-                {isSimulation && (
+                {(isSimulation || isSimulationId) && (
                   <TestTube className="w-6 h-6 text-orange-500 absolute -top-1 -right-1" />
                 )}
               </div>
@@ -161,8 +181,8 @@ export const PaymentSuccessPage = () => {
             {status === 'loading' && 'Finalisation en cours...'}
             {status === 'success' && (
               isCardAddition 
-                ? (isSimulation ? 'Carte ajoutée (simulation) !' : 'Carte ajoutée !') 
-                : (isSimulation ? 'Campagne créée (simulation) !' : 'Campagne créée !')
+                ? ((isSimulation || isSimulationId) ? 'Carte ajoutée (simulation) !' : 'Carte ajoutée !') 
+                : ((isSimulation || isSimulationId) ? 'Campagne créée (simulation) !' : 'Campagne créée !')
             )}
             {status === 'error' && 'Erreur'}
           </CardTitle>
@@ -176,7 +196,7 @@ export const PaymentSuccessPage = () => {
             </p>
           )}
           
-          {isSimulation && status === 'success' && (
+          {(isSimulation || isSimulationId) && status === 'success' && (
             <div className="bg-orange-50 border border-orange-200 rounded-lg p-3">
               <div className="flex items-center justify-center space-x-2 text-orange-700">
                 <TestTube className="w-4 h-4" />
