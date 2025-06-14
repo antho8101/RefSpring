@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,7 +9,9 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertTriangle, Pause } from 'lucide-react';
 import { Campaign } from '@/types';
 import { CriticalActionConfirmDialog } from '@/components/CriticalActionConfirmDialog';
+import { PaymentMethodSelector } from '@/components/PaymentMethodSelector';
 import { useCampaigns } from '@/hooks/useCampaigns';
+import { usePaymentMethods } from '@/hooks/usePaymentMethods';
 import { useToast } from '@/hooks/use-toast';
 
 interface CampaignGeneralSettingsProps {
@@ -51,7 +54,10 @@ export const CampaignGeneralSettings = ({
     action: () => {},
   });
 
+  const [showPaymentSelector, setShowPaymentSelector] = useState(false);
+
   const { updateCampaign } = useCampaigns();
+  const { paymentMethods, loading: paymentMethodsLoading, refreshPaymentMethods } = usePaymentMethods();
   const { toast } = useToast();
 
   const hasTargetUrlChanged = formData.targetUrl !== initialTargetUrl;
@@ -104,8 +110,9 @@ export const CampaignGeneralSettings = ({
     }
   };
 
-  const handleStatusChange = (isActive: boolean) => {
+  const handleStatusChange = async (isActive: boolean) => {
     if (!isActive && campaign.isActive) {
+      // Désactivation : procédure normale
       handleCriticalChange(
         'isActive',
         isActive,
@@ -114,14 +121,48 @@ export const CampaignGeneralSettings = ({
         'Désactiver',
         'warning'
       );
+    } else if (isActive && !campaign.isActive) {
+      // Réactivation : VÉRIFIER LES CARTES D'ABORD !
+      console.log('🔄 Tentative de réactivation - vérification des cartes...');
+      
+      try {
+        // Actualiser les cartes disponibles
+        await refreshPaymentMethods();
+        
+        if (paymentMethods.length === 0) {
+          console.log('❌ Aucune carte disponible pour la réactivation');
+          toast({
+            title: "Impossible de réactiver",
+            description: "Vous devez d'abord ajouter une carte bancaire pour réactiver cette campagne.",
+            variant: "destructive",
+          });
+          
+          // Afficher le sélecteur de cartes pour ajouter une carte
+          setShowPaymentSelector(true);
+          return;
+        }
+        
+        console.log('✅ Cartes disponibles, réactivation possible');
+        // Procéder à la réactivation normale
+        saveStatusChange(isActive);
+        
+      } catch (error) {
+        console.error('❌ Erreur lors de la vérification des cartes:', error);
+        toast({
+          title: "Erreur",
+          description: "Impossible de vérifier les cartes bancaires",
+          variant: "destructive",
+        });
+      }
     } else {
+      // Pas de changement de statut
       saveStatusChange(isActive);
     }
   };
 
   const saveStatusChange = async (isActive: boolean) => {
     try {
-      console.log('🔄 Sauvegarde automatique du statut:', { campaignId: campaign.id, isActive });
+      console.log('🔄 Sauvegarde du statut:', { campaignId: campaign.id, isActive });
       
       // Utiliser directement updateCampaign pour une sauvegarde immédiate
       await updateCampaign(campaign.id, { isActive });
@@ -148,6 +189,46 @@ export const CampaignGeneralSettings = ({
       // En cas d'erreur, revenir à l'état précédent
       onFormDataChange({ ...formData, isActive: campaign.isActive });
     }
+  };
+
+  const handleCardSelection = async (cardId: string) => {
+    try {
+      console.log('💳 Association de la carte', cardId, 'à la campagne', campaign.id);
+      
+      // Mettre à jour la campagne avec la nouvelle carte ET l'activer
+      await updateCampaign(campaign.id, {
+        stripePaymentMethodId: cardId,
+        isActive: true,
+      });
+      
+      // Mettre à jour le formData local
+      onFormDataChange({ ...formData, isActive: true });
+      
+      setShowPaymentSelector(false);
+      
+      toast({
+        title: "✅ Parfait !",
+        description: "La carte a été associée et la campagne a été réactivée !",
+      });
+      
+    } catch (error: any) {
+      console.error('❌ Erreur association carte:', error);
+      toast({
+        title: "Erreur",
+        description: error.message || "Impossible d'associer la carte à la campagne",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleAddNewCard = () => {
+    // Rediriger vers Stripe pour ajouter une carte
+    // TODO: Implémenter la redirection vers Stripe
+    setShowPaymentSelector(false);
+    toast({
+      title: "Redirection Stripe",
+      description: "Fonctionnalité d'ajout de carte à implémenter",
+    });
   };
 
   return (
@@ -250,6 +331,7 @@ export const CampaignGeneralSettings = ({
               id="isActive"
               checked={formData.isActive}
               onCheckedChange={handleStatusChange}
+              disabled={paymentMethodsLoading}
             />
           </div>
         </div>
@@ -274,6 +356,15 @@ export const CampaignGeneralSettings = ({
         confirmText={confirmDialog.confirmText}
         variant={confirmDialog.variant}
         onConfirm={confirmDialog.action}
+      />
+
+      <PaymentMethodSelector
+        open={showPaymentSelector}
+        onOpenChange={setShowPaymentSelector}
+        paymentMethods={paymentMethods}
+        onSelectCard={handleCardSelection}
+        onAddNewCard={handleAddNewCard}
+        loading={paymentMethodsLoading}
       />
     </>
   );
