@@ -15,6 +15,7 @@ export interface CampaignFormData {
 export const useCampaignFormSimple = () => {
   const [loading, setLoading] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showPaymentSelector, setShowPaymentSelector] = useState(false);
   const [createdCampaign, setCreatedCampaign] = useState<{ id: string; name: string } | null>(null);
   const [formData, setFormData] = useState<CampaignFormData>({
     name: '',
@@ -25,7 +26,7 @@ export const useCampaignFormSimple = () => {
 
   const { user } = useAuth();
   const { createCampaign } = useCampaigns();
-  const { paymentMethods } = usePaymentMethods();
+  const { paymentMethods, refreshPaymentMethods } = usePaymentMethods();
   const { toast } = useToast();
 
   const updateFormData = (updates: Partial<CampaignFormData>) => {
@@ -36,6 +37,7 @@ export const useCampaignFormSimple = () => {
     setFormData({ name: '', description: '', targetUrl: '', isActive: true });
     setShowSuccessModal(false);
     setCreatedCampaign(null);
+    setShowPaymentSelector(false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -43,7 +45,7 @@ export const useCampaignFormSimple = () => {
     setLoading(true);
 
     try {
-      console.log('🚀 SIMPLE: Création directe de campagne...');
+      console.log('🚀 SIMPLE: Début création campagne...');
       
       if (!formData.name) {
         throw new Error('Le nom de la campagne est requis');
@@ -53,15 +55,61 @@ export const useCampaignFormSimple = () => {
         throw new Error('L\'URL de destination est requise');
       }
 
-      // Prendre la première carte disponible
-      const firstCard = paymentMethods[0];
-      if (!firstCard) {
+      // Vérifier les cartes disponibles
+      await refreshPaymentMethods();
+      
+      if (paymentMethods.length === 0) {
         throw new Error('Aucune carte de paiement disponible');
       }
 
-      console.log('💳 SIMPLE: Utilisation de la carte:', firstCard.id);
+      if (paymentMethods.length === 1) {
+        // Une seule carte disponible, l'utiliser directement
+        console.log('💳 SIMPLE: Utilisation carte unique:', paymentMethods[0].id);
+        
+        const campaignId = await createCampaign({
+          name: formData.name,
+          description: formData.description,
+          targetUrl: formData.targetUrl,
+          isActive: formData.isActive,
+          isDraft: false,
+          paymentConfigured: true,
+          defaultCommissionRate: 10,
+          stripePaymentMethodId: paymentMethods[0].id,
+        });
 
-      // Créer la campagne directement
+        console.log('✅ SIMPLE: Campagne créée avec ID:', campaignId);
+
+        // Déclencher la modale de succès
+        setCreatedCampaign({ id: campaignId, name: formData.name });
+        setShowSuccessModal(true);
+
+        toast({
+          title: "Campagne créée avec succès !",
+          description: "Votre campagne est maintenant active.",
+        });
+      } else {
+        // Plusieurs cartes disponibles, afficher le sélecteur
+        console.log('💳 SIMPLE: Plusieurs cartes disponibles, affichage sélecteur');
+        setShowPaymentSelector(true);
+      }
+
+    } catch (error: any) {
+      console.error('❌ SIMPLE: Erreur création campagne:', error);
+      toast({
+        title: "Erreur",
+        description: error.message || "Impossible de créer la campagne",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCardSelection = async (cardId: string) => {
+    setLoading(true);
+    try {
+      console.log('💳 SIMPLE: Carte sélectionnée:', cardId);
+      
       const campaignId = await createCampaign({
         name: formData.name,
         description: formData.description,
@@ -70,24 +118,23 @@ export const useCampaignFormSimple = () => {
         isDraft: false,
         paymentConfigured: true,
         defaultCommissionRate: 10,
-        stripePaymentMethodId: firstCard.id,
+        stripePaymentMethodId: cardId,
       });
-
-      console.log('✅ SIMPLE: Campagne créée avec ID:', campaignId);
-
-      // Déclencher immédiatement la modale de succès
+      
+      console.log('✅ SIMPLE: Campagne créée avec carte sélectionnée:', campaignId);
+      
+      // Fermer le sélecteur et ouvrir la modale de succès
+      setShowPaymentSelector(false);
       setCreatedCampaign({ id: campaignId, name: formData.name });
       setShowSuccessModal(true);
-
-      console.log('🎉 SIMPLE: Modale de succès déclenchée');
-
+      
       toast({
         title: "Campagne créée avec succès !",
-        description: "Votre campagne est maintenant active.",
+        description: "Votre campagne est maintenant active avec la carte sélectionnée.",
       });
-
+      
     } catch (error: any) {
-      console.error('❌ SIMPLE: Erreur création campagne:', error);
+      console.error('❌ SIMPLE: Erreur création avec carte sélectionnée:', error);
       toast({
         title: "Erreur",
         description: error.message || "Impossible de créer la campagne",
@@ -108,10 +155,14 @@ export const useCampaignFormSimple = () => {
     formData,
     loading,
     showSuccessModal,
+    showPaymentSelector,
     createdCampaign,
+    paymentMethods,
     updateFormData,
     resetForm,
     handleSubmit,
+    handleCardSelection,
     handleSuccessModalClose,
+    setShowPaymentSelector,
   };
 };

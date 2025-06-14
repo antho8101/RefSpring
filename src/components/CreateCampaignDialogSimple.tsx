@@ -6,6 +6,7 @@ import { Plus, CreditCard, Loader2 } from 'lucide-react';
 import { useCampaignFormSimple } from '@/hooks/useCampaignFormSimple';
 import { CampaignFormFields } from '@/components/CampaignFormFields';
 import { CampaignSuccessModal } from '@/components/CampaignSuccessModal';
+import { PaymentMethodSelector } from '@/components/PaymentMethodSelector';
 import { ConfettiCelebration } from '@/components/ConfettiCelebration';
 
 interface CreateCampaignDialogSimpleProps {
@@ -19,14 +20,23 @@ export const CreateCampaignDialogSimple = ({ children }: CreateCampaignDialogSim
     formData,
     loading,
     showSuccessModal,
+    showPaymentSelector,
     createdCampaign,
+    paymentMethods,
     updateFormData,
     resetForm,
     handleSubmit,
+    handleCardSelection,
     handleSuccessModalClose,
+    setShowPaymentSelector,
   } = useCampaignFormSimple();
 
-  console.log('🎯 SIMPLE: État dialog:', { open, showSuccessModal, createdCampaign: !!createdCampaign });
+  console.log('🎯 SIMPLE: État dialog:', { 
+    open, 
+    showSuccessModal, 
+    showPaymentSelector,
+    createdCampaign: !!createdCampaign 
+  });
 
   const resetDialog = () => {
     resetForm();
@@ -36,6 +46,11 @@ export const CreateCampaignDialogSimple = ({ children }: CreateCampaignDialogSim
   const handleSuccessClose = () => {
     handleSuccessModalClose();
     setOpen(false);
+  };
+
+  const handleAddNewCard = () => {
+    console.log('💳 SIMPLE: Ajout nouvelle carte - fonctionnalité à implémenter');
+    setShowPaymentSelector(false);
   };
 
   return (
@@ -97,7 +112,17 @@ export const CreateCampaignDialogSimple = ({ children }: CreateCampaignDialogSim
         </DialogContent>
       </Dialog>
 
-      {/* Modale de succès simple */}
+      {/* Sélecteur de cartes de paiement */}
+      <PaymentMethodSelector
+        open={showPaymentSelector}
+        onOpenChange={setShowPaymentSelector}
+        paymentMethods={paymentMethods}
+        onSelectCard={handleCardSelection}
+        onAddNewCard={handleAddNewCard}
+        loading={loading}
+      />
+
+      {/* Modale de succès avec codes d'intégration */}
       {showSuccessModal && createdCampaign && (
         <CampaignSuccessModal
           open={showSuccessModal}
