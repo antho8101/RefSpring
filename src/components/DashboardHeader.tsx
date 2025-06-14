@@ -35,7 +35,7 @@ export const DashboardHeader = ({ user, onLogout, period, onPeriodChange }: Dash
       <div className="w-full px-3 sm:px-4 lg:px-8">
         <div className="flex justify-between items-center h-16 min-w-0">
           {/* Logo - Fixed to prevent overflow */}
-          <Link to="/landing" className="animate-fade-in hover:opacity-80 transition-opacity flex-shrink-0 min-w-0">
+          <a href="https://www.refspring.com" className="animate-fade-in hover:opacity-80 transition-opacity flex-shrink-0 min-w-0">
             <div className="flex items-center gap-2 sm:gap-3 min-w-0">
               <RefSpringLogo width="28" height="28" className="flex-shrink-0" />
               <div className="min-w-0">
@@ -45,7 +45,7 @@ export const DashboardHeader = ({ user, onLogout, period, onPeriodChange }: Dash
                 <p className="text-xs sm:text-sm text-slate-600 font-medium truncate">Dashboard</p>
               </div>
             </div>
-          </Link>
+          </a>
 
           {/* Desktop Navigation - Hidden on mobile to prevent overflow */}
           <div className="hidden lg:flex items-center space-x-3 xl:space-x-4 flex-shrink-0">
