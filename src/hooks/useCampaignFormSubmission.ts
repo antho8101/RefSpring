@@ -67,7 +67,7 @@ export const useCampaignFormSubmission = (
     setLoading(true);
 
     try {
-      console.log('🎯 NOUVEAU FLOW: Validation AVANT création de campagne...');
+      console.log('🎯 FLOW CORRIGÉ: Validation AVANT création de campagne...');
       
       if (!formData.name) {
         throw new Error('Le nom de la campagne est requis');
@@ -99,38 +99,19 @@ export const useCampaignFormSubmission = (
       console.log('💳 Cartes disponibles:', availableCards.length);
       
       if (availableCards.length === 0) {
-        console.log('💳 NOUVEAU FLOW: Aucune carte → Redirection Stripe (PAS de création campagne)');
+        console.log('💳 FLOW CORRIGÉ: Aucune carte → Redirection Stripe (PAS de création campagne)');
         await redirectToStripeForNewCard(formData);
         return;
       }
 
-      if (availableCards.length === 1) {
-        console.log('💳 NOUVEAU FLOW: Une carte validée → Création campagne directe');
-        const campaignId = await createCampaignWithExistingCard(formData, availableCards[0].id);
-        
-        toast({
-          title: "Campagne créée avec succès !",
-          description: "Votre campagne est maintenant active.",
-        });
-        
-        setLoading(false);
-        
-        // 🔥 CORRECTION: Retourner les bonnes données pour déclencher la modale de succès
-        return { 
-          success: true, 
-          campaignId, 
-          campaignName: formData.name,
-          shouldShowModal: true 
-        };
-      }
-
-      console.log('💳 NOUVEAU FLOW: Plusieurs cartes → Sélecteur (PAS de création campagne)');
+      // 🔥 CORRECTION: TOUJOURS afficher le sélecteur, même avec une seule carte
+      console.log('💳 FLOW CORRIGÉ: Cartes disponibles → TOUJOURS afficher le sélecteur');
       setPendingCampaignData(formData);
       setShowPaymentSelector(true);
       setLoading(false);
       
     } catch (error: any) {
-      console.error('❌ Erreur dans le nouveau flow:', error);
+      console.error('❌ Erreur dans le flow corrigé:', error);
       toast({
         title: "Erreur",
         description: error.message || "Impossible de traiter la demande",
