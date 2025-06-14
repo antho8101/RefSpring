@@ -90,20 +90,6 @@ export const CampaignsList = memo(() => {
   console.log('CampaignsList: rendering campaigns list');
   return (
     <div className="space-y-6">
-      {/* En-tête avec bouton de création */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold text-slate-900">Mes Campagnes</h2>
-          <p className="text-slate-600 mt-1">Gérez vos campagnes d'affiliation</p>
-        </div>
-        <CreateCampaignDialog>
-          <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl hover:scale-105 transition-all">
-            <Plus className="h-4 w-4 mr-2" />
-            Nouvelle Campagne
-          </Button>
-        </CreateCampaignDialog>
-      </div>
-
       {/* Sélecteur de mode d'affichage */}
       {campaigns.length > 3 && (
         <div className="flex justify-end">
