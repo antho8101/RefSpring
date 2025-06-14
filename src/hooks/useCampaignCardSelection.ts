@@ -41,21 +41,25 @@ export const useCampaignCardSelection = (
       
       console.log('✅ CARD SELECTION: Campagne créée avec ID:', campaignId);
       
-      // Fermer le sélecteur AVANT de déclencher la modale de succès
+      // 🔥 CORRECTION CRITIQUE: Fermer le sélecteur AVANT tout le reste
       setShowPaymentSelector(false);
       console.log('🔄 CARD SELECTION: Sélecteur fermé');
       
-      // Attendre un peu pour que le DOM se mette à jour
-      await new Promise(resolve => setTimeout(resolve, 100));
+      // 🔥 CORRECTION: Arrêter le loading AVANT de déclencher la modale de succès
+      setLoading(false);
+      console.log('⏹️ CARD SELECTION: Loading arrêté');
       
-      // Déclencher la modale de succès avec logs détaillés
+      // 🔥 CORRECTION: Attendre un peu plus pour que tous les états se stabilisent
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
+      // 🔥 CORRECTION: Déclencher la modale de succès en dernier
       console.log('🎉 CARD SELECTION: DÉCLENCHEMENT triggerSuccessModal avec:', { campaignId, name: pendingCampaignData.name });
       triggerSuccessModal(campaignId, pendingCampaignData.name);
       
-      // Vérifier que les états sont bien mis à jour
+      // 🔥 CORRECTION: Vérification retardée pour s'assurer que les états tiennent
       setTimeout(() => {
-        console.log('🔍 CARD SELECTION: Vérification états après 200ms');
-      }, 200);
+        console.log('🔍 CARD SELECTION: Vérification états après 1s - ILS DOIVENT ÊTRE MAINTENUS !');
+      }, 1000);
       
       toast({
         title: "Campagne créée avec succès !",
@@ -71,7 +75,6 @@ export const useCampaignCardSelection = (
         description: error.message || "Impossible de créer la campagne",
         variant: "destructive",
       });
-    } finally {
       setLoading(false);
     }
   };

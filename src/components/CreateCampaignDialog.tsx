@@ -51,8 +51,9 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
     });
   }, [open, showSuccessModal, createdCampaign, showPaymentSelector, showConfetti, loading, paymentLoading]);
 
+  // 🔥 CORRECTION: NE PAS RESET automatiquement quand le dialog se ferme !
   const resetDialog = () => {
-    console.log('🔄 DIALOG: resetDialog appelé');
+    console.log('🔄 DIALOG: resetDialog appelé MANUELLEMENT');
     resetForm();
     setOpen(false);
   };
@@ -97,10 +98,11 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
     setOpen(false);
   };
 
-  // 🔥 EMPÊCHER LA FERMETURE si la modale de succès est visible
+  // 🔥 CORRECTION CRITIQUE: Empêcher la fermeture automatique si la modale de succès est visible
   const handleDialogOpenChange = (isOpen: boolean) => {
     console.log('🔄 DIALOG: handleDialogOpenChange appelé avec:', isOpen, 'showSuccessModal:', showSuccessModal);
     
+    // 🔥 EMPÊCHER LA FERMETURE si la modale de succès est visible
     if (!isOpen && showSuccessModal) {
       console.log('🚫 DIALOG: Fermeture bloquée car modale de succès active');
       return; // BLOQUER la fermeture
@@ -108,9 +110,9 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
     
     console.log('✅ DIALOG: Changement autorisé vers:', isOpen);
     setOpen(isOpen);
-    if (!isOpen) {
-      resetDialog();
-    }
+    
+    // 🔥 CORRECTION: NE PAS RESET automatiquement à la fermeture !
+    // Le reset ne doit se faire que manuellement via resetDialog()
   };
 
   // Vérification des conditions de rendu de la modale de succès
