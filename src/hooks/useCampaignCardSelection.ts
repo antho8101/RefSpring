@@ -6,12 +6,10 @@ import { CampaignFormData } from './useCampaignFormState';
 export const useCampaignCardSelection = (
   pendingCampaignData: CampaignFormData | null,
   setLoading: (loading: boolean) => void,
-  setShowConfetti: (show: boolean) => void,
-  setCreatedCampaign: (campaign: { id: string; name: string } | null) => void,
-  setShowSuccessModal: (show: boolean) => void,
   setShowPaymentSelector: (show: boolean) => void,
   redirectToStripeForNewCard: (data: CampaignFormData) => Promise<void>,
-  triggerSuccessModal: (campaignId: string, campaignName: string) => void
+  triggerSuccessModal: (campaignId: string, campaignName: string) => void,
+  activateResetProtection: () => void
 ) => {
   const { createCampaign } = useCampaigns();
   const { toast } = useToast();
@@ -27,7 +25,10 @@ export const useCampaignCardSelection = (
       console.log('💳 CARD SELECTION: Début création campagne avec carte:', cardId);
       console.log('💳 CARD SELECTION: Données campagne:', pendingCampaignData);
       
-      // Créer la campagne directement finalisée car la carte est validée
+      // Activer la protection contre les resets
+      activateResetProtection();
+      
+      // Créer la campagne
       const campaignId = await createCampaign({
         name: pendingCampaignData.name,
         description: pendingCampaignData.description,
@@ -41,25 +42,16 @@ export const useCampaignCardSelection = (
       
       console.log('✅ CARD SELECTION: Campagne créée avec ID:', campaignId);
       
-      // 🔥 CORRECTION CRITIQUE: Fermer le sélecteur AVANT tout le reste
+      // Fermer le sélecteur de paiement
       setShowPaymentSelector(false);
-      console.log('🔄 CARD SELECTION: Sélecteur fermé');
-      
-      // 🔥 CORRECTION: Arrêter le loading AVANT de déclencher la modale de succès
       setLoading(false);
-      console.log('⏹️ CARD SELECTION: Loading arrêté');
       
-      // 🔥 CORRECTION: Attendre un peu plus pour que tous les états se stabilisent
-      await new Promise(resolve => setTimeout(resolve, 300));
+      // Attendre que les états se stabilisent
+      await new Promise(resolve => setTimeout(resolve, 100));
       
-      // 🔥 CORRECTION: Déclencher la modale de succès en dernier
-      console.log('🎉 CARD SELECTION: DÉCLENCHEMENT triggerSuccessModal avec:', { campaignId, name: pendingCampaignData.name });
+      // Déclencher la modale de succès avec le nouveau système isolé
+      console.log('🚀 CARD SELECTION: Déclenchement modale de succès isolée');
       triggerSuccessModal(campaignId, pendingCampaignData.name);
-      
-      // 🔥 CORRECTION: Vérification retardée pour s'assurer que les états tiennent
-      setTimeout(() => {
-        console.log('🔍 CARD SELECTION: Vérification états après 1s - ILS DOIVENT ÊTRE MAINTENUS !');
-      }, 1000);
       
       toast({
         title: "Campagne créée avec succès !",
@@ -84,7 +76,7 @@ export const useCampaignCardSelection = (
     
     try {
       setLoading(true);
-      console.log('💳 NOUVEAU FLOW: Ajout nouvelle carte → Redirection Stripe (PAS de création campagne)');
+      console.log('💳 NOUVEAU FLOW: Ajout nouvelle carte → Redirection Stripe');
       await redirectToStripeForNewCard(pendingCampaignData);
     } catch (error: any) {
       console.error('❌ Erreur ajout nouvelle carte:', error);
