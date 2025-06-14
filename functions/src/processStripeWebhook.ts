@@ -62,6 +62,35 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   console.log('💳 WEBHOOK - Checkout complété:', session.id);
   
   if (session.mode === 'setup' && session.setup_intent) {
+    console.log('⚙️ WEBHOOK - Processing setup mode session');
+    
+    try {
+      // Récupérer le setup intent pour obtenir la méthode de paiement
+      const setupIntent = await stripe.setupIntents.retrieve(session.setup_intent as string);
+      console.log('📋 WEBHOOK - SetupIntent récupéré:', setupIntent.id);
+      
+      if (setupIntent.payment_method && session.customer) {
+        console.log('💳 WEBHOOK - Attachement de la méthode de paiement au client');
+        
+        // S'assurer que la méthode de paiement est attachée au client
+        await stripe.paymentMethods.attach(setupIntent.payment_method as string, {
+          customer: session.customer as string,
+        });
+        
+        // Définir comme méthode par défaut
+        await stripe.customers.update(session.customer as string, {
+          invoice_settings: {
+            default_payment_method: setupIntent.payment_method as string,
+          },
+        });
+        
+        console.log('✅ WEBHOOK - Méthode de paiement attachée et définie par défaut');
+      }
+    } catch (attachError) {
+      console.error('❌ WEBHOOK - Erreur lors de l\'attachement:', attachError);
+      // Continuer même si l'attachement échoue
+    }
+    
     // Configuration de paiement réussie
     const campaignId = session.metadata?.campaign_id;
     if (campaignId) {
@@ -98,13 +127,22 @@ async function handleSetupIntentSucceeded(setupIntent: Stripe.SetupIntent) {
   console.log('⚙️ WEBHOOK - SetupIntent réussi:', setupIntent.id);
   
   if (setupIntent.customer && setupIntent.payment_method) {
-    // Mettre à jour la méthode de paiement par défaut
-    await stripe.customers.update(setupIntent.customer as string, {
-      invoice_settings: {
-        default_payment_method: setupIntent.payment_method as string,
-      },
-    });
-    
-    console.log('✅ WEBHOOK - Méthode de paiement définie par défaut');
+    try {
+      // S'assurer que la méthode de paiement est attachée
+      await stripe.paymentMethods.attach(setupIntent.payment_method as string, {
+        customer: setupIntent.customer as string,
+      });
+      
+      // Mettre à jour la méthode de paiement par défaut
+      await stripe.customers.update(setupIntent.customer as string, {
+        invoice_settings: {
+          default_payment_method: setupIntent.payment_method as string,
+        },
+      });
+      
+      console.log('✅ WEBHOOK - Méthode de paiement attachée et définie par défaut via SetupIntent');
+    } catch (error) {
+      console.error('❌ WEBHOOK - Erreur lors de l\'attachement via SetupIntent:', error);
+    }
   }
 }
