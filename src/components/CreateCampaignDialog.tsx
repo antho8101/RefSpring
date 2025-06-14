@@ -31,7 +31,7 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
     handleCardSelection,
     handleAddNewCard,
     setShowPaymentSelector,
-    // ✅ SYSTÈME VIA CONTEXTE GLOBAL
+    // ✅ SYSTÈME ISOLÉ
     successModalData,
     showConfetti,
     isSuccessModalOpen,
@@ -40,7 +40,7 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
 
   // Logger CHAQUE RENDER avec détails complets
   useEffect(() => {
-    console.log('🔥 DIALOG RENDER: États détaillés via contexte:', {
+    console.log('🔥 DIALOG RENDER: États détaillés:', {
       open,
       isSuccessModalOpen,
       successModalData,
@@ -71,7 +71,16 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
     console.log('💳 DIALOG: Résultat handleCardSelection:', result);
     
     if (result?.success) {
-      console.log('🎉 DIALOG: Succès confirmé, modale de succès devrait être visible via contexte');
+      console.log('🎉 DIALOG: Succès confirmé, modale de succès devrait être visible');
+      
+      // Forcer un petit délai pour s'assurer que les états sont mis à jour
+      setTimeout(() => {
+        console.log('🔍 DIALOG: Vérification post-succès:', {
+          isSuccessModalOpen,
+          successModalData,
+          'typeof successModalData': typeof successModalData
+        });
+      }, 100);
     }
   };
 
@@ -100,7 +109,7 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
   };
 
   // Log spécial pour le rendu de la modale
-  console.log('🎭 DIALOG: Condition de rendu modale via contexte:', {
+  console.log('🎭 DIALOG: Condition de rendu modale:', {
     'isSuccessModalOpen': isSuccessModalOpen,
     'successModalData': !!successModalData,
     'successModalData?.campaignId': successModalData?.campaignId,
@@ -109,7 +118,7 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
 
   return (
     <>
-      {/* ✅ CONFETTIS AVEC CONTEXTE GLOBAL */}
+      {/* ✅ CONFETTIS AVEC SYSTÈME ISOLÉ */}
       <ConfettiCelebration 
         trigger={showConfetti} 
         onComplete={() => {}} 
@@ -178,7 +187,7 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
         loading={loading || paymentLoading}
       />
 
-      {/* ✅ MODALE DE SUCCÈS - RENDU VIA CONTEXTE GLOBAL */}
+      {/* ✅ MODALE DE SUCCÈS - RENDU SIMPLIFIÉ SANS CONDITIONS COMPLEXES */}
       <CampaignSuccessModal
         open={isSuccessModalOpen}
         onOpenChange={handleSuccessModalClose}
@@ -202,7 +211,7 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
           maxWidth: '400px'
         }}>
           <div style={{ marginBottom: '8px', fontSize: '14px', fontWeight: 'bold', color: '#00ff00' }}>
-            🌍 DEBUG CONTEXTE GLOBAL V4 🌍
+            🚀 DEBUG COMPLET V3 🚀
           </div>
           <div style={{ color: isSuccessModalOpen ? '#00ff00' : '#ff6b6b', marginBottom: '4px' }}>
             ✅ isSuccessModalOpen: {String(isSuccessModalOpen)}
