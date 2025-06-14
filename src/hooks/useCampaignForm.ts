@@ -32,15 +32,15 @@ export const useCampaignForm = () => {
   const { loading: paymentLoading } = useStripePayment();
   const { paymentMethods, loading: paymentMethodsLoading } = usePaymentMethods();
 
-  // Form submission logic
-  const { handleSubmit, createCampaignWithPayment } = useCampaignFormSubmission(
+  // Form submission logic avec nouveau flow
+  const { handleSubmit, createCampaignWithExistingCard, redirectToStripeForNewCard } = useCampaignFormSubmission(
     formData,
     setPendingCampaignData,
     setShowPaymentSelector,
     setLoading
   );
 
-  // Card selection logic
+  // Card selection logic avec nouveau flow
   const { handleCardSelection, handleAddNewCard } = useCampaignCardSelection(
     pendingCampaignData,
     setLoading,
@@ -48,8 +48,8 @@ export const useCampaignForm = () => {
     setCreatedCampaign,
     setShowSuccessModal,
     setShowPaymentSelector,
-    createCampaignWithPayment,
-    triggerSuccessModal // 📋 CORRECTION: Passer triggerSuccessModal
+    redirectToStripeForNewCard, // Nouvelle méthode
+    triggerSuccessModal
   );
 
   return {
