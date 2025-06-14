@@ -23,19 +23,42 @@ export const useCampaigns = () => {
   // Wrapper sécurisé pour les opérations
   const secureOperations = {
     createCampaign: async (campaignData: any) => {
-      requireAuthentication('créer une campagne');
+      // CORRECTION CRITIQUE : Vérifier d'abord si l'auth est finie
+      if (authLoading) {
+        console.log('🔐 SECURITY - Auth still loading, cannot create campaign yet');
+        throw new Error('Authentification en cours, veuillez patienter...');
+      }
+      
+      if (!requireAuthentication('créer une campagne')) {
+        return;
+      }
       return operations.createCampaign(campaignData);
     },
     updateCampaign: async (id: string, updates: any) => {
-      requireAuthentication('modifier une campagne');
+      if (authLoading) {
+        throw new Error('Authentification en cours, veuillez patienter...');
+      }
+      if (!requireAuthentication('modifier une campagne')) {
+        return;
+      }
       return operations.updateCampaign(id, updates);
     },
     finalizeCampaign: async (id: string, stripeData: any) => {
-      requireAuthentication('finaliser une campagne');
+      if (authLoading) {
+        throw new Error('Authentification en cours, veuillez patienter...');
+      }
+      if (!requireAuthentication('finaliser une campagne')) {
+        return;
+      }
       return operations.finalizeCampaign(id, stripeData);
     },
     deleteCampaign: async (id: string) => {
-      requireAuthentication('supprimer une campagne');
+      if (authLoading) {
+        throw new Error('Authentification en cours, veuillez patienter...');
+      }
+      if (!requireAuthentication('supprimer une campagne')) {
+        return;
+      }
       return operations.deleteCampaign(id);
     },
   };

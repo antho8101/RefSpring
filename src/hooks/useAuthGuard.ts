@@ -42,10 +42,10 @@ export const useAuthGuard = (options: UseAuthGuardOptions = {}) => {
 
   // Fonction pour vérifier l'autorisation d'une action
   const requireAuthentication = useCallback((action: string = 'cette action') => {
-    // CORRECTION: Ne pas lancer d'exception si l'authentification est encore en cours de chargement
+    // CORRECTION CRITIQUE : Pendant le chargement, retourner false sans lancer d'exception
     if (loading) {
       console.log(`🔐 SECURITY - Auth still loading for action: ${action}`);
-      return false; // Retourner false au lieu de lancer une exception
+      return false; // Ne pas bloquer, juste indiquer que ce n'est pas encore prêt
     }
     
     if (!user) {
@@ -59,7 +59,7 @@ export const useAuthGuard = (options: UseAuthGuardOptions = {}) => {
 
   // Fonction pour vérifier la propriété d'une ressource
   const requireOwnership = useCallback((resourceUserId: string, resourceType: string = 'ressource') => {
-    // CORRECTION: Vérifier d'abord que l'authentification est terminée
+    // CORRECTION : Vérifier d'abord que l'authentification est terminée
     if (loading) {
       console.log(`🔐 SECURITY - Auth still loading for ownership check: ${resourceType}`);
       return false;

@@ -1,8 +1,9 @@
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useStripePayment } from '@/hooks/useStripePayment';
 import { useCampaigns } from '@/hooks/useCampaigns';
+import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { CheckCircle, Loader2, AlertCircle, ArrowRight } from 'lucide-react';
@@ -13,6 +14,7 @@ import { useToast } from '@/hooks/use-toast';
 export const PaymentSuccessPage = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { user, loading: authLoading } = useAuth();
   const { verifyPaymentSetup } = useStripePayment();
   const { createCampaign } = useCampaigns();
   const { toast } = useToast();
@@ -22,10 +24,13 @@ export const PaymentSuccessPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [createdCampaign, setCreatedCampaign] = useState<{ id: string; name: string } | null>(null);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  
+  // Protection absolue contre les doubles exécutions
+  const hasProcessedRef = useRef(false);
+  const processingRef = useRef(false);
 
   useEffect(() => {
     const setupIntentId = searchParams.get('setup_intent');
-    const campaignId = searchParams.get('campaign_id');
     
     if (!setupIntentId) {
       setError('Aucun setup intent trouvé');
@@ -34,8 +39,30 @@ export const PaymentSuccessPage = () => {
     }
 
     const handlePaymentSuccess = async () => {
+      // PROTECTION ABSOLUE : Vérifier si déjà traité ou en cours de traitement
+      if (hasProcessedRef.current || processingRef.current) {
+        console.log('🔒 PAYMENT SUCCESS: Déjà traité ou en cours, ignoré');
+        return;
+      }
+
+      // PROTECTION : Attendre que l'authentification soit complète
+      if (authLoading) {
+        console.log('🔒 PAYMENT SUCCESS: Authentification en cours, attente...');
+        return;
+      }
+
+      if (!user) {
+        console.log('❌ PAYMENT SUCCESS: Utilisateur non authentifié');
+        setError('Utilisateur non authentifié');
+        setLoading(false);
+        return;
+      }
+
+      // Marquer comme en cours de traitement
+      processingRef.current = true;
+      
       try {
-        console.log('🔥 PAYMENT SUCCESS: Vérification et création campagne après Stripe');
+        console.log('🔥 PAYMENT SUCCESS: TRAITEMENT UNIQUE - Début vérification');
         
         // Vérifier le paiement Stripe
         const verificationResult = await verifyPaymentSetup(setupIntentId);
@@ -66,6 +93,9 @@ export const PaymentSuccessPage = () => {
             // Nettoyer le localStorage
             localStorage.removeItem('pendingCampaignData');
             
+            // Marquer comme traité avec succès
+            hasProcessedRef.current = true;
+            
             // Afficher le succès
             setCreatedCampaign({ id: newCampaignId, name: pendingData.name });
             setShowSuccessModal(true);
@@ -77,6 +107,7 @@ export const PaymentSuccessPage = () => {
             });
           } else {
             console.log('⚠️ Aucune donnée de campagne en attente trouvée');
+            hasProcessedRef.current = true;
             setSuccess(true); // Juste confirmer le paiement
           }
         } else {
@@ -86,12 +117,13 @@ export const PaymentSuccessPage = () => {
         console.error('❌ Erreur lors de la vérification:', err);
         setError(err.message);
       } finally {
+        processingRef.current = false;
         setLoading(false);
       }
     };
 
     handlePaymentSuccess();
-  }, [searchParams, verifyPaymentSetup, createCampaign, toast]);
+  }, [setupIntentId, authLoading, user]); // Dépendances spécifiques pour éviter les boucles
 
   const handleBackToDashboard = () => {
     navigate('/');
@@ -108,7 +140,10 @@ export const PaymentSuccessPage = () => {
                 Finalisation en cours...
               </h2>
               <p className="text-slate-600">
-                Nous vérifions votre paiement et créons votre campagne.
+                {authLoading 
+                  ? 'Vérification de l\'authentification...'
+                  : 'Nous vérifions votre paiement et créons votre campagne.'
+                }
               </p>
             </div>
           </CardContent>
