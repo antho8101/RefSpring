@@ -6,9 +6,9 @@ export const DashboardFooter = () => {
   return (
     <footer className="border-t border-slate-200/50 bg-white/60 backdrop-blur-xl py-6 mt-8 w-full">
       <div className="w-full px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col lg:flex-row items-center gap-6">
+        <div className="flex flex-col lg:flex-row items-center justify-center gap-6">
           {/* Logo à gauche */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 lg:absolute lg:left-4 xl:left-8">
             <RefSpringLogo width="28" height="28" />
             <div>
               <h3 className="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
@@ -18,8 +18,8 @@ export const DashboardFooter = () => {
             </div>
           </div>
 
-          {/* Liens et copyright centrés ensemble */}
-          <div className="flex-1 flex flex-col items-center gap-4">
+          {/* Liens et copyright centrés */}
+          <div className="flex flex-col items-center gap-4">
             <div className="flex flex-wrap justify-center gap-6 text-sm text-slate-500">
               <Link to="/privacy" className="hover:text-slate-700 transition-colors">
                 Confidentialité
