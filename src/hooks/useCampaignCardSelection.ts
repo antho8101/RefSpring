@@ -38,22 +38,23 @@ export const useCampaignCardSelection = (
       
       console.log('✅ 🐛 DEBUG: Campagne créée avec succès avec la carte existante. ID:', campaignId);
       
-      // 🎉 Déclencher les confettis pour la création avec carte existante !
+      // 🎉 Fermer le sélecteur de paiement EN PREMIER
+      console.log('💳 🐛 DEBUG: Fermeture du sélecteur de paiement...');
+      setShowPaymentSelector(false);
+      
+      // 🎉 Déclencher les confettis
       console.log('🎉 🐛 DEBUG: Déclenchement des confettis...');
       setShowConfetti(true);
       
-      // 📋 UTILISER triggerSuccessModal au lieu de définir manuellement les états
-      console.log('📋 🐛 DEBUG: Utilisation de triggerSuccessModal...');
-      triggerSuccessModal(campaignId, pendingCampaignData.name);
+      // 📋 CORRECTION CRITIQUE : Définir les états manuellement au lieu d'utiliser triggerSuccessModal
+      console.log('📋 🐛 DEBUG: Définition manuelle des états de succès...');
+      setCreatedCampaign({ id: campaignId, name: pendingCampaignData.name });
+      setShowSuccessModal(true);
       
       toast({
         title: "Campagne créée avec succès !",
         description: "Votre campagne est maintenant active avec la carte sélectionnée.",
       });
-      
-      // Fermer le sélecteur de paiement
-      console.log('💳 🐛 DEBUG: Fermeture du sélecteur de paiement...');
-      setShowPaymentSelector(false);
       
       // Retourner un signal pour fermer la modale principale
       console.log('💳 🐛 DEBUG: Retour du signal de succès...');
