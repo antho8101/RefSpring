@@ -31,23 +31,25 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
     handleCardSelection,
     handleAddNewCard,
     setShowPaymentSelector,
-    // ✅ UTILISER LE NOUVEAU SYSTÈME ISOLÉ
+    // ✅ SYSTÈME ISOLÉ
     successModalData,
     showConfetti,
     isSuccessModalOpen,
     hideSuccessModal,
   } = useCampaignForm();
 
-  // Logger les changements d'état pour debug - SIMPLIFIÉ
+  // Logger CHAQUE RENDER avec détails complets
   useEffect(() => {
-    console.log('🎭 DIALOG: États isolés:', {
+    console.log('🔥 DIALOG RENDER: États détaillés:', {
       open,
       isSuccessModalOpen,
-      successModalData: successModalData ? `${successModalData.campaignName} (${successModalData.campaignId})` : null,
+      successModalData,
       showPaymentSelector,
-      showConfetti
+      showConfetti,
+      'successModalData?.campaignId': successModalData?.campaignId,
+      'successModalData?.campaignName': successModalData?.campaignName,
     });
-  }, [open, isSuccessModalOpen, successModalData, showPaymentSelector, showConfetti]);
+  });
 
   const onSubmit = async (e: React.FormEvent) => {
     try {
@@ -70,6 +72,15 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
     
     if (result?.success) {
       console.log('🎉 DIALOG: Succès confirmé, modale de succès devrait être visible');
+      
+      // Forcer un petit délai pour s'assurer que les états sont mis à jour
+      setTimeout(() => {
+        console.log('🔍 DIALOG: Vérification post-succès:', {
+          isSuccessModalOpen,
+          successModalData,
+          'typeof successModalData': typeof successModalData
+        });
+      }, 100);
     }
   };
 
@@ -96,6 +107,14 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
     console.log('✅ DIALOG: Changement autorisé vers:', isOpen);
     setOpen(isOpen);
   };
+
+  // Log spécial pour le rendu de la modale
+  console.log('🎭 DIALOG: Condition de rendu modale:', {
+    'isSuccessModalOpen': isSuccessModalOpen,
+    'successModalData': !!successModalData,
+    'successModalData?.campaignId': successModalData?.campaignId,
+    'shouldRender': isSuccessModalOpen && !!successModalData
+  });
 
   return (
     <>
@@ -168,17 +187,15 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
         loading={loading || paymentLoading}
       />
 
-      {/* ✅ MODALE DE SUCCÈS AVEC SYSTÈME ISOLÉ - RENDU INDÉPENDANT */}
-      {isSuccessModalOpen && successModalData && (
-        <CampaignSuccessModal
-          open={isSuccessModalOpen}
-          onOpenChange={handleSuccessModalClose}
-          campaignId={successModalData.campaignId}
-          campaignName={successModalData.campaignName}
-        />
-      )}
+      {/* ✅ MODALE DE SUCCÈS - RENDU SIMPLIFIÉ SANS CONDITIONS COMPLEXES */}
+      <CampaignSuccessModal
+        open={isSuccessModalOpen}
+        onOpenChange={handleSuccessModalClose}
+        campaignId={successModalData?.campaignId || ''}
+        campaignName={successModalData?.campaignName || ''}
+      />
       
-      {/* ✅ DEBUG INFO PLUS CLAIR */}
+      {/* ✅ DEBUG INFO MAXIMUM */}
       {import.meta.env.DEV && (
         <div style={{ 
           position: 'fixed', 
@@ -191,10 +208,10 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
           zIndex: 10000,
           border: '3px solid lime',
           borderRadius: '8px',
-          maxWidth: '350px'
+          maxWidth: '400px'
         }}>
           <div style={{ marginBottom: '8px', fontSize: '14px', fontWeight: 'bold', color: '#00ff00' }}>
-            🚀 SUCCESS MODAL ISOLÉ V2 🚀
+            🚀 DEBUG COMPLET V3 🚀
           </div>
           <div style={{ color: isSuccessModalOpen ? '#00ff00' : '#ff6b6b', marginBottom: '4px' }}>
             ✅ isSuccessModalOpen: {String(isSuccessModalOpen)}
@@ -208,8 +225,14 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
           <div style={{ color: open ? '#00ff00' : '#ff6b6b', marginBottom: '4px' }}>
             🔄 open: {String(open)}
           </div>
-          <div style={{ color: showPaymentSelector ? '#00ff00' : '#ff6b6b' }}>
+          <div style={{ color: showPaymentSelector ? '#00ff00' : '#ff6b6b', marginBottom: '4px' }}>
             💳 paymentSelector: {String(showPaymentSelector)}
+          </div>
+          <div style={{ color: '#ffff00', marginBottom: '4px' }}>
+            📊 shouldRender: {String(isSuccessModalOpen && !!successModalData)}
+          </div>
+          <div style={{ color: '#ffff00' }}>
+            🔍 typeof successModalData: {typeof successModalData}
           </div>
         </div>
       )}
