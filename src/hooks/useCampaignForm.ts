@@ -24,13 +24,16 @@ export const useCampaignForm = () => {
   } = useCampaignFormState();
 
   // State management - modale de succès isolée
+  const successModalState = useSuccessModalState();
+  console.log('🔍 CAMPAIGN FORM: État reçu de useSuccessModalState:', successModalState);
+
   const {
     successModalData,
     showConfetti,
     isSuccessModalOpen,
     showSuccessModal: triggerSuccessModal,
     hideSuccessModal,
-  } = useSuccessModalState();
+  } = successModalState;
 
   // External hooks
   const { loading: paymentLoading } = useStripePayment();
@@ -54,7 +57,7 @@ export const useCampaignForm = () => {
     activateResetProtection
   );
 
-  return {
+  const result = {
     formData,
     loading,
     paymentLoading,
@@ -74,4 +77,12 @@ export const useCampaignForm = () => {
     isSuccessModalOpen,
     hideSuccessModal,
   };
+
+  console.log('🔍 CAMPAIGN FORM: États finaux retournés:', {
+    'successModalData': result.successModalData,
+    'isSuccessModalOpen': result.isSuccessModalOpen,
+    'showConfetti': result.showConfetti
+  });
+
+  return result;
 };
