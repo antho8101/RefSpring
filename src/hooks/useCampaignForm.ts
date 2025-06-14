@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useCampaigns } from '@/hooks/useCampaigns';
 import { useStripePayment } from '@/hooks/useStripePayment';
@@ -57,16 +56,29 @@ export const useCampaignForm = () => {
         throw new Error('L\'URL de destination est requise');
       }
 
-      // **ÉTAPE CRITIQUE** : Rafraîchir les cartes avant de décider
+      // **CORRECTION CRITIQUE** : Récupérer les données fraîches directement
       console.log('🔄 CRITICAL: Vérification des cartes avant création...');
       await refreshPaymentMethods();
       
-      // Attendre un petit délai pour s'assurer que les données sont synchronisées
-      await new Promise(resolve => setTimeout(resolve, 100));
+      // Attendre un délai plus long pour s'assurer de la synchronisation
+      await new Promise(resolve => setTimeout(resolve, 500));
       
-      console.log('💳 CRITICAL: Cartes disponibles après refresh:', paymentMethods.length);
+      // **NOUVEAU** : Faire un deuxième appel pour obtenir les données les plus récentes
+      const freshCardsResponse = await fetch('/api/stripe/get-payment-methods', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userEmail: user?.email }),
+      });
       
-      if (paymentMethods.length > 0) {
+      const freshCardsData = await freshCardsResponse.json();
+      const freshCardsCount = freshCardsData.paymentMethods?.length || 0;
+      
+      console.log('💳 CRITICAL: Cartes disponibles (données fraîches directes):', freshCardsCount);
+      console.log('💳 CRITICAL: Cartes disponibles (hook local):', paymentMethods.length);
+      
+      if (freshCardsCount > 0) {
         console.log('💳 Cartes existantes trouvées, affichage du sélecteur');
         setPendingCampaignData(formData);
         setShowPaymentSelector(true);
