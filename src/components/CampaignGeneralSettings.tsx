@@ -1,4 +1,3 @@
-
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Pause } from 'lucide-react';
@@ -102,10 +101,19 @@ export const CampaignGeneralSettings = ({
       console.log('🔄 RÉACTIVATION: Redirection vers Stripe pour nouvelle carte');
       setShowPaymentSelector(false);
       
+      // Stocker les données de réactivation pour le retour de Stripe
+      localStorage.setItem('campaignReactivationData', JSON.stringify({
+        campaignId: campaign.id,
+        campaignName: campaign.name,
+      }));
+      console.log('💾 Données de réactivation stockées pour campagne:', campaign.name);
+      
       // Utiliser le système de redirection Stripe existant
       await setupPaymentForCampaign(campaign.id, campaign.name);
     } catch (error: any) {
       console.error('❌ Erreur redirection Stripe:', error);
+      // Nettoyer les données si erreur
+      localStorage.removeItem('campaignReactivationData');
     }
   };
 

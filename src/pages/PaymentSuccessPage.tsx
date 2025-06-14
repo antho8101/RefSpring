@@ -14,11 +14,13 @@ export const PaymentSuccessPage = () => {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
   const { verifyPaymentSetup } = useStripePayment();
-  const { createCampaign } = useCampaigns();
+  const { createCampaign, updateCampaign } = useCampaigns();
   const { toast } = useToast();
   
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isReactivation, setIsReactivation] = useState(false);
+  const [campaignName, setCampaignName] = useState<string>('');
   
   // Protection absolue contre les doubles exécutions
   const hasProcessedRef = useRef(false);
@@ -34,7 +36,7 @@ export const PaymentSuccessPage = () => {
     }
 
     const handlePaymentSuccess = async () => {
-      console.log('🔥 PAYMENT SUCCESS: Vérification et création campagne après Stripe');
+      console.log('🔥 PAYMENT SUCCESS: Vérification et traitement après Stripe');
       
       // PROTECTION ABSOLUE : Vérifier si déjà traité ou en cours de traitement
       if (hasProcessedRef.current || processingRef.current) {
@@ -66,52 +68,80 @@ export const PaymentSuccessPage = () => {
         console.log('✅ Paiement vérifié:', verificationResult);
         
         if (verificationResult.status === 'succeeded') {
-          // Récupérer les données de campagne stockées
-          const pendingDataStr = localStorage.getItem('pendingCampaignData');
+          // Vérifier s'il s'agit d'une réactivation de campagne
+          const reactivationData = localStorage.getItem('campaignReactivationData');
           
-          if (pendingDataStr) {
-            const pendingData = JSON.parse(pendingDataStr);
-            console.log('📝 Données campagne récupérées:', pendingData);
+          if (reactivationData) {
+            // CAS DE RÉACTIVATION
+            const { campaignId, campaignName: storedCampaignName } = JSON.parse(reactivationData);
+            console.log('🔄 RÉACTIVATION: Détectée pour campagne:', campaignId);
             
-            // MAINTENANT créer la campagne avec la carte validée
-            const newCampaignId = await createCampaign({
-              name: pendingData.name,
-              description: pendingData.description,
-              targetUrl: pendingData.targetUrl,
-              isActive: pendingData.isActive,
-              isDraft: false,
-              paymentConfigured: true,
-              defaultCommissionRate: 10,
+            setIsReactivation(true);
+            setCampaignName(storedCampaignName);
+            
+            // Réactiver la campagne avec la nouvelle carte
+            await updateCampaign(campaignId, {
+              isActive: true,
               stripePaymentMethodId: verificationResult.paymentMethodId,
             });
             
-            console.log('✅ CAMPAGNE CRÉÉE APRÈS VALIDATION STRIPE:', newCampaignId);
+            console.log('✅ CAMPAGNE RÉACTIVÉE:', campaignId);
             
-            // Nettoyer le localStorage des données de campagne
-            localStorage.removeItem('pendingCampaignData');
-            
-            // Stocker les infos pour afficher la modale dans le dashboard
-            localStorage.setItem('newCampaignCreated', JSON.stringify({
-              id: newCampaignId,
-              name: pendingData.name,
-              showModal: true
-            }));
+            // Nettoyer les données de réactivation
+            localStorage.removeItem('campaignReactivationData');
             
             // Marquer comme traité avec succès
             hasProcessedRef.current = true;
+            setLoading(false);
             
-            toast({
-              title: "Campagne créée avec succès !",
-              description: "Redirection vers le dashboard...",
-            });
-
-            // Redirection immédiate vers le dashboard
-            navigate('/dashboard');
           } else {
-            console.log('⚠️ Aucune donnée de campagne en attente trouvée');
-            hasProcessedRef.current = true;
-            // Redirection vers dashboard même sans campagne
-            navigate('/dashboard');
+            // CAS DE CRÉATION DE CAMPAGNE
+            const pendingDataStr = localStorage.getItem('pendingCampaignData');
+            
+            if (pendingDataStr) {
+              const pendingData = JSON.parse(pendingDataStr);
+              console.log('📝 Données campagne récupérées:', pendingData);
+              
+              // Créer la campagne avec la carte validée
+              const newCampaignId = await createCampaign({
+                name: pendingData.name,
+                description: pendingData.description,
+                targetUrl: pendingData.targetUrl,
+                isActive: pendingData.isActive,
+                isDraft: false,
+                paymentConfigured: true,
+                defaultCommissionRate: 10,
+                stripePaymentMethodId: verificationResult.paymentMethodId,
+              });
+              
+              console.log('✅ CAMPAGNE CRÉÉE APRÈS VALIDATION STRIPE:', newCampaignId);
+              
+              // Nettoyer le localStorage des données de campagne
+              localStorage.removeItem('pendingCampaignData');
+              
+              // Stocker les infos pour afficher la modale dans le dashboard
+              localStorage.setItem('newCampaignCreated', JSON.stringify({
+                id: newCampaignId,
+                name: pendingData.name,
+                showModal: true
+              }));
+              
+              // Marquer comme traité avec succès
+              hasProcessedRef.current = true;
+              
+              toast({
+                title: "Campagne créée avec succès !",
+                description: "Redirection vers le dashboard...",
+              });
+
+              // Redirection immédiate vers le dashboard
+              navigate('/dashboard');
+            } else {
+              console.log('⚠️ Aucune donnée de campagne en attente trouvée');
+              hasProcessedRef.current = true;
+              // Redirection vers dashboard même sans campagne
+              navigate('/dashboard');
+            }
           }
         } else {
           throw new Error(`Échec de la vérification: ${verificationResult.status}`);
@@ -126,9 +156,17 @@ export const PaymentSuccessPage = () => {
     };
 
     handlePaymentSuccess();
-  }, [searchParams, authLoading, user, verifyPaymentSetup, createCampaign, toast, navigate]);
+  }, [searchParams, authLoading, user, verifyPaymentSetup, createCampaign, updateCampaign, toast, navigate]);
 
   const handleBackToDashboard = () => {
+    navigate('/dashboard');
+  };
+
+  const handleContinueToDashboard = () => {
+    toast({
+      title: "✅ Campagne réactivée !",
+      description: `La campagne "${campaignName}" est maintenant active et prête à générer des revenus.`,
+    });
     navigate('/dashboard');
   };
 
@@ -140,12 +178,14 @@ export const PaymentSuccessPage = () => {
             <div className="flex flex-col items-center text-center space-y-4">
               <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
               <h2 className="text-xl font-semibold text-slate-900">
-                Finalisation en cours...
+                {isReactivation ? 'Réactivation en cours...' : 'Finalisation en cours...'}
               </h2>
               <p className="text-slate-600">
                 {authLoading 
                   ? 'Vérification de l\'authentification...'
-                  : 'Nous vérifions votre paiement et créons votre campagne.'
+                  : isReactivation 
+                    ? 'Nous réactivons votre campagne avec la nouvelle carte.'
+                    : 'Nous vérifions votre paiement et créons votre campagne.'
                 }
               </p>
             </div>
@@ -176,6 +216,39 @@ export const PaymentSuccessPage = () => {
     );
   }
 
-  // Cette page ne devrait plus jamais s'afficher normalement
+  // Affichage de confirmation pour la réactivation
+  if (isReactivation) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50 flex items-center justify-center p-4">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
+              <CheckCircle className="h-8 w-8 text-green-600" />
+            </div>
+            <CardTitle className="text-xl font-semibold text-slate-900">
+              🎉 Campagne réactivée !
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="text-center space-y-4">
+            <p className="text-slate-600">
+              Parfait ! La campagne <strong>"{campaignName}"</strong> a été réactivée avec succès.
+            </p>
+            <p className="text-sm text-slate-500">
+              Votre nouvelle carte de paiement a été enregistrée et la campagne accepte à nouveau les nouveaux clics.
+            </p>
+            <Button 
+              onClick={handleContinueToDashboard}
+              className="w-full bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transition-all"
+            >
+              Retour au tableau de bord
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Cette page ne devrait plus jamais s'afficher normalement pour les créations
   return null;
 };
