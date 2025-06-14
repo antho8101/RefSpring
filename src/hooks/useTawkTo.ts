@@ -43,17 +43,59 @@ export const useTawkTo = (config: TawkToConfig = {}) => {
     scriptElement.innerHTML = script;
     document.head.appendChild(scriptElement);
 
-    // Personnaliser la position une fois le widget chargé
-    const positionWidget = () => {
-      const widget = document.querySelector('#tawkchat-iframe-container, .tawk-messenger-container, [id*="tawk"]');
-      if (widget && widget instanceof HTMLElement) {
-        // Positionner le chat bien au-dessus du footer
-        widget.style.bottom = '140px'; // Plus d'espace pour éviter le chevauchement
-        widget.style.right = '20px';
-        widget.style.zIndex = '999'; // En dessous du footer mais visible
-        console.log('🗨️ Tawk.to widget positioned above footer with proper spacing');
+    // Fonction pour forcer le positionnement avec !important
+    const forceWidgetPosition = () => {
+      // Chercher tous les éléments possibles du widget Tawk.to
+      const selectors = [
+        '#tawkchat-iframe-container',
+        '.tawk-messenger-container', 
+        '[id*="tawk"]',
+        'iframe[src*="tawk.to"]'
+      ];
+      
+      selectors.forEach(selector => {
+        const widgets = document.querySelectorAll(selector);
+        widgets.forEach(widget => {
+          if (widget instanceof HTMLElement) {
+            // Forcer le positionnement avec !important
+            widget.style.setProperty('bottom', '160px', 'important');
+            widget.style.setProperty('right', '20px', 'important');
+            widget.style.setProperty('z-index', '998', 'important');
+            console.log('🗨️ Tawk.to widget repositioned with !important');
+          }
+        });
+      });
+
+      // Ajouter des styles CSS globaux pour être sûr
+      const styleElement = document.createElement('style');
+      styleElement.innerHTML = `
+        #tawkchat-iframe-container,
+        .tawk-messenger-container,
+        [id*="tawk"] {
+          bottom: 160px !important;
+          right: 20px !important;
+          z-index: 998 !important;
+        }
+      `;
+      
+      if (!document.head.querySelector('style[data-tawk-position]')) {
+        styleElement.setAttribute('data-tawk-position', 'true');
+        document.head.appendChild(styleElement);
       }
     };
+
+    // Observer pour détecter les changements dans le DOM
+    const observer = new MutationObserver(() => {
+      forceWidgetPosition();
+    });
+
+    // Surveiller les changements dans le body
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['style', 'class']
+    });
 
     // Attendre que le widget soit chargé et le repositionner
     const checkAndPositionWidget = () => {
@@ -61,29 +103,31 @@ export const useTawkTo = (config: TawkToConfig = {}) => {
         // Utiliser onLoad si disponible
         if (window.Tawk_API.onLoad) {
           window.Tawk_API.onLoad = function() {
-            setTimeout(positionWidget, 500);
+            setTimeout(forceWidgetPosition, 500);
+            setTimeout(forceWidgetPosition, 1000);
             // Repositionner également lors du redimensionnement
-            window.addEventListener('resize', positionWidget);
+            window.addEventListener('resize', forceWidgetPosition);
           };
         }
         
         // Repositionner aussi quand le widget change d'état
         if (window.Tawk_API.onChatMaximized) {
           window.Tawk_API.onChatMaximized = function() {
-            setTimeout(positionWidget, 100);
+            setTimeout(forceWidgetPosition, 100);
           };
         }
         
         if (window.Tawk_API.onChatMinimized) {
           window.Tawk_API.onChatMinimized = function() {
-            setTimeout(positionWidget, 100);
+            setTimeout(forceWidgetPosition, 100);
           };
         }
       }
       
-      // Fallback: repositionner après un délai
-      setTimeout(positionWidget, 2000);
-      setTimeout(positionWidget, 4000); // Double vérification
+      // Fallback: repositionner après plusieurs délais
+      setTimeout(forceWidgetPosition, 1000);
+      setTimeout(forceWidgetPosition, 2000);
+      setTimeout(forceWidgetPosition, 4000);
     };
 
     // Vérifier périodiquement que le widget est chargé
@@ -92,12 +136,15 @@ export const useTawkTo = (config: TawkToConfig = {}) => {
         checkAndPositionWidget();
         clearInterval(checkWidget);
       }
+      // Forcer le positionnement même si l'API n'est pas encore prête
+      forceWidgetPosition();
     }, 500);
 
     // Cleanup function
     return () => {
       clearInterval(checkWidget);
-      window.removeEventListener('resize', positionWidget);
+      observer.disconnect();
+      window.removeEventListener('resize', forceWidgetPosition);
       if (window.Tawk_API && window.Tawk_API.onLoaded) {
         console.log('🗨️ Tawk.to cleanup');
       }
