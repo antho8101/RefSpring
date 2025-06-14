@@ -21,7 +21,7 @@ import TermsPage from '@/pages/TermsPage';
 import SecurityPage from '@/pages/SecurityPage';
 import StatusPage from '@/pages/StatusPage';
 import AdminPage from '@/pages/AdminPage';
-import { PaymentSuccessPage } from '@/pages/PaymentSuccessPage';
+import PaymentSuccessPage from '@/pages/PaymentSuccessPage';
 import AffiliatePage from '@/pages/AffiliatePage';
 import AdvancedStatsPage from '@/pages/AdvancedStatsPage';
 import TrackingPage from '@/pages/TrackingPage';
