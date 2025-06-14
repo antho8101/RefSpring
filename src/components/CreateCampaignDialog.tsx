@@ -36,6 +36,7 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
     setShowPaymentSelector,
     setShowConfetti,
     setShowSuccessModal,
+    releaseSuccessModalLock,
   } = useCampaignForm();
 
   // Logger TOUS les changements d'état pour débugger
@@ -50,13 +51,6 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
       paymentLoading
     });
   }, [open, showSuccessModal, createdCampaign, showPaymentSelector, showConfetti, loading, paymentLoading]);
-
-  // 🔥 CORRECTION: Reset manuel uniquement
-  const resetDialog = () => {
-    console.log('🔄 DIALOG: resetDialog appelé MANUELLEMENT');
-    resetForm();
-    setOpen(false);
-  };
 
   const onSubmit = async (e: React.FormEvent) => {
     try {
@@ -90,6 +84,9 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
 
   const handleSuccessModalClose = () => {
     console.log('🔄 DIALOG: handleSuccessModalClose appelé');
+    
+    // 🔥 LIBÉRER les verrous AVANT de fermer
+    releaseSuccessModalLock();
     
     // Fermer tout et reset
     setShowSuccessModal(false);
@@ -157,7 +154,7 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
               <Button 
                 type="button" 
                 variant="outline" 
-                onClick={resetDialog}
+                onClick={() => setOpen(false)}
                 disabled={loading || paymentLoading}
               >
                 Annuler
@@ -203,7 +200,7 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
         />
       )}
       
-      {/* Debug info en mode dev */}
+      {/* Debug info en mode dev - VERSION AMÉLIORÉE */}
       {import.meta.env.DEV && (
         <div style={{ 
           position: 'fixed', 
@@ -211,16 +208,31 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
           right: '10px', 
           background: 'black', 
           color: 'white', 
-          padding: '10px', 
+          padding: '15px', 
           fontSize: '12px',
-          zIndex: 9999,
-          border: '2px solid red'
+          zIndex: 10000,
+          border: '3px solid red',
+          borderRadius: '8px',
+          maxWidth: '350px'
         }}>
-          <div>🎭 showSuccessModal: {String(showSuccessModal)}</div>
-          <div>🎯 createdCampaign: {createdCampaign ? `${createdCampaign.name} (${createdCampaign.id})` : 'null'}</div>
-          <div>✅ shouldShow: {String(shouldShowSuccessModal)}</div>
-          <div>🔄 open: {String(open)}</div>
-          <div>💳 paymentSelector: {String(showPaymentSelector)}</div>
+          <div style={{ marginBottom: '5px', fontSize: '14px', fontWeight: 'bold', color: '#ff6b6b' }}>
+            🚨 DEBUG SUCCESS MODAL 🚨
+          </div>
+          <div style={{ color: showSuccessModal ? '#4ecdc4' : '#ff6b6b' }}>
+            🎭 showSuccessModal: {String(showSuccessModal)}
+          </div>
+          <div style={{ color: createdCampaign ? '#4ecdc4' : '#ff6b6b' }}>
+            🎯 createdCampaign: {createdCampaign ? `${createdCampaign.name} (${createdCampaign.id})` : 'null'}
+          </div>
+          <div style={{ color: shouldShowSuccessModal ? '#4ecdc4' : '#ff6b6b' }}>
+            ✅ shouldShow: {String(shouldShowSuccessModal)}
+          </div>
+          <div style={{ color: open ? '#4ecdc4' : '#ff6b6b' }}>
+            🔄 open: {String(open)}
+          </div>
+          <div style={{ color: showPaymentSelector ? '#4ecdc4' : '#ff6b6b' }}>
+            💳 paymentSelector: {String(showPaymentSelector)}
+          </div>
         </div>
       )}
     </>

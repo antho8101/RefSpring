@@ -26,6 +26,7 @@ export const useCampaignForm = () => {
     updateFormData,
     resetForm,
     triggerSuccessModal,
+    releaseSuccessModalLock,
   } = useCampaignFormState();
 
   // External hooks
@@ -71,5 +72,6 @@ export const useCampaignForm = () => {
     setShowConfetti,
     setShowSuccessModal,
     triggerSuccessModal,
+    releaseSuccessModalLock,
   };
 };

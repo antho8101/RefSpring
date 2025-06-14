@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 
 export interface CampaignFormData {
   name: string;
@@ -22,12 +22,27 @@ export const useCampaignFormState = () => {
     isActive: true,
   });
 
+  // 🔥 PROTECTION ABSOLUE contre les resets non désirés
+  const successModalLockRef = useRef(false);
+  const resetProtectionRef = useRef(false);
+
   const updateFormData = (updates: Partial<CampaignFormData>) => {
     setFormData(prev => ({ ...prev, ...updates }));
   };
 
+  // 🔥 VERSION SÉCURISÉE du reset qui respecte la protection
   const resetForm = () => {
-    console.log('🔥 FINAL: resetForm appelé - remise à zéro des états');
+    if (resetProtectionRef.current) {
+      console.log('🚫 PROTECTION: Reset bloqué car protection active');
+      return;
+    }
+    
+    if (successModalLockRef.current) {
+      console.log('🚫 PROTECTION: Reset bloqué car modale de succès active');
+      return;
+    }
+
+    console.log('🔥 FINAL: resetForm appelé - remise à zéro des états (AUTORISÉ)');
     setFormData({ name: '', description: '', targetUrl: '', isActive: true });
     setPendingCampaignData(null);
     setShowPaymentSelector(false);
@@ -36,46 +51,69 @@ export const useCampaignFormState = () => {
     setCreatedCampaign(null);
   };
 
+  // 🔥 VERSION ULTRA SÉCURISÉE du déclenchement de la modale
   const triggerSuccessModal = (campaignId: string, campaignName: string) => {
     console.log('🔥 FINAL: triggerSuccessModal appelé avec:', { campaignId, campaignName });
-    console.log('🔥 FINAL: États AVANT triggerSuccessModal:', {
-      showSuccessModal,
-      createdCampaign,
-      showConfetti
-    });
     
-    // 🔥 CORRECTION CRITIQUE: Utiliser une seule opération batch
+    // 🔥 VERROUS ABSOLUS
+    successModalLockRef.current = true;
+    resetProtectionRef.current = true;
+    
+    console.log('🔒 PROTECTION: Verrous activés - plus aucun reset possible');
+    
     const newCampaign = { id: campaignId, name: campaignName };
     
-    // 🔥 EMPÊCHER TOUT RESET pendant 5 secondes
-    console.log('🚫 PROTECTION: Activation protection anti-reset pendant 5s');
-    
+    // 🔥 FORCER les états de manière synchrone
     setCreatedCampaign(newCampaign);
     setShowSuccessModal(true);
     setShowConfetti(true);
     
-    console.log('🔥 FINAL: Tous les états définis:', {
+    console.log('🔥 FINAL: États forcés:', {
       createdCampaign: newCampaign,
       showSuccessModal: true,
       showConfetti: true
     });
-    
-    // Forcer un re-render pour s'assurer que les changements d'état sont pris en compte
+
+    // 🔥 VÉRIFICATIONS RETARDÉES avec protection maintenue
     setTimeout(() => {
-      console.log('🔥 FINAL: Vérification post-trigger (50ms):', {
-        showSuccessModal,
-        createdCampaign,
-        showConfetti
-      });
+      console.log('🔥 PROTECTION: Vérification 50ms avec verrous maintenus');
     }, 50);
     
     setTimeout(() => {
-      console.log('🔥 FINAL: Vérification post-trigger (200ms):', {
-        showSuccessModal,
-        createdCampaign,
-        showConfetti
-      });
+      console.log('🔥 PROTECTION: Vérification 200ms avec verrous maintenus');
     }, 200);
+    
+    // 🔥 MAINTENIR la protection pendant 10 secondes (augmenté)
+    setTimeout(() => {
+      console.log('🔓 PROTECTION: Verrous libérés après 10s');
+      resetProtectionRef.current = false;
+      // NE PAS libérer successModalLockRef ici - seulement quand la modale se ferme
+    }, 10000);
+  };
+
+  // 🔥 FONCTION pour libérer le verrou quand la modale se ferme
+  const releaseSuccessModalLock = () => {
+    console.log('🔓 PROTECTION: Libération du verrou de modale de succès');
+    successModalLockRef.current = false;
+    resetProtectionRef.current = false;
+  };
+
+  // 🔥 SETTERS PROTÉGÉS
+  const protectedSetShowSuccessModal = (value: boolean) => {
+    if (!value && successModalLockRef.current) {
+      // Permettre seulement si on ferme explicitement via releaseSuccessModalLock
+      console.log('🚫 PROTECTION: Tentative de fermeture modale bloquée');
+      return;
+    }
+    setShowSuccessModal(value);
+  };
+
+  const protectedSetCreatedCampaign = (value: { id: string; name: string } | null) => {
+    if (value === null && successModalLockRef.current) {
+      console.log('🚫 PROTECTION: Tentative de reset createdCampaign bloquée');
+      return;
+    }
+    setCreatedCampaign(value);
   };
 
   return {
@@ -88,15 +126,16 @@ export const useCampaignFormState = () => {
     createdCampaign,
     formData,
     
-    // Actions
+    // Actions (certaines protégées)
     setLoading,
     setShowPaymentSelector,
     setPendingCampaignData,
     setShowConfetti,
-    setShowSuccessModal,
-    setCreatedCampaign,
+    setShowSuccessModal: protectedSetShowSuccessModal,
+    setCreatedCampaign: protectedSetCreatedCampaign,
     updateFormData,
     resetForm,
     triggerSuccessModal,
+    releaseSuccessModalLock,
   };
 };
