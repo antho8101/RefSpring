@@ -46,10 +46,11 @@ export default async function handler(req, res) {
     const origin = req.headers.origin || req.headers.host;
     const baseUrl = origin ? (origin.startsWith('http') ? origin : `https://${origin}`) : 'https://refspring.com';
 
-    // Créer une session Checkout pour SetupIntent
+    // Créer une session Checkout pour SetupIntent avec currency requis
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       mode: 'setup',
+      currency: 'eur', // Paramètre requis par Stripe
       success_url: `${baseUrl}/payment-success?setup_intent={CHECKOUT_SESSION_ID}&campaign_id=${campaignId}`,
       cancel_url: `${baseUrl}/dashboard`,
       metadata: {
