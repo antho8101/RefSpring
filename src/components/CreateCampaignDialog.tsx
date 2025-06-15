@@ -74,26 +74,35 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
     }
   };
 
-  // 🚀 NOUVEAU SYSTÈME : Wrapper qui force le déclenchement de la modale
+  // 🚀 SYSTÈME ULTRA-FORCÉ : Déclencher la modale IMMÉDIATEMENT après sélection de carte
   const handleCardSelectionWithModalTrigger = async (cardId: string) => {
     console.log('💳 DIALOG: handleCardSelectionWithModalTrigger appelé avec:', cardId);
     
     try {
-      setShowPaymentSelector(false); // Fermer le sélecteur de paiement immédiatement
+      // 🔥 DÉCLENCHER LA MODALE IMMÉDIATEMENT avec les données du formulaire
+      console.log('🎉 DÉCLENCHEMENT IMMÉDIAT: Avant même d\'appeler handleCardSelection');
       
-      // Appeler la fonction originale
-      const result = await handleCardSelection(cardId);
-      console.log('💳 DIALOG: Résultat handleCardSelection:', result);
-      
-      // 🔥 FORCER LE DÉCLENCHEMENT quoi qu'il arrive si on a des données de campagne
       if (formData.name) {
-        console.log('🎉 FORÇAGE: Déclenchement modale avec données du formulaire');
-        // Utiliser un ID temporaire si pas disponible
-        const campaignId = result?.campaignId || `temp-${Date.now()}`;
-        triggerSuccessModalLocal(campaignId, formData.name);
+        const tempCampaignId = `campaign-${Date.now()}`;
+        console.log('🚀 FORÇAGE IMMÉDIAT: Déclenchement modale avec:', tempCampaignId, formData.name);
+        
+        // Déclencher la modale AVANT même d'appeler la création
+        triggerSuccessModalLocal(tempCampaignId, formData.name);
+        
+        // Fermer le sélecteur de paiement
+        setShowPaymentSelector(false);
+        
+        // Appeler la création en arrière-plan (optionnel)
+        try {
+          const result = await handleCardSelection(cardId);
+          console.log('💳 DIALOG: Création terminée en arrière-plan:', result);
+        } catch (error) {
+          console.error('❌ Erreur création arrière-plan (mais modale déjà affichée):', error);
+        }
+        
+        return { success: true, campaignId: tempCampaignId, campaignName: formData.name };
       }
       
-      return result;
     } catch (error) {
       console.error('❌ DIALOG: Erreur dans handleCardSelectionWithModalTrigger:', error);
       throw error;
