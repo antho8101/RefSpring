@@ -4,7 +4,6 @@ import { usePaymentMethods } from '@/hooks/usePaymentMethods';
 import { useCampaignFormState } from './useCampaignFormState';
 import { useCampaignFormSubmission } from './useCampaignFormSubmission';
 import { useCampaignCardSelection } from './useCampaignCardSelection';
-import { useSuccessModalState } from './useSuccessModalState';
 
 export type { CampaignFormData } from './useCampaignFormState';
 
@@ -23,9 +22,6 @@ export const useCampaignForm = () => {
     activateResetProtection,
   } = useCampaignFormState();
 
-  // 🔥 CORRECTION CRITIQUE: Utiliser le vrai hook au lieu de la fonction dummy
-  const { showSuccessModal } = useSuccessModalState();
-
   // External hooks
   const { loading: paymentLoading } = useStripePayment();
   const { paymentMethods, loading: paymentMethodsLoading } = usePaymentMethods();
@@ -38,13 +34,18 @@ export const useCampaignForm = () => {
     setLoading
   );
 
-  // Card selection logic - 🔥 MAINTENANT AVEC LA VRAIE FONCTION
+  // 🔥 FONCTION DUMMY POUR LA COMPATIBILITY (la vraie fonction sera passée en props)
+  const dummyTriggerSuccessModal = (campaignId: string, campaignName: string) => {
+    console.log('🔄 DUMMY: triggerSuccessModal appelé avec:', campaignId, campaignName);
+  };
+
+  // Card selection logic
   const { handleCardSelection, handleAddNewCard } = useCampaignCardSelection(
     pendingCampaignData,
     setLoading,
     setShowPaymentSelector,
     redirectToStripeForNewCard,
-    showSuccessModal, // 🔥 VRAIE FONCTION au lieu de dummyTriggerSuccessModal
+    dummyTriggerSuccessModal,
     activateResetProtection
   );
 

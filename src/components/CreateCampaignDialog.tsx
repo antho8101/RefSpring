@@ -1,32 +1,21 @@
 
-import { useState, ReactNode, useEffect } from 'react';
+import { useState, ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Plus, CreditCard, Loader2 } from 'lucide-react';
 import { useCampaignForm } from '@/hooks/useCampaignForm';
-import { useSuccessModalState } from '@/hooks/useSuccessModalState';
 import { CampaignFormFields } from '@/components/CampaignFormFields';
 import { PaymentMethodSelector } from '@/components/PaymentMethodSelector';
-import { ConfettiCelebration } from '@/components/ConfettiCelebration';
-import { CampaignSuccessModal } from '@/components/CampaignSuccessModal';
 import { useToast } from '@/hooks/use-toast';
 
 interface CreateCampaignDialogProps {
   children?: ReactNode;
+  onSuccessModalTrigger: (campaignId: string, campaignName: string) => void;
 }
 
-export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) => {
+export const CreateCampaignDialog = ({ children, onSuccessModalTrigger }: CreateCampaignDialogProps) => {
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
-  
-  // 🔥 NOUVEAU : Utiliser le hook dédié pour la modale de succès
-  const {
-    successModalData,
-    showConfetti,
-    isSuccessModalOpen,
-    showSuccessModal,
-    hideSuccessModal,
-  } = useSuccessModalState();
   
   const {
     formData,
@@ -45,9 +34,7 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
 
   console.log('🔥 DIALOG RENDER: États locaux:', {
     open,
-    isSuccessModalOpen,
-    successModalData,
-    showConfetti
+    showPaymentSelector
   });
 
   const onSubmit = async (e: React.FormEvent) => {
@@ -63,7 +50,7 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
     }
   };
 
-  // 🚀 SYSTÈME CORRIGÉ : Déclencher la modale avec le bon hook
+  // 🚀 SYSTÈME CORRIGÉ : Utiliser la fonction passée en props
   const handleCardSelectionWithModalTrigger = async (cardId: string) => {
     console.log('💳 DIALOG: handleCardSelectionWithModalTrigger appelé avec:', cardId);
     
@@ -75,11 +62,14 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
         const tempCampaignId = `campaign-${Date.now()}`;
         console.log('🚀 FORÇAGE IMMÉDIAT: Déclenchement modale avec:', tempCampaignId, formData.name);
         
-        // 🔥 UTILISER LE VRAI HOOK au lieu de la fonction dummy
-        showSuccessModal(tempCampaignId, formData.name);
+        // 🔥 UTILISER LA FONCTION PASSÉE EN PROPS
+        onSuccessModalTrigger(tempCampaignId, formData.name);
         
         // Fermer le sélecteur de paiement
         setShowPaymentSelector(false);
+        
+        // Fermer le dialog principal immédiatement
+        setOpen(false);
         
         // Toast de confirmation
         toast({
@@ -104,38 +94,17 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
     }
   };
 
-  const handleSuccessModalClose = () => {
-    console.log('🔄 DIALOG: handleSuccessModalClose appelé');
-    
-    // Utiliser la fonction du hook
-    hideSuccessModal();
-    
-    // Fermer le dialog principal et reset
-    setOpen(false);
-    resetForm();
-  };
-
-  // Empêcher fermeture si modale de succès active
   const handleDialogOpenChange = (isOpen: boolean) => {
-    console.log('🔄 DIALOG: handleDialogOpenChange appelé avec:', isOpen, 'isSuccessModalOpen:', isSuccessModalOpen);
-    
-    if (!isOpen && isSuccessModalOpen) {
-      console.log('🚫 DIALOG: Fermeture bloquée car modale de succès active');
-      return;
-    }
-    
-    console.log('✅ DIALOG: Changement autorisé vers:', isOpen);
+    console.log('🔄 DIALOG: handleDialogOpenChange appelé avec:', isOpen);
     setOpen(isOpen);
+    
+    if (!isOpen) {
+      resetForm();
+    }
   };
 
   return (
     <>
-      {/* CONFETTIS */}
-      <ConfettiCelebration 
-        trigger={showConfetti} 
-        onComplete={() => {}} 
-      />
-      
       <Dialog open={open} onOpenChange={handleDialogOpenChange}>
         <DialogTrigger asChild>
           {children || (
@@ -198,64 +167,6 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
         onAddNewCard={handleAddNewCard}
         loading={loading || paymentLoading}
       />
-
-      {/* MODALE DE SUCCÈS */}
-      <CampaignSuccessModal
-        open={isSuccessModalOpen}
-        onOpenChange={handleSuccessModalClose}
-        campaignId={successModalData?.campaignId || ''}
-        campaignName={successModalData?.campaignName || ''}
-      />
-      
-      {/* DEBUG BUTTON - FONCTIONNE EN DEV ET PROD */}
-      {(import.meta.env.DEV || window.location.hostname.includes('vercel')) && (
-        <div style={{ 
-          position: 'fixed', 
-          bottom: '10px', 
-          right: '10px', 
-          background: 'black', 
-          color: 'white', 
-          padding: '15px', 
-          fontSize: '12px',
-          zIndex: 10000,
-          border: '3px solid lime',
-          borderRadius: '8px',
-          maxWidth: '400px'
-        }}>
-          <div style={{ marginBottom: '8px', fontSize: '14px', fontWeight: 'bold', color: '#00ff00' }}>
-            🚀 DEBUG MODAL TRIGGER 🚀
-          </div>
-          <div style={{ color: isSuccessModalOpen ? '#00ff00' : '#ff6b6b', marginBottom: '4px' }}>
-            ✅ isSuccessModalOpen: {String(isSuccessModalOpen)}
-          </div>
-          <div style={{ color: successModalData ? '#00ff00' : '#ff6b6b', marginBottom: '4px' }}>
-            🎯 successModalData: {successModalData ? `${successModalData.campaignName} (${successModalData.campaignId})` : 'null'}
-          </div>
-          <div style={{ color: showConfetti ? '#00ff00' : '#ff6b6b', marginBottom: '4px' }}>
-            🎊 showConfetti: {String(showConfetti)}
-          </div>
-          <div style={{ color: open ? '#00ff00' : '#ff6b6b', marginBottom: '4px' }}>
-            🔄 open: {String(open)}
-          </div>
-          <div style={{ color: showPaymentSelector ? '#00ff00' : '#ff6b6b' }}>
-            💳 paymentSelector: {String(showPaymentSelector)}
-          </div>
-          <button 
-            onClick={() => showSuccessModal('test-id', 'Test Campaign')}
-            style={{ 
-              marginTop: '10px', 
-              padding: '5px 10px', 
-              background: '#00ff00', 
-              color: 'black', 
-              border: 'none', 
-              borderRadius: '4px',
-              cursor: 'pointer'
-            }}
-          >
-            🧪 TEST MODAL
-          </button>
-        </div>
-      )}
     </>
   );
 };
