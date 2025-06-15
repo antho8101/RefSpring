@@ -22,7 +22,10 @@ const AdvancedStatsPage = () => {
   const navigate = useNavigate();
   const { campaigns } = useCampaigns();
   const { period, setPeriod, getDateFilter, getPeriodLabel } = useStatsFilters();
-  const { stats, loading } = useAdvancedStatsExtended(campaignId, getDateFilter());
+  
+  // 🔧 FIX: Utiliser directement la valeur filtrée mémorisée
+  const dateFilter = getDateFilter();
+  const { stats, loading } = useAdvancedStatsExtended(campaignId, dateFilter);
 
   const campaign = campaigns.find(c => c.id === campaignId);
 
