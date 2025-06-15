@@ -10,7 +10,11 @@ import { CompactCampaignCard } from '@/components/CompactCampaignCard';
 import { useState, useCallback, memo } from 'react';
 import { CreateCampaignDialog } from '@/components/CreateCampaignDialog';
 
-export const CampaignsList = memo(() => {
+interface CampaignsListProps {
+  onSuccessModalTrigger: (campaignId: string, campaignName: string) => void;
+}
+
+export const CampaignsList = memo(({ onSuccessModalTrigger }: CampaignsListProps) => {
   const { campaigns, loading } = useCampaigns();
   const { toast } = useToast();
   const [viewMode, setViewMode] = useState<'normal' | 'compact'>('normal');
@@ -62,7 +66,7 @@ export const CampaignsList = memo(() => {
             Créez votre première campagne pour commencer à gérer vos affiliés et générer des revenus.
           </p>
           <div className="mt-6">
-            <CreateCampaignDialog>
+            <CreateCampaignDialog onSuccessModalTrigger={onSuccessModalTrigger}>
               <Button 
                 size="lg" 
                 className="text-base lg:text-lg px-6 py-3 lg:px-8 lg:py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-110 border-0 text-white group relative overflow-hidden" 

@@ -46,7 +46,7 @@ export const DashboardContent = () => {
         </div>
         
         <div className="relative min-w-0" data-tour="campaigns-list">
-          <CampaignsList />
+          <CampaignsList onSuccessModalTrigger={showSuccessModal} />
         </div>
       </div>
 
