@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Plus, CreditCard, Loader2 } from 'lucide-react';
 import { useCampaignForm } from '@/hooks/useCampaignForm';
+import { useSuccessModalState } from '@/hooks/useSuccessModalState';
 import { CampaignFormFields } from '@/components/CampaignFormFields';
 import { PaymentMethodSelector } from '@/components/PaymentMethodSelector';
 import { ConfettiCelebration } from '@/components/ConfettiCelebration';
@@ -16,10 +17,16 @@ interface CreateCampaignDialogProps {
 
 export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) => {
   const [open, setOpen] = useState(false);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [successData, setSuccessData] = useState<{campaignId: string, campaignName: string} | null>(null);
-  const [showConfetti, setShowConfetti] = useState(false);
   const { toast } = useToast();
+  
+  // 🔥 NOUVEAU : Utiliser le hook dédié pour la modale de succès
+  const {
+    successModalData,
+    showConfetti,
+    isSuccessModalOpen,
+    showSuccessModal,
+    hideSuccessModal,
+  } = useSuccessModalState();
   
   const {
     formData,
@@ -38,28 +45,10 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
 
   console.log('🔥 DIALOG RENDER: États locaux:', {
     open,
-    showSuccessModal,
-    successData,
+    isSuccessModalOpen,
+    successModalData,
     showConfetti
   });
-
-  // 🔥 FONCTION DÉDIÉE POUR DÉCLENCHER LA MODALE
-  const triggerSuccessModalLocal = (campaignId: string, campaignName: string) => {
-    console.log('🚀 TRIGGER SUCCESS MODAL LOCAL appelé avec:', { campaignId, campaignName });
-    
-    // Forcer l'état de manière synchrone
-    setSuccessData({ campaignId, campaignName });
-    setShowConfetti(true);
-    setShowSuccessModal(true);
-    
-    console.log('✅ États forcés - showSuccessModal devrait être true');
-    
-    // Toast de confirmation
-    toast({
-      title: "🎉 Campagne créée avec succès !",
-      description: `Votre campagne "${campaignName}" est maintenant active !`,
-    });
-  };
 
   const onSubmit = async (e: React.FormEvent) => {
     try {
@@ -74,7 +63,7 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
     }
   };
 
-  // 🚀 SYSTÈME ULTRA-FORCÉ : Déclencher la modale IMMÉDIATEMENT après sélection de carte
+  // 🚀 SYSTÈME CORRIGÉ : Déclencher la modale avec le bon hook
   const handleCardSelectionWithModalTrigger = async (cardId: string) => {
     console.log('💳 DIALOG: handleCardSelectionWithModalTrigger appelé avec:', cardId);
     
@@ -86,11 +75,17 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
         const tempCampaignId = `campaign-${Date.now()}`;
         console.log('🚀 FORÇAGE IMMÉDIAT: Déclenchement modale avec:', tempCampaignId, formData.name);
         
-        // Déclencher la modale AVANT même d'appeler la création
-        triggerSuccessModalLocal(tempCampaignId, formData.name);
+        // 🔥 UTILISER LE VRAI HOOK au lieu de la fonction dummy
+        showSuccessModal(tempCampaignId, formData.name);
         
         // Fermer le sélecteur de paiement
         setShowPaymentSelector(false);
+        
+        // Toast de confirmation
+        toast({
+          title: "🎉 Campagne créée avec succès !",
+          description: `Votre campagne "${formData.name}" est maintenant active !`,
+        });
         
         // Appeler la création en arrière-plan (optionnel)
         try {
@@ -112,10 +107,8 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
   const handleSuccessModalClose = () => {
     console.log('🔄 DIALOG: handleSuccessModalClose appelé');
     
-    // Fermer la modale de succès
-    setShowSuccessModal(false);
-    setSuccessData(null);
-    setShowConfetti(false);
+    // Utiliser la fonction du hook
+    hideSuccessModal();
     
     // Fermer le dialog principal et reset
     setOpen(false);
@@ -124,9 +117,9 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
 
   // Empêcher fermeture si modale de succès active
   const handleDialogOpenChange = (isOpen: boolean) => {
-    console.log('🔄 DIALOG: handleDialogOpenChange appelé avec:', isOpen, 'showSuccessModal:', showSuccessModal);
+    console.log('🔄 DIALOG: handleDialogOpenChange appelé avec:', isOpen, 'isSuccessModalOpen:', isSuccessModalOpen);
     
-    if (!isOpen && showSuccessModal) {
+    if (!isOpen && isSuccessModalOpen) {
       console.log('🚫 DIALOG: Fermeture bloquée car modale de succès active');
       return;
     }
@@ -140,7 +133,7 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
       {/* CONFETTIS */}
       <ConfettiCelebration 
         trigger={showConfetti} 
-        onComplete={() => setShowConfetti(false)} 
+        onComplete={() => {}} 
       />
       
       <Dialog open={open} onOpenChange={handleDialogOpenChange}>
@@ -208,10 +201,10 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
 
       {/* MODALE DE SUCCÈS */}
       <CampaignSuccessModal
-        open={showSuccessModal}
+        open={isSuccessModalOpen}
         onOpenChange={handleSuccessModalClose}
-        campaignId={successData?.campaignId || ''}
-        campaignName={successData?.campaignName || ''}
+        campaignId={successModalData?.campaignId || ''}
+        campaignName={successModalData?.campaignName || ''}
       />
       
       {/* DEBUG BUTTON - FONCTIONNE EN DEV ET PROD */}
@@ -232,11 +225,11 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
           <div style={{ marginBottom: '8px', fontSize: '14px', fontWeight: 'bold', color: '#00ff00' }}>
             🚀 DEBUG MODAL TRIGGER 🚀
           </div>
-          <div style={{ color: showSuccessModal ? '#00ff00' : '#ff6b6b', marginBottom: '4px' }}>
-            ✅ showSuccessModal: {String(showSuccessModal)}
+          <div style={{ color: isSuccessModalOpen ? '#00ff00' : '#ff6b6b', marginBottom: '4px' }}>
+            ✅ isSuccessModalOpen: {String(isSuccessModalOpen)}
           </div>
-          <div style={{ color: successData ? '#00ff00' : '#ff6b6b', marginBottom: '4px' }}>
-            🎯 successData: {successData ? `${successData.campaignName} (${successData.campaignId})` : 'null'}
+          <div style={{ color: successModalData ? '#00ff00' : '#ff6b6b', marginBottom: '4px' }}>
+            🎯 successModalData: {successModalData ? `${successModalData.campaignName} (${successModalData.campaignId})` : 'null'}
           </div>
           <div style={{ color: showConfetti ? '#00ff00' : '#ff6b6b', marginBottom: '4px' }}>
             🎊 showConfetti: {String(showConfetti)}
@@ -248,7 +241,7 @@ export const CreateCampaignDialog = ({ children }: CreateCampaignDialogProps) =>
             💳 paymentSelector: {String(showPaymentSelector)}
           </div>
           <button 
-            onClick={() => triggerSuccessModalLocal('test-id', 'Test Campaign')}
+            onClick={() => showSuccessModal('test-id', 'Test Campaign')}
             style={{ 
               marginTop: '10px', 
               padding: '5px 10px', 
