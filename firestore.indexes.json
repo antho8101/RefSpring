@@ -2,11 +2,29 @@
 {
   "indexes": [
     {
-      "collectionGroup": "campaigns",
+      "collectionGroup": "paymentDistributions",
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "userId",
+          "fieldPath": "campaignId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "processedAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "conversions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "campaignId",
           "order": "ASCENDING"
         },
         {
@@ -17,6 +35,20 @@
     },
     {
       "collectionGroup": "clicks",
+      "queryScope": "COLLECTION", 
+      "fields": [
+        {
+          "fieldPath": "campaignId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "createdAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "affiliates",
       "queryScope": "COLLECTION",
       "fields": [
         {
@@ -24,63 +56,7 @@
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "timestamp",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "clicks",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "affiliateId",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "timestamp",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "clicks",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "ip",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "timestamp",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "conversions",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "campaignId",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "timestamp",
-          "order": "DESCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "conversions",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "affiliateId",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "timestamp",
+          "fieldPath": "createdAt",
           "order": "DESCENDING"
         }
       ]
