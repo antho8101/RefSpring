@@ -30,26 +30,55 @@ export const calculateCommissionsSinceDate = async (
 
     console.log('👥 Affiliés trouvés:', affiliates.length);
 
-    // Récupérer les conversions depuis la date donnée
+    // 🔍 DÉBOGAGE RENFORCÉ - Récupérer TOUTES les conversions pour cette campagne d'abord
+    console.log('🔍 DÉBOGAGE - Recherche de TOUTES les conversions pour campagne:', campaignId);
+    
+    const allConversionsQuery = query(
+      collection(db, 'conversions'),
+      where('campaignId', '==', campaignId)
+    );
+    const allConversionsSnapshot = await getDocs(allConversionsQuery);
+    
+    console.log('🔍 DÉBOGAGE - TOUTES les conversions trouvées:', allConversionsSnapshot.size);
+    
+    // Log détaillé de chaque conversion trouvée
+    allConversionsSnapshot.docs.forEach((doc, index) => {
+      const data = doc.data();
+      console.log(`🔍 DÉBOGAGE - Conversion ${index + 1}:`, {
+        id: doc.id,
+        campaignId: data.campaignId,
+        affiliateId: data.affiliateId,
+        amount: data.amount,
+        commission: data.commission,
+        timestamp: data.timestamp || data.createdAt,
+        rawTimestamp: data.timestamp || data.createdAt
+      });
+    });
+
+    // Récupérer les conversions selon la logique habituelle
     let conversionsQuery = query(
       collection(db, 'conversions'),
-      where('campaignId', '==', campaignId),
-      orderBy('createdAt', 'desc')
+      where('campaignId', '==', campaignId)
     );
 
     if (sinceDate) {
+      console.log('🔍 DÉBOGAGE - Ajout filtre date:', sinceDate);
       conversionsQuery = query(
         collection(db, 'conversions'),
         where('campaignId', '==', campaignId),
-        where('createdAt', '>=', Timestamp.fromDate(sinceDate)),
-        orderBy('createdAt', 'desc')
+        where('createdAt', '>=', Timestamp.fromDate(sinceDate))
       );
     }
 
     const conversionsSnapshot = await getDocs(conversionsQuery);
+    
+    console.log('🔍 DÉBOGAGE - Date de référence (sinceDate):', sinceDate);
+    console.log('🔍 DÉBOGAGE - Conversions après filtre date:', conversionsSnapshot.size);
+
     const conversions: ConversionData[] = conversionsSnapshot.docs.map(doc => {
       const data = doc.data();
-      const rawTimestamp = data.createdAt || data.timestamp;
+      // 🔍 DÉBOGAGE - Essayer plusieurs champs pour le timestamp
+      let rawTimestamp = data.createdAt || data.timestamp;
       let convertedDate: Date;
       
       if (rawTimestamp?.toDate) {
@@ -58,7 +87,16 @@ export const calculateCommissionsSinceDate = async (
         convertedDate = new Date(rawTimestamp.seconds * 1000);
       } else {
         convertedDate = new Date();
+        console.log('⚠️ DÉBOGAGE - Aucun timestamp valide trouvé pour la conversion:', doc.id);
       }
+
+      console.log('🔍 DÉBOGAGE - Traitement conversion:', {
+        id: doc.id,
+        rawTimestamp,
+        convertedDate,
+        amount: data.amount,
+        commission: data.commission
+      });
 
       return {
         id: doc.id,
@@ -71,19 +109,17 @@ export const calculateCommissionsSinceDate = async (
       };
     });
 
-    console.log('🔍 DÉBOGAGE - Date de référence (sinceDate):', sinceDate);
-    console.log('🔍 DÉBOGAGE - Nombre total de conversions:', conversions.length);
+    console.log('🔍 DÉBOGAGE - Nombre total de conversions après traitement:', conversions.length);
 
     // Filtrer les conversions selon la date
     const filteredConversions = conversions.filter(conversion => {
       if (!sinceDate) return true;
       
-      console.log('🔍 DÉBOGAGE - Conversion:', {
+      console.log('🔍 DÉBOGAGE - Test filtre conversion:', {
         id: conversion.id,
         convertedDate: conversion.convertedDate,
-        amount: conversion.amount,
-        commission: conversion.commission,
-        affiliateId: conversion.affiliateId
+        sinceDate: sinceDate,
+        isIncluded: conversion.convertedDate >= sinceDate
       });
       
       const isIncluded = conversion.convertedDate >= sinceDate;
@@ -98,6 +134,8 @@ export const calculateCommissionsSinceDate = async (
       return isIncluded;
     });
 
+    console.log('🔍 DÉBOGAGE - Conversions après filtrage final:', filteredConversions.length);
+
     // Calculer les paiements par affilié
     const affiliatePayments = [];
     let totalRevenue = 0;
@@ -106,9 +144,19 @@ export const calculateCommissionsSinceDate = async (
     for (const affiliate of affiliates) {
       const affiliateConversions = filteredConversions.filter(c => c.affiliateId === affiliate.id);
       
+      console.log(`👤 DÉBOGAGE - Affilié ${affiliate.name}:`, {
+        id: affiliate.id,
+        conversions: affiliateConversions.length
+      });
+      
       if (affiliateConversions.length > 0) {
         const affiliateRevenue = affiliateConversions.reduce((sum, c) => sum + (c.amount || 0), 0);
         const affiliateCommissions = affiliateConversions.reduce((sum, c) => sum + (c.commission || 0), 0);
+        
+        console.log(`💰 DÉBOGAGE - Totaux affilié ${affiliate.name}:`, {
+          revenue: affiliateRevenue,
+          commissions: affiliateCommissions
+        });
         
         affiliatePayments.push({
           affiliateId: affiliate.id,
