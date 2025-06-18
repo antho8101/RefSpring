@@ -62,11 +62,13 @@ export default async function handler(req, res) {
       console.log('💳 STRIPE: Nouveau client créé:', customerId);
     }
 
-    // Créer la facture Stripe réelle
+    // Créer la facture Stripe avec la bonne méthode de collecte
     const invoice = await stripe.invoices.create({
       customer: customerId,
       currency: 'eur',
       description: description,
+      collection_method: 'send_invoice', // ✅ CORRECTION : Permettre l'envoi manuel d'emails
+      days_until_due: 30, // Délai de paiement de 30 jours
       metadata: {
         campaign_name: campaignName,
         source: 'RefSpring'
