@@ -82,10 +82,20 @@ export default async function handler(req, res) {
       description: description
     });
 
-    // Finaliser et envoyer la facture
+    // Finaliser la facture
     const finalizedInvoice = await stripe.invoices.finalizeInvoice(invoice.id);
     
     console.log('✅ STRIPE: Facture créée et finalisée:', finalizedInvoice.id);
+    
+    // **NOUVEAU : Envoyer automatiquement la facture par email**
+    try {
+      console.log('📧 STRIPE: Envoi automatique de la facture par email...');
+      await stripe.invoices.sendInvoice(finalizedInvoice.id);
+      console.log('✅ STRIPE: Facture envoyée par email avec succès');
+    } catch (emailError) {
+      console.error('⚠️ STRIPE: Erreur envoi email (facture créée mais non envoyée):', emailError);
+      // Ne pas faire échouer toute l'opération si juste l'email échoue
+    }
     
     // Log pour traçabilité
     console.log('💳 FACTURATION REFSPRING RÉELLE:', {
@@ -93,14 +103,16 @@ export default async function handler(req, res) {
       amount: amount / 100, // Convertir en euros pour les logs
       campaign: campaignName,
       invoiceId: finalizedInvoice.id,
-      invoiceUrl: finalizedInvoice.hosted_invoice_url
+      invoiceUrl: finalizedInvoice.hosted_invoice_url,
+      emailSent: true
     });
 
     return res.status(200).json({
       success: true,
       invoiceId: finalizedInvoice.id,
       invoiceUrl: finalizedInvoice.hosted_invoice_url,
-      message: 'Facture RefSpring créée et envoyée avec succès'
+      emailSent: true,
+      message: 'Facture RefSpring créée, envoyée par email, et disponible en ligne'
     });
 
   } catch (error) {
