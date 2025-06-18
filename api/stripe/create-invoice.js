@@ -1,4 +1,5 @@
 
+
 import Stripe from 'stripe';
 
 export default async function handler(req, res) {
@@ -16,13 +17,13 @@ export default async function handler(req, res) {
   }
 
   try {
-    console.log('💳 API STRIPE INVOICE: Début création facture PRODUCTION');
+    console.log('💳 API STRIPE INVOICE: Début prélèvement automatique PRODUCTION');
     
-    const { userEmail, amount, description, campaignName } = req.body;
+    const { userEmail, amount, description, campaignName, stripePaymentMethodId } = req.body;
 
-    if (!userEmail || !amount || !description) {
+    if (!userEmail || !amount || !description || !stripePaymentMethodId) {
       return res.status(400).json({ 
-        error: 'Paramètres manquants (userEmail, amount, description requis)' 
+        error: 'Paramètres manquants (userEmail, amount, description, stripePaymentMethodId requis)' 
       });
     }
 
@@ -36,7 +37,8 @@ export default async function handler(req, res) {
     console.log('💳 API STRIPE INVOICE: Paramètres validés:', {
       userEmail,
       amount,
-      description: description.substring(0, 50) + '...'
+      description: description.substring(0, 50) + '...',
+      paymentMethodId: stripePaymentMethodId
     });
 
     // Initialiser Stripe en mode PRODUCTION
@@ -62,13 +64,13 @@ export default async function handler(req, res) {
       console.log('💳 STRIPE: Nouveau client créé:', customerId);
     }
 
-    // Créer la facture Stripe avec la bonne méthode de collecte
+    // Créer la facture avec prélèvement automatique
     const invoice = await stripe.invoices.create({
       customer: customerId,
       currency: 'eur',
       description: description,
-      collection_method: 'send_invoice', // ✅ CORRECTION : Permettre l'envoi manuel d'emails
-      days_until_due: 30, // Délai de paiement de 30 jours
+      collection_method: 'charge_automatically', // ✅ PRÉLÈVEMENT AUTOMATIQUE
+      default_payment_method: stripePaymentMethodId, // ✅ UTILISER LA CARTE DE LA CAMPAGNE
       metadata: {
         campaign_name: campaignName,
         source: 'RefSpring'
@@ -86,42 +88,60 @@ export default async function handler(req, res) {
 
     // Finaliser la facture
     const finalizedInvoice = await stripe.invoices.finalizeInvoice(invoice.id);
-    
     console.log('✅ STRIPE: Facture créée et finalisée:', finalizedInvoice.id);
     
-    // **NOUVEAU : Envoyer automatiquement la facture par email**
-    try {
-      console.log('📧 STRIPE: Envoi automatique de la facture par email...');
-      await stripe.invoices.sendInvoice(finalizedInvoice.id);
-      console.log('✅ STRIPE: Facture envoyée par email avec succès');
-    } catch (emailError) {
-      console.error('⚠️ STRIPE: Erreur envoi email (facture créée mais non envoyée):', emailError);
-      // Ne pas faire échouer toute l'opération si juste l'email échoue
-    }
+    // **PRÉLÈVEMENT AUTOMATIQUE : Payer la facture immédiatement**
+    console.log('💳 STRIPE: Tentative de prélèvement automatique...');
+    const paidInvoice = await stripe.invoices.pay(finalizedInvoice.id, {
+      payment_method: stripePaymentMethodId
+    });
     
-    // Log pour traçabilité
-    console.log('💳 FACTURATION REFSPRING RÉELLE:', {
-      email: userEmail,
-      amount: amount / 100, // Convertir en euros pour les logs
-      campaign: campaignName,
-      invoiceId: finalizedInvoice.id,
-      invoiceUrl: finalizedInvoice.hosted_invoice_url,
-      emailSent: true
-    });
+    if (paidInvoice.status === 'paid') {
+      console.log('✅ STRIPE: Prélèvement réussi ! Paiement confirmé');
+      
+      // Log pour traçabilité
+      console.log('💰 FACTURATION REFSPRING RÉELLE - PAIEMENT CONFIRMÉ:', {
+        email: userEmail,
+        amount: amount / 100,
+        campaign: campaignName,
+        invoiceId: paidInvoice.id,
+        paymentStatus: paidInvoice.status,
+        paymentMethodId: stripePaymentMethodId
+      });
 
-    return res.status(200).json({
-      success: true,
-      invoiceId: finalizedInvoice.id,
-      invoiceUrl: finalizedInvoice.hosted_invoice_url,
-      emailSent: true,
-      message: 'Facture RefSpring créée, envoyée par email, et disponible en ligne'
-    });
+      return res.status(200).json({
+        success: true,
+        invoiceId: paidInvoice.id,
+        paymentStatus: 'paid',
+        amountPaid: paidInvoice.amount_paid,
+        message: 'Prélèvement automatique réussi - Vous pouvez maintenant payer les affiliés en toute sécurité'
+      });
+      
+    } else {
+      console.error('❌ STRIPE: Prélèvement échoué:', paidInvoice.status);
+      return res.status(402).json({
+        error: 'Prélèvement échoué',
+        paymentStatus: paidInvoice.status,
+        details: 'La carte bancaire a été refusée ou est insuffisamment provisionnée'
+      });
+    }
 
   } catch (error) {
     console.error('❌ API STRIPE INVOICE: Erreur PRODUCTION:', error);
+    
+    // Gestion spécifique des erreurs de paiement
+    if (error.type === 'StripeCardError') {
+      return res.status(402).json({
+        error: 'Erreur de carte bancaire',
+        details: error.message,
+        code: error.code
+      });
+    }
+    
     return res.status(500).json({
-      error: 'Erreur lors de la création de la facture Stripe',
+      error: 'Erreur lors du prélèvement automatique',
       details: error.message
     });
   }
 }
+
