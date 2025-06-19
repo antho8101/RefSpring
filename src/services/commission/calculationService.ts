@@ -44,17 +44,25 @@ export const calculateCommissionsSinceDate = async (
     // Log détaillé de chaque conversion trouvée
     allConversionsSnapshot.docs.forEach((doc, index) => {
       const data = doc.data();
+      const timestamp = data.createdAt || data.timestamp;
+      const convertedDate = timestamp?.toDate ? timestamp.toDate() : new Date(timestamp);
+      
       console.log(`🔍 DÉBOGAGE - Conversion ${index + 1}:`, {
         id: doc.id,
         campaignId: data.campaignId,
         affiliateId: data.affiliateId,
         amount: data.amount,
         commission: data.commission,
-        timestamp: data.timestamp || data.createdAt,
-        rawTimestamp: data.timestamp || data.createdAt
+        rawTimestamp: timestamp,
+        convertedDate: convertedDate,
+        isAfterSinceDate: sinceDate ? convertedDate >= sinceDate : true,
+        sinceDateForComparison: sinceDate
       });
     });
 
+    // 🆕 NOUVELLE LOGIQUE : Si aucune conversion récente, on propose quand même la suppression
+    // mais avec un avertissement que tout a déjà été payé
+    
     // Récupérer les conversions selon la logique habituelle
     let conversionsQuery = query(
       collection(db, 'conversions'),
@@ -136,7 +144,41 @@ export const calculateCommissionsSinceDate = async (
 
     console.log('🔍 DÉBOGAGE - Conversions après filtrage final:', filteredConversions.length);
 
-    // Calculer les paiements par affilié
+    // 🆕 NOUVELLE LOGIQUE : Calculer aussi les totaux historiques pour information
+    const allConversions: ConversionData[] = allConversionsSnapshot.docs.map(doc => {
+      const data = doc.data();
+      let rawTimestamp = data.createdAt || data.timestamp;
+      let convertedDate: Date;
+      
+      if (rawTimestamp?.toDate) {
+        convertedDate = rawTimestamp.toDate();
+      } else if (rawTimestamp?.seconds) {
+        convertedDate = new Date(rawTimestamp.seconds * 1000);
+      } else {
+        convertedDate = new Date();
+      }
+
+      return {
+        id: doc.id,
+        affiliateId: data.affiliateId,
+        campaignId: data.campaignId,
+        amount: data.amount || 0,
+        commission: data.commission || 0,
+        createdAt: rawTimestamp,
+        convertedDate,
+      };
+    });
+
+    const totalHistoricalRevenue = allConversions.reduce((sum, c) => sum + (c.amount || 0), 0);
+    const totalHistoricalCommissions = allConversions.reduce((sum, c) => sum + (c.commission || 0), 0);
+
+    console.log('📊 DÉBOGAGE - Totaux historiques:', {
+      totalHistoricalRevenue,
+      totalHistoricalCommissions,
+      conversionsCount: allConversions.length
+    });
+
+    // Calculer les paiements par affilié POUR LES NOUVELLES CONVERSIONS
     const affiliatePayments = [];
     let totalRevenue = 0;
     let totalCommissions = 0;
@@ -172,15 +214,29 @@ export const calculateCommissionsSinceDate = async (
       }
     }
 
-    // Calculer la commission de la plateforme (25% des commissions)
+    // Calculer la commission de la plateforme (25% des commissions des nouvelles conversions)
     const platformFee = totalCommissions * 0.25;
 
     console.log('💰 Calculs terminés:', {
-      totalRevenue,
-      totalCommissions,
-      platformFee,
-      affiliatesCount: affiliatePayments.length
+      nouvellesTotalRevenue: totalRevenue,
+      nouvellesTotalCommissions: totalCommissions,
+      nouvellesPlatformFee: platformFee,
+      affiliatesCount: affiliatePayments.length,
+      historicalInfo: {
+        totalHistoricalRevenue,
+        totalHistoricalCommissions,
+        totalHistoricalConversions: allConversions.length
+      }
     });
+
+    // 🆕 AVERTISSEMENT : Si pas de nouvelles commissions mais des historiques
+    if (filteredConversions.length === 0 && allConversions.length > 0) {
+      console.log('⚠️ AVERTISSEMENT - Aucune nouvelle commission depuis le dernier paiement');
+      console.log('📊 Mais il y a des commissions historiques:', {
+        historicalRevenue: totalHistoricalRevenue,
+        historicalCommissions: totalHistoricalCommissions
+      });
+    }
 
     return {
       totalRevenue,
