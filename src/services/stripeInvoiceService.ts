@@ -5,6 +5,7 @@ export interface RefSpringInvoiceData {
   amount: number; // Montant en centimes
   description: string;
   campaignName: string;
+  stripePaymentMethodId: string; // 🔥 AJOUT du paramètre obligatoire
 }
 
 export class StripeInvoiceService {
@@ -27,6 +28,7 @@ export class StripeInvoiceService {
           amount: invoiceData.amount,
           description: invoiceData.description,
           campaignName: invoiceData.campaignName,
+          stripePaymentMethodId: invoiceData.stripePaymentMethodId, // 🔥 TRANSMISSION du paramètre
         }),
       });
 

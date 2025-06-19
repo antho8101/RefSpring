@@ -104,11 +104,17 @@ export const CampaignDeletionDialog = ({
       if (distribution.platformFee > 0) {
         console.log('💳 Création facture Stripe pour commission RefSpring:', distribution.platformFee);
         
+        // 🔥 CORRECTION: Passer le stripePaymentMethodId de la campagne
+        if (!campaign.stripePaymentMethodId) {
+          throw new Error('Aucune méthode de paiement associée à cette campagne. Veuillez configurer une carte bancaire.');
+        }
+        
         const invoiceResult = await StripeInvoiceService.createAndSendInvoice({
           userEmail: user.email!,
           amount: Math.round(distribution.platformFee * 100), // Convertir en centimes
           description: `Commission RefSpring - Suppression campagne "${campaign.name}"`,
           campaignName: campaign.name,
+          stripePaymentMethodId: campaign.stripePaymentMethodId, // 🔥 AJOUT du paramètre manquant
         });
 
         if (!invoiceResult.success) {
@@ -123,7 +129,7 @@ export const CampaignDeletionDialog = ({
 
       toast({
         title: "Suppression terminée",
-        description: `Les commissions ont été distribuées, la facture RefSpring envoyée, et la campagne "${campaign.name}" a été supprimée.`,
+        description: `Les commissions ont été distribuées, la facture RefSpring payée, et la campagne "${campaign.name}" a été supprimée.`,
       });
 
       onOpenChange(false);
