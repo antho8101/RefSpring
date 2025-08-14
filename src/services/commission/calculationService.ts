@@ -206,7 +206,8 @@ export const calculateCommissionsSinceDate = async (
           affiliateEmail: affiliate.email || '',
           totalCommission: affiliateCommissions,
           conversionsCount: affiliateConversions.length,
-          commissionRate: affiliate.commissionRate || 0
+          commissionRate: affiliate.commissionRate || 0,
+          stripeAccountId: affiliate.stripeAccountId // 🆕 STRIPE CONNECT
         });
 
         totalRevenue += affiliateRevenue;

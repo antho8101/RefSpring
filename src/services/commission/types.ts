@@ -16,6 +16,8 @@ export interface AffiliatePayment {
   totalCommission: number;
   conversionsCount: number;
   commissionRate: number;
+  // Nouveau champ Stripe Connect
+  stripeAccountId?: string;
 }
 
 export interface PaymentDistribution {
@@ -36,6 +38,7 @@ export interface AffiliateData {
   email: string;
   commissionRate: number;
   campaignId: string;
+  stripeAccountId?: string; // 🆕 STRIPE CONNECT
 }
 
 export interface ConversionData {

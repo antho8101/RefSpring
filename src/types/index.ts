@@ -28,6 +28,9 @@ export interface Affiliate {
   trackingCode: string;
   createdAt: Date;
   isActive: boolean;
+  // Nouveaux champs Stripe Connect
+  stripeAccountId?: string;
+  stripeAccountStatus?: 'pending' | 'verified' | 'incomplete';
 }
 
 export interface Conversion {

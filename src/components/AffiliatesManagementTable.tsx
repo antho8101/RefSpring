@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { AffiliateManagementDialog } from '@/components/AffiliateManagementDialog';
 import { AffiliateDeleteDialog } from '@/components/AffiliateDeleteDialog';
 import { AffiliateTableRow } from '@/components/AffiliateTableRow';
+import { StripeConnectButton } from '@/components/StripeConnectButton';
 import { Affiliate } from '@/types';
 import {
   Table,
@@ -70,6 +71,7 @@ export const AffiliatesManagementTable = ({ campaignId, onCopyTrackingLink }: Af
               <TableHead>Code de suivi</TableHead>
               <TableHead>Date d'ajout</TableHead>
               <TableHead>Performances</TableHead>
+              <TableHead>Paiements</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
