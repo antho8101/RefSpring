@@ -152,7 +152,7 @@ export default function CommissionInfoPage() {
         <div className="flex flex-col gap-3">
           <Button 
             onClick={handleConfigureStripeConnect}
-            className="w-full bg-blue-600 hover:bg-blue-700"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white"
             size="lg"
           >
             <ExternalLink className="h-4 w-4 mr-2" />
