@@ -102,152 +102,96 @@ export const processStripeTransfers = async (
   }
 };
 
-// 🆕 NOUVEAU : Service pour créer des Payment Links Stripe réels
-export const createStripePaymentLinks = async (
-  distribution: PaymentDistribution,
-  campaignName: string
-): Promise<{ affiliateId: string; paymentLinkUrl: string }[]> => {
-  console.log('💳 STRIPE PAYMENT LINKS: Création des liens de paiement pour', distribution.affiliatePayments.length, 'affiliés');
-  
-  const paymentLinks = [];
-  
-  for (const payment of distribution.affiliatePayments) {
-    try {
-      console.log(`💳 Création Payment Link pour ${payment.affiliateName} - ${payment.totalCommission}€`);
-      
-      // Appel à l'API pour créer le Payment Link Stripe
-      const response = await fetch('/api/stripe/create-payment-link', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          affiliateEmail: payment.affiliateEmail,
-          affiliateName: payment.affiliateName,
-          amount: Math.round(payment.totalCommission * 100), // Convertir en centimes
-          description: `Commission RefSpring - Campagne "${campaignName}"`,
-          campaignName: campaignName,
-        }),
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Erreur création Payment Link: ${response.status} - ${errorText}`);
-      }
-
-      const result = await response.json();
-      console.log(`✅ Payment Link créé pour ${payment.affiliateName}:`, result.paymentLinkUrl);
-      
-      paymentLinks.push({
-        affiliateId: payment.affiliateId,
-        paymentLinkUrl: result.paymentLinkUrl
-      });
-      
-    } catch (error) {
-      console.error(`❌ Erreur création Payment Link pour ${payment.affiliateName}:`, error);
-      // En cas d'erreur, utiliser un lien de fallback
-      paymentLinks.push({
-        affiliateId: payment.affiliateId,
-        paymentLinkUrl: `https://refspring.com/payment-error?affiliate=${payment.affiliateId}&amount=${payment.totalCommission}`
-      });
-    }
-  }
-  
-  return paymentLinks;
-};
-
-// 🔄 MIGRATION: Nouvelle fonction principale qui utilise Stripe Connect si possible, sinon Payment Links
-export const sendStripePaymentLinks = async (
+// 🆕 NOUVEAU : Service pour envoyer des emails d'information de commission (pas de Payment Links!)
+export const sendCommissionNotificationEmails = async (
   distribution: PaymentDistribution,
   campaignName: string
 ): Promise<void> => {
   try {
-    console.log('🔄 PAYMENT SYSTEM: Démarrage processus de paiement hybride pour:', campaignName);
+    console.log('📧 COMMISSION EMAILS: Envoi d\'emails d\'information pour', distribution.affiliatePayments.length, 'affiliés');
     
-    // Séparer les affiliés avec/sans Stripe Connect
-    const affiliatesWithStripeConnect = distribution.affiliatePayments.filter(p => p.stripeAccountId);
-    const affiliatesWithoutStripeConnect = distribution.affiliatePayments.filter(p => !p.stripeAccountId);
-    
-    console.log('📊 PAYMENT SYSTEM: Répartition des affiliés:', {
-      withStripeConnect: affiliatesWithStripeConnect.length,
-      withoutStripeConnect: affiliatesWithoutStripeConnect.length,
-      total: distribution.affiliatePayments.length
-    });
-
-    // ÉTAPE 1: Traiter les transfers Stripe Connect (automatiques)
-    if (affiliatesWithStripeConnect.length > 0) {
-      console.log('💸 Traitement des transfers Stripe Connect...');
-      await processStripeTransfers({
-        ...distribution,
-        affiliatePayments: affiliatesWithStripeConnect
-      }, campaignName);
-    }
-
-    // ÉTAPE 2: Traiter les Payment Links pour les autres (emails)
-    if (affiliatesWithoutStripeConnect.length > 0) {
-      console.log('📧 Traitement des Payment Links pour affiliés sans Stripe Connect...');
-      await sendStripePaymentLinksLegacy({
-        ...distribution,
-        affiliatePayments: affiliatesWithoutStripeConnect
-      }, campaignName);
-    }
-
-    console.log('✅ PAYMENT SYSTEM: Processus de paiement hybride terminé');
-
-  } catch (error) {
-    console.error('❌ PAYMENT SYSTEM: Erreur processus hybride:', error);
-    throw error;
-  }
-};
-
-// 🔄 RENOMMAGE: Ancienne fonction pour les Payment Links
-export const sendStripePaymentLinksLegacy = async (
-  distribution: PaymentDistribution,
-  campaignName: string
-): Promise<void> => {
-  try {
-    console.log('📧 PRODUCTION: Envoi d\'emails réels pour:', campaignName);
-    console.log('💰 Nombre d\'affiliés à payer:', distribution.affiliatePayments.length);
-
     if (distribution.affiliatePayments.length === 0) {
-      console.log('ℹ️ Aucun affilié à payer');
+      console.log('ℹ️ Aucun affilié à notifier');
       return;
     }
-
-    // 🆕 ÉTAPE 1 : Créer les Payment Links Stripe réels
-    console.log('💳 Création des Payment Links Stripe...');
-    const paymentLinks = await createStripePaymentLinks(distribution, campaignName);
     
-    // 🆕 ÉTAPE 2 : Préparer les données pour l'envoi groupé d'emails avec les vrais liens
-    const emailData = distribution.affiliatePayments.map(payment => {
-      const paymentLink = paymentLinks.find(link => link.affiliateId === payment.affiliateId);
-      
-      return {
-        affiliateEmail: payment.affiliateEmail,
-        affiliateName: payment.affiliateName,
-        amount: payment.totalCommission,
-        campaignName: campaignName,
-        paymentLinkUrl: paymentLink?.paymentLinkUrl || `https://refspring.com/payment-error?affiliate=${payment.affiliateId}`
-      };
-    });
+    // Préparer les données pour l'envoi d'emails de notification 
+    const emailData = distribution.affiliatePayments.map(payment => ({
+      affiliateEmail: payment.affiliateEmail,
+      affiliateName: payment.affiliateName,
+      amount: payment.totalCommission,
+      campaignName: campaignName,
+      // URL vers une page d'information au lieu d'un payment link
+      paymentLinkUrl: `https://refspring.com/commission-info?amount=${payment.totalCommission}&campaign=${encodeURIComponent(campaignName)}&affiliate=${payment.affiliateId}`
+    }));
 
-    // ÉTAPE 3 : Envoyer les emails réels via EmailJS
+    // Envoyer les emails d'information via EmailJS
     const result = await EmailService.sendBulkCommissionEmails(emailData);
     
-    console.log('📧 PRODUCTION: Résultat envoi emails:', {
+    console.log('📧 COMMISSION EMAILS: Résultat envoi emails:', {
       successful: result.successful,
       failed: result.failed,
       errors: result.errors
     });
 
     if (result.failed > 0) {
-      console.warn('⚠️ PRODUCTION: Certains emails ont échoué:', result.errors);
+      console.warn('⚠️ COMMISSION EMAILS: Certains emails ont échoué:', result.errors);
     }
 
-    console.log('✅ PRODUCTION: Processus d\'envoi d\'emails terminé avec Payment Links Stripe');
+    console.log('✅ COMMISSION EMAILS: Processus d\'envoi d\'emails d\'information terminé');
 
   } catch (error) {
-    console.error('❌ PRODUCTION: Erreur envoi emails:', error);
+    console.error('❌ COMMISSION EMAILS: Erreur envoi emails:', error);
     throw error;
   }
 };
+
+// 🔄 CORRECTION MAJEURE: Processus de paiement correct pour les affiliés
+export const sendStripePaymentLinks = async (
+  distribution: PaymentDistribution,
+  campaignName: string
+): Promise<void> => {
+  try {
+    console.log('💰 COMMISSION SYSTEM: Démarrage du système de commissions pour:', campaignName);
+    
+    // Séparer les affiliés avec/sans Stripe Connect
+    const affiliatesWithStripeConnect = distribution.affiliatePayments.filter(p => p.stripeAccountId);
+    const affiliatesWithoutStripeConnect = distribution.affiliatePayments.filter(p => !p.stripeAccountId);
+    
+    console.log('📊 COMMISSION SYSTEM: Répartition des affiliés:', {
+      withStripeConnect: affiliatesWithStripeConnect.length,
+      withoutStripeConnect: affiliatesWithoutStripeConnect.length,
+      total: distribution.affiliatePayments.length
+    });
+
+    // ÉTAPE 1: Traiter les transfers Stripe Connect (automatiques - ARGENT ENVOYÉ AUX AFFILIÉS)
+    if (affiliatesWithStripeConnect.length > 0) {
+      console.log('💸 Envoi d\'argent aux affiliés via Stripe Connect...');
+      await processStripeTransfers({
+        ...distribution,
+        affiliatePayments: affiliatesWithStripeConnect
+      }, campaignName);
+    }
+
+    // ÉTAPE 2: Pour les affiliés sans Stripe Connect - ENVOYER EMAIL D'INFO SEULEMENT
+    if (affiliatesWithoutStripeConnect.length > 0) {
+      console.log('📧 Envoi d\'emails d\'information pour affiliés sans Stripe Connect...');
+      await sendCommissionNotificationEmails({
+        ...distribution,
+        affiliatePayments: affiliatesWithoutStripeConnect
+      }, campaignName);
+    }
+
+    console.log('✅ COMMISSION SYSTEM: Toutes les commissions ont été traitées');
+
+  } catch (error) {
+    console.error('❌ COMMISSION SYSTEM: Erreur traitement commissions:', error);
+    throw error;
+  }
+};
+
+// 🗑️ SUPPRIMÉ: Cette fonction était défectueuse - elle créait des liens où les affiliés payaient au lieu de recevoir
+// Les Payment Links sont pour que quelqu'un PAIE, pas pour recevoir de l'argent !
+// Maintenant on utilise:
+// 1. Stripe Connect Transfers pour les affiliés avec compte configuré 
+// 2. Emails d'information pour les autres (leur expliquant comment configurer Stripe Connect)

@@ -26,6 +26,7 @@ import ShortLinkPage from '@/pages/ShortLinkPage';
 import TrackingJsRoute from '@/pages/TrackingJsRoute';
 import AdminPage from '@/pages/AdminPage';
 import AffiliateOnboardingPage from '@/pages/AffiliateOnboardingPage';
+import CommissionInfoPage from '@/pages/CommissionInfoPage';
 
 const Index = lazy(() => import('@/pages/Index'));
 const AdvancedStatsPage = lazy(() => import('@/pages/AdvancedStatsPage'));
@@ -79,6 +80,7 @@ function App() {
                     <Route path="/legal" element={<LegalPage />} />
                     <Route path="/payment-success" element={<PaymentSuccessPage />} />
                     <Route path="/affiliate-onboarding" element={<AffiliateOnboardingPage />} />
+                    <Route path="/commission-info" element={<CommissionInfoPage />} />
                   </Routes>
                 </Suspense>
                 
