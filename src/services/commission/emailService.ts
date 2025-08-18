@@ -122,7 +122,7 @@ export const sendCommissionNotificationEmails = async (
       amount: payment.totalCommission,
       campaignName: campaignName,
       // URL vers une page d'information au lieu d'un payment link
-      paymentLinkUrl: `https://refspring.com/commission-info?amount=${payment.totalCommission}&campaign=${encodeURIComponent(campaignName)}&affiliate=${payment.affiliateId}`
+      paymentLinkUrl: `https://refspring.com/commission-info?amount=${payment.totalCommission}&campaign=${encodeURIComponent(campaignName)}&affiliate=${payment.affiliateId}&email=${encodeURIComponent(payment.affiliateEmail)}&name=${encodeURIComponent(payment.affiliateName)}`
     }));
 
     // Envoyer les emails d'information via EmailJS
