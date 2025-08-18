@@ -1,26 +1,82 @@
 import { useSearchParams } from 'react-router-dom';
+import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { useStripeConnect } from '@/hooks/useStripeConnect';
+import { useToast } from '@/hooks/use-toast';
 import { 
   CheckCircle, 
   ExternalLink, 
   CreditCard, 
   ArrowRight,
   Info,
-  Gift
+  Gift,
+  Loader2
 } from 'lucide-react';
 
 export default function CommissionInfoPage() {
   const [searchParams] = useSearchParams();
+  const [isConfiguring, setIsConfiguring] = useState(false);
+  const { createConnectAccount, createAccountLink, loading } = useStripeConnect();
+  const { toast } = useToast();
+  
   const amount = searchParams.get('amount') || '0';
   const campaign = searchParams.get('campaign') || 'Campagne inconnue';
   const affiliateId = searchParams.get('affiliate') || '';
+  const affiliateEmail = searchParams.get('email') || '';
+  const affiliateName = searchParams.get('name') || 'Affilié';
 
-  const handleConfigureStripeConnect = () => {
-    // Rediriger vers la page de configuration Stripe Connect ou contact
-    window.open('https://refspring.com/contact', '_blank');
+  const handleConfigureStripeConnect = async () => {
+    if (!affiliateEmail) {
+      toast({
+        title: "Erreur",
+        description: "Email manquant. Veuillez contacter le support.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsConfiguring(true);
+    
+    try {
+      // Étape 1: Créer le compte Stripe Connect
+      console.log('🔄 Creating Stripe Connect account...');
+      const accountData = await createConnectAccount(
+        affiliateEmail,
+        affiliateName,
+        'FR'
+      );
+
+      // Étape 2: Créer le lien d'onboarding
+      console.log('🔄 Creating onboarding link...');
+      const linkData = await createAccountLink(
+        accountData.accountId,
+        affiliateId,
+        `${window.location.origin}/commission-info?refresh=true&${searchParams.toString()}`,
+        `${window.location.origin}/commission-info?success=true&${searchParams.toString()}`
+      );
+
+      // Étape 3: Rediriger vers Stripe
+      console.log('✅ Redirecting to Stripe onboarding...');
+      window.open(linkData.onboardingUrl, '_blank');
+
+      toast({
+        title: "Configuration Stripe lancée",
+        description: "Une nouvelle fenêtre s'est ouverte pour configurer votre compte Stripe",
+      });
+
+    } catch (err: any) {
+      console.error('❌ Error with Stripe Connect:', err);
+      toast({
+        title: "Erreur",
+        description: err.message || "Erreur lors de la configuration Stripe",
+        variant: "destructive",
+      });
+    } finally {
+      setIsConfiguring(false);
+    }
   };
 
   return (
@@ -105,9 +161,9 @@ export default function CommissionInfoPage() {
                   1
                 </div>
                 <div>
-                  <h4 className="font-semibold">Contactez l'équipe RefSpring</h4>
+                  <h4 className="font-semibold">Créez votre compte Stripe directement</h4>
                   <p className="text-sm text-slate-600">
-                    Envoyez un message avec votre ID affilié pour commencer la configuration
+                    Configurez votre compte Stripe Connect en quelques clics (gratuit et sécurisé)
                   </p>
                 </div>
               </div>
@@ -117,9 +173,9 @@ export default function CommissionInfoPage() {
                   2
                 </div>
                 <div>
-                  <h4 className="font-semibold">Créez votre compte Stripe</h4>
+                  <h4 className="font-semibold">Complétez votre profil Stripe</h4>
                   <p className="text-sm text-slate-600">
-                    Un compte Stripe sera créé pour vous (gratuit et sans engagement)
+                    Renseignez vos informations bancaires et de facturation
                   </p>
                 </div>
               </div>
@@ -154,14 +210,19 @@ export default function CommissionInfoPage() {
             onClick={handleConfigureStripeConnect}
             className="w-full bg-blue-600 hover:bg-blue-700 text-white"
             size="lg"
+            disabled={loading || isConfiguring || !affiliateEmail}
           >
-            <ExternalLink className="h-4 w-4 mr-2" />
+            {(loading || isConfiguring) ? (
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            ) : (
+              <CreditCard className="h-4 w-4 mr-2" />
+            )}
             Configurer mon compte Stripe Connect
             <ArrowRight className="h-4 w-4 ml-2" />
           </Button>
           
           <p className="text-center text-sm text-slate-500">
-            ID Affilié : {affiliateId}
+            ID Affilié : {affiliateId} {!affiliateEmail && " • Email manquant"}
           </p>
         </div>
 
