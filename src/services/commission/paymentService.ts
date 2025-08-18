@@ -65,19 +65,33 @@ export const createPaymentDistributionRecord = async (
       totalAmount
     });
 
+    // 🔥 CORRECTION CRITIQUE: Nettoyer les valeurs undefined pour Firestore
+    const cleanAffiliatePayments = distribution.affiliatePayments.map(payment => ({
+      affiliateId: payment.affiliateId || '',
+      affiliateName: payment.affiliateName || '',
+      affiliateEmail: payment.affiliateEmail || '',
+      totalCommission: payment.totalCommission || 0,
+      conversionsCount: payment.conversionsCount || 0,
+      commissionRate: payment.commissionRate || 0,
+      // Stripe Connect : nettoyer les undefined
+      ...(payment.stripeAccountId && { stripeAccountId: payment.stripeAccountId })
+    }));
+
     const record = {
-      campaignId,
-      userId,
-      reason,
-      totalRevenue: distribution.totalRevenue,
-      totalCommissions: distribution.totalCommissions,
-      platformFee: distribution.platformFee,
-      totalAmount,
-      affiliatePayments: distribution.affiliatePayments,
+      campaignId: campaignId || '',
+      userId: userId || '',
+      reason: reason || 'manual_payout',
+      totalRevenue: distribution.totalRevenue || 0,
+      totalCommissions: distribution.totalCommissions || 0,
+      platformFee: distribution.platformFee || 0,
+      totalAmount: totalAmount || 0,
+      affiliatePayments: cleanAffiliatePayments,
       status: 'completed',
       processedAt: Timestamp.now(),
       createdAt: Timestamp.now()
     };
+
+    console.log('🧹 Enregistrement nettoyé avant sauvegarde:', record);
 
     const docRef = await addDoc(collection(db, 'paymentDistributions'), record);
     console.log('✅ Enregistrement créé:', docRef.id);
