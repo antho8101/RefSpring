@@ -343,8 +343,8 @@ export const Dashboard = memo(() => {
       </Helmet>
 
       <NetworkStatus />
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30 relative overflow-hidden flex flex-col">
-        <DashboardBackground />
+      <div className="min-h-screen bg-white relative overflow-hidden flex flex-col">
+        {/* Removed DashboardBackground */}
         <div data-tour="header">
           <DashboardHeader 
             user={user} 
