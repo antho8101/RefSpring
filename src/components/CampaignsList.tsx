@@ -69,18 +69,15 @@ export const CampaignsList = memo(({ onSuccessModalTrigger }: CampaignsListProps
             <CreateCampaignDialog onSuccessModalTrigger={onSuccessModalTrigger}>
               <Button 
                 size="lg" 
-                className="text-base lg:text-lg px-6 py-3 lg:px-8 lg:py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-110 border-0 text-white group relative overflow-hidden" 
-                style={{
-                  boxShadow: '0 10px 40px rgba(59, 130, 246, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
-                }}
+                className="text-base lg:text-lg px-6 py-3 lg:px-8 lg:py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transition-all duration-300 hover:scale-[1.02] border-0 text-white group relative overflow-hidden" 
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.filter = 'drop-shadow(0 0 25px rgba(59, 130, 246, 0.6))';
+                  e.currentTarget.style.filter = 'drop-shadow(0 0 15px rgba(59, 130, 246, 0.3))';
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.filter = 'none';
                 }}
               >
-                <span className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                <span className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
                 <Plus className="h-4 w-4 mr-2 relative z-10" />
                 <span className="relative z-10">Lancer ma première campagne</span>
               </Button>
