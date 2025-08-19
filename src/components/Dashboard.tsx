@@ -148,10 +148,10 @@ const DashboardStats = ({ activeCampaigns, totalCampaigns, totalAffiliates, user
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 px-1">
-      <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105 group cursor-default rounded-xl">
+      <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 transition-all duration-300 hover:scale-105 group cursor-default rounded-xl">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-4 pt-4">
           <CardTitle className="text-sm font-medium text-slate-600 truncate pr-2">Campagnes Actives</CardTitle>
-          <div className="p-2 bg-blue-600 rounded-xl shadow-md group-hover:animate-bounce">
+          <div className="p-2 bg-blue-600 rounded-xl group-hover:animate-bounce">
             <BarChart3 className="h-5 w-5 text-white" />
           </div>
         </CardHeader>
@@ -164,10 +164,10 @@ const DashboardStats = ({ activeCampaigns, totalCampaigns, totalAffiliates, user
         </CardContent>
       </Card>
 
-      <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200 shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105 group cursor-default rounded-xl">
+      <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200 transition-all duration-300 hover:scale-105 group cursor-default rounded-xl">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-4 pt-4">
           <CardTitle className="text-sm font-medium text-slate-600 truncate pr-2">Total Affiliés</CardTitle>
-          <div className="p-2 bg-green-600 rounded-xl shadow-md group-hover:animate-bounce">
+          <div className="p-2 bg-green-600 rounded-xl group-hover:animate-bounce">
             <Users className="h-5 w-5 text-white" />
           </div>
         </CardHeader>
@@ -180,13 +180,13 @@ const DashboardStats = ({ activeCampaigns, totalCampaigns, totalAffiliates, user
         </CardContent>
       </Card>
 
-      <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200 shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105 group cursor-default rounded-xl">
+      <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200 transition-all duration-300 hover:scale-105 group cursor-default rounded-xl">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-4 pt-4">
           <CardTitle className="text-sm font-medium text-slate-600 truncate pr-2">
             Chiffre d'affaires
             <span className="text-xs text-slate-500 block font-normal truncate">{periodLabel}</span>
           </CardTitle>
-          <div className="p-2 bg-purple-600 rounded-xl shadow-md group-hover:animate-bounce">
+          <div className="p-2 bg-purple-600 rounded-xl group-hover:animate-bounce">
             <DollarSign className="h-5 w-5 text-white" />
           </div>
         </CardHeader>
@@ -203,13 +203,13 @@ const DashboardStats = ({ activeCampaigns, totalCampaigns, totalAffiliates, user
         </CardContent>
       </Card>
 
-      <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200 shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105 group cursor-default rounded-xl">
+      <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200 transition-all duration-300 hover:scale-105 group cursor-default rounded-xl">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-4 pt-4">
           <CardTitle className="text-sm font-medium text-slate-600 truncate pr-2">
             Taux Conversion
             <span className="text-xs text-slate-500 block font-normal truncate">{periodLabel}</span>
           </CardTitle>
-          <div className="p-2 bg-orange-600 rounded-xl shadow-md group-hover:animate-bounce">
+          <div className="p-2 bg-orange-600 rounded-xl group-hover:animate-bounce">
             <Percent className="h-5 w-5 text-white" />
           </div>
         </CardHeader>

@@ -39,7 +39,7 @@ export const CampaignsList = memo(({ onSuccessModalTrigger }: CampaignsListProps
     return (
       <div className="space-y-6">
       {[1, 2, 3].map((i) => (
-        <Card key={i} className="animate-pulse bg-gradient-to-br from-white to-slate-50 border-slate-200 shadow-lg rounded-2xl">
+        <Card key={i} className="animate-pulse bg-gradient-to-br from-white to-slate-50 border-slate-200 rounded-2xl">
           <CardHeader>
             <div className="h-6 bg-slate-200 rounded-xl w-1/4"></div>
             <div className="h-4 bg-slate-200 rounded-xl w-1/2 mt-2"></div>
@@ -56,9 +56,9 @@ export const CampaignsList = memo(({ onSuccessModalTrigger }: CampaignsListProps
   if (campaigns.length === 0) {
     console.log('CampaignsList: showing empty state');
     return (
-      <Card className="bg-gradient-to-br from-blue-50 to-purple-50 border-slate-200 shadow-xl rounded-2xl">
+      <Card className="bg-gradient-to-br from-blue-50 to-purple-50 border-slate-200 rounded-2xl">
         <CardContent className="flex flex-col items-center justify-center py-16">
-          <div className="p-6 bg-blue-600 rounded-3xl mb-6 shadow-lg">
+          <div className="p-6 bg-blue-600 rounded-3xl mb-6">
             <Eye className="h-12 w-12 text-white" />
           </div>
           <h3 className="text-xl font-bold text-slate-900 mb-3">Aucune campagne</h3>
@@ -101,7 +101,7 @@ export const CampaignsList = memo(({ onSuccessModalTrigger }: CampaignsListProps
             type="single" 
             value={viewMode} 
             onValueChange={handleViewModeChange}
-            className="bg-white border border-slate-200 rounded-xl p-1 shadow-sm"
+            className="bg-white border border-slate-200 rounded-xl p-1"
           >
             <ToggleGroupItem value="normal" aria-label="Vue normale" className="data-[state=on]:bg-blue-100 data-[state=on]:text-blue-700">
               <LayoutGrid className="h-4 w-4" />
