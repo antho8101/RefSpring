@@ -63,10 +63,10 @@ export const CampaignCard = ({ campaign, onCopyUrl }: CampaignCardProps) => {
   };
 
   return (
-    <Card className="bg-gradient-to-br from-white to-slate-50/50 border-slate-200/50 shadow-md hover:shadow-lg transition-all backdrop-blur-sm group min-w-0 overflow-hidden">
+    <Card className="bg-gradient-to-br from-white to-slate-50 border-slate-200 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] group min-w-0 overflow-hidden rounded-2xl">
       <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
         <CollapsibleTrigger asChild>
-          <CardHeader className="pb-3 cursor-pointer hover:bg-slate-50/50 transition-colors min-w-0">
+          <CardHeader className="pb-3 cursor-pointer hover:bg-slate-100/30 transition-colors min-w-0">
             <div className="flex items-center justify-between min-w-0">
               <div className="flex items-center gap-3 flex-1 min-w-0">
                 {isExpanded ? 

@@ -147,70 +147,82 @@ const DashboardStats = ({ activeCampaigns, totalCampaigns, totalAffiliates, user
   };
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 mb-3 sm:mb-4 px-1">
-      <Card className="bg-gradient-to-br from-white to-blue-50/50 border-slate-200/50 shadow-md transition-all duration-300 hover:shadow-lg hover:scale-105 hover:bg-gradient-to-br hover:from-white hover:to-blue-100/70 min-w-0">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 px-1">
+      <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105 group cursor-default rounded-xl">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-4 pt-4">
-          <CardTitle className="text-sm font-medium text-slate-700 truncate pr-2">Campagnes Actives</CardTitle>
-          <div className="p-2 bg-blue-100 rounded-full flex-shrink-0">
-            <BarChart3 className="h-4 w-4 text-blue-600" />
+          <CardTitle className="text-sm font-medium text-slate-600 truncate pr-2">Campagnes Actives</CardTitle>
+          <div className="p-2 bg-blue-600 rounded-xl shadow-md group-hover:animate-bounce">
+            <BarChart3 className="h-5 w-5 text-white" />
           </div>
         </CardHeader>
         <CardContent className="px-4 pb-4">
-          <div className="text-2xl font-bold text-slate-900 truncate">{activeCampaigns}</div>
-          <p className="text-xs text-slate-500 truncate">sur {totalCampaigns} campagne{totalCampaigns > 1 ? 's' : ''}</p>
+          <div className="text-2xl font-bold text-slate-900 truncate group-hover:scale-110 transition-transform">{activeCampaigns}</div>
+          <p className="text-xs text-slate-600 truncate">sur {totalCampaigns} campagne{totalCampaigns > 1 ? 's' : ''}</p>
+          <div className="opacity-0 group-hover:opacity-100 transition-opacity mt-1">
+            <div className="text-xs text-slate-500 italic">📊 Suivi en temps réel</div>
+          </div>
         </CardContent>
       </Card>
 
-      <Card className="bg-gradient-to-br from-white to-green-50/50 border-slate-200/50 shadow-md transition-all duration-300 hover:shadow-lg hover:scale-105 hover:bg-gradient-to-br hover:from-white hover:to-green-100/70 min-w-0">
+      <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200 shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105 group cursor-default rounded-xl">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-4 pt-4">
-          <CardTitle className="text-sm font-medium text-slate-700 truncate pr-2">Total Affiliés</CardTitle>
-          <div className="p-2 bg-green-100 rounded-full flex-shrink-0">
-            <Users className="h-4 w-4 text-green-600" />
+          <CardTitle className="text-sm font-medium text-slate-600 truncate pr-2">Total Affiliés</CardTitle>
+          <div className="p-2 bg-green-600 rounded-xl shadow-md group-hover:animate-bounce">
+            <Users className="h-5 w-5 text-white" />
           </div>
         </CardHeader>
         <CardContent className="px-4 pb-4">
-          <div className="text-2xl font-bold text-slate-900 truncate">{totalAffiliates}</div>
-          <p className="text-xs text-slate-500 truncate">affiliés actifs</p>
+          <div className="text-2xl font-bold text-slate-900 truncate group-hover:scale-110 transition-transform">{totalAffiliates}</div>
+          <p className="text-xs text-slate-600 truncate">affiliés actifs</p>
+          <div className="opacity-0 group-hover:opacity-100 transition-opacity mt-1">
+            <div className="text-xs text-slate-500 italic">🚀 Réseau grandissant</div>
+          </div>
         </CardContent>
       </Card>
 
-      <Card className="bg-gradient-to-br from-white to-purple-50/50 border-slate-200/50 shadow-md transition-all duration-300 hover:shadow-lg hover:scale-105 hover:bg-gradient-to-br hover:from-white hover:to-purple-100/70 min-w-0">
+      <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200 shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105 group cursor-default rounded-xl">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-4 pt-4">
-          <CardTitle className="text-sm font-medium text-slate-700 truncate pr-2">
+          <CardTitle className="text-sm font-medium text-slate-600 truncate pr-2">
             Chiffre d'affaires
             <span className="text-xs text-slate-500 block font-normal truncate">{periodLabel}</span>
           </CardTitle>
-          <div className="p-2 bg-purple-100 rounded-full flex-shrink-0">
-            <DollarSign className="h-4 w-4 text-purple-600" />
+          <div className="p-2 bg-purple-600 rounded-xl shadow-md group-hover:animate-bounce">
+            <DollarSign className="h-5 w-5 text-white" />
           </div>
         </CardHeader>
         <CardContent className="px-4 pb-4">
-          <div className="text-xl lg:text-2xl font-bold text-slate-900 truncate">
+          <div className="text-xl lg:text-2xl font-bold text-slate-900 truncate group-hover:scale-110 transition-transform">
             {loading ? '...' : formatCurrency(globalStats.totalRevenue)}
           </div>
-          <p className="text-xs text-slate-500 truncate">
+          <p className="text-xs text-slate-600 truncate">
             {loading ? 'Calcul...' : `${globalStats.totalConversions} conversion${globalStats.totalConversions > 1 ? 's' : ''}`}
           </p>
+          <div className="opacity-0 group-hover:opacity-100 transition-opacity mt-1">
+            <div className="text-xs text-slate-500 italic">💰 En croissance</div>
+          </div>
         </CardContent>
       </Card>
 
-      <Card className="bg-gradient-to-br from-white to-orange-50/50 border-slate-200/50 shadow-md transition-all duration-300 hover:shadow-lg hover:scale-105 hover:bg-gradient-to-br hover:from-white hover:to-orange-100/70 min-w-0">
+      <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200 shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105 group cursor-default rounded-xl">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-4 pt-4">
-          <CardTitle className="text-sm font-medium text-slate-700 truncate pr-2">
+          <CardTitle className="text-sm font-medium text-slate-600 truncate pr-2">
             Taux Conversion
             <span className="text-xs text-slate-500 block font-normal truncate">{periodLabel}</span>
           </CardTitle>
-          <div className="p-2 bg-orange-100 rounded-full flex-shrink-0">
-            <Percent className="h-4 w-4 text-orange-600" />
+          <div className="p-2 bg-orange-600 rounded-xl shadow-md group-hover:animate-bounce">
+            <Percent className="h-5 w-5 text-white" />
           </div>
         </CardHeader>
         <CardContent className="px-4 pb-4">
-          <div className="text-2xl font-bold text-slate-900 truncate">
+          <div className="text-2xl font-bold text-slate-900 truncate group-hover:scale-110 transition-transform">
             {loading ? '...' : `${globalStats.conversionRate.toFixed(1)}%`}
           </div>
-          <p className="text-xs text-slate-500 truncate">
+          <p className="text-xs text-slate-600 truncate">
             {loading ? 'Calcul...' : `${globalStats.totalClicks} clic${globalStats.totalClicks > 1 ? 's' : ''} total`}
           </p>
+          <div className="opacity-0 group-hover:opacity-100 transition-opacity mt-1">
+            <div className="text-xs text-slate-500 italic">🎯 Performance optimale</div>
+          </div>
         </CardContent>
       </Card>
     </div>
@@ -331,7 +343,7 @@ export const Dashboard = memo(() => {
       </Helmet>
 
       <NetworkStatus />
-      <div className="min-h-screen bg-gradient-to-br from-blue-50/50 via-white to-purple-50/50 relative overflow-hidden flex flex-col">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30 relative overflow-hidden flex flex-col">
         <DashboardBackground />
         <div data-tour="header">
           <DashboardHeader 
