@@ -109,8 +109,7 @@ export const CreateCampaignDialog = ({ children, onSuccessModalTrigger }: Create
         <DialogTrigger asChild>
           {children || (
             <Button
-              size="lg" 
-              className="text-base lg:text-lg px-6 py-3 lg:px-8 lg:py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-110 border-0 text-white group relative overflow-hidden"
+              className="flex items-center gap-2 text-sm px-3 py-2 h-9 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 border-0 text-white group relative overflow-hidden"
               style={{
                 boxShadow: '0 10px 40px rgba(59, 130, 246, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
               }}
