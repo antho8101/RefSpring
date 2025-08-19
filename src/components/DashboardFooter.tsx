@@ -43,9 +43,6 @@ export const DashboardFooter = () => {
               </Link>
             </div>
             
-            <p className="text-sm text-slate-400">
-              © {new Date().getFullYear()} RefSpring
-            </p>
           </div>
         </div>
       </div>
