@@ -62,11 +62,10 @@ export const DashboardHeader = ({ user, onLogout, period, onPeriodChange }: Dash
             
             <Button 
               variant="outline" 
-              size="sm" 
               onClick={handleLogout}
-              className="rounded-[10px] hover:scale-105 transition-all duration-300 backdrop-blur-sm border-slate-200 bg-white/80 hover:bg-white/95 hover:border-slate-300 flex-shrink-0 h-9 px-3 py-2 text-sm text-slate-700"
+              className="rounded-[10px] hover:scale-105 transition-all duration-300 backdrop-blur-sm border-slate-200 bg-white/80 hover:bg-white/95 hover:border-slate-300 flex-shrink-0 h-9 px-3 py-2 text-sm text-slate-700 gap-2"
             >
-              <LogOut className="h-4 w-4 mr-2" />
+              <LogOut className="h-4 w-4 text-slate-500 flex-shrink-0" />
               <span className="hidden xl:inline">Déconnexion</span>
             </Button>
           </div>
