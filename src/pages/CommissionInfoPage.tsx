@@ -13,12 +13,18 @@ import {
   ArrowRight,
   Info,
   Gift,
-  Loader2
+  Loader2,
+  ChevronDown,
+  ChevronUp,
+  UserPlus,
+  LogIn
 } from 'lucide-react';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 export default function CommissionInfoPage() {
   const [searchParams] = useSearchParams();
   const [isConfiguring, setIsConfiguring] = useState(false);
+  const [isStepsOpen, setIsStepsOpen] = useState(false);
   const { createConnectAccount, createAccountLink, loading } = useStripeConnect();
   const { toast } = useToast();
   
@@ -136,92 +142,114 @@ export default function CommissionInfoPage() {
                     Pour recevoir vos commissions automatiquement, vous devez configurer 
                     votre compte Stripe Connect. C'est gratuit et sécurisé !
                   </p>
+                  
+                  <div className="flex gap-3 mt-4">
+                    <Button 
+                      onClick={handleConfigureStripeConnect}
+                      className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
+                      disabled={loading || isConfiguring || !affiliateEmail}
+                    >
+                      {(loading || isConfiguring) ? (
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      ) : (
+                        <UserPlus className="h-4 w-4 mr-2" />
+                      )}
+                      Créer mon compte
+                    </Button>
+                    
+                    <Button 
+                      variant="outline"
+                      className="flex-1 border-blue-300 text-blue-700 hover:bg-blue-50"
+                      onClick={() => window.open('https://connect.stripe.com/login', '_blank')}
+                    >
+                      <LogIn className="h-4 w-4 mr-2" />
+                      Se connecter
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Étapes pour configurer Stripe Connect */}
+        {/* Étapes pour configurer Stripe Connect - Encart déroulant */}
         <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <CreditCard className="h-5 w-5 text-blue-600" />
-              Configurer Stripe Connect
-            </CardTitle>
-            <CardDescription>
-              Suivez ces étapes simples pour recevoir vos futures commissions automatiquement
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
+          <Collapsible open={isStepsOpen} onOpenChange={setIsStepsOpen}>
+            <CollapsibleTrigger asChild>
+              <CardHeader className="cursor-pointer hover:bg-slate-50 transition-colors">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <CreditCard className="h-5 w-5 text-blue-600" />
+                    <CardTitle>Configurer Stripe Connect</CardTitle>
+                  </div>
+                  {isStepsOpen ? (
+                    <ChevronUp className="h-5 w-5 text-slate-400" />
+                  ) : (
+                    <ChevronDown className="h-5 w-5 text-slate-400" />
+                  )}
+                </div>
+                <CardDescription>
+                  Suivez ces étapes simples pour recevoir vos futures commissions automatiquement
+                </CardDescription>
+              </CardHeader>
+            </CollapsibleTrigger>
             
-            <div className="space-y-3">
-              <div className="flex items-start gap-3 p-3 border rounded-lg">
-                <div className="bg-blue-100 text-blue-600 rounded-full w-6 h-6 flex items-center justify-center text-sm font-semibold">
-                  1
+            <CollapsibleContent>
+              <CardContent className="space-y-4 pt-0">
+                <div className="space-y-3">
+                  <div className="flex items-start gap-3 p-3 border rounded-lg">
+                    <div className="bg-blue-100 text-blue-600 rounded-full w-6 h-6 flex items-center justify-center text-sm font-semibold">
+                      1
+                    </div>
+                    <div>
+                      <h4 className="font-semibold">Créez votre compte Stripe directement</h4>
+                      <p className="text-sm text-slate-600">
+                        Configurez votre compte Stripe Connect en quelques clics (gratuit et sécurisé)
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3 p-3 border rounded-lg">
+                    <div className="bg-blue-100 text-blue-600 rounded-full w-6 h-6 flex items-center justify-center text-sm font-semibold">
+                      2
+                    </div>
+                    <div>
+                      <h4 className="font-semibold">Complétez votre profil Stripe</h4>
+                      <p className="text-sm text-slate-600">
+                        Renseignez vos informations bancaires et de facturation
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3 p-3 border rounded-lg">
+                    <div className="bg-green-100 text-green-600 rounded-full w-6 h-6 flex items-center justify-center text-sm font-semibold">
+                      3
+                    </div>
+                    <div>
+                      <h4 className="font-semibold">Recevez vos commissions automatiquement</h4>
+                      <p className="text-sm text-slate-600">
+                        Toutes vos futures commissions seront versées directement sur votre compte !
+                      </p>
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <h4 className="font-semibold">Créez votre compte Stripe directement</h4>
-                  <p className="text-sm text-slate-600">
-                    Configurez votre compte Stripe Connect en quelques clics (gratuit et sécurisé)
+
+                <Separator />
+
+                <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                  <p className="text-yellow-800 text-sm">
+                    <strong>💡 Bon à savoir :</strong> Cette commission de {amount}€ sera versée 
+                    dès que votre compte Stripe Connect sera configuré. Rien n'est perdu !
                   </p>
                 </div>
-              </div>
-
-              <div className="flex items-start gap-3 p-3 border rounded-lg">
-                <div className="bg-blue-100 text-blue-600 rounded-full w-6 h-6 flex items-center justify-center text-sm font-semibold">
-                  2
-                </div>
-                <div>
-                  <h4 className="font-semibold">Complétez votre profil Stripe</h4>
-                  <p className="text-sm text-slate-600">
-                    Renseignez vos informations bancaires et de facturation
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3 p-3 border rounded-lg">
-                <div className="bg-green-100 text-green-600 rounded-full w-6 h-6 flex items-center justify-center text-sm font-semibold">
-                  3
-                </div>
-                <div>
-                  <h4 className="font-semibold">Recevez vos commissions automatiquement</h4>
-                  <p className="text-sm text-slate-600">
-                    Toutes vos futures commissions seront versées directement sur votre compte !
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <Separator />
-
-            <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
-              <p className="text-yellow-800 text-sm">
-                <strong>💡 Bon à savoir :</strong> Cette commission de {amount}€ sera versée 
-                dès que votre compte Stripe Connect sera configuré. Rien n'est perdu !
-              </p>
-            </div>
-          </CardContent>
+              </CardContent>
+            </CollapsibleContent>
+          </Collapsible>
         </Card>
 
-        {/* Bouton d'action */}
-        <div className="flex flex-col gap-3">
-          <Button 
-            onClick={handleConfigureStripeConnect}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-            size="lg"
-            disabled={loading || isConfiguring || !affiliateEmail}
-          >
-            {(loading || isConfiguring) ? (
-              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-            ) : (
-              <CreditCard className="h-4 w-4 mr-2" />
-            )}
-            Configurer mon compte Stripe Connect
-            <ArrowRight className="h-4 w-4 ml-2" />
-          </Button>
-          
-          <p className="text-center text-sm text-slate-500">
+        {/* Informations sur l'affilié */}
+        <div className="text-center">
+          <p className="text-sm text-slate-500">
             ID Affilié : {affiliateId} {!affiliateEmail && " • Email manquant"}
           </p>
         </div>
