@@ -50,7 +50,7 @@ export const DashboardHeader = ({ user, onLogout, period, onPeriodChange }: Dash
           {/* Desktop Navigation - Hidden on mobile to prevent overflow */}
           <div className="hidden lg:flex items-center space-x-3 xl:space-x-4 flex-shrink-0">
             <AccountSettingsDialog>
-              <button className="flex items-center gap-2 text-sm text-slate-700 bg-white/80 backdrop-blur-sm px-3 py-2 rounded-[10px] border border-slate-200 hover:bg-white/95 hover:border-slate-300 transition-all duration-300 hover:scale-105 hover:shadow-lg min-w-0">
+              <button className="flex items-center gap-2 text-sm text-slate-700 bg-white/80 backdrop-blur-sm px-3 py-2 rounded-[10px] border border-slate-200 hover:bg-white/95 hover:border-slate-300 transition-all duration-300 hover:scale-105 flex-shrink-0 h-9">
                 <span className="whitespace-nowrap">Bonjour, <span className="font-semibold">{user?.displayName || user?.email}</span></span>
                 <Settings className="h-4 w-4 text-slate-500 flex-shrink-0" />
               </button>
@@ -64,7 +64,7 @@ export const DashboardHeader = ({ user, onLogout, period, onPeriodChange }: Dash
               variant="outline" 
               size="sm" 
               onClick={handleLogout}
-              className="rounded-[10px] hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl backdrop-blur-sm border-slate-300 bg-white/90 hover:bg-white/95 flex-shrink-0"
+              className="rounded-[10px] hover:scale-105 transition-all duration-300 backdrop-blur-sm border-slate-200 bg-white/80 hover:bg-white/95 hover:border-slate-300 flex-shrink-0 h-9 px-3 py-2 text-sm text-slate-700"
             >
               <LogOut className="h-4 w-4 mr-2" />
               <span className="hidden xl:inline">Déconnexion</span>
