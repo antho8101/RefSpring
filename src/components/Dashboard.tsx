@@ -375,7 +375,7 @@ export const Dashboard = memo(() => {
             </ErrorBoundary>
             
             {/* Toggle des périodes - Version discrète */}
-            <div className="flex justify-end -mt-4" data-tour="period-toggle">
+            <div className="flex justify-end -mt-4 pb-5" data-tour="period-toggle">
               <StatsPeriodToggle period={period} onPeriodChange={setPeriod} />
             </div>
           </div>
