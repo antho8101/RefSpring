@@ -147,7 +147,7 @@ const DashboardStats = ({ activeCampaigns, totalCampaigns, totalAffiliates, user
   };
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 mb-6 sm:mb-8 px-1">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 mb-3 sm:mb-4 px-1">
       <Card className="bg-gradient-to-br from-white to-blue-50/50 border-slate-200/50 shadow-md transition-all duration-300 hover:shadow-lg hover:scale-105 hover:bg-gradient-to-br hover:from-white hover:to-blue-100/70 min-w-0">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-4 pt-4">
           <CardTitle className="text-sm font-medium text-slate-700 truncate pr-2">Campagnes Actives</CardTitle>
