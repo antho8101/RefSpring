@@ -217,11 +217,6 @@ export const BillingHistorySettings = ({ onCancel }: BillingHistorySettingsProps
         </CardContent>
       </Card>
 
-      <div className="flex gap-3">
-        <Button variant="outline" onClick={onCancel}>
-          Fermer
-        </Button>
-      </div>
     </div>
   );
 };
