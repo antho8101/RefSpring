@@ -31,7 +31,7 @@ export const DashboardHeader = ({ user, onLogout, period, onPeriodChange }: Dash
   };
 
   return (
-    <header className="relative z-50 border-b border-slate-200/80 bg-white/90 backdrop-blur-xl shadow-lg">
+    <header className="relative z-50 border-b border-slate-200/80 bg-white/90 backdrop-blur-xl shadow-sm">
       <div className="w-full px-3 sm:px-4 lg:px-8">
         <div className="flex justify-between items-center h-16 min-w-0">
           {/* Logo - Fixed to prevent overflow */}
@@ -68,7 +68,7 @@ export const DashboardHeader = ({ user, onLogout, period, onPeriodChange }: Dash
           <Button
             variant="outline"
             size="sm"
-            className="lg:hidden rounded-[10px] shadow-lg border-slate-300 flex-shrink-0"
+            className="lg:hidden rounded-[10px] border-slate-300 flex-shrink-0"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
             <Menu className="h-4 w-4" />
@@ -95,7 +95,7 @@ export const DashboardHeader = ({ user, onLogout, period, onPeriodChange }: Dash
                   variant="outline" 
                   size="sm" 
                   onClick={handleLogout}
-                  className="w-full justify-start rounded-[10px] shadow-lg border-slate-300 hover:scale-105 transition-all duration-300"
+                  className="w-full justify-start rounded-[10px] border-slate-300 hover:scale-105 transition-all duration-300"
                 >
                   <LogOut className="h-4 w-4 mr-2" />
                   Déconnexion
