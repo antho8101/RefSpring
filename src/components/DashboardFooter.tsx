@@ -4,7 +4,7 @@ import { RefSpringLogo } from '@/components/RefSpringLogo';
 
 export const DashboardFooter = () => {
   return (
-    <footer className="border-t border-slate-200/50 bg-white/60 backdrop-blur-xl py-6 mt-8 w-full">
+    <footer className="fixed bottom-0 left-0 right-0 z-50 border-t border-slate-200/50 bg-white/60 backdrop-blur-xl py-6 w-full">
       <div className="w-full px-4 sm:px-6 lg:px-8">
         <div className="relative flex flex-col lg:flex-row items-center justify-center gap-6">
           {/* Logo à gauche */}
