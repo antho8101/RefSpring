@@ -55,11 +55,6 @@ export const DashboardHeader = ({ user, onLogout, period, onPeriodChange }: Dash
                 <Settings className="h-4 w-4 text-slate-500 flex-shrink-0" />
               </button>
             </AccountSettingsDialog>
-            
-            <div data-tour="period-toggle">
-              <StatsPeriodToggle period={period} onPeriodChange={onPeriodChange} />
-            </div>
-            
             <button 
               onClick={handleLogout}
               className="flex items-center gap-2 text-sm text-slate-700 bg-white/80 backdrop-blur-sm px-3 py-2 rounded-[10px] border border-slate-200 hover:bg-white/95 hover:border-slate-300 transition-all duration-300 hover:scale-105 flex-shrink-0 h-9"

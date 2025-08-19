@@ -19,6 +19,7 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 import { Helmet } from 'react-helmet-async';
 import { memo, useCallback, useMemo, useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { StatsPeriodToggle } from '@/components/StatsPeriodToggle';
 import { BarChart3, Users, DollarSign, Percent } from 'lucide-react';
 import { auth } from '@/lib/firebase';
 import { collection, query, where, getDocs } from 'firebase/firestore';
@@ -33,7 +34,7 @@ interface GlobalStats {
 }
 
 // Composant de stats avec vraies données Firebase et filtrage par période
-const DashboardStats = ({ activeCampaigns, totalCampaigns, totalAffiliates, userId, filterDate, periodLabel }) => {
+const DashboardStats = ({ activeCampaigns, totalCampaigns, totalAffiliates, userId, filterDate, periodLabel, period, onPeriodChange }) => {
   const [globalStats, setGlobalStats] = useState<GlobalStats>({
     totalRevenue: 0,
     totalCommissions: 0,
@@ -356,8 +357,15 @@ export const Dashboard = memo(() => {
                 userId={user?.uid}
                 filterDate={getDateFilter()}
                 periodLabel={getPeriodLabel()}
+                period={period}
+                onPeriodChange={setPeriod}
               />
             </ErrorBoundary>
+            
+            {/* Toggle des périodes - Version discrète */}
+            <div className="flex justify-center mb-6" data-tour="period-toggle">
+              <StatsPeriodToggle period={period} onPeriodChange={setPeriod} />
+            </div>
           </div>
 
           <ErrorBoundary fallback={<div>Erreur contenu</div>}>
