@@ -134,7 +134,7 @@ export const AccountSettingsDialog = ({ children }: AccountSettingsDialogProps) 
             </button>
           )}
         </DialogTrigger>
-        <DialogContent className="w-[calc(100vw-60px)] h-[calc(100vh-60px)] max-w-none max-h-none p-0 bg-white overflow-hidden">
+        <DialogContent className="w-[calc(100vw-60px)] h-[calc(100vh-60px)] max-w-6xl max-h-[90vh] p-0 bg-white overflow-hidden">
           <div className="flex h-full">
             <AccountSettingsNavigation 
               activeTab={activeTab} 
