@@ -60,14 +60,13 @@ export const DashboardHeader = ({ user, onLogout, period, onPeriodChange }: Dash
               <StatsPeriodToggle period={period} onPeriodChange={onPeriodChange} />
             </div>
             
-            <Button 
-              variant="outline" 
+            <button 
               onClick={handleLogout}
-              className="rounded-[10px] hover:scale-105 transition-all duration-300 backdrop-blur-sm border-slate-200 bg-white/80 hover:bg-white/95 hover:border-slate-300 flex-shrink-0 h-9 px-3 py-2 text-sm text-slate-700 gap-2"
+              className="flex items-center gap-2 text-sm text-slate-700 bg-white/80 backdrop-blur-sm px-3 py-2 rounded-[10px] border border-slate-200 hover:bg-white/95 hover:border-slate-300 transition-all duration-300 hover:scale-105 flex-shrink-0 h-9"
             >
               <LogOut className="h-4 w-4 text-slate-500 flex-shrink-0" />
               <span className="hidden xl:inline">Déconnexion</span>
-            </Button>
+            </button>
           </div>
 
           {/* Mobile Menu Button - Fixed positioning */}
