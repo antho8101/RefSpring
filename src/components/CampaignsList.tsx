@@ -9,6 +9,7 @@ import { CampaignCard } from '@/components/CampaignCard';
 import { CompactCampaignCard } from '@/components/CompactCampaignCard';
 import { useState, useCallback, memo } from 'react';
 import { CreateCampaignDialog } from '@/components/CreateCampaignDialog';
+import Logger from '@/utils/logger';
 
 interface CampaignsListProps {
   onSuccessModalTrigger: (campaignId: string, campaignName: string) => void;
@@ -19,7 +20,7 @@ export const CampaignsList = memo(({ onSuccessModalTrigger }: CampaignsListProps
   const { toast } = useToast();
   const [viewMode, setViewMode] = useState<'normal' | 'compact'>('normal');
 
-  console.log('CampaignsList render - campaigns:', campaigns, 'loading:', loading);
+  Logger.debug('CampaignsList render - campaigns:', campaigns.length, 'loading:', loading);
 
   const copyTrackingUrl = useCallback((campaignId: string) => {
     const trackingUrl = `https://refspring.com/r/${campaignId}`;
@@ -35,7 +36,7 @@ export const CampaignsList = memo(({ onSuccessModalTrigger }: CampaignsListProps
   }, []);
 
   if (loading) {
-    console.log('CampaignsList: showing loading state');
+    Logger.debug('CampaignsList: showing loading state');
     return (
       <div className="space-y-6">
       {[1, 2, 3].map((i) => (
@@ -54,7 +55,7 @@ export const CampaignsList = memo(({ onSuccessModalTrigger }: CampaignsListProps
   }
 
   if (campaigns.length === 0) {
-    console.log('CampaignsList: showing empty state');
+    Logger.debug('CampaignsList: showing empty state');
     return (
       <Card className="bg-gradient-to-br from-blue-50 to-purple-50 border-slate-200 rounded-2xl">
         <CardContent className="flex flex-col items-center justify-center py-16">
@@ -88,7 +89,7 @@ export const CampaignsList = memo(({ onSuccessModalTrigger }: CampaignsListProps
     );
   }
 
-  console.log('CampaignsList: rendering campaigns list');
+  Logger.debug('CampaignsList: rendering campaigns list');
   return (
     <div className="space-y-6">
       {/* Sélecteur de mode d'affichage */}

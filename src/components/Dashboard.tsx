@@ -24,6 +24,7 @@ import { BarChart3, Users, DollarSign, Percent } from 'lucide-react';
 import { auth } from '@/lib/firebase';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+import Logger from '@/utils/logger';
 
 interface GlobalStats {
   totalRevenue: number;
@@ -48,7 +49,7 @@ const DashboardStats = ({ activeCampaigns, totalCampaigns, totalAffiliates, user
   useEffect(() => {
     const loadGlobalStats = async () => {
       if (!userId) {
-        console.log('📊 SECURITY - No userId provided for stats');
+        Logger.security('No userId provided for stats');
         return;
       }
       
@@ -58,7 +59,7 @@ const DashboardStats = ({ activeCampaigns, totalCampaigns, totalAffiliates, user
           return; // Sortir si l'auth n'est pas prête
         }
         
-        console.log(`📊 SECURITY - Loading secured global stats ${periodLabel} for:`, userId);
+        Logger.security(`Loading secured global stats ${periodLabel} for: ${userId}`);
         
         // Récupérer les campagnes de l'utilisateur avec vérification de propriété
         const campaignsQuery = query(collection(db, 'campaigns'), where('userId', '==', userId));
@@ -66,7 +67,7 @@ const DashboardStats = ({ activeCampaigns, totalCampaigns, totalAffiliates, user
         const campaignIds = campaignsSnapshot.docs.map(doc => doc.id);
         
         if (campaignIds.length === 0) {
-          console.log('📊 SECURITY - No campaigns found for user');
+          Logger.security('No campaigns found for user');
           setLoading(false);
           return;
         }
@@ -113,7 +114,7 @@ const DashboardStats = ({ activeCampaigns, totalCampaigns, totalAffiliates, user
 
         const conversionRate = totalClicks > 0 ? (totalConversions / totalClicks) * 100 : 0;
 
-        console.log(`📊 SECURITY - Secured stats calculated ${periodLabel}:`, {
+        Logger.security(`Secured stats calculated ${periodLabel}:`, {
           totalClicks,
           totalConversions,
           totalRevenue,
@@ -247,9 +248,9 @@ export const Dashboard = memo(() => {
   // CORRECTION: Vérification de sécurité au montage SEULEMENT quand l'auth est prête
   useEffect(() => {
     if (!isLoading) {
-      console.log('📊 SECURITY - Dashboard mounted, checking authentication');
+      Logger.security('Dashboard mounted, checking authentication');
       if (!requireAuthentication('accéder au dashboard')) {
-        console.log('📊 SECURITY - Auth not ready or failed, will retry when ready');
+        Logger.warning('Auth not ready or failed, will retry when ready');
       }
     }
   }, [requireAuthentication, isLoading]);
@@ -261,7 +262,7 @@ export const Dashboard = memo(() => {
       if (newCampaignCreated) {
         try {
           const campaignData = JSON.parse(newCampaignCreated);
-          console.log('🎉 DASHBOARD: Nouvelle campagne détectée:', campaignData);
+          Logger.info('Nouvelle campagne détectée:', campaignData);
           
           setNewCampaignData(campaignData);
           setShowSuccessModal(true);
@@ -284,7 +285,7 @@ export const Dashboard = memo(() => {
     if (isAuthenticated && !tourCompleted && !campaignsLoading && !affiliatesLoading) {
       // Attendre un peu que le dashboard soit rendu
       const timer = setTimeout(() => {
-        console.log('🎯 Starting guided tour for new user');
+        Logger.info('Starting guided tour for new user');
         startTour();
       }, 1000);
       
@@ -294,11 +295,11 @@ export const Dashboard = memo(() => {
 
   const handleLogout = useCallback(async () => {
     try {
-      console.log('🔐 SECURITY - User logout initiated');
+      Logger.security('User logout initiated');
       await auth.signOut();
       localStorage.removeItem('auth_user');
       sessionStorage.clear(); // Nettoyer toutes les données de session
-      console.log('🔐 SECURITY - User logged out successfully');
+      Logger.security('User logged out successfully');
     } catch (error) {
       console.error('🔐 SECURITY - Logout error:', error);
     }
