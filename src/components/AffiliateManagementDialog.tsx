@@ -176,6 +176,9 @@ export const AffiliateManagementDialog = ({ affiliate, open, onOpenChange, mode 
             <AlertDialogDescription>
               Êtes-vous sûr de vouloir supprimer <strong>{affiliate.name}</strong> ?
               Cette action est irréversible et supprimera toutes les données associées.
+              <br /><br />
+              <strong>Note :</strong> Si cet affilié a déjà généré du chiffre d'affaires, 
+              il sera payé dans tous les cas selon les commissions dues.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
