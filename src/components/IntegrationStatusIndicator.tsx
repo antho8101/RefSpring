@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { CheckCircle, AlertCircle, XCircle, RefreshCw } from 'lucide-react';
+import { CheckCircle, AlertCircle, XCircle, RefreshCw, HelpCircle } from 'lucide-react';
 import { Campaign } from '@/types';
 
 interface IntegrationStatusIndicatorProps {
@@ -66,7 +66,7 @@ export const IntegrationStatusIndicator = ({ campaign }: IntegrationStatusIndica
       case 'fully-integrated':
         return {
           icon: <CheckCircle className="h-3 w-3" />,
-          label: 'Parfaitement intégré',
+          label: 'Code',
           variant: 'default' as const,
           className: 'bg-green-100 text-green-800 border-green-200',
           description: 'Script installé et conversions trackées avec succès'
@@ -115,6 +115,16 @@ export const IntegrationStatusIndicator = ({ campaign }: IntegrationStatusIndica
             <p className="text-gray-500 mt-1">
               Dernière vérification: {lastCheck.toLocaleTimeString('fr-FR')}
             </p>
+          </div>
+        </TooltipContent>
+      </Tooltip>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <HelpCircle className="h-3 w-3 text-blue-500/70 cursor-help" />
+        </TooltipTrigger>
+        <TooltipContent>
+          <div className="text-xs max-w-48">
+            <p>L'indicateur "Code" vous montre si votre script de tracking RefSpring est correctement installé sur votre site e-commerce et s'il fonctionne.</p>
           </div>
         </TooltipContent>
       </Tooltip>
