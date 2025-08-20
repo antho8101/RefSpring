@@ -123,7 +123,7 @@ export const CreateCampaignDialog = ({ children, onSuccessModalTrigger }: Create
             </Button>
           )}
         </DialogTrigger>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-[425px] bg-white border border-slate-200 rounded-xl">
           <DialogHeader>
             <DialogTitle>Créer une nouvelle campagne</DialogTitle>
             <DialogDescription>

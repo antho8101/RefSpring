@@ -80,7 +80,7 @@ export const AffiliateManagementDialog = ({ affiliate, open, onOpenChange, mode 
   if (mode === 'delete') {
     return (
       <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
-        <AlertDialogContent>
+        <AlertDialogContent className="bg-white border border-slate-200 rounded-xl">
           <AlertDialogHeader>
             <AlertDialogTitle>Supprimer l'affilié</AlertDialogTitle>
             <AlertDialogDescription>
@@ -106,7 +106,7 @@ export const AffiliateManagementDialog = ({ affiliate, open, onOpenChange, mode 
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-[425px] bg-white/95 backdrop-blur-xl border-slate-200">
+        <DialogContent className="sm:max-w-[425px] bg-white border border-slate-200 rounded-xl">
           <DialogHeader>
             <DialogTitle>Modifier l'affilié</DialogTitle>
             <DialogDescription>
@@ -170,7 +170,7 @@ export const AffiliateManagementDialog = ({ affiliate, open, onOpenChange, mode 
       </Dialog>
 
       <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
-        <AlertDialogContent>
+        <AlertDialogContent className="bg-white border border-slate-200 rounded-xl">
           <AlertDialogHeader>
             <AlertDialogTitle>Supprimer l'affilié</AlertDialogTitle>
             <AlertDialogDescription>

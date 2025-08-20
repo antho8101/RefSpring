@@ -39,7 +39,7 @@ export const CampaignSettingsDialog = ({ campaign }: CampaignSettingsDialogProps
             <Settings className="h-4 w-4" />
           </Button>
         </DialogTrigger>
-        <DialogContent className="w-[calc(100vw-60px)] h-[calc(100vh-60px)] max-w-6xl max-h-[90vh] p-0 bg-white overflow-hidden">
+        <DialogContent className="w-[calc(100vw-60px)] h-[calc(100vh-60px)] max-w-6xl max-h-[90vh] p-0 bg-white border border-slate-200 rounded-xl overflow-hidden">
           <div className="flex h-full">
             <CampaignSettingsNavigation 
               activeTab={activeTab} 

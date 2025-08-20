@@ -112,7 +112,7 @@ export const AffiliateDeleteDialog = ({ affiliate, open, onOpenChange, campaignI
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent className="bg-white border border-slate-200 shadow-xl">
+      <AlertDialogContent className="bg-white border border-slate-200 rounded-xl">
         <AlertDialogHeader>
           <AlertDialogTitle>Supprimer l'affilié</AlertDialogTitle>
           <AlertDialogDescription>

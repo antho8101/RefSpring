@@ -45,7 +45,7 @@ export const AddPaymentMethodDialog = ({ onPaymentMethodAdded }: AddPaymentMetho
           Ajouter une carte
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md bg-white border border-slate-200 rounded-xl">
         <DialogHeader>
           <DialogTitle>Ajouter une carte bancaire</DialogTitle>
         </DialogHeader>

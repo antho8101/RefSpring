@@ -112,7 +112,7 @@ export const CreateAffiliateDialog = ({ campaignId, campaignName }: CreateAffili
           Ajouter un affilié
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px] bg-white/95 backdrop-blur-xl border-slate-200">
+      <DialogContent className="sm:max-w-[425px] bg-white border border-slate-200 rounded-xl">
         <DialogHeader>
           <DialogTitle>Ajouter un affilié</DialogTitle>
           <DialogDescription>

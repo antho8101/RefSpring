@@ -58,7 +58,7 @@ export const CampaignSuccessModal = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto bg-white border border-slate-200 rounded-xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Check className="h-5 w-5 text-green-600" />
@@ -96,7 +96,7 @@ export const CampaignSuccessModal = ({
         <div className="flex justify-end">
           <Button 
             onClick={() => onOpenChange(false)}
-            className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all"
+            className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl"
           >
             C'est parti ! 🎊
           </Button>
