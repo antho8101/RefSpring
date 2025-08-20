@@ -1,6 +1,39 @@
 /**
- * Utilitaires pour optimiser les performances
+ * ⚡ Utilitaires de Performance - Optimisation Web Core Vitals
  */
+
+import { useCallback, useEffect, useRef, useState } from 'react';
+
+/**
+ * Hook pour lazy loading des images
+ */
+export const useLazyLoading = () => {
+  const [isIntersecting, setIsIntersecting] = useState(false);
+  const imgRef = useRef<HTMLImageElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsIntersecting(true);
+          observer.disconnect();
+        }
+      },
+      { 
+        threshold: 0.1,
+        rootMargin: '50px' // Charger 50px avant d'être visible
+      }
+    );
+
+    if (imgRef.current) {
+      observer.observe(imgRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
+  return { imgRef, shouldLoad: isIntersecting };
+};
 
 export const debounce = <T extends (...args: any[]) => any>(
   func: T,
