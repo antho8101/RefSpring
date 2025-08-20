@@ -68,12 +68,12 @@ export const AffiliatesManagementTable = ({ campaignId, onCopyTrackingLink }: Af
           <Table className="w-full table-fixed" style={{ width: '100%', maxWidth: '100%' }}>
           <TableHeader>
             <TableRow className="bg-slate-50">
-              <TableHead className="w-1/4 min-w-0">Affilié</TableHead>
-              <TableHead className="w-1/6 min-w-0">Code de suivi</TableHead>
-              <TableHead className="w-1/6 min-w-0">Date d'ajout</TableHead>
-              <TableHead className="w-1/6 min-w-0">Performances</TableHead>
-              <TableHead className="w-1/6 min-w-0">Paiements</TableHead>
-              <TableHead className="w-1/6 min-w-0 text-right">Actions</TableHead>
+              <TableHead className="w-[30%] min-w-0">Affilié</TableHead>
+              <TableHead className="w-[15%] min-w-0">Code de suivi</TableHead>
+              <TableHead className="w-[15%] min-w-0">Date d'ajout</TableHead>
+              <TableHead className="w-[15%] min-w-0">Performances</TableHead>
+              <TableHead className="w-[15%] min-w-0">Paiements</TableHead>
+              <TableHead className="w-[10%] min-w-0 text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

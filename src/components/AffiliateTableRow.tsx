@@ -19,18 +19,18 @@ interface AffiliateTableRowProps {
 export const AffiliateTableRow = ({ affiliate, onEdit, onCopyTrackingLink, onDelete }: AffiliateTableRowProps) => {
   return (
     <TableRow className="hover:bg-slate-50">
-      <TableCell className="w-1/4 max-w-0 overflow-hidden">
-        <div className="space-y-1 truncate">
+      <TableCell className="w-[30%] max-w-0 overflow-hidden">
+        <div className="space-y-1">
           <div className="font-medium text-slate-900 truncate">{affiliate.name}</div>
           <Badge variant="outline" className="text-xs truncate max-w-full">
             <span className="truncate">{affiliate.email}</span>
           </Badge>
         </div>
       </TableCell>
-      <TableCell className="w-1/6 max-w-0 overflow-hidden">
-        <div className="flex items-center gap-1 text-sm text-slate-600 truncate">
+      <TableCell className="w-[15%] max-w-0 overflow-hidden">
+        <div className="flex items-center gap-1 text-sm text-slate-600">
           <Hash className="h-3 w-3 flex-shrink-0" />
-          <span className="font-mono truncate">{affiliate.trackingCode}</span>
+          <span className="font-mono truncate text-xs">{affiliate.trackingCode}</span>
         </div>
       </TableCell>
       <TableCell>
