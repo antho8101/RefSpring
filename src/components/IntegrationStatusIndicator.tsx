@@ -66,7 +66,7 @@ export const IntegrationStatusIndicator = ({ campaign }: IntegrationStatusIndica
       case 'fully-integrated':
         return {
           icon: <CheckCircle className="h-3 w-3" />,
-          label: 'Code',
+          label: 'Code parfaitement intégré',
           variant: 'default' as const,
           className: 'bg-green-100 text-green-800 border-green-200',
           description: 'Script installé et conversions trackées avec succès'
