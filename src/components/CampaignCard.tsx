@@ -109,7 +109,7 @@ export const CampaignCard = ({ campaign, onCopyUrl }: CampaignCardProps) => {
               <CollapsibleTrigger asChild>
                 <Button 
                   variant="ghost" 
-                  className="w-full flex items-center justify-between p-2 hover:bg-slate-100/50 rounded-lg mt-3 min-w-0"
+                  className="w-full flex items-center justify-between p-2 hover:bg-slate-100/50 rounded-xl mt-3 min-w-0"
                 >
                   <div className="flex items-center gap-2 min-w-0">
                     <Users className="h-4 w-4 flex-shrink-0" />
