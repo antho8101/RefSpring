@@ -63,8 +63,9 @@ export const AffiliatesManagementTable = ({ campaignId, onCopyTrackingLink }: Af
 
   return (
     <>
-      <div className="border border-slate-200 rounded-xl overflow-hidden bg-white">
-        <Table>
+      <div className="border border-slate-200 rounded-xl overflow-hidden bg-white w-full max-w-full">
+        <div className="overflow-x-auto">
+          <Table className="w-full">
           <TableHeader>
             <TableRow className="bg-slate-50">
               <TableHead>Affilié</TableHead>
@@ -87,6 +88,7 @@ export const AffiliatesManagementTable = ({ campaignId, onCopyTrackingLink }: Af
             ))}
           </TableBody>
         </Table>
+        </div>
       </div>
 
       {selectedAffiliate && (
