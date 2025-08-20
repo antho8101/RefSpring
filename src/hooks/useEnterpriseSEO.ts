@@ -325,7 +325,7 @@ const updateMetaDescription = (metadata: EnterpriseSeOMetadata) => {
   }
   
   // Add emotional triggers and urgency for CTR
-  const ctaWords = ['Découvrez', 'Transformez', 'Optimisez', 'Révolutionnez'];
+  const ctaWords = ['Découvrez', 'Transformez', 'Optimisez', 'Maximisez'];
   const urgencyWords = ['maintenant', "aujourd'hui", 'rapidement', 'immédiatement'];
   
   let description = metadata.description;
@@ -468,7 +468,7 @@ const generateEnterpriseSchemas = (metadata: EnterpriseSeOMetadata): any[] => {
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: 'RefSpring',
-    description: 'Plateforme d\'affiliation révolutionnaire sans frais mensuels',
+    description: 'Plateforme d\'affiliation innovante sans frais mensuels',
     url: 'https://refspring.com',
     logo: {
       '@type': 'ImageObject',
