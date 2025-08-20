@@ -173,7 +173,7 @@ export const AffiliatesList = ({ campaignId, onCopyTrackingLink }: AffiliatesLis
             </div>
 
             {/* Statistiques mises à jour */}
-            <div className="bg-slate-50 rounded-lg p-3 border border-slate-100">
+            <div className="bg-slate-50 rounded-xl p-3 border border-slate-300">
               <div className="flex items-center gap-2 mb-3">
                 <BarChart3 className="h-4 w-4 text-slate-600" />
                 <span className="text-sm font-medium text-slate-700">Performances & Coûts</span>
