@@ -43,7 +43,7 @@ export const CampaignSettingsNavigation = ({ activeTab, onTabChange, onDeleteCli
         })}
       </nav>
 
-      <div className="mt-6">
+      <div className="flex-shrink-0">
         <Separator className="mb-4" />
         <div className="space-y-3">
           <div>
