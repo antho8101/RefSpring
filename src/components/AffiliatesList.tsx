@@ -156,7 +156,7 @@ export const AffiliatesList = ({ campaignId, onCopyTrackingLink }: AffiliatesLis
                   variant="outline" 
                   size="sm"
                   onClick={() => handleEditAffiliate(affiliate)}
-                  className="h-8 w-8 p-0"
+                  className="h-8 w-8 p-0 border-slate-300 rounded-xl"
                 >
                   <Edit2 className="h-3 w-3" />
                 </Button>
@@ -164,7 +164,7 @@ export const AffiliatesList = ({ campaignId, onCopyTrackingLink }: AffiliatesLis
                   variant="outline" 
                   size="sm"
                   onClick={() => handleCopyTrackingLink(affiliate.id)}
-                  className="h-8 px-3"
+                  className="h-8 px-3 border-slate-300 rounded-xl"
                 >
                   <Copy className="h-3 w-3 mr-2" />
                   Copier le lien
