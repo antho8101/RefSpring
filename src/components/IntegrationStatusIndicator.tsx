@@ -15,8 +15,10 @@ export const IntegrationStatusIndicator = ({ campaign }: IntegrationStatusIndica
   const [status, setStatus] = useState<IntegrationStatus>('checking');
   const [lastCheck, setLastCheck] = useState<Date>(new Date());
 
-  const checkIntegrationStatus = async () => {
-    setStatus('checking');
+  const checkIntegrationStatus = async (isInitialCheck = false) => {
+    if (isInitialCheck) {
+      setStatus('checking');
+    }
     
     try {
       // Simuler un appel API pour vérifier le statut d'intégration
@@ -53,10 +55,10 @@ export const IntegrationStatusIndicator = ({ campaign }: IntegrationStatusIndica
   };
 
   useEffect(() => {
-    checkIntegrationStatus();
+    checkIntegrationStatus(true);
     
     // Vérifier le statut toutes les 30 secondes
-    const interval = setInterval(checkIntegrationStatus, 30000);
+    const interval = setInterval(() => checkIntegrationStatus(false), 30000);
     
     return () => clearInterval(interval);
   }, [campaign.id]);
