@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { CheckCircle, AlertCircle, XCircle, RefreshCw } from 'lucide-react';
 import { Campaign } from '@/types';
-import { InfoTooltip } from './InfoTooltip';
+import { CustomInfoTooltip } from './CustomInfoTooltip';
 
 interface IntegrationStatusIndicatorProps {
   campaign: Campaign;
@@ -109,8 +109,8 @@ export const IntegrationStatusIndicator = ({ campaign }: IntegrationStatusIndica
         {config.icon}
         <span className="text-xs font-medium">{config.label}</span>
       </Badge>
-      <InfoTooltip text={config.description} />
-      <InfoTooltip text="L'indicateur 'Code' vous montre si votre script de tracking RefSpring est correctement installé sur votre site e-commerce et s'il fonctionne." />
+      <CustomInfoTooltip text={config.description} />
+      <CustomInfoTooltip text="L'indicateur 'Code' vous montre si votre script de tracking RefSpring est correctement installé sur votre site e-commerce et s'il fonctionne." />
     </div>
   );
 };

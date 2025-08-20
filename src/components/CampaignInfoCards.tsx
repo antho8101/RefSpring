@@ -6,7 +6,7 @@ import { TrendingUp, Calendar, ExternalLink, Copy } from 'lucide-react';
 import { Campaign } from '@/types';
 import { useToast } from '@/hooks/use-toast';
 import { IntegrationStatusIndicator } from './IntegrationStatusIndicator';
-import { InfoTooltip } from './InfoTooltip';
+import { CustomInfoTooltip } from './CustomInfoTooltip';
 
 interface CampaignInfoCardsProps {
   campaign: Campaign;
@@ -83,7 +83,7 @@ export const CampaignInfoCards = ({ campaign }: CampaignInfoCardsProps) => {
         <div className="flex items-center gap-2 text-blue-600 mb-2">
           <ExternalLink className="h-4 w-4" />
           <span className="text-sm font-medium">Dashboard public</span>
-          <InfoTooltip text="Partagez ce lien avec vos affiliés pour qu'ils puissent consulter leurs statistiques et accéder à leurs liens de tracking." />
+          <CustomInfoTooltip text="Partagez ce lien avec vos affiliés pour qu'ils puissent consulter leurs statistiques et accéder à leurs liens de tracking." />
         </div>
         <div className="space-y-2">
           <div className="flex items-center gap-2">
