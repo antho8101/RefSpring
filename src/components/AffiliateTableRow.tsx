@@ -19,18 +19,16 @@ interface AffiliateTableRowProps {
 export const AffiliateTableRow = ({ affiliate, onEdit, onCopyTrackingLink, onDelete }: AffiliateTableRowProps) => {
   return (
     <TableRow className="hover:bg-slate-50">
-      <TableCell className="w-[30%] max-w-0 overflow-hidden">
+      <TableCell className="w-[35%] max-w-0 overflow-hidden">
         <div className="space-y-1">
           <div className="font-medium text-slate-900 truncate">{affiliate.name}</div>
           <Badge variant="outline" className="text-xs truncate max-w-full">
             <span className="truncate">{affiliate.email}</span>
           </Badge>
-        </div>
-      </TableCell>
-      <TableCell className="w-[15%] max-w-0 overflow-hidden">
-        <div className="flex items-center gap-1 text-sm text-slate-600">
-          <Hash className="h-3 w-3 flex-shrink-0" />
-          <span className="font-mono truncate text-xs">{affiliate.trackingCode}</span>
+          <div className="flex items-center gap-1 text-xs text-slate-500 mt-1">
+            <Hash className="h-3 w-3 flex-shrink-0" />
+            <span className="font-mono truncate">{affiliate.trackingCode}</span>
+          </div>
         </div>
       </TableCell>
       <TableCell className="w-[15%] max-w-0 overflow-hidden">
@@ -41,10 +39,10 @@ export const AffiliateTableRow = ({ affiliate, onEdit, onCopyTrackingLink, onDel
           </div>
         )}
       </TableCell>
-      <TableCell className="w-[15%] max-w-0 overflow-hidden">
+      <TableCell className="w-[20%] max-w-0 overflow-hidden">
         <AffiliateStatsCell affiliateId={affiliate.id} commissionRate={affiliate.commissionRate} />
       </TableCell>
-      <TableCell className="w-[15%] max-w-0 overflow-hidden">
+      <TableCell className="w-[20%] max-w-0 overflow-hidden">
         <StripeConnectButton affiliate={affiliate} />
       </TableCell>
       <TableCell className="w-[10%] max-w-0 overflow-hidden">
