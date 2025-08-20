@@ -30,6 +30,7 @@ export const CampaignActions = ({ campaign, onCopyUrl }: CampaignActionsProps) =
         <BarChart3 className="h-4 w-4 mr-1 group-hover:scale-110 transition-transform duration-300" />
         <span className="font-medium">Stats avancées</span>
         <div className="absolute inset-0 bg-gradient-to-r from-blue-100/20 to-purple-100/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10" />
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-0 group-hover:opacity-100 translate-x-[-100%] group-hover:translate-x-[100%] transition-all duration-700 ease-out -z-10" />
       </Button>
       <CampaignSettingsDialog campaign={campaign} />
     </div>
