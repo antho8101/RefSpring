@@ -156,12 +156,12 @@ export const AffiliateManagementDialog = ({ affiliate, open, onOpenChange, mode 
                 type="button" 
                 variant="destructive" 
                 onClick={() => setShowDeleteConfirm(true)}
-                className="mr-auto"
+                className="mr-auto border border-red-300"
               >
                 <Trash2 className="h-4 w-4 mr-2" />
                 Supprimer
               </Button>
-              <Button type="submit" disabled={loading}>
+              <Button type="submit" disabled={loading} className="border border-slate-300">
                 {loading ? 'Sauvegarde...' : 'Sauvegarder'}
               </Button>
             </DialogFooter>
