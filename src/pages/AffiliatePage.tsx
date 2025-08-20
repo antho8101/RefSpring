@@ -113,41 +113,50 @@ const AffiliatePage = () => {
   // Error display with more helpful message for public access
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex flex-col">
-        <PublicDashboardHeader campaignName={t('publicDashboard.errors.accessRestricted')} loading={false} />
-        <div className="flex-1 flex items-center justify-center py-20 px-4 sm:px-6 lg:px-8">
-          <Card className="max-w-md border-red-200 bg-red-50/50">
-            <CardContent className="p-8">
-              <div className="text-center">
-                <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Users className="h-6 w-6 text-red-500" />
-                </div>
-                <h3 className="text-lg font-semibold mb-3 text-red-700">{t('publicDashboard.errors.accessRestricted')}</h3>
-                <p className="text-red-600 mb-4">{error}</p>
-                <p className="text-sm text-red-500/80 mb-4">
-                  {t('publicDashboard.errors.specialConfig')}
-                </p>
-                <p className="text-xs text-red-400 font-mono bg-red-100/50 px-3 py-2 rounded-lg">
-                  ID: {campaignId}
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+      <div className="min-h-screen bg-white overflow-hidden flex flex-col">
+        <div className="fixed inset-0 pointer-events-none">
+          <div className="absolute top-20 right-10 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute top-1/2 left-10 w-48 h-48 bg-purple-500/5 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-1/4 right-1/4 w-32 h-32 bg-green-500/5 rounded-full blur-2xl animate-pulse"></div>
         </div>
-        <PublicDashboardFooter />
+        
+        <div className="relative z-10">
+          <PublicDashboardHeader campaignName={t('publicDashboard.errors.accessRestricted')} loading={false} />
+          <div className="flex-1 flex items-center justify-center py-20 px-4 sm:px-6 lg:px-8">
+            <Card className="max-w-md border-red-200 bg-red-50/50">
+              <CardContent className="p-8">
+                <div className="text-center">
+                  <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                    <Users className="h-6 w-6 text-red-500" />
+                  </div>
+                  <h3 className="text-lg font-semibold mb-3 text-red-700">{t('publicDashboard.errors.accessRestricted')}</h3>
+                  <p className="text-red-600 mb-4">{error}</p>
+                  <p className="text-sm text-red-500/80 mb-4">
+                    {t('publicDashboard.errors.specialConfig')}
+                  </p>
+                  <p className="text-xs text-red-400 font-mono bg-red-100/50 px-3 py-2 rounded-xl">
+                    ID: {campaignId}
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+          <PublicDashboardFooter />
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex flex-col">
+    <div className="min-h-screen bg-white overflow-hidden flex flex-col">
       {/* Background decorations */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-20 right-10 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-20 left-10 w-48 h-48 bg-purple-500/5 rounded-full blur-3xl"></div>
+      <div className="fixed inset-0 pointer-events-none">
+        <div className="absolute top-20 right-10 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute top-1/2 left-10 w-48 h-48 bg-purple-500/5 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-32 h-32 bg-green-500/5 rounded-full blur-2xl animate-pulse"></div>
       </div>
 
-      <div className="relative flex flex-col flex-1">
+      <div className="relative z-10 flex flex-col flex-1">
         <PublicDashboardHeader campaignName={campaignName} loading={loading} />
 
         <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
