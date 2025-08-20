@@ -5,6 +5,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { CheckCircle, AlertCircle, XCircle, RefreshCw } from 'lucide-react';
 import { Campaign } from '@/types';
 import { CustomInfoTooltip } from './CustomInfoTooltip';
+import { TooltipProvider } from '@/components/ui/tooltip';
 
 interface IntegrationStatusIndicatorProps {
   campaign: Campaign;
@@ -104,12 +105,27 @@ export const IntegrationStatusIndicator = ({ campaign }: IntegrationStatusIndica
   const config = getStatusConfig();
 
   return (
-    <div className="flex items-center gap-2">
+    <TooltipProvider>
+      <div className="flex items-center gap-2">
       <Badge className={`flex items-center gap-1 ${config.className}`}>
         {config.icon}
         <span className="text-xs font-medium">{config.label}</span>
       </Badge>
-      <CustomInfoTooltip text="L'indicateur 'Code' vous montre si votre script de tracking RefSpring est correctement installé sur votre site e-commerce et s'il fonctionne." />
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div className="cursor-help">
+            <svg className="h-3 w-3 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+              <path d="M12 17h.01"/>
+            </svg>
+          </div>
+        </TooltipTrigger>
+        <TooltipContent side="top" className="max-w-xs">
+          <p>L'indicateur 'Code' vous montre si votre script de tracking RefSpring est correctement installé sur votre site e-commerce et s'il fonctionne.</p>
+        </TooltipContent>
+      </Tooltip>
     </div>
+    </TooltipProvider>
   );
 };

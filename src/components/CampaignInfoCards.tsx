@@ -7,6 +7,7 @@ import { Campaign } from '@/types';
 import { useToast } from '@/hooks/use-toast';
 import { IntegrationStatusIndicator } from './IntegrationStatusIndicator';
 import { CustomInfoTooltip } from './CustomInfoTooltip';
+import { TooltipProvider } from '@/components/ui/tooltip';
 
 interface CampaignInfoCardsProps {
   campaign: Campaign;
@@ -78,12 +79,26 @@ export const CampaignInfoCards = ({ campaign }: CampaignInfoCardsProps) => {
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+    <TooltipProvider>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
       <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 lg:col-span-6">
         <div className="flex items-center gap-2 text-blue-600 mb-2">
           <ExternalLink className="h-4 w-4" />
           <span className="text-sm font-medium">Dashboard public</span>
-          <CustomInfoTooltip text="Partagez ce lien avec vos affiliés pour qu'ils puissent consulter leurs statistiques et accéder à leurs liens de tracking." />
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="cursor-help">
+                <svg className="h-3 w-3 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="10"/>
+                  <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                  <path d="M12 17h.01"/>
+                </svg>
+              </div>
+            </TooltipTrigger>
+            <TooltipContent side="top" className="max-w-xs">
+              <p>Partagez ce lien avec vos affiliés pour qu'ils puissent consulter leurs statistiques et accéder à leurs liens de tracking.</p>
+            </TooltipContent>
+          </Tooltip>
         </div>
         <div className="space-y-2">
           <div className="flex items-center gap-2">
@@ -125,6 +140,7 @@ export const CampaignInfoCards = ({ campaign }: CampaignInfoCardsProps) => {
         </p>
       </div>
 
-    </div>
+      </div>
+    </TooltipProvider>
   );
 };
