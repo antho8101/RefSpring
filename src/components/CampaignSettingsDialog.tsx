@@ -57,7 +57,7 @@ export const CampaignSettingsDialog = ({ campaign }: CampaignSettingsDialogProps
               </div>
 
               <div className="flex-1 overflow-auto min-w-0">
-                <div className="p-8 max-w-full">
+                <div className="p-8 w-full max-w-full">
                   <div className="max-w-full overflow-hidden">
                     <CampaignSettingsTabContent
                       activeTab={activeTab}
