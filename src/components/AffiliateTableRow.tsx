@@ -58,14 +58,6 @@ export const AffiliateTableRow = ({ affiliate, onEdit, onCopyTrackingLink, onDel
           <Button 
             variant="outline" 
             size="sm"
-            onClick={() => onCopyTrackingLink(affiliate.id)}
-            className="rounded-lg h-6 w-6 p-0"
-          >
-            <Copy className="h-2.5 w-2.5" />
-          </Button>
-          <Button 
-            variant="outline" 
-            size="sm"
             onClick={() => onDelete(affiliate)}
             className="rounded-lg h-6 w-6 p-0 text-red-600 hover:bg-red-50 hover:text-red-700 border-red-200"
           >
