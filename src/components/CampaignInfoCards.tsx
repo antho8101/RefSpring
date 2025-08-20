@@ -86,9 +86,9 @@ export const CampaignInfoCards = ({ campaign }: CampaignInfoCardsProps) => {
             <TooltipTrigger asChild>
               <HelpCircle className="h-3 w-3 text-blue-500/70 cursor-help" />
             </TooltipTrigger>
-            <TooltipContent>
-              <p className="text-xs">Partagez ce lien avec vos affiliés pour qu'ils puissent consulter leurs statistiques et accéder à leurs liens de tracking.</p>
-            </TooltipContent>
+             <TooltipContent>
+               <p className="text-xs text-foreground">Partagez ce lien avec vos affiliés pour qu'ils puissent consulter leurs statistiques et accéder à leurs liens de tracking.</p>
+             </TooltipContent>
           </Tooltip>
         </div>
         <div className="space-y-2">
