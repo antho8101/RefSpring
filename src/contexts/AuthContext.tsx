@@ -70,7 +70,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const signInWithEmail = async (email: string, password: string) => {
     console.log('🔐 AUTH: Tentative de connexion avec email');
-    return await signInWithEmailAndPassword(auth, email, password);
+    try {
+      console.log('🔐 AUTH: Firebase auth instance:', !!auth);
+      console.log('🔐 AUTH: Firebase config:', auth.app.options);
+      
+      const result = await signInWithEmailAndPassword(auth, email, password);
+      console.log('🔐 AUTH: Connexion réussie:', result.user.uid);
+      return result;
+    } catch (error) {
+      console.error('🚨 AUTH: Erreur de connexion:', error);
+      console.error('🚨 AUTH: Code erreur:', (error as any).code);
+      console.error('🚨 AUTH: Message erreur:', (error as any).message);
+      throw error;
+    }
   };
 
   const signUpWithEmail = async (email: string, password: string) => {
