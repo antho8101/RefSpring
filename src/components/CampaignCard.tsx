@@ -63,7 +63,7 @@ export const CampaignCard = ({ campaign, onCopyUrl }: CampaignCardProps) => {
   };
 
   return (
-    <Card className="bg-gradient-to-br from-white to-slate-50 border-slate-200 min-w-0 overflow-hidden rounded-2xl">
+    <Card className="bg-card border-border min-w-0 overflow-hidden rounded-lg">
       <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
         <CollapsibleTrigger asChild>
           <CardHeader className="pb-3 cursor-pointer min-w-0">
