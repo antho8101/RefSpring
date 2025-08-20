@@ -30,7 +30,7 @@ export const PublicDashboardFooter = () => {
                 href="/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2 bg-slate-900 text-white text-sm font-medium rounded-xl hover:bg-slate-800 transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-xl hover:bg-blue-700 transition-colors"
               >
                 <span>{t('publicDashboard.footer.createCampaign')}</span>
                 <ExternalLink className="h-3 w-3" />
