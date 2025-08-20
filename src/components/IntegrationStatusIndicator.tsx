@@ -109,13 +109,8 @@ export const IntegrationStatusIndicator = ({ campaign }: IntegrationStatusIndica
             <span className="text-xs font-medium">{config.label}</span>
           </Badge>
         </TooltipTrigger>
-        <TooltipContent className="bg-white border border-gray-200 shadow-lg">
-          <div className="text-xs">
-            <p>{config.description}</p>
-            <p className="text-gray-500 mt-1">
-              Dernière vérification: {lastCheck.toLocaleTimeString('fr-FR')}
-            </p>
-          </div>
+        <TooltipContent>
+          <p className="text-xs">L'indicateur "Code" vous montre si votre script de tracking RefSpring est correctement installé sur votre site e-commerce et s'il fonctionne.</p>
         </TooltipContent>
       </Tooltip>
       <Tooltip>
