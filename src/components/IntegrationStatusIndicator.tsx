@@ -113,7 +113,7 @@ export const IntegrationStatusIndicator = ({ campaign }: IntegrationStatusIndica
           </Badge>
         </TooltipTrigger>
         <TooltipContent>
-          <p className="text-xs">{config.description}</p>
+          <p className="text-xs text-foreground">{config.description}</p>
         </TooltipContent>
       </Tooltip>
       <InfoTooltip text="L'indicateur 'Code' vous montre si votre script de tracking RefSpring est correctement installé sur votre site e-commerce et s'il fonctionne." />
