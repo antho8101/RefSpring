@@ -2,7 +2,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 import { auth, googleProvider } from '@/lib/firebase';
-import { secureStorage } from '@/utils/security';
 
 interface AuthContextType {
   user: User | null;
@@ -32,18 +31,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setUser(user);
       setLoading(false);
       
-      // Sauvegarder l'état d'authentification de façon sécurisée
+      // Sauvegarder l'état d'authentification simplement
       if (user) {
         const userData = {
           uid: user.uid,
           email: user.email,
           timestamp: Date.now()
         };
-        secureStorage.setSecure('auth_user', userData);
-        console.log('🔐 AUTH: Session sauvegardée de façon sécurisée');
+        localStorage.setItem('auth_user', JSON.stringify(userData));
+        console.log('🔐 AUTH: Session sauvegardée');
       } else {
-        secureStorage.removeSecure('auth_user');
-        console.log('🔐 AUTH: Session supprimée de façon sécurisée');
+        localStorage.removeItem('auth_user');
+        console.log('🔐 AUTH: Session supprimée');
       }
     });
 
@@ -70,19 +69,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const signInWithEmail = async (email: string, password: string) => {
     console.log('🔐 AUTH: Tentative de connexion avec email');
-    try {
-      console.log('🔐 AUTH: Firebase auth instance:', !!auth);
-      console.log('🔐 AUTH: Firebase config:', auth.app.options);
-      
-      const result = await signInWithEmailAndPassword(auth, email, password);
-      console.log('🔐 AUTH: Connexion réussie:', result.user.uid);
-      return result;
-    } catch (error) {
-      console.error('🚨 AUTH: Erreur de connexion:', error);
-      console.error('🚨 AUTH: Code erreur:', (error as any).code);
-      console.error('🚨 AUTH: Message erreur:', (error as any).message);
-      throw error;
-    }
+    return await signInWithEmailAndPassword(auth, email, password);
   };
 
   const signUpWithEmail = async (email: string, password: string) => {

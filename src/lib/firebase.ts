@@ -6,36 +6,17 @@ import { getFunctions } from "firebase/functions";
 
 // Configuration Firebase avec des valeurs par défaut pour le développement
 const firebaseConfig = {
-  apiKey: "AIzaSyAlHsC-w7Sx18XKJ6dIcxvqj-AUdqkjqSE",
-  authDomain: "refspring-8c3ac.firebaseapp.com",
-  databaseURL: "https://refspring-8c3ac-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "refspring-8c3ac",
-  storageBucket: "refspring-8c3ac.firebasestorage.app",
-  messagingSenderId: "519439687826",
-  appId: "1:519439687826:web:c0644e224f4ca23b57864b",
-  measurementId: "G-QNK35Y7EE4"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyAlHsC-w7Sx18XKJ6dIcxvqj-AUdqkjqSE",
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "refspring-8c3ac.firebaseapp.com",
+  databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL || "https://refspring-8c3ac-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "refspring-8c3ac",
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "refspring-8c3ac.firebasestorage.app",
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "519439687826",
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:519439687826:web:c0644e224f4ca23b57864b",
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || "G-QNK35Y7EE4"
 };
 
-console.log('🔥 Firebase config loaded:', {
-  projectId: firebaseConfig.projectId,
-  authDomain: firebaseConfig.authDomain,
-  apiKeyPrefix: firebaseConfig.apiKey.substring(0, 10) + '...'
-});
-
-// Test de connexion Firebase
-const testFirebaseConnection = async () => {
-  try {
-    console.log('🔥 Testing Firebase connection...');
-    const testUrl = `https://identitytoolkit.googleapis.com/v1/projects/${firebaseConfig.projectId}`;
-    const response = await fetch(testUrl, { method: 'HEAD' });
-    console.log('🔥 Firebase connection test:', response.status);
-  } catch (error) {
-    console.error('🚨 Firebase connection failed:', error);
-  }
-};
-
-// Tester la connexion au démarrage
-testFirebaseConnection();
+console.log('🔥 Firebase config loaded with fallback values');
 
 // Éviter la double initialisation de Firebase
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
