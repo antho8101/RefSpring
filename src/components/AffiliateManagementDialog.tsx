@@ -183,7 +183,7 @@ export const AffiliateManagementDialog = ({ affiliate, open, onOpenChange, mode 
             <AlertDialogAction 
               onClick={handleDelete}
               disabled={loading}
-              className="bg-red-600 hover:bg-red-700"
+              className="bg-red-600 hover:bg-red-700 text-white"
             >
               {loading ? 'Suppression...' : 'Supprimer'}
             </AlertDialogAction>
