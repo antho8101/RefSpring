@@ -20,7 +20,7 @@ const AffiliateOnboardingPage = () => {
       setMessage('Votre compte Stripe Connect a été configuré avec succès ! Vous pouvez maintenant recevoir vos commissions automatiquement.');
     } else if (isRefresh) {
       setStatus('refresh');
-      setMessage('Votre session d\'onboarding a expiré. Veuillez recommencer le processus depuis votre dashboard affilié.');
+      setMessage('Votre session d\'onboarding a expiré. Veuillez recommencer le processus depuis le lien fourni par le propriétaire de la campagne.');
     } else if (accountId) {
       setStatus('loading');
       setMessage('Vérification du statut de votre compte...');
@@ -31,14 +31,18 @@ const AffiliateOnboardingPage = () => {
     }
   }, [accountId, isSuccess, isRefresh]);
 
-  const handleReturnToDashboard = () => {
-    // Rediriger vers le dashboard affilié ou la page principale
-    window.location.href = '/';
+  const handleReturnToOrigin = () => {
+    // Essayer de fermer la fenêtre, sinon rediriger
+    try {
+      window.close();
+    } catch {
+      window.location.href = '/';
+    }
   };
 
-  const handleRestartOnboarding = () => {
-    // Relancer le processus d'onboarding
-    window.location.href = '/?restart_onboarding=true';
+  const handleContactSupport = () => {
+    // Ouvrir l'email de support
+    window.location.href = 'mailto:support@refspring.app?subject=Problème configuration Stripe Connect';
   };
 
   return (
@@ -130,25 +134,25 @@ const AffiliateOnboardingPage = () => {
               {/* Actions */}
               <div className="flex gap-3 justify-center">
                 {status === 'success' && (
-                  <Button onClick={handleReturnToDashboard} className="min-w-[200px]">
-                    Retour au dashboard
+                  <Button onClick={handleReturnToOrigin} className="min-w-[200px]">
+                    Fermer cette fenêtre
                   </Button>
                 )}
                 
                 {status === 'refresh' && (
                   <>
-                    <Button variant="outline" onClick={handleReturnToDashboard}>
-                      Retour au dashboard
+                    <Button variant="outline" onClick={handleReturnToOrigin}>
+                      Fermer cette fenêtre
                     </Button>
-                    <Button onClick={handleRestartOnboarding}>
-                      Recommencer la configuration
+                    <Button onClick={handleContactSupport}>
+                      Contacter le support
                     </Button>
                   </>
                 )}
                 
                 {status === 'error' && (
-                  <Button variant="outline" onClick={handleReturnToDashboard}>
-                    Retour au dashboard
+                  <Button variant="outline" onClick={handleContactSupport}>
+                    Contacter le support
                   </Button>
                 )}
                 
