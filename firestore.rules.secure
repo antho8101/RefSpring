@@ -1,0 +1,139 @@
+/**
+ * 🛡️ Firestore Security Rules - Version Durcie
+ */
+
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Fonction helper pour valider la structure des données
+    function isValidCampaignData(data) {
+      return data.keys().hasAll(['name', 'targetUrl', 'userId', 'isActive']) &&
+             data.name is string && data.name.size() > 2 && data.name.size() <= 100 &&
+             data.targetUrl is string && data.targetUrl.matches('https?://.*') &&
+             data.userId is string &&
+             data.isActive is bool;
+    }
+    
+    function isValidAffiliateData(data) {
+      return data.keys().hasAll(['name', 'email', 'campaignId', 'userId']) &&
+             data.name is string && data.name.size() > 1 && data.name.size() <= 50 &&
+             data.email is string && data.email.matches('.*@.*\\..*') &&
+             data.campaignId is string &&
+             data.userId is string;
+    }
+    
+    // Fonction pour vérifier si l'utilisateur est admin
+    function isAdmin() {
+      return request.auth != null && 
+             request.auth.token.email in ['admin@refspring.com'];
+    }
+    
+    // Fonction pour vérifier la propriété d'une campagne
+    function isCampaignOwner(campaignId) {
+      return request.auth != null &&
+             request.auth.uid == get(/databases/$(database)/documents/campaigns/$(campaignId)).data.userId;
+    }
+    
+    // Règles pour les campagnes
+    match /campaigns/{campaignId} {
+      // Lecture: propriétaire, admin, ou campagne publique
+      allow read: if request.auth != null && 
+        (request.auth.uid == resource.data.userId || 
+         isAdmin() ||
+         resource.data.isPublic == true);
+      
+      // Création: utilisateur authentifié avec données valides
+      allow create: if request.auth != null && 
+        request.auth.uid == request.resource.data.userId &&
+        isValidCampaignData(request.resource.data);
+      
+      // Modification: propriétaire uniquement avec données valides
+      allow update: if request.auth != null && 
+        request.auth.uid == resource.data.userId &&
+        request.auth.uid == request.resource.data.userId &&
+        isValidCampaignData(request.resource.data);
+      
+      // Suppression: propriétaire ou admin
+      allow delete: if request.auth != null && 
+        (request.auth.uid == resource.data.userId || isAdmin());
+    }
+    
+    // Règles pour les affiliés
+    match /affiliates/{affiliateId} {
+      // Lecture: propriétaire de la campagne ou admin
+      allow read: if request.auth != null && 
+        (isCampaignOwner(resource.data.campaignId) || isAdmin());
+      
+      // Création: propriétaire de la campagne avec données valides
+      allow create: if request.auth != null && 
+        isCampaignOwner(request.resource.data.campaignId) &&
+        isValidAffiliateData(request.resource.data);
+      
+      // Modification: propriétaire de la campagne avec données valides
+      allow update: if request.auth != null && 
+        isCampaignOwner(resource.data.campaignId) &&
+        isValidAffiliateData(request.resource.data);
+      
+      // Suppression: propriétaire de la campagne ou admin
+      allow delete: if request.auth != null && 
+        (isCampaignOwner(resource.data.campaignId) || isAdmin());
+    }
+    
+    // Règles pour les clics (tracking public mais avec validation)
+    match /clicks/{clickId} {
+      // Lecture: propriétaire de la campagne ou admin
+      allow read: if request.auth != null && 
+        (isCampaignOwner(resource.data.campaignId) || isAdmin());
+      
+      // Création: validation des données requises
+      allow create: if request.resource.data.keys().hasAll(['campaignId', 'affiliateId', 'timestamp']) &&
+        request.resource.data.campaignId is string &&
+        request.resource.data.affiliateId is string &&
+        request.resource.data.timestamp is timestamp;
+      
+      // Pas de modification/suppression des clics
+      allow update, delete: if false;
+    }
+    
+    // Règles pour les conversions (tracking public mais avec validation stricte)
+    match /conversions/{conversionId} {
+      // Lecture: propriétaire de la campagne ou admin
+      allow read: if request.auth != null && 
+        (isCampaignOwner(resource.data.campaignId) || isAdmin());
+      
+      // Création: validation stricte des données
+      allow create: if request.resource.data.keys().hasAll(['campaignId', 'affiliateId', 'amount', 'timestamp']) &&
+        request.resource.data.campaignId is string &&
+        request.resource.data.affiliateId is string &&
+        request.resource.data.amount is number &&
+        request.resource.data.amount > 0 &&
+        request.resource.data.timestamp is timestamp;
+      
+      // Modification: admin uniquement (pour vérification)
+      allow update: if isAdmin();
+      
+      // Pas de suppression des conversions
+      allow delete: if false;
+    }
+    
+    // Règles pour les liens courts
+    match /shortLinks/{shortLinkId} {
+      allow read: if true; // Lecture publique pour redirection
+      allow write: if request.auth != null && 
+        request.auth.uid == request.resource.data.userId;
+    }
+    
+    // Règles pour les données de facturation (admin/propriétaire uniquement)
+    match /billingRecords/{recordId} {
+      allow read, write: if request.auth != null && 
+        (request.auth.uid == resource.data.userId || isAdmin());
+    }
+    
+    // Règles par défaut: authentification requise
+    match /{document=**} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}

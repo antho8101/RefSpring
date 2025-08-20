@@ -2,6 +2,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 import { auth, googleProvider } from '@/lib/firebase';
+import { secureStorage } from '@/utils/security';
 
 interface AuthContextType {
   user: User | null;
@@ -31,17 +32,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setUser(user);
       setLoading(false);
       
-      // Sauvegarder l'état d'authentification dans localStorage pour la persistance
+      // Sauvegarder l'état d'authentification de façon sécurisée
       if (user) {
-        localStorage.setItem('auth_user', JSON.stringify({
+        const userData = {
           uid: user.uid,
           email: user.email,
           timestamp: Date.now()
-        }));
-        console.log('🔐 AUTH: Session sauvegardée dans localStorage');
+        };
+        secureStorage.setSecure('auth_user', userData);
+        console.log('🔐 AUTH: Session sauvegardée de façon sécurisée');
       } else {
-        localStorage.removeItem('auth_user');
-        console.log('🔐 AUTH: Session supprimée du localStorage');
+        secureStorage.removeSecure('auth_user');
+        console.log('🔐 AUTH: Session supprimée de façon sécurisée');
       }
     });
 

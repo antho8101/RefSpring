@@ -38,9 +38,10 @@ export const useTawkTo = (config: TawkToConfig = {}) => {
       })();
     `;
 
-    // Exécuter le script
+    // Exécuter le script de façon sécurisée
     const scriptElement = document.createElement('script');
-    scriptElement.innerHTML = script;
+    scriptElement.textContent = script; // Plus sûr que innerHTML
+    scriptElement.type = 'text/javascript';
     document.head.appendChild(scriptElement);
 
     // Cleanup function
