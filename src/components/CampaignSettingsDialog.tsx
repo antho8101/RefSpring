@@ -40,29 +40,37 @@ export const CampaignSettingsDialog = ({ campaign }: CampaignSettingsDialogProps
           </Button>
         </DialogTrigger>
         <DialogContent className="w-[calc(100vw-60px)] h-[calc(100vh-60px)] max-w-6xl max-h-[90vh] p-0 bg-white border border-slate-200 rounded-xl overflow-hidden">
-          <div className="flex h-full">
-            <CampaignSettingsNavigation 
-              activeTab={activeTab} 
-              onTabChange={setActiveTab} 
-              onDeleteClick={handleDeleteClick}
-            />
+          <div className="flex h-full min-h-0">
+            {/* MENU GAUCHE - TAILLE FIXE */}
+            <div className="w-80 h-full flex-shrink-0 overflow-hidden">
+              <CampaignSettingsNavigation 
+                activeTab={activeTab} 
+                onTabChange={setActiveTab} 
+                onDeleteClick={handleDeleteClick}
+              />
+            </div>
 
-            <div className="flex-1 flex flex-col">
-              <CampaignSettingsHeader activeTab={activeTab} />
+            {/* CONTENU DROITE - FLEX */}
+            <div className="flex-1 h-full flex flex-col min-w-0 overflow-hidden">
+              <div className="flex-shrink-0">
+                <CampaignSettingsHeader activeTab={activeTab} />
+              </div>
 
-              <div className="flex-1 p-8 overflow-auto">
-                <CampaignSettingsTabContent
-                  activeTab={activeTab}
-                  campaign={campaign}
-                  formData={formData}
-                  initialTargetUrl={initialTargetUrl}
-                  loading={loading}
-                  onFormDataChange={setFormData}
-                  onSubmit={handleSubmit}
-                  onCancel={() => setOpen(false)}
-                  onDeleteClick={handleDeleteClick}
-                  onPaymentMethodChange={handlePaymentMethodChange}
-                />
+              <div className="flex-1 overflow-auto">
+                <div className="p-8">
+                  <CampaignSettingsTabContent
+                    activeTab={activeTab}
+                    campaign={campaign}
+                    formData={formData}
+                    initialTargetUrl={initialTargetUrl}
+                    loading={loading}
+                    onFormDataChange={setFormData}
+                    onSubmit={handleSubmit}
+                    onCancel={() => setOpen(false)}
+                    onDeleteClick={handleDeleteClick}
+                    onPaymentMethodChange={handlePaymentMethodChange}
+                  />
+                </div>
               </div>
             </div>
           </div>
