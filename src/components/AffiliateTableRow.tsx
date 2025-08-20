@@ -6,7 +6,7 @@ import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { Affiliate } from '@/types';
 import { AffiliateStatsCell } from '@/components/AffiliateStatsCell';
-import { StripeConnectButton } from '@/components/StripeConnectButton';
+import { AffiliatePaymentStatus } from '@/components/AffiliatePaymentStatus';
 import { TableCell, TableRow } from '@/components/ui/table';
 
 interface AffiliateTableRowProps {
@@ -42,8 +42,8 @@ export const AffiliateTableRow = ({ affiliate, onEdit, onCopyTrackingLink, onDel
       <TableCell className="w-[20%] max-w-0 overflow-hidden">
         <AffiliateStatsCell affiliateId={affiliate.id} commissionRate={affiliate.commissionRate} />
       </TableCell>
-      <TableCell className="w-[20%]">
-        <StripeConnectButton affiliate={affiliate} />
+      <TableCell className="w-[20%] max-w-0 overflow-hidden">
+        <AffiliatePaymentStatus affiliate={affiliate} />
       </TableCell>
       <TableCell className="w-[10%] max-w-0 overflow-hidden">
         <div className="flex items-center justify-end gap-1">
