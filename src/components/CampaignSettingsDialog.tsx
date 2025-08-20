@@ -56,20 +56,22 @@ export const CampaignSettingsDialog = ({ campaign }: CampaignSettingsDialogProps
                 <CampaignSettingsHeader activeTab={activeTab} />
               </div>
 
-              <div className="flex-1 overflow-auto">
-                <div className="p-8">
-                  <CampaignSettingsTabContent
-                    activeTab={activeTab}
-                    campaign={campaign}
-                    formData={formData}
-                    initialTargetUrl={initialTargetUrl}
-                    loading={loading}
-                    onFormDataChange={setFormData}
-                    onSubmit={handleSubmit}
-                    onCancel={() => setOpen(false)}
-                    onDeleteClick={handleDeleteClick}
-                    onPaymentMethodChange={handlePaymentMethodChange}
-                  />
+              <div className="flex-1 overflow-auto min-w-0">
+                <div className="p-8 max-w-full">
+                  <div className="max-w-full overflow-hidden">
+                    <CampaignSettingsTabContent
+                      activeTab={activeTab}
+                      campaign={campaign}
+                      formData={formData}
+                      initialTargetUrl={initialTargetUrl}
+                      loading={loading}
+                      onFormDataChange={setFormData}
+                      onSubmit={handleSubmit}
+                      onCancel={() => setOpen(false)}
+                      onDeleteClick={handleDeleteClick}
+                      onPaymentMethodChange={handlePaymentMethodChange}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
