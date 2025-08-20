@@ -65,7 +65,7 @@ export const AffiliatesManagementTable = ({ campaignId, onCopyTrackingLink }: Af
     <>
       <div className="border border-slate-200 rounded-xl overflow-hidden bg-white w-full max-w-full">
         <div className="overflow-x-auto">
-          <Table className="w-full">
+          <Table className="w-full table-fixed" style={{ width: '100%', maxWidth: '100%' }}>
           <TableHeader>
             <TableRow className="bg-slate-50">
               <TableHead className="w-1/4 min-w-0">Affilié</TableHead>
