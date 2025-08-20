@@ -131,7 +131,7 @@ export const AffiliatesList = ({ campaignId, onCopyTrackingLink }: AffiliatesLis
         {affiliates.map((affiliate) => (
           <div
             key={affiliate.id}
-            className="bg-white border border-slate-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+            className="bg-white border border-slate-300 rounded-xl p-4 hover:shadow-md transition-shadow"
           >
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-3 flex-1">
