@@ -17,7 +17,7 @@ export const CampaignSettingsNavigation = ({ activeTab, onTabChange, onDeleteCli
   ];
 
   return (
-    <div className="w-80 h-full bg-slate-50 border-r p-6 flex flex-col">
+    <div className="w-80 h-full bg-slate-50 border-r p-6 flex flex-col flex-shrink-0">
       <div className="mb-6">
         <h2 className="text-xl font-semibold text-slate-900">Paramètres</h2>
         <p className="text-sm text-slate-600">Configuration de la campagne</p>
