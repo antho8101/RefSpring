@@ -105,17 +105,11 @@ export const IntegrationStatusIndicator = ({ campaign }: IntegrationStatusIndica
 
   return (
     <div className="flex items-center gap-2">
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Badge className={`flex items-center gap-1 ${config.className}`}>
-            {config.icon}
-            <span className="text-xs font-medium">{config.label}</span>
-          </Badge>
-        </TooltipTrigger>
-        <TooltipContent>
-          <p className="text-xs text-foreground">{config.description}</p>
-        </TooltipContent>
-      </Tooltip>
+      <Badge className={`flex items-center gap-1 ${config.className}`}>
+        {config.icon}
+        <span className="text-xs font-medium">{config.label}</span>
+      </Badge>
+      <InfoTooltip text={config.description} />
       <InfoTooltip text="L'indicateur 'Code' vous montre si votre script de tracking RefSpring est correctement installé sur votre site e-commerce et s'il fonctionne." />
     </div>
   );
