@@ -91,6 +91,9 @@ export const CampaignCard = ({ campaign, onCopyUrl }: CampaignCardProps) => {
                   <CardDescription className="text-slate-600 mt-1 text-sm leading-relaxed line-clamp-2">
                     {campaign.description}
                   </CardDescription>
+                  <div className="text-xs text-slate-500 mt-1">
+                    Créée le {new Date(campaign.createdAt).toLocaleDateString('fr-FR')}
+                  </div>
                 </div>
               </div>
               <div className="ml-2 flex-shrink-0" onClick={(e) => e.stopPropagation()}>
