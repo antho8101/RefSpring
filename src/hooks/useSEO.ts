@@ -179,14 +179,19 @@ export const useSEO = (pageData: SEOPageData) => {
   ]);
 };
 
+// Declare gtag function
+declare global {
+  function gtag(...args: any[]): void;
+}
+
 // Hook for tracking SEO events
 export const useSEOAnalytics = () => {
   const location = useLocation();
 
   const trackPageView = useCallback((title: string) => {
     // Google Analytics 4
-    if (typeof gtag !== 'undefined') {
-      gtag('config', 'GA_MEASUREMENT_ID', {
+    if (typeof window !== 'undefined' && typeof (window as any).gtag === 'function') {
+      (window as any).gtag('config', 'GA_MEASUREMENT_ID', {
         page_title: title,
         page_location: window.location.href
       });
@@ -208,8 +213,8 @@ export const useSEOAnalytics = () => {
     label?: string, 
     value?: number
   ) => {
-    if (typeof gtag !== 'undefined') {
-      gtag('event', action, {
+    if (typeof window !== 'undefined' && typeof (window as any).gtag === 'function') {
+      (window as any).gtag('event', action, {
         event_category: 'SEO',
         event_label: label,
         value: value
@@ -228,12 +233,12 @@ export const useCoreWebVitals = () => {
   useEffect(() => {
     const reportWebVitals = async () => {
       try {
-        const { getCLS, getFID, getFCP, getLCP, getTTFB } = await import('web-vitals');
+        const { onCLS, onINP, onFCP, onLCP, onTTFB } = await import('web-vitals');
 
         const sendToAnalytics = ({ name, value, rating, delta, id }: any) => {
           // Send to Google Analytics
-          if (typeof gtag !== 'undefined') {
-            gtag('event', name, {
+          if (typeof window !== 'undefined' && typeof (window as any).gtag === 'function') {
+            (window as any).gtag('event', name, {
               event_category: 'Web Vitals',
               event_label: rating,
               value: Math.round(value),
@@ -254,11 +259,11 @@ export const useCoreWebVitals = () => {
           }
         };
 
-        getCLS(sendToAnalytics);
-        getFID(sendToAnalytics);
-        getFCP(sendToAnalytics);
-        getLCP(sendToAnalytics);
-        getTTFB(sendToAnalytics);
+        onCLS(sendToAnalytics);
+        onINP(sendToAnalytics);
+        onFCP(sendToAnalytics);
+        onLCP(sendToAnalytics);
+        onTTFB(sendToAnalytics);
       } catch (error) {
         console.warn('Web Vitals not available:', error);
       }

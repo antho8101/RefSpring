@@ -6,20 +6,20 @@ export class Result<T, E = Error> {
     private readonly _isSuccess: boolean = false
   ) {}
 
-  static success<T>(value: T): Result<T> {
-    return new Result(value, undefined, true);
+  static success<T, E = Error>(value: T): Result<T, E> {
+    return new Result<T, E>(value, undefined, true);
   }
 
-  static failure<E>(error: E): Result<never, E> {
-    return new Result<never, E>(undefined, error, false);
+  static failure<T = never, E = Error>(error: E): Result<T, E> {
+    return new Result<T, E>(undefined, error, false);
   }
 
   static async fromPromise<T>(promise: Promise<T>): Promise<Result<T, Error>> {
     try {
       const value = await promise;
-      return Result.success(value);
+      return Result.success<T, Error>(value);
     } catch (error) {
-      return Result.failure(error instanceof Error ? error : new Error(String(error)));
+      return Result.failure<T, Error>(error instanceof Error ? error : new Error(String(error)));
     }
   }
 
@@ -49,20 +49,21 @@ export class Result<T, E = Error> {
   map<U>(fn: (value: T) => U): Result<U, E> {
     if (this.isSuccess()) {
       try {
-        return Result.success(fn(this.value));
+        const newValue = fn(this.value);
+        return Result.success<U, E>(newValue);
       } catch (error) {
-        return Result.failure(error as E);
+        return Result.failure<U, E>(error as E);
       }
     }
-    return Result.failure(this.error);
+    return Result.failure<U, E>(this.error);
   }
 
   // Transform the error if failure, otherwise return the same success
   mapError<F>(fn: (error: E) => F): Result<T, F> {
     if (this.isFailure()) {
-      return Result.failure(fn(this.error));
+      return Result.failure<T, F>(fn(this.error));
     }
-    return Result.success(this.value);
+    return Result.success<T, F>(this.value);
   }
 
   // Chain operations that return Results
@@ -70,7 +71,7 @@ export class Result<T, E = Error> {
     if (this.isSuccess()) {
       return fn(this.value);
     }
-    return Result.failure(this.error);
+    return Result.failure<U, E>(this.error);
   }
 
   // Provide a default value if failure
@@ -118,12 +119,12 @@ export class Results {
     
     for (let i = 0; i < results.length; i++) {
       if (results[i].isFailure()) {
-        return Result.failure(results[i].error);
+        return Result.failure<T, any>(results[i].error);
       }
       (values as any)[i] = results[i].value;
     }
     
-    return Result.success(values);
+    return Result.success<T, any>(values);
   }
 
   // Get the first success or the last failure
