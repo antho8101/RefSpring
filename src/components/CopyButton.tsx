@@ -54,7 +54,7 @@ export const CopyButton = ({
       variant="outline"
       size="sm"
       onClick={copyToClipboard}
-      className="px-2 text-xs h-4 min-h-4"
+      className="px-2 text-xs h-5 min-h-5"
     >
       {isCopied ? (
         <>
