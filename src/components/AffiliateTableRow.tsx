@@ -46,30 +46,30 @@ export const AffiliateTableRow = ({ affiliate, onEdit, onCopyTrackingLink, onDel
         <AffiliatePaymentAmount affiliateId={affiliate.id} />
       </TableCell>
       <TableCell className="w-[10%] max-w-0 overflow-hidden">
-        <div className="flex items-center justify-end gap-1">
+        <div className="flex flex-col items-center justify-center gap-1">
           <Button 
             variant="outline" 
             size="sm"
             onClick={() => onEdit(affiliate)}
-            className="rounded-lg h-8 w-8 p-0"
+            className="rounded-lg h-6 w-6 p-0"
           >
-            <Edit2 className="h-3 w-3" />
+            <Edit2 className="h-2.5 w-2.5" />
           </Button>
           <Button 
             variant="outline" 
             size="sm"
             onClick={() => onCopyTrackingLink(affiliate.id)}
-            className="rounded-lg h-8 w-8 p-0"
+            className="rounded-lg h-6 w-6 p-0"
           >
-            <Copy className="h-3 w-3" />
+            <Copy className="h-2.5 w-2.5" />
           </Button>
           <Button 
             variant="outline" 
             size="sm"
             onClick={() => onDelete(affiliate)}
-            className="rounded-lg h-8 w-8 p-0 text-red-600 hover:bg-red-50 hover:text-red-700 border-red-200"
+            className="rounded-lg h-6 w-6 p-0 text-red-600 hover:bg-red-50 hover:text-red-700 border-red-200"
           >
-            <X className="h-3 w-3" />
+            <X className="h-2.5 w-2.5" />
           </Button>
         </div>
       </TableCell>
