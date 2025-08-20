@@ -77,7 +77,7 @@ export const CampaignInfoCards = ({ campaign }: CampaignInfoCardsProps) => {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-      <div className="bg-blue-50/50 p-4 rounded-xl lg:col-span-5">
+      <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 lg:col-span-5">
         <div className="flex items-center gap-2 text-blue-600 mb-2">
           <ExternalLink className="h-4 w-4" />
           <span className="text-sm font-medium">Dashboard public</span>
@@ -117,7 +117,7 @@ export const CampaignInfoCards = ({ campaign }: CampaignInfoCardsProps) => {
         </div>
       </div>
       
-      <div className="bg-blue-50/50 p-4 rounded-xl lg:col-span-5">
+      <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 lg:col-span-5">
         <div className="flex items-center gap-2 text-blue-600 mb-2">
           <TrendingUp className="h-4 w-4" />
           <span className="text-sm font-medium">URL Cible</span>
@@ -127,7 +127,7 @@ export const CampaignInfoCards = ({ campaign }: CampaignInfoCardsProps) => {
         </p>
       </div>
 
-      <div className="bg-purple-50/50 p-4 rounded-xl lg:col-span-2">
+      <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 lg:col-span-2">
         <div className="flex items-center gap-2 text-purple-600 mb-2">
           <Calendar className="h-4 w-4" />
           <span className="text-sm font-medium">Créée le</span>
