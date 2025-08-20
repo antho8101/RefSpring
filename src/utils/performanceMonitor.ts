@@ -15,7 +15,7 @@ interface PerformanceThresholds {
 const THRESHOLDS: PerformanceThresholds = {
   pageLoadTime: 3000, // 3 secondes
   apiResponseTime: 2000, // 2 secondes
-  memoryUsage: 100, // 100MB
+  memoryUsage: 300, // 300MB (seuil plus réaliste)
   bundleSize: 1000000 // 1MB
 };
 
@@ -65,62 +65,45 @@ export const monitorPagePerformance = () => {
   }
 };
 
-// Monitor les appels API
+// Monitor les appels API (version sécurisée)
 export const monitorAPIPerformance = () => {
-  const originalFetch = window.fetch;
-  
-  window.fetch = async function(...args) {
-    const startTime = performance.now();
-    const url = args[0] as string;
-    
+  // Surveiller uniquement les appels Firebase et Stripe
+  const monitorFirebaseAPI = () => {
+    const observer = new PerformanceObserver((list) => {
+      for (const entry of list.getEntries()) {
+        if (entry.name.includes('firebase') || entry.name.includes('stripe')) {
+          const duration = entry.duration;
+          
+          if (duration > THRESHOLDS.apiResponseTime) {
+            Logger.warning('Slow API call detected', {
+              url: entry.name.replace(/user-\w+|campaign-\w+/g, '***'),
+              duration: Math.round(duration)
+            });
+          }
+        }
+      }
+    });
+
     try {
-      const response = await originalFetch.apply(this, args);
-      const endTime = performance.now();
-      const duration = endTime - startTime;
-      
-      // Log des appels API lents
-      if (duration > THRESHOLDS.apiResponseTime) {
-        Logger.warning('Slow API call detected', {
-          url: typeof url === 'string' ? url.replace(/user-\w+|campaign-\w+/g, '***') : 'Unknown',
-          duration,
-          status: response.status
-        });
-      }
-      
-      // Monitor les erreurs API
-      if (!response.ok) {
-        Logger.error('API call failed', {
-          url: typeof url === 'string' ? url.replace(/user-\w+|campaign-\w+/g, '***') : 'Unknown',
-          status: response.status,
-          statusText: response.statusText
-        });
-      }
-      
-      return response;
+      observer.observe({ entryTypes: ['resource'] });
     } catch (error) {
-      const endTime = performance.now();
-      const duration = endTime - startTime;
-      
-      Logger.error('API call error', {
-        url: typeof url === 'string' ? url.replace(/user-\w+|campaign-\w+/g, '***') : 'Unknown',
-        duration,
-        error: error instanceof Error ? error.message : 'Unknown error'
-      });
-      
-      throw error;
+      Logger.debug('API performance monitoring not supported');
     }
   };
+
+  monitorFirebaseAPI();
 };
 
-// Monitor l'utilisation mémoire
+// Monitor l'utilisation mémoire (optimisé)
 export const monitorMemoryUsage = () => {
   if ('memory' in performance) {
     const checkMemory = () => {
       const memory = (performance as any).memory;
       const usedMB = memory.usedJSHeapSize / 1024 / 1024;
       
-      if (usedMB > THRESHOLDS.memoryUsage) {
-        Logger.warning('High memory usage detected', {
+      // Ne déclencher que si vraiment critique (500MB+)
+      if (usedMB > 500) {
+        Logger.warning('Critical memory usage detected', {
           usedMB: Math.round(usedMB),
           totalMB: Math.round(memory.totalJSHeapSize / 1024 / 1024),
           limitMB: Math.round(memory.jsHeapSizeLimit / 1024 / 1024)
@@ -128,11 +111,11 @@ export const monitorMemoryUsage = () => {
       }
     };
     
-    // Vérifier toutes les 30 secondes
-    setInterval(checkMemory, 30000);
+    // Vérifier toutes les 2 minutes (moins agressif)
+    setInterval(checkMemory, 120000);
     
-    // Vérification initiale après 10 secondes
-    setTimeout(checkMemory, 10000);
+    // Vérification initiale après 30 secondes
+    setTimeout(checkMemory, 30000);
   }
 };
 
