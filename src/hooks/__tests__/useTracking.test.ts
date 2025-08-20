@@ -2,279 +2,240 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useTracking } from '@/hooks/useTracking';
 
-// Mock crypto
-vi.mock('crypto-js', () => ({
-  AES: {
-    encrypt: vi.fn(() => ({ toString: () => 'encrypted-data' })),
-    decrypt: vi.fn(() => ({ toString: () => 'decrypted-data' })),
-  },
-  enc: {
-    Utf8: {
-      stringify: vi.fn(() => 'decoded-string'),
-    },
-  },
-}));
-
 // Mock Firebase
 const mockAddDoc = vi.fn();
-const mockGetDocs = vi.fn();
-const mockQuery = vi.fn();
-const mockWhere = vi.fn();
-const mockOrderBy = vi.fn();
+const mockGetDoc = vi.fn();
 
 vi.mock('firebase/firestore', () => ({
   collection: vi.fn(),
   addDoc: mockAddDoc,
-  getDocs: mockGetDocs,
-  query: mockQuery,
-  where: mockWhere,
-  orderBy: mockOrderBy,
-  serverTimestamp: vi.fn(() => ({ seconds: Date.now() / 1000 })),
+  doc: vi.fn(),
+  getDoc: mockGetDoc,
+}));
+
+// Mock hooks
+const mockUseAntifraud = vi.fn();
+const mockUseConversionVerification = vi.fn();
+
+vi.mock('@/hooks/useAntifraud', () => ({
+  useAntifraud: mockUseAntifraud,
+}));
+
+vi.mock('@/hooks/useConversionVerification', () => ({
+  useConversionVerification: mockUseConversionVerification,
 }));
 
 describe('useTracking Hook', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    // Reset URL
-    Object.defineProperty(window, 'location', {
+    
+    mockUseAntifraud.mockReturnValue({
+      validateClick: vi.fn().mockResolvedValue({
+        valid: true,
+        riskScore: 0.1,
+        reasons: [],
+      }),
+    });
+    
+    mockUseConversionVerification.mockReturnValue({
+      createConversion: vi.fn().mockResolvedValue({
+        id: 'conversion-123',
+        success: true,
+      }),
+    });
+    
+    // Mock sessionStorage
+    Object.defineProperty(window, 'sessionStorage', {
       value: {
-        href: 'https://example.com',
-        search: '',
-        pathname: '/',
+        getItem: vi.fn(),
+        setItem: vi.fn(),
+        removeItem: vi.fn(),
+        clear: vi.fn(),
       },
       writable: true,
     });
   });
 
-  it('should generate tracking link correctly', () => {
-    const { result } = renderHook(() => useTracking());
-    
-    const campaignId = 'campaign-123';
-    const affiliateId = 'affiliate-456';
-    
-    const trackingLink = result.current.generateTrackingLink(campaignId, affiliateId);
-    
-    expect(trackingLink).toContain(campaignId);
-    expect(trackingLink).toContain(affiliateId);
-    expect(trackingLink).toMatch(/^https?:\/\//); // Should be a valid URL
-  });
-
-  it('should detect affiliate from URL parameters', () => {
-    // Mock URL with affiliate parameter
-    Object.defineProperty(window, 'location', {
-      value: {
-        href: 'https://example.com?ref=affiliate-123&campaign=campaign-456',
-        search: '?ref=affiliate-123&campaign=campaign-456',
-        pathname: '/',
-      },
-      writable: true,
-    });
+  it('should record click successfully', async () => {
+    mockAddDoc.mockResolvedValue({ id: 'click-123' });
+    window.sessionStorage.getItem = vi.fn().mockReturnValue(null);
     
     const { result } = renderHook(() => useTracking());
-    
-    const affiliateData = result.current.detectAffiliateFromUrl();
-    
-    expect(affiliateData).toEqual({
-      affiliateId: 'affiliate-123',
-      campaignId: 'campaign-456',
-    });
-  });
-
-  it('should track page view correctly', async () => {
-    mockAddDoc.mockResolvedValue({ id: 'tracking-123' });
-    
-    const { result } = renderHook(() => useTracking());
-    
-    const trackingData = {
-      campaignId: 'campaign-123',
-      affiliateId: 'affiliate-456',
-      action: 'page_view' as const,
-      url: 'https://example.com/product',
-    };
     
     await act(async () => {
-      await result.current.trackEvent(trackingData);
+      const clickId = await result.current.recordClick(
+        'affiliate-123',
+        'campaign-456',
+        'https://example.com'
+      );
+      expect(typeof clickId).toBe('string');
     });
     
-    expect(mockAddDoc).toHaveBeenCalledWith(
-      expect.anything(),
-      expect.objectContaining({
-        ...trackingData,
-        timestamp: expect.anything(),
-        userAgent: expect.any(String),
-        ipAddress: expect.any(String),
-        sessionId: expect.any(String),
-      })
-    );
+    expect(mockAddDoc).toHaveBeenCalled();
+    expect(window.sessionStorage.setItem).toHaveBeenCalled();
   });
 
-  it('should track conversion with revenue', async () => {
-    mockAddDoc.mockResolvedValue({ id: 'conversion-123' });
+  it('should prevent duplicate clicks in same session', async () => {
+    window.sessionStorage.getItem = vi.fn().mockReturnValue('existing-click-id');
     
     const { result } = renderHook(() => useTracking());
-    
-    const conversionData = {
-      campaignId: 'campaign-123',
-      affiliateId: 'affiliate-456',
-      action: 'conversion' as const,
-      revenue: 99.99,
-      orderId: 'order-789',
-    };
     
     await act(async () => {
-      await result.current.trackConversion(conversionData);
-    });
-    
-    expect(mockAddDoc).toHaveBeenCalledWith(
-      expect.anything(),
-      expect.objectContaining({
-        ...conversionData,
-        timestamp: expect.anything(),
-        commissionAmount: expect.any(Number), // Should calculate commission
-      })
-    );
-  });
-
-  it('should calculate commission correctly', () => {
-    const { result } = renderHook(() => useTracking());
-    
-    const revenue = 100;
-    const commissionRate = 15; // 15%
-    
-    const commission = result.current.calculateCommission(revenue, commissionRate);
-    
-    expect(commission).toBe(15);
-  });
-
-  it('should validate tracking data before submission', async () => {
-    const { result } = renderHook(() => useTracking());
-    
-    const invalidData = {
-      campaignId: '', // Empty campaign ID
-      affiliateId: 'affiliate-456',
-      action: 'page_view' as const,
-    };
-    
-    await act(async () => {
-      await expect(result.current.trackEvent(invalidData))
-        .rejects.toThrow();
+      const clickId = await result.current.recordClick(
+        'affiliate-123',
+        'campaign-456',
+        'https://example.com'
+      );
+      expect(clickId).toBe('existing-click-id');
     });
     
     expect(mockAddDoc).not.toHaveBeenCalled();
   });
 
-  it('should generate unique session ID', () => {
-    const { result } = renderHook(() => useTracking());
-    
-    const sessionId1 = result.current.generateSessionId();
-    const sessionId2 = result.current.generateSessionId();
-    
-    expect(sessionId1).not.toBe(sessionId2);
-    expect(sessionId1).toMatch(/^[a-f0-9-]+$/); // Should be UUID-like
-  });
-
-  it('should detect bot traffic', () => {
-    const { result } = renderHook(() => useTracking());
-    
-    // Mock bot user agent
-    Object.defineProperty(navigator, 'userAgent', {
-      value: 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
-      writable: true,
+  it('should record conversion successfully', async () => {
+    mockGetDoc.mockResolvedValue({
+      exists: () => true,
+      data: () => ({ 
+        affiliateId: 'affiliate-123',
+        campaignId: 'campaign-456',
+        commissionRate: 15,
+      }),
     });
     
-    const isBot = result.current.detectBot();
-    expect(isBot).toBe(true);
+    const { result } = renderHook(() => useTracking());
     
-    // Mock human user agent
-    Object.defineProperty(navigator, 'userAgent', {
-      value: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-      writable: true,
+    await act(async () => {
+      const conversion = await result.current.recordConversion(
+        'affiliate-123',
+        'campaign-456',
+        100,
+        15
+      );
+      expect(conversion).toBeDefined();
     });
     
-    const isHuman = result.current.detectBot();
-    expect(isHuman).toBe(false);
+    expect(mockUseConversionVerification().createConversion).toHaveBeenCalled();
   });
 
-  it('should encrypt sensitive tracking data', () => {
-    const { result } = renderHook(() => useTracking());
+  it('should handle antifraud rejection', async () => {
+    mockUseAntifraud.mockReturnValue({
+      validateClick: vi.fn().mockResolvedValue({
+        valid: false,
+        riskScore: 0.9,
+        reasons: ['Suspicious IP', 'Bot detected'],
+      }),
+    });
     
-    const sensitiveData = 'user-email@example.com';
-    const encrypted = result.current.encryptData(sensitiveData);
-    
-    expect(encrypted).toBe('encrypted-data');
-    expect(require('crypto-js').AES.encrypt).toHaveBeenCalledWith(
-      sensitiveData,
-      expect.any(String)
-    );
-  });
-
-  it('should get tracking analytics for campaign', async () => {
-    const mockTrackingData = [
-      {
-        id: '1',
-        data: () => ({
-          action: 'page_view',
-          timestamp: { seconds: Date.now() / 1000 },
-          revenue: 0,
-        }),
-      },
-      {
-        id: '2',
-        data: () => ({
-          action: 'conversion',
-          timestamp: { seconds: Date.now() / 1000 },
-          revenue: 50,
-        }),
-      },
-    ];
-    
-    mockGetDocs.mockResolvedValue({ docs: mockTrackingData });
+    window.sessionStorage.getItem = vi.fn().mockReturnValue(null);
     
     const { result } = renderHook(() => useTracking());
     
-    const analytics = await result.current.getCampaignAnalytics('campaign-123');
+    await act(async () => {
+      await expect(result.current.recordClick(
+        'affiliate-123',
+        'campaign-456',
+        'https://example.com'
+      )).rejects.toThrow('Clic rejeté');
+    });
     
-    expect(analytics).toEqual({
-      totalClicks: 1,
-      totalConversions: 1,
-      totalRevenue: 50,
-      conversionRate: 100, // 1 conversion out of 1 click
+    expect(mockAddDoc).not.toHaveBeenCalled();
+  });
+
+  it('should validate click data before recording', async () => {
+    const { result } = renderHook(() => useTracking());
+    
+    await act(async () => {
+      await expect(result.current.recordClick(
+        '', // Empty affiliate ID
+        'campaign-456',
+        'https://example.com'
+      )).rejects.toThrow();
     });
   });
 
-  it('should handle rate limiting for tracking requests', async () => {
+  it('should handle network errors gracefully', async () => {
+    mockAddDoc.mockRejectedValue(new Error('Network error'));
+    window.sessionStorage.getItem = vi.fn().mockReturnValue(null);
+    
     const { result } = renderHook(() => useTracking());
     
-    // Simulate rapid tracking requests
-    const promises = Array.from({ length: 10 }, () =>
-      result.current.trackEvent({
-        campaignId: 'campaign-123',
-        affiliateId: 'affiliate-456',
-        action: 'page_view' as const,
+    await act(async () => {
+      await expect(result.current.recordClick(
+        'affiliate-123',
+        'campaign-456',
+        'https://example.com'
+      )).rejects.toThrow('Network error');
+    });
+  });
+
+  it('should calculate commission correctly', async () => {
+    mockGetDoc.mockResolvedValue({
+      exists: () => true,
+      data: () => ({ 
+        affiliateId: 'affiliate-123',
+        campaignId: 'campaign-456',
+        commissionRate: 10,
+      }),
+    });
+    
+    const { result } = renderHook(() => useTracking());
+    
+    await act(async () => {
+      await result.current.recordConversion(
+        'affiliate-123',
+        'campaign-456',
+        100, // Revenue
+        10   // Commission rate
+      );
+    });
+    
+    const createConversionCall = mockUseConversionVerification().createConversion.mock.calls[0];
+    expect(createConversionCall[0]).toEqual(
+      expect.objectContaining({
+        revenue: 100,
+        commissionAmount: 10, // 10% of 100
       })
     );
-    
-    await act(async () => {
-      await Promise.allSettled(promises);
-    });
-    
-    // Should not exceed rate limit (e.g., max 5 requests per second)
-    expect(mockAddDoc).toHaveBeenCalledTimes(5);
   });
 
-  it('should clean up tracking data older than retention period', async () => {
+  it('should handle invalid conversion data', async () => {
     const { result } = renderHook(() => useTracking());
     
     await act(async () => {
-      await result.current.cleanupOldTrackingData(30); // 30 days retention
+      await expect(result.current.recordConversion(
+        '', // Empty affiliate ID
+        'campaign-456',
+        100,
+        10
+      )).rejects.toThrow();
+    });
+  });
+
+  it('should detect bot traffic', async () => {
+    // Mock bot user agent
+    Object.defineProperty(navigator, 'userAgent', {
+      value: 'Mozilla/5.0 (compatible; Googlebot/2.1)',
+      writable: true,
     });
     
-    // Should query for old data and delete it
-    expect(mockQuery).toHaveBeenCalled();
-    expect(mockWhere).toHaveBeenCalledWith(
-      'timestamp',
-      '<',
-      expect.any(Object)
-    );
+    mockUseAntifraud.mockReturnValue({
+      validateClick: vi.fn().mockResolvedValue({
+        valid: false,
+        riskScore: 1.0,
+        reasons: ['Bot detected'],
+      }),
+    });
+    
+    window.sessionStorage.getItem = vi.fn().mockReturnValue(null);
+    
+    const { result } = renderHook(() => useTracking());
+    
+    await act(async () => {
+      await expect(result.current.recordClick(
+        'affiliate-123',
+        'campaign-456',
+        'https://example.com'
+      )).rejects.toThrow('Bot detected');
+    });
   });
 });
