@@ -46,27 +46,34 @@ const AffiliateOnboardingPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-      <div className="container mx-auto px-4 py-16">
-        <div className="max-w-2xl mx-auto">
-          
-          {/* En-tête */}
-          <div className="text-center mb-8">
-            <div className="flex justify-center mb-4">
-              <div className="p-3 bg-blue-100 rounded-full">
-                <CreditCard className="h-8 w-8 text-blue-600" />
+    <div className="min-h-screen bg-white overflow-hidden">
+      <div className="fixed inset-0 pointer-events-none">
+        <div className="absolute top-20 right-10 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute top-1/2 left-10 w-48 h-48 bg-purple-500/5 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-32 h-32 bg-green-500/5 rounded-full blur-2xl animate-pulse"></div>
+      </div>
+      
+      <div className="relative z-10">
+        <div className="container mx-auto px-4 py-16">
+          <div className="max-w-2xl mx-auto">
+            
+            {/* En-tête */}
+            <div className="text-center mb-8">
+              <div className="flex justify-center mb-4">
+                <div className="p-3 bg-blue-100 rounded-xl">
+                  <CreditCard className="h-8 w-8 text-blue-600" />
+                </div>
               </div>
+              <h1 className="text-3xl font-bold text-slate-900 mb-2">
+                Configuration Stripe Connect
+              </h1>
+              <p className="text-slate-600">
+                Configuration des paiements pour les affiliés RefSpring
+              </p>
             </div>
-            <h1 className="text-3xl font-bold text-slate-900 mb-2">
-              Configuration Stripe Connect
-            </h1>
-            <p className="text-slate-600">
-              Configuration des paiements pour les affiliés RefSpring
-            </p>
-          </div>
 
           {/* Contenu principal */}
-          <Card className="border-0 shadow-lg">
+          <Card className="border-slate-200">
             <CardHeader className="text-center">
               <CardTitle className="flex items-center justify-center gap-3">
                 {status === 'loading' && (
@@ -112,7 +119,7 @@ const AffiliateOnboardingPage = () => {
 
               {/* Informations sur le compte */}
               {accountId && (
-                <div className="bg-slate-50 rounded-lg p-4">
+                <div className="bg-slate-50 rounded-xl p-4">
                   <div className="text-sm text-slate-600 mb-1">Compte Stripe Connect</div>
                   <div className="font-mono text-sm text-slate-900">{accountId}</div>
                 </div>
@@ -120,7 +127,7 @@ const AffiliateOnboardingPage = () => {
 
               {/* Prochaines étapes */}
               {status === 'success' && (
-                <div className="bg-green-50 rounded-lg p-4">
+                <div className="bg-green-50 rounded-xl p-4">
                   <h3 className="font-medium text-green-900 mb-2">Prochaines étapes :</h3>
                   <ul className="text-sm text-green-800 space-y-1">
                     <li>• Vos commissions seront automatiquement transférées sur votre compte</li>
@@ -179,6 +186,7 @@ const AffiliateOnboardingPage = () => {
 
         </div>
       </div>
+    </div>
     </div>
   );
 };
