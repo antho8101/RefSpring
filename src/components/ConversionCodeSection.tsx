@@ -24,13 +24,13 @@ export const ConversionCodeSection = ({
       <p className="text-sm text-muted-foreground">
         Ajoutez ce code sur votre page de confirmation de commande. <strong>Le système attribue automatiquement au bon affilié</strong> grâce à la logique "premier clic gagne".
       </p>
-      <div className="relative">
+      <div>
         <Textarea 
           value={conversionCode}
           readOnly 
           className="font-mono text-xs min-h-[160px] resize-none"
         />
-        <div className="absolute top-2 right-2">
+        <div className="flex justify-end mt-2">
           <CopyButton 
             text={conversionCode}
             itemKey="conversion"

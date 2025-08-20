@@ -24,13 +24,13 @@ export const TrackingScriptSection = ({
       <p className="text-sm text-muted-foreground">
         Ajoutez ce code dans la section &lt;head&gt; de toutes les pages de votre site.
       </p>
-      <div className="relative">
+      <div>
         <Textarea 
           value={trackingScript}
           readOnly 
           className="font-mono text-xs min-h-[120px] resize-none"
         />
-        <div className="absolute top-2 right-2">
+        <div className="flex justify-end mt-2">
           <CopyButton 
             text={trackingScript}
             itemKey="script"
