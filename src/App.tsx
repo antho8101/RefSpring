@@ -28,6 +28,7 @@ import AdminPage from '@/pages/AdminPage';
 import AffiliateOnboardingPage from '@/pages/AffiliateOnboardingPage';
 import CommissionInfoPage from '@/pages/CommissionInfoPage';
 import MobileNotSupportedPage from '@/pages/MobileNotSupportedPage';
+import PrivacyDashboardPage from '@/pages/PrivacyDashboardPage';
 
 const Index = lazy(() => import('@/pages/Index'));
 const AdvancedStatsPage = lazy(() => import('@/pages/AdvancedStatsPage'));
@@ -83,6 +84,7 @@ function App() {
                     <Route path="/affiliate-onboarding" element={<AffiliateOnboardingPage />} />
                     <Route path="/commission-info" element={<CommissionInfoPage />} />
                     <Route path="/mobile-not-supported" element={<MobileNotSupportedPage />} />
+                    <Route path="/privacy-dashboard" element={<PrivacyDashboardPage />} />
                   </Routes>
                 </Suspense>
                 
