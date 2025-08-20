@@ -42,7 +42,7 @@ export const AffiliateTableRow = ({ affiliate, onEdit, onCopyTrackingLink, onDel
       <TableCell className="w-[20%] max-w-0 overflow-hidden">
         <AffiliateStatsCell affiliateId={affiliate.id} commissionRate={affiliate.commissionRate} />
       </TableCell>
-      <TableCell className="w-[20%] max-w-0 overflow-hidden">
+      <TableCell className="w-[20%]">
         <StripeConnectButton affiliate={affiliate} />
       </TableCell>
       <TableCell className="w-[10%] max-w-0 overflow-hidden">
