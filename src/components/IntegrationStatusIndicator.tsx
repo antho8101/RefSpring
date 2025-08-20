@@ -113,9 +113,6 @@ export const IntegrationStatusIndicator = ({ campaign }: IntegrationStatusIndica
         </TooltipTrigger>
         <TooltipContent>
           <p className="text-xs">{config.description}</p>
-          <p className="text-xs text-gray-500 mt-1">
-            Dernière vérification: {lastCheck.toLocaleTimeString('fr-FR')}
-          </p>
         </TooltipContent>
       </Tooltip>
       <Tooltip>
