@@ -8,7 +8,7 @@ export const PublicDashboardFooter = () => {
   const { t } = useTranslation();
   
   return (
-    <footer className="w-full mt-16 border-t border-slate-200/80 bg-gradient-to-r from-slate-50 to-slate-100/50">
+    <footer className="w-full mt-16 border-t border-slate-200 bg-white">
       <div className="w-full px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col gap-6">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -30,7 +30,7 @@ export const PublicDashboardFooter = () => {
                 href="/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white text-sm font-medium rounded-xl hover:from-blue-600 hover:to-purple-600 transition-all duration-200 hover:scale-105 shadow-sm hover:shadow-md"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-slate-900 text-white text-sm font-medium rounded-xl hover:bg-slate-800 transition-colors"
               >
                 <span>{t('publicDashboard.footer.createCampaign')}</span>
                 <ExternalLink className="h-3 w-3" />
@@ -39,7 +39,7 @@ export const PublicDashboardFooter = () => {
           </div>
           
           {/* Liens légaux */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-slate-200/60">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-slate-200">
             <div className="flex flex-wrap justify-center sm:justify-start gap-4 text-sm text-slate-500">
               <Link to="/privacy" className="hover:text-slate-700 transition-colors">
                 {t('publicDashboard.footer.links.privacy')}
