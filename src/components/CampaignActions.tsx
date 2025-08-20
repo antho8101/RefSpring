@@ -25,10 +25,11 @@ export const CampaignActions = ({ campaign, onCopyUrl }: CampaignActionsProps) =
         variant="outline"
         size="sm"
         onClick={handleAdvancedStats}
-        className="bg-slate-50 text-slate-700 border border-slate-200 rounded-xl justify-center"
+        className="bg-slate-50 text-slate-700 border-2 border-slate-200 hover:border-blue-400 hover:bg-blue-50 hover:text-blue-700 rounded-xl justify-center transition-all duration-300 relative overflow-hidden group"
       >
-        <BarChart3 className="h-4 w-4 mr-1" />
+        <BarChart3 className="h-4 w-4 mr-1 group-hover:scale-110 transition-transform duration-300" />
         <span className="font-medium">Stats avancées</span>
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-100/20 to-purple-100/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10" />
       </Button>
       <CampaignSettingsDialog campaign={campaign} />
     </div>
