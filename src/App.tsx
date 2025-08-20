@@ -2,7 +2,6 @@
 import { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from '@/contexts/AuthContext';
-import { Toaster } from '@/components/ui/toaster';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Helmet, HelmetProvider } from 'react-helmet-async';
 import { CookieBanner } from '@/components/CookieBanner';
@@ -89,7 +88,6 @@ function App() {
                 </Suspense>
                 
                 <CookieBanner />
-                <Toaster />
               </div>
             </Router>
           </AuthProvider>
