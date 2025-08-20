@@ -86,14 +86,14 @@ export default function CommissionInfoPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4">
+    <div className="min-h-screen bg-background p-4">
       <div className="max-w-2xl mx-auto space-y-6">
         
         {/* Header avec félicitations */}
         <Card className="border-green-200 bg-green-50">
           <CardHeader className="text-center">
             <div className="flex justify-center mb-4">
-              <div className="bg-green-100 p-3 rounded-full">
+              <div className="bg-green-100 p-3 rounded-xl">
                 <Gift className="h-8 w-8 text-green-600" />
               </div>
             </div>
@@ -107,7 +107,7 @@ export default function CommissionInfoPage() {
         </Card>
 
         {/* Détails de la commission */}
-        <Card>
+        <Card className="border-slate-200">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <CheckCircle className="h-5 w-5 text-green-600" />
@@ -131,10 +131,10 @@ export default function CommissionInfoPage() {
             
             <Separator />
             
-            <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+            <div className="bg-blue-50 p-4 rounded-xl border border-blue-200">
               <div className="flex items-start gap-3">
                 <Info className="h-5 w-5 text-blue-600 mt-0.5" />
-                <div>
+                <div className="flex-1">
                   <h4 className="font-semibold text-blue-800 mb-2">
                     Comment recevoir votre paiement ?
                   </h4>
@@ -146,7 +146,7 @@ export default function CommissionInfoPage() {
                   <div className="flex gap-3 mt-4">
                     <Button 
                       onClick={handleConfigureStripeConnect}
-                      className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
+                      className="flex-1"
                       disabled={loading || isConfiguring || !affiliateEmail}
                     >
                       {(loading || isConfiguring) ? (
@@ -159,7 +159,7 @@ export default function CommissionInfoPage() {
                     
                     <Button 
                       variant="outline"
-                      className="flex-1 border-blue-300 text-blue-700 hover:bg-blue-50"
+                      className="flex-1"
                       onClick={() => window.open('https://connect.stripe.com/login', '_blank')}
                     >
                       <LogIn className="h-4 w-4 mr-2" />
@@ -173,7 +173,7 @@ export default function CommissionInfoPage() {
         </Card>
 
         {/* Étapes pour configurer Stripe Connect - Encart déroulant */}
-        <Card>
+        <Card className="border-slate-200">
           <Collapsible open={isStepsOpen} onOpenChange={setIsStepsOpen}>
             <CollapsibleTrigger asChild>
               <CardHeader className="cursor-pointer hover:bg-slate-50 transition-colors">
@@ -197,8 +197,8 @@ export default function CommissionInfoPage() {
             <CollapsibleContent>
               <CardContent className="space-y-4 pt-0">
                 <div className="space-y-3">
-                  <div className="flex items-start gap-3 p-3 border rounded-lg">
-                    <div className="bg-blue-100 text-blue-600 rounded-full w-6 h-6 flex items-center justify-center text-sm font-semibold">
+                  <div className="flex items-start gap-3 p-3 border border-slate-200 rounded-xl">
+                    <div className="bg-blue-100 text-blue-600 rounded-full w-6 h-6 flex items-center justify-center text-sm font-semibold flex-shrink-0">
                       1
                     </div>
                     <div>
@@ -209,8 +209,8 @@ export default function CommissionInfoPage() {
                     </div>
                   </div>
 
-                  <div className="flex items-start gap-3 p-3 border rounded-lg">
-                    <div className="bg-blue-100 text-blue-600 rounded-full w-6 h-6 flex items-center justify-center text-sm font-semibold">
+                  <div className="flex items-start gap-3 p-3 border border-slate-200 rounded-xl">
+                    <div className="bg-blue-100 text-blue-600 rounded-full w-6 h-6 flex items-center justify-center text-sm font-semibold flex-shrink-0">
                       2
                     </div>
                     <div>
@@ -221,8 +221,8 @@ export default function CommissionInfoPage() {
                     </div>
                   </div>
 
-                  <div className="flex items-start gap-3 p-3 border rounded-lg">
-                    <div className="bg-green-100 text-green-600 rounded-full w-6 h-6 flex items-center justify-center text-sm font-semibold">
+                  <div className="flex items-start gap-3 p-3 border border-slate-200 rounded-xl">
+                    <div className="bg-green-100 text-green-600 rounded-full w-6 h-6 flex items-center justify-center text-sm font-semibold flex-shrink-0">
                       3
                     </div>
                     <div>
@@ -236,7 +236,7 @@ export default function CommissionInfoPage() {
 
                 <Separator />
 
-                <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                <div className="bg-yellow-50 p-4 rounded-xl border border-yellow-200">
                   <p className="text-yellow-800 text-sm">
                     <strong>💡 Bon à savoir :</strong> Cette commission de {amount}€ sera versée 
                     dès que votre compte Stripe Connect sera configuré. Rien n'est perdu !
@@ -260,7 +260,7 @@ export default function CommissionInfoPage() {
             Une question ? Contactez-nous sur{' '}
             <a 
               href="https://refspring.com/contact" 
-              className="text-blue-600 hover:underline"
+              className="text-primary hover:underline"
               target="_blank"
               rel="noopener noreferrer"
             >
