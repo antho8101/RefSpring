@@ -11,7 +11,7 @@ export const CustomInfoTooltip = ({ text }: CustomInfoTooltipProps) => {
   return (
     <div className="relative inline-block">
       <HelpCircle 
-        className="h-3 w-3 text-blue-500/70 cursor-help" 
+        className="h-3 w-3 text-gray-500 cursor-help" 
         onMouseEnter={() => setIsVisible(true)}
         onMouseLeave={() => setIsVisible(false)}
       />
