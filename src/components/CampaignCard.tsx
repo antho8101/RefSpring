@@ -88,11 +88,9 @@ export const CampaignCard = ({ campaign, onCopyUrl }: CampaignCardProps) => {
                        </Badge>
                     </div>
                   </CardTitle>
-                  {isExpanded && (
-                    <CardDescription className="text-slate-600 mt-1 text-sm leading-relaxed line-clamp-2">
-                      {campaign.description}
-                    </CardDescription>
-                  )}
+                  <CardDescription className="text-slate-600 mt-1 text-sm leading-relaxed line-clamp-2">
+                    {campaign.description}
+                  </CardDescription>
                 </div>
               </div>
               <div className="ml-2 flex-shrink-0" onClick={(e) => e.stopPropagation()}>
