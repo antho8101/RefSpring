@@ -2,10 +2,11 @@
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { TrendingUp, Calendar, ExternalLink, Copy, HelpCircle } from 'lucide-react';
+import { TrendingUp, Calendar, ExternalLink, Copy } from 'lucide-react';
 import { Campaign } from '@/types';
 import { useToast } from '@/hooks/use-toast';
 import { IntegrationStatusIndicator } from './IntegrationStatusIndicator';
+import { InfoTooltip } from './InfoTooltip';
 
 interface CampaignInfoCardsProps {
   campaign: Campaign;
@@ -82,14 +83,7 @@ export const CampaignInfoCards = ({ campaign }: CampaignInfoCardsProps) => {
         <div className="flex items-center gap-2 text-blue-600 mb-2">
           <ExternalLink className="h-4 w-4" />
           <span className="text-sm font-medium">Dashboard public</span>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <HelpCircle className="h-3 w-3 text-blue-500/70 cursor-help" />
-            </TooltipTrigger>
-             <TooltipContent>
-               <p className="text-xs text-foreground">Partagez ce lien avec vos affiliés pour qu'ils puissent consulter leurs statistiques et accéder à leurs liens de tracking.</p>
-             </TooltipContent>
-          </Tooltip>
+          <InfoTooltip text="Partagez ce lien avec vos affiliés pour qu'ils puissent consulter leurs statistiques et accéder à leurs liens de tracking." />
         </div>
         <div className="space-y-2">
           <div className="flex items-center gap-2">
