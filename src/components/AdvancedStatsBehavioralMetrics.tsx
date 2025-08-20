@@ -31,7 +31,7 @@ export const AdvancedStatsBehavioralMetrics = ({ behavioralMetrics }: AdvancedSt
       <div className="grid grid-cols-1 gap-4">
         
         {/* Valeur moyenne des commandes */}
-        <Card className="bg-white border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+        <Card className="bg-white border-slate-200">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-slate-700">Panier moyen</CardTitle>
             <div className="p-2 bg-green-100 rounded-full">
@@ -47,7 +47,7 @@ export const AdvancedStatsBehavioralMetrics = ({ behavioralMetrics }: AdvancedSt
         </Card>
 
         {/* Taux de rétention des affiliés */}
-        <Card className="bg-white border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+        <Card className="bg-white border-slate-200">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-slate-700">Rétention Affiliés</CardTitle>
             <div className="p-2 bg-purple-100 rounded-full">
@@ -63,7 +63,7 @@ export const AdvancedStatsBehavioralMetrics = ({ behavioralMetrics }: AdvancedSt
         </Card>
 
         {/* Concentration du CA */}
-        <Card className="bg-white border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+        <Card className="bg-white border-slate-200">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-slate-700">Concentration CA</CardTitle>
             <div className="p-2 bg-orange-100 rounded-full">

@@ -44,7 +44,7 @@ const EvolutionCard = ({ metric }: { metric: EvolutionMetric }) => {
   const isNeutral = change === 0;
 
   return (
-    <Card className="bg-white border-slate-200 shadow-sm">
+    <Card className="bg-white border-slate-200">
       <CardHeader className="pb-2">
         <CardTitle className="text-sm font-medium text-slate-700">{metric.label}</CardTitle>
       </CardHeader>
