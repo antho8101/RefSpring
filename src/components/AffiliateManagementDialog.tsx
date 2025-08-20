@@ -110,7 +110,7 @@ export const AffiliateManagementDialog = ({ affiliate, open, onOpenChange, mode 
           <DialogHeader>
             <DialogTitle>Modifier l'affilié</DialogTitle>
             <DialogDescription>
-              Modifiez les informations de {affiliate.name}
+              Modifiez les informations de <strong>{affiliate.name}</strong>
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleUpdate}>
