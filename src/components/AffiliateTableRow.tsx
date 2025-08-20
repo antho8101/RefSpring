@@ -35,7 +35,7 @@ export const AffiliateTableRow = ({ affiliate, onEdit, onCopyTrackingLink, onDel
         {affiliate.createdAt && (
           <div className="flex items-center gap-1 text-xs text-slate-600">
             <Calendar className="h-3 w-3 flex-shrink-0" />
-            <span className="truncate">{format(affiliate.createdAt, 'dd MMM yyyy', { locale: fr })}</span>
+            <span>{format(affiliate.createdAt, 'dd MMM yyyy', { locale: fr })}</span>
           </div>
         )}
       </TableCell>
