@@ -122,10 +122,8 @@ export const IntegrationStatusIndicator = ({ campaign }: IntegrationStatusIndica
         <TooltipTrigger asChild>
           <HelpCircle className="h-3 w-3 text-blue-500/70 cursor-help" />
         </TooltipTrigger>
-        <TooltipContent className="bg-white border border-gray-200 shadow-lg">
-          <div className="text-xs max-w-48">
-            <p>L'indicateur "Code" vous montre si votre script de tracking RefSpring est correctement installé sur votre site e-commerce et s'il fonctionne.</p>
-          </div>
+        <TooltipContent>
+          <p className="text-xs">L'indicateur "Code" vous montre si votre script de tracking RefSpring est correctement installé sur votre site e-commerce et s'il fonctionne.</p>
         </TooltipContent>
       </Tooltip>
     </div>
