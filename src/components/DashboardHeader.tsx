@@ -31,7 +31,7 @@ export const DashboardHeader = ({ user, onLogout, period, onPeriodChange }: Dash
   };
 
   return (
-    <header className="relative z-50 border-b border-slate-200/80 bg-white/90 backdrop-blur-xl shadow-sm">
+    <header className="fixed top-0 left-0 right-0 z-50 border-b border-slate-200/80 bg-white/90 backdrop-blur-xl shadow-sm">
       <div className="w-full px-3 sm:px-4 lg:px-8">
         <div className="flex justify-between items-center h-16 min-w-0">
           {/* Logo - Fixed to prevent overflow */}
