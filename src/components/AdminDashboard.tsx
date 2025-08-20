@@ -5,6 +5,7 @@ import { useFirestoreMonitoring } from '@/hooks/useFirestoreMonitoring';
 import { useProductionDBMonitoring } from '@/hooks/useProductionDBMonitoring';
 import { collection, getDocs, getCountFromServer } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+import Logger from '@/utils/logger';
 import { AdminHeader } from './admin/AdminHeader';
 import { SystemStatusCard } from './admin/SystemStatusCard';
 import { SystemMetricsGrid } from './admin/SystemMetricsGrid';
@@ -55,7 +56,7 @@ export const AdminDashboard = () => {
 
   const loadSystemStats = async () => {
     try {
-      console.log('🔒 ADMIN - Loading real system statistics');
+      Logger.admin('Loading real system statistics');
 
       // Compter les documents dans les collections principales
       const collections = ['campaigns', 'affiliates', 'clicks', 'conversions'];
@@ -66,7 +67,7 @@ export const AdminDashboard = () => {
           const countQuery = await getCountFromServer(collection(db, collectionName));
           totalDocs += countQuery.data().count;
         } catch (error) {
-          console.warn(`Could not count ${collectionName}, falling back to getDocs`);
+          Logger.warning(`Could not count ${collectionName}, falling back to getDocs`);
           const snapshot = await getDocs(collection(db, collectionName));
           totalDocs += snapshot.size;
         }
@@ -88,14 +89,14 @@ export const AdminDashboard = () => {
         lastUpdateTime: new Date(),
       });
 
-      console.log('✅ ADMIN - Real system stats loaded:', {
+      Logger.admin('Real system stats loaded', {
         totalDocuments: totalDocs,
         avgResponseTime,
         healthyServices,
         totalServices: healthChecks.length
       });
     } catch (error) {
-      console.error('❌ ADMIN - Error loading system stats:', error);
+      Logger.error('ADMIN - Error loading system stats', error);
     } finally {
       setLoading(false);
     }
