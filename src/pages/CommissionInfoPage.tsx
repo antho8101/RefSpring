@@ -86,7 +86,14 @@ export default function CommissionInfoPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white p-4">
+    <div className="min-h-screen bg-white overflow-hidden">
+      <div className="fixed inset-0 pointer-events-none">
+        <div className="absolute top-20 right-10 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute top-1/2 left-10 w-48 h-48 bg-purple-500/5 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-32 h-32 bg-green-500/5 rounded-full blur-2xl animate-pulse"></div>
+      </div>
+      
+      <div className="relative z-10 p-4">
       <div className="max-w-2xl mx-auto space-y-6">
         
         {/* Header avec félicitations */}
@@ -269,6 +276,7 @@ export default function CommissionInfoPage() {
           </p>
         </div>
       </div>
+    </div>
     </div>
   );
 }
