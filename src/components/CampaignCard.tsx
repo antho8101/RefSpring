@@ -66,7 +66,7 @@ export const CampaignCard = ({ campaign, onCopyUrl }: CampaignCardProps) => {
     <Card className="bg-white rounded-xl border border-slate-200 min-w-0 overflow-hidden">
       <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
         <CollapsibleTrigger asChild>
-          <CardHeader className="pb-3 cursor-pointer min-w-0">
+          <CardHeader className="py-4 cursor-pointer min-w-0">
             <div className="flex items-center justify-between min-w-0">
               <div className="flex items-center gap-3 flex-1 min-w-0">
                 {isExpanded ? 
