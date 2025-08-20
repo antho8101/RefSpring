@@ -63,7 +63,7 @@ export const CampaignCard = ({ campaign, onCopyUrl }: CampaignCardProps) => {
   };
 
   return (
-    <Card className="bg-card border-border min-w-0 overflow-hidden rounded-lg">
+    <Card className="bg-white border border-slate-200 min-w-0 overflow-hidden rounded-xl shadow-sm">
       <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
         <CollapsibleTrigger asChild>
           <CardHeader className="pb-3 cursor-pointer min-w-0">
@@ -77,15 +77,15 @@ export const CampaignCard = ({ campaign, onCopyUrl }: CampaignCardProps) => {
                   <CardTitle className="flex items-center gap-2 text-lg min-w-0">
                     <div className="flex items-center gap-2 min-w-0 flex-wrap">
                       <span className="truncate">{campaign.name}</span>
-                      <Badge 
-                        variant={campaign.isActive ? "default" : "secondary"}
-                        className={`${campaign.isActive 
-                          ? "bg-gradient-to-r from-green-500 to-green-600 text-white border-0" 
-                          : "bg-slate-200 text-slate-600"
-                        } text-xs px-2 py-0.5 flex-shrink-0`}
-                      >
-                        {campaign.isActive ? "Active" : "En pause"}
-                      </Badge>
+                       <Badge 
+                         variant={campaign.isActive ? "default" : "secondary"}
+                         className={`${campaign.isActive 
+                           ? "bg-green-500 text-white border-0" 
+                           : "bg-slate-200 text-slate-600"
+                         } text-xs px-2 py-0.5 flex-shrink-0`}
+                       >
+                         {campaign.isActive ? "Active" : "En pause"}
+                       </Badge>
                     </div>
                   </CardTitle>
                   {isExpanded && (
