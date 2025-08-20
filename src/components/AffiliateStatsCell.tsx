@@ -19,12 +19,12 @@ export const AffiliateStatsCell = ({ affiliateId, commissionRate }: AffiliateSta
   const totalRevenue = stats.commissions / (commissionRate / 100);
 
   return (
-    <div className="space-y-1">
-      <div className="text-xs text-slate-600">
-        Taux: <span className="font-medium">{conversionRate.toFixed(1)}%</span>
+    <div className="text-xs space-y-0.5">
+      <div className="text-slate-600 leading-tight">
+        <span className="font-medium text-slate-900">{conversionRate.toFixed(1)}%</span>
       </div>
-      <div className="text-xs text-slate-600">
-        CA: <span className="font-medium">{convertAndFormat(totalRevenue)}</span>
+      <div className="text-slate-500 leading-tight">
+        {convertAndFormat(totalRevenue)}
       </div>
     </div>
   );

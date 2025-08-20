@@ -33,48 +33,46 @@ export const AffiliateTableRow = ({ affiliate, onEdit, onCopyTrackingLink, onDel
           <span className="font-mono truncate text-xs">{affiliate.trackingCode}</span>
         </div>
       </TableCell>
-      <TableCell>
+      <TableCell className="w-[15%] max-w-0 overflow-hidden">
         {affiliate.createdAt && (
-          <div className="flex items-center gap-1 text-sm text-slate-600">
-            <Calendar className="h-3 w-3" />
-            <span>{format(affiliate.createdAt, 'dd MMM yyyy', { locale: fr })}</span>
+          <div className="flex items-center gap-1 text-xs text-slate-600">
+            <Calendar className="h-3 w-3 flex-shrink-0" />
+            <span className="truncate">{format(affiliate.createdAt, 'dd MMM yyyy', { locale: fr })}</span>
           </div>
         )}
       </TableCell>
-      <TableCell>
+      <TableCell className="w-[15%] max-w-0 overflow-hidden">
         <AffiliateStatsCell affiliateId={affiliate.id} commissionRate={affiliate.commissionRate} />
       </TableCell>
-      <TableCell>
+      <TableCell className="w-[15%] max-w-0 overflow-hidden">
         <StripeConnectButton affiliate={affiliate} />
       </TableCell>
-      <TableCell>
-        <div className="flex items-center justify-end gap-2">
+      <TableCell className="w-[10%] max-w-0 overflow-hidden">
+        <div className="flex items-center justify-end gap-1">
           <Button 
             variant="outline" 
             size="sm"
             onClick={() => onEdit(affiliate)}
-            className="rounded-xl"
+            className="rounded-lg h-8 w-8 p-0"
           >
-            <Edit2 className="h-4 w-4" />
+            <Edit2 className="h-3 w-3" />
           </Button>
           <Button 
             variant="outline" 
             size="sm"
             onClick={() => onCopyTrackingLink(affiliate.id)}
-            className="rounded-xl"
+            className="rounded-lg h-8 w-8 p-0"
           >
-            <Copy className="h-4 w-4" />
+            <Copy className="h-3 w-3" />
           </Button>
-          <div className="ml-3 border-l border-slate-200 pl-3">
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={() => onDelete(affiliate)}
-              className="rounded-xl text-red-600 hover:bg-red-50 hover:text-red-700 border-red-200"
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => onDelete(affiliate)}
+            className="rounded-lg h-8 w-8 p-0 text-red-600 hover:bg-red-50 hover:text-red-700 border-red-200"
+          >
+            <X className="h-3 w-3" />
+          </Button>
         </div>
       </TableCell>
     </TableRow>
