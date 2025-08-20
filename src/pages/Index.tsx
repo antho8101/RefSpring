@@ -3,10 +3,12 @@ import { useAuth } from '@/hooks/useAuth';
 import { useOnboarding } from '@/hooks/useOnboarding';
 import { useAuthGuard } from '@/hooks/useAuthGuard';
 import { useGuidedTour } from '@/hooks/useGuidedTour';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { AuthForm } from '@/components/AuthForm';
 import { Dashboard } from '@/components/Dashboard';
 import { OnboardingCarousel } from '@/components/OnboardingCarousel';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
+import MobileNotSupportedPage from './MobileNotSupportedPage';
 import { useTranslation } from 'react-i18next';
 import { useEffect } from 'react';
 
@@ -16,6 +18,7 @@ const Index = () => {
   const { isAuthenticated, checkAuth } = useAuthGuard({ requireAuth: false });
   const { tourCompleted, startTour } = useGuidedTour();
   const { t } = useTranslation();
+  const isMobile = useIsMobile();
 
   const loading = authLoading || onboardingLoading;
 
@@ -64,6 +67,12 @@ const Index = () => {
   if (!user) {
     console.log('🔐 SECURITY - No user detected, showing auth form');
     return <AuthForm />;
+  }
+
+  // Si connecté mais sur mobile/tablette, afficher la page mobile
+  if (user && isMobile) {
+    console.log('📱 DEVICE - Mobile user detected, showing mobile page');
+    return <MobileNotSupportedPage />;
   }
 
   // Si connecté mais n'a pas vu l'onboarding, afficher le carousel (protégé)
