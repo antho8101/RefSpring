@@ -54,7 +54,7 @@ export const CopyButton = ({
       variant="outline"
       size="sm"
       onClick={copyToClipboard}
-      className=""
+      className="py-1"
     >
       {isCopied ? (
         <>
