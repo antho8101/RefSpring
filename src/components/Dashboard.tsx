@@ -354,11 +354,15 @@ export const Dashboard = memo(() => {
           />
         </div>
 
-        <main className="relative z-10 max-w-6xl mx-auto w-full px-3 sm:px-4 lg:px-8 pt-24 py-4 sm:py-6 lg:py-8 flex-1 min-w-0 pb-32">
-          {/* Bandeau de notifications de paiement */}
-          <ErrorBoundary fallback={<div>Erreur notifications</div>}>
-            <PaymentNotificationBanner />
-          </ErrorBoundary>
+        <main className="relative z-10 max-w-6xl mx-auto w-full px-3 sm:px-4 lg:px-8 pt-32 py-4 sm:py-6 lg:py-8 flex-1 min-w-0 pb-32">
+          {/* Bandeau de notifications de paiement - avec espace pour header fixe */}
+          <div className="fixed top-16 left-0 right-0 z-40 px-3 sm:px-4 lg:px-8 pt-4">
+            <div className="max-w-6xl mx-auto">
+              <ErrorBoundary fallback={<div>Erreur notifications</div>}>
+                <PaymentNotificationBanner />
+              </ErrorBoundary>
+            </div>
+          </div>
 
           <div data-tour="stats">
             <ErrorBoundary fallback={<div>Erreur stats</div>}>
