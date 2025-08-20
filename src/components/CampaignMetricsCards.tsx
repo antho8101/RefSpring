@@ -19,7 +19,7 @@ export const CampaignMetricsCards = ({ stats, loading }: CampaignMetricsCardsPro
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
-      <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
+      <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
         <div className="flex items-center gap-2 text-green-600 mb-2">
           <Users className="h-4 w-4" />
           <span className="text-sm font-medium">Affiliés</span>
@@ -32,7 +32,7 @@ export const CampaignMetricsCards = ({ stats, loading }: CampaignMetricsCardsPro
         </div>
       </div>
 
-      <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
+      <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
         <div className="flex items-center gap-2 text-blue-600 mb-2">
           <MousePointer className="h-4 w-4" />
           <span className="text-sm font-medium">Total Clics</span>
@@ -42,7 +42,7 @@ export const CampaignMetricsCards = ({ stats, loading }: CampaignMetricsCardsPro
         </div>
       </div>
 
-      <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
+      <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
         <div className="flex items-center gap-2 text-orange-600 mb-2">
           <DollarSign className="h-4 w-4" />
           <span className="text-sm font-medium">Total Paiements</span>
@@ -52,7 +52,7 @@ export const CampaignMetricsCards = ({ stats, loading }: CampaignMetricsCardsPro
         </div>
       </div>
 
-      <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
+      <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
         <div className="flex items-center gap-2 text-purple-600 mb-2">
           <Percent className="h-4 w-4" />
           <span className="text-sm font-medium">Taux Conversion</span>
@@ -62,7 +62,7 @@ export const CampaignMetricsCards = ({ stats, loading }: CampaignMetricsCardsPro
         </div>
       </div>
 
-      <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
+      <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
         <div className="flex items-center gap-2 text-emerald-600 mb-2">
           <DollarSign className="h-4 w-4" />
           <span className="text-sm font-medium">CA Net Généré</span>
