@@ -86,7 +86,7 @@ export default function CommissionInfoPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background p-4">
+    <div className="min-h-screen bg-slate-50 p-4">
       <div className="max-w-2xl mx-auto space-y-6">
         
         {/* Header avec félicitations */}
