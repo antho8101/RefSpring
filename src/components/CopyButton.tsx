@@ -53,7 +53,8 @@ export const CopyButton = ({
     <Button
       variant="outline"
       onClick={copyToClipboard}
-      className="px-2 text-xs h-5 min-h-5 py-[5px]"
+      className="px-2 text-xs"
+      style={{ height: '20px', paddingTop: '5px', paddingBottom: '5px' }}
     >
       {isCopied ? (
         <>
