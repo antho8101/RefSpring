@@ -20,6 +20,9 @@ interface IntegrationStatus {
     active: boolean;
   }>;
   activeIntegrationType: 'code' | 'plugin';
+  codeIntegrationStatus?: 'active' | 'pending' | 'error' | 'inactive';
+  lastCodeActivity?: Date;
+  errorMessage?: string;
 }
 
 interface CampaignSettingsDialogProps {
