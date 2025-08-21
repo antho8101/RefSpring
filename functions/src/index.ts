@@ -5,6 +5,7 @@ import { processStripeWebhook } from './processStripeWebhook';
 import { validateTracking } from './validateTracking';
 import { calculateCommissions } from './calculateCommissions';
 import { antifraudCheck } from './antifraudCheck';
+import { wordpressConfig, shopifyInstall, generatePluginApiKey } from './pluginAPI';
 
 // Initialize Firebase Admin
 admin.initializeApp();
@@ -15,5 +16,8 @@ export {
   processStripeWebhook,
   validateTracking,
   calculateCommissions,
-  antifraudCheck
+  antifraudCheck,
+  wordpressConfig,
+  shopifyInstall,
+  generatePluginApiKey
 };
