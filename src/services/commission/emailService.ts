@@ -1,6 +1,8 @@
 
 import { PaymentDistribution } from './types';
 import { EmailService } from '../emailService';
+import { functions } from '@/lib/firebase';
+import { httpsCallable } from 'firebase/functions';
 
 // 🆕 NOUVEAU : Service Stripe Connect pour transfers automatiques
 export const processStripeTransfers = async (
@@ -35,8 +37,6 @@ export const processStripeTransfers = async (
         console.log(`💸 Création transfer pour ${payment.affiliateName} - ${payment.totalCommission}€`);
         
         // Créer le transfer Stripe via Firebase
-        const { functions } = await import('@/lib/firebase');
-        const { httpsCallable } = await import('firebase/functions');
         const createTransfer = httpsCallable(functions, 'stripeCreateTransfer');
         
         const transferResult = await createTransfer({

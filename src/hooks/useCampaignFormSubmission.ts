@@ -5,6 +5,8 @@ import { useStripePayment } from '@/hooks/useStripePayment';
 import { usePaymentMethods } from '@/hooks/usePaymentMethods';
 import { useToast } from '@/hooks/use-toast';
 import { CampaignFormData } from './useCampaignFormState';
+import { functions } from '@/lib/firebase';
+import { httpsCallable } from 'firebase/functions';
 
 export const useCampaignFormSubmission = (
   formData: CampaignFormData,
@@ -85,8 +87,6 @@ export const useCampaignFormSubmission = (
       await new Promise(resolve => setTimeout(resolve, 500));
       
       // Récupérer les données fraîches via Firebase
-      const { functions } = await import('@/lib/firebase');
-      const { httpsCallable } = await import('firebase/functions');
       const getPaymentMethods = httpsCallable(functions, 'stripeGetPaymentMethods');
       const freshCardsResponse = await getPaymentMethods({ userEmail: user?.email });
       const freshCardsData = freshCardsResponse.data as { paymentMethods?: any[] };
