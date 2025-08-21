@@ -131,7 +131,7 @@ export const CampaignSettingsHeader = ({ activeTab, integrationStatus }: Campaig
               {status === 'error' && (
                 <Popover>
                   <PopoverTrigger asChild>
-                    <Badge className="bg-red-100 text-red-800 border-red-200 text-xs font-medium cursor-pointer hover:bg-red-200 transition-colors flex items-center gap-1">
+                    <Badge className="bg-red-100 text-red-800 border-red-200 text-xs font-medium cursor-pointer flex items-center gap-1">
                       ❌ Erreur d'intégration
                       <HelpCircle className="h-3 w-3" />
                     </Badge>
