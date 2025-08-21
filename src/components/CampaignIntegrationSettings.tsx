@@ -67,27 +67,19 @@ export const CampaignIntegrationSettings = ({ campaign, onIntegrationStatusChang
         const campaignAge = Date.now() - campaign.createdAt.getTime();
         const daysSinceCreation = campaignAge / (1000 * 60 * 60 * 24);
 
-        if (campaign.isActive && campaign.paymentConfigured) {
-          // Campagne active avec paiement configuré - probablement bien intégrée
+        if (campaign.isActive) {
+          // Campagne active - supposer que l'intégration fonctionne
           if (daysSinceCreation > 1) {
             codeStatus = 'active';
             lastActivity = new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000); // Dans les 7 derniers jours
           } else {
             codeStatus = 'pending'; // Campagne récente, en attente de première activité
           }
-        } else if (campaign.isActive && !campaign.paymentConfigured) {
-          // Campagne active mais paiement non configuré - problème de configuration
-          codeStatus = 'error';
-          errorMsg = 'Campagne active mais méthode de paiement non configurée.';
         } else if (!campaign.isActive && daysSinceCreation > 7) {
           // Campagne inactive depuis longtemps - code probablement pas installé
           codeStatus = 'inactive';
-        } else if (!campaign.isActive && daysSinceCreation > 1) {
-          // Campagne récente mais inactive - peut-être un problème d'intégration
-          codeStatus = 'error';
-          errorMsg = 'Code installé mais campagne inactive. Vérifiez la configuration.';
         } else {
-          // Campagne très récente - normal qu'elle soit en attente
+          // Campagne récente ou récemment désactivée - statut en attente
           codeStatus = 'pending';
         }
 
@@ -122,7 +114,7 @@ export const CampaignIntegrationSettings = ({ campaign, onIntegrationStatusChang
     };
 
     loadIntegrationStatus();
-  }, [campaign.id, campaign.createdAt, campaign.isActive, campaign.paymentConfigured, integrationType, onIntegrationStatusChange]);
+  }, [campaign.id, campaign.createdAt, campaign.isActive, integrationType, onIntegrationStatusChange]);
 
   const handleTypeChange = (type: 'code' | 'plugin') => {
     setIntegrationType(type);
