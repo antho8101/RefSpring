@@ -173,11 +173,6 @@ export const CampaignSettingsHeader = ({ activeTab, integrationStatus }: Campaig
                 {errorMessage}
               </p>
             )}
-            {status === 'active' && lastCodeActivity && (
-              <p className="text-xs text-green-600 mt-1">
-                Dernière activité: {new Date(lastCodeActivity).toLocaleDateString('fr-FR')}
-              </p>
-            )}
             {status === 'pending' && (
               <p className="text-xs text-amber-600 mt-1">
                 Vérifiez que le code est bien installé sur votre site
