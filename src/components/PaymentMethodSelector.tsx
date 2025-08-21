@@ -78,7 +78,7 @@ export const PaymentMethodSelector = ({
                           )}
                         </div>
                         <p className="text-sm text-slate-600">
-                          Expire {card.exp_month.toString().padStart(2, '0')}/{card.exp_year}
+                          Expire {card.exp_month?.toString().padStart(2, '0') || '00'}/{card.exp_year || '0000'}
                         </p>
                       </div>
                     </div>

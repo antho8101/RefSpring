@@ -28,7 +28,18 @@ export default async function handler(req, res) {
       type: 'card'
     });
 
-    res.status(200).json({ paymentMethods: paymentMethods.data });
+    // Format the payment methods to match the expected structure  
+    const formattedMethods = paymentMethods.data.map(pm => ({
+      id: pm.id,
+      type: pm.type,
+      last4: pm.card?.last4 || '',
+      brand: pm.card?.brand || '',
+      exp_month: pm.card?.exp_month || 0,
+      exp_year: pm.card?.exp_year || 0,
+      isDefault: customer.invoice_settings?.default_payment_method === pm.id
+    }));
+
+    res.status(200).json({ paymentMethods: formattedMethods });
   } catch (error) {
     console.error('Error fetching payment methods:', error);
     res.status(500).json({ error: error.message });
