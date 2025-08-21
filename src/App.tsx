@@ -23,6 +23,7 @@ import { PaymentSuccessPage } from '@/pages/PaymentSuccessPage';
 import TrackingPage from '@/pages/TrackingPage';
 import ShortLinkPage from '@/pages/ShortLinkPage';
 import TrackingJsRoute from '@/pages/TrackingJsRoute';
+import { ShopifyCallbackPage } from '@/pages/ShopifyCallbackPage';
 import AdminPage from '@/pages/AdminPage';
 import AffiliateOnboardingPage from '@/pages/AffiliateOnboardingPage';
 import CommissionInfoPage from '@/pages/CommissionInfoPage';
@@ -65,6 +66,7 @@ function App() {
                     <Route path="/contact" element={<ContactPage />} />
                     <Route path="/app" element={<Index />} />
                     <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/auth/shopify/callback" element={<ShopifyCallbackPage />} />
                     <Route path="/admin" element={<AdminPage />} />
                     <Route path="/campaign/:campaignId" element={<AdvancedStatsPage />} />
                     <Route path="/affiliate/:affiliateId" element={<AffiliatePage />} />

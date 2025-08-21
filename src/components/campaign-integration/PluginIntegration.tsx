@@ -316,11 +316,11 @@ export const PluginIntegration: React.FC<PluginIntegrationProps> = ({ campaignId
                   Sans .myshopify.com (ex: ma-boutique)
                 </p>
               </div>
-              <Button onClick={configureShopify} disabled={isLoading} className="w-full">
-                <ShoppingBag className="h-4 w-4 mr-2" />
-                Installer sur Shopify
-                <ExternalLink className="h-4 w-4 ml-2" />
-              </Button>
+                <Button onClick={configureShopify} disabled={isLoading} className="w-full">
+                  <ShoppingBag className="h-4 w-4 mr-2" />
+                  {isLoading ? 'Configuration...' : 'Installer sur Shopify'}
+                  <ExternalLink className="h-4 w-4 ml-2" />
+                </Button>
             </CardContent>
           </Card>
         </TabsContent>
