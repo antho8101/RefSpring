@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,6 +8,8 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { Globe, ShoppingBag, Key, Copy, ExternalLink } from 'lucide-react';
 import { CopyButton } from '@/components/CopyButton';
+import { httpsCallable } from 'firebase/functions';
+import { functions } from '@/lib/firebase';
 
 interface PluginManagerProps {
   campaignId: string;
@@ -36,14 +38,17 @@ export const PluginManager: React.FC<PluginManagerProps> = ({ campaignId, userId
   const generateApiKey = async () => {
     setIsLoading(true);
     try {
-      // Simuler l'appel à la fonction Firebase
-      const newApiKey = 'rsp_' + Buffer.from(campaignId + '_' + Date.now()).toString('base64').slice(0, 32);
-      setApiKey(newApiKey);
+      const generatePluginApiKey = httpsCallable(functions, 'generatePluginApiKey');
+      const result = await generatePluginApiKey({ campaignId });
+      const data = result.data as { apiKey: string };
+      
+      setApiKey(data.apiKey);
       toast({
         title: "Clé API générée",
         description: "Votre clé API a été créée avec succès",
       });
     } catch (error) {
+      console.error('Erreur génération clé API:', error);
       toast({
         title: "Erreur",
         description: "Impossible de générer la clé API",
@@ -64,37 +69,44 @@ export const PluginManager: React.FC<PluginManagerProps> = ({ campaignId, userId
       return;
     }
 
+    if (!apiKey) {
+      toast({
+        title: "Erreur",
+        description: "Veuillez d'abord générer une clé API",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setIsLoading(true);
     try {
-      // Simuler l'appel à l'API WordPress
-      const script = `<?php
-// RefSpring Tracking Script for WordPress
-function refspring_add_tracking_script() {
-    $campaign_id = '${campaignId}';
-    $script_url = 'https://refspring.com/tracking.js';
-    
-    echo '<script data-campaign="' . $campaign_id . '" src="' . $script_url . '"></script>';
-}
-add_action('wp_head', 'refspring_add_tracking_script');
+      const response = await fetch('/api/wordpress-config', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          pluginType: 'wordpress',
+          domain: wordpressDomain,
+          apiKey,
+          campaignId,
+          userId,
+          settings: {
+            autoInject: true,
+            trackingEnabled: true
+          }
+        })
+      });
 
-// Hook pour WooCommerce conversions
-function refspring_woocommerce_conversion($order_id) {
-    $order = wc_get_order($order_id);
-    $total = $order->get_total();
-    
-    echo '<script>
-        if (window.RefSpring) {
-            window.RefSpring.trackConversion(' . $total . ');
-        }
-    </script>';
-}
-add_action('woocommerce_thankyou', 'refspring_woocommerce_conversion');
-?>`;
+      if (!response.ok) {
+        throw new Error('Configuration failed');
+      }
 
-      setTrackingScript(script);
+      const result = await response.json();
+      setTrackingScript(result.trackingScript);
       
       const newConfig: PluginConfig = {
-        id: 'wp_' + Date.now(),
+        id: result.pluginId,
         type: 'wordpress',
         domain: wordpressDomain,
         active: true,
@@ -102,12 +114,14 @@ add_action('woocommerce_thankyou', 'refspring_woocommerce_conversion');
       };
       
       setConfigs([...configs, newConfig]);
+      setWordpressDomain('');
       
       toast({
         title: "WordPress configuré",
         description: "Le plugin WordPress a été configuré avec succès",
       });
     } catch (error) {
+      console.error('Erreur configuration WordPress:', error);
       toast({
         title: "Erreur",
         description: "Impossible de configurer WordPress",
@@ -128,19 +142,42 @@ add_action('woocommerce_thankyou', 'refspring_woocommerce_conversion');
       return;
     }
 
+    if (!apiKey) {
+      toast({
+        title: "Erreur", 
+        description: "Veuillez d'abord générer une clé API",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setIsLoading(true);
     try {
-      // Simuler l'installation Shopify
-      const shopifyUrl = `https://${shopifyShop}.myshopify.com/admin/oauth/authorize?client_id=YOUR_APP_ID&scope=read_orders,write_script_tags&redirect_uri=https://refspring.com/shopify/callback&state=${campaignId}`;
+      // Générer l'URL d'autorisation Shopify avec l'état nécessaire
+      const state = btoa(JSON.stringify({ campaignId, userId, apiKey }));
+      const shopifyUrl = `https://${shopifyShop}.myshopify.com/admin/oauth/authorize?client_id=YOUR_SHOPIFY_APP_ID&scope=read_orders,write_script_tags&redirect_uri=https://refspring.com/shopify/callback&state=${state}`;
       
       // Ouvrir dans une nouvelle fenêtre
       window.open(shopifyUrl, '_blank');
       
+      // Simuler l'ajout de la configuration en attendant le callback
+      const newConfig: PluginConfig = {
+        id: 'shopify_' + Date.now(),
+        type: 'shopify',
+        domain: shopifyShop + '.myshopify.com',
+        active: false, // Sera activé après autorisation
+        createdAt: new Date()
+      };
+      
+      setConfigs([...configs, newConfig]);
+      setShopifyShop('');
+      
       toast({
         title: "Redirection Shopify",
-        description: "Vous allez être redirigé vers Shopify pour autoriser l'application",
+        description: "Autorisez l'application dans la nouvelle fenêtre pour terminer l'installation",
       });
     } catch (error) {
+      console.error('Erreur configuration Shopify:', error);
       toast({
         title: "Erreur",
         description: "Impossible de configurer Shopify",
