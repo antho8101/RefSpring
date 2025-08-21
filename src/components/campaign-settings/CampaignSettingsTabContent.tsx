@@ -6,6 +6,18 @@ import { CampaignPaymentSettings } from '@/components/CampaignPaymentSettings';
 import { AffiliatesManagementTable } from '@/components/AffiliatesManagementTable';
 import { CreateAffiliateDialog } from '@/components/CreateAffiliateDialog';
 
+interface IntegrationStatus {
+  hasCodeIntegration: boolean;
+  hasPluginIntegration: boolean;
+  pluginConfigs: Array<{
+    id: string;
+    type: 'wordpress' | 'shopify';
+    domain: string;
+    active: boolean;
+  }>;
+  activeIntegrationType: 'code' | 'plugin';
+}
+
 interface CampaignSettingsTabContentProps {
   activeTab: string;
   campaign: Campaign;
@@ -23,6 +35,7 @@ interface CampaignSettingsTabContentProps {
   onCancel: () => void;
   onDeleteClick: () => void;
   onPaymentMethodChange: () => void;
+  onIntegrationStatusChange?: (status: IntegrationStatus) => void;
 }
 
 export const CampaignSettingsTabContent = ({
@@ -36,6 +49,7 @@ export const CampaignSettingsTabContent = ({
   onCancel,
   onDeleteClick,
   onPaymentMethodChange,
+  onIntegrationStatusChange,
 }: CampaignSettingsTabContentProps) => {
   switch (activeTab) {
     case 'general':
@@ -52,7 +66,7 @@ export const CampaignSettingsTabContent = ({
         />
       );
     case 'integration':
-      return <CampaignIntegrationSettings campaign={campaign} />;
+      return <CampaignIntegrationSettings campaign={campaign} onIntegrationStatusChange={onIntegrationStatusChange} />;
     case 'payment':
       return (
         <CampaignPaymentSettings

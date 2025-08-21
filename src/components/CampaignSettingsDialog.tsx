@@ -1,4 +1,5 @@
 
+import { useState } from 'react';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Settings } from 'lucide-react';
@@ -9,11 +10,25 @@ import { CampaignSettingsHeader } from '@/components/campaign-settings/CampaignS
 import { CampaignSettingsTabContent } from '@/components/campaign-settings/CampaignSettingsTabContent';
 import { useCampaignSettingsDialog } from '@/hooks/useCampaignSettingsDialog';
 
+interface IntegrationStatus {
+  hasCodeIntegration: boolean;
+  hasPluginIntegration: boolean;
+  pluginConfigs: Array<{
+    id: string;
+    type: 'wordpress' | 'shopify';
+    domain: string;
+    active: boolean;
+  }>;
+  activeIntegrationType: 'code' | 'plugin';
+}
+
 interface CampaignSettingsDialogProps {
   campaign: Campaign;
 }
 
 export const CampaignSettingsDialog = ({ campaign }: CampaignSettingsDialogProps) => {
+  const [integrationStatus, setIntegrationStatus] = useState<IntegrationStatus | undefined>();
+  
   const {
     open,
     setOpen,
@@ -30,6 +45,10 @@ export const CampaignSettingsDialog = ({ campaign }: CampaignSettingsDialogProps
     handleDeleteClick,
     handlePaymentMethodChange,
   } = useCampaignSettingsDialog(campaign);
+
+  const handleIntegrationStatusChange = (status: IntegrationStatus) => {
+    setIntegrationStatus(status);
+  };
 
   return (
     <>
@@ -53,7 +72,10 @@ export const CampaignSettingsDialog = ({ campaign }: CampaignSettingsDialogProps
             {/* CONTENU DROITE - FLEX */}
             <div className="flex-1 h-full flex flex-col min-w-0 overflow-hidden">
               <div className="flex-shrink-0">
-                <CampaignSettingsHeader activeTab={activeTab} />
+                <CampaignSettingsHeader 
+                  activeTab={activeTab} 
+                  integrationStatus={integrationStatus}
+                />
               </div>
 
               <div className="flex-1 overflow-auto min-w-0 w-full max-w-full">
@@ -70,6 +92,7 @@ export const CampaignSettingsDialog = ({ campaign }: CampaignSettingsDialogProps
                       onCancel={() => setOpen(false)}
                       onDeleteClick={handleDeleteClick}
                       onPaymentMethodChange={handlePaymentMethodChange}
+                      onIntegrationStatusChange={handleIntegrationStatusChange}
                     />
                   </div>
                 </div>
