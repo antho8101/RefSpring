@@ -6,6 +6,9 @@ import { validateTracking } from './validateTracking';
 import { calculateCommissions } from './calculateCommissions';
 import { antifraudCheck } from './antifraudCheck';
 import { wordpressConfig, shopifyInstall, generatePluginApiKey } from './pluginAPI';
+import { shopifyAuthUrl, shopifyTokenExchange } from './shopifyOAuth';
+import { shopifyOrderWebhook, shopifyAppWebhook } from './shopifyWebhooks';
+import { setupShopifyWebhooks, checkShopifyInstallation } from './shopifySetup';
 import { stripeGetPaymentMethods } from './stripeGetPaymentMethods';
 import { stripeDeletePaymentMethod } from './stripeDeletePaymentMethod';
 import { stripeSetDefaultPaymentMethod } from './stripeSetDefaultPaymentMethod';
@@ -27,6 +30,12 @@ export {
   wordpressConfig,
   shopifyInstall,
   generatePluginApiKey,
+  shopifyAuthUrl,
+  shopifyTokenExchange,
+  shopifyOrderWebhook,
+  shopifyAppWebhook,
+  setupShopifyWebhooks,
+  checkShopifyInstallation,
   stripeGetPaymentMethods,
   stripeDeletePaymentMethod,
   stripeSetDefaultPaymentMethod,

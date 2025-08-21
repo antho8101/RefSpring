@@ -1,4 +1,4 @@
-// Proxy pour les Firebase Functions depuis Vercel
+// Proxy pour le callback OAuth Shopify
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -6,7 +6,7 @@ export default async function handler(req, res) {
 
   try {
     // Forward la requête vers Firebase Functions
-    const firebaseUrl = 'https://us-central1-refspring-project.cloudfunctions.net/shopifyAuthUrl';
+    const firebaseUrl = 'https://us-central1-refspring-project.cloudfunctions.net/shopifyTokenExchange';
     
     const response = await fetch(firebaseUrl, {
       method: 'POST',
@@ -24,7 +24,7 @@ export default async function handler(req, res) {
 
     res.json(data);
   } catch (error) {
-    console.error('Proxy error:', error);
+    console.error('OAuth callback proxy error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 }

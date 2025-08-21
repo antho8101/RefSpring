@@ -79,7 +79,7 @@ export const wordpressConfig = functions.https.onRequest((request, response) => 
   });
 });
 
-// API pour l'installation Shopify
+// API pour l'installation Shopify (redirige vers le processus OAuth)
 export const shopifyInstall = functions.https.onRequest((request, response) => {
   corsHandler(request, response, async () => {
     if (request.method !== 'POST') {
@@ -90,35 +90,20 @@ export const shopifyInstall = functions.https.onRequest((request, response) => {
       const installData: ShopifyInstall = request.body;
       
       // Validation
-      if (!installData.shop || !installData.code || !installData.campaignId) {
+      if (!installData.shop || !installData.campaignId) {
         return response.status(400).json({ error: 'Missing required fields' });
       }
 
-      // Échanger le code OAuth contre un access token (simulation)
-      // En réalité, on ferait un appel à l'API Shopify
-      const accessToken = 'simulated_access_token_' + Date.now();
-
-      // Stocker la configuration Shopify
-      const shopifyDoc = await admin.firestore()
-        .collection('plugin_configs')
-        .add({
-          pluginType: 'shopify',
-          domain: installData.shop,
-          campaignId: installData.campaignId,
-          accessToken,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          active: true,
-          settings: {
-            autoInject: true,
-            trackingEnabled: true
-          }
-        });
-
+      // Génération de l'état OAuth sécurisé
+      const state = Buffer.from(`${installData.campaignId}:${Date.now()}`).toString('base64');
+      
+      // Rediriger vers le processus OAuth réel
       response.json({
         success: true,
-        pluginId: shopifyDoc.id,
-        message: 'Shopify app installed successfully'
+        requiresOAuth: true,
+        state,
+        message: 'Please complete OAuth authorization',
+        nextStep: 'oauth'
       });
 
     } catch (error) {
