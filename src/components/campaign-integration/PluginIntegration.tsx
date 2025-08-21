@@ -187,13 +187,6 @@ export const PluginIntegration: React.FC<PluginIntegrationProps> = ({ campaignId
 
   return (
     <div className="space-y-6">
-      <div className="space-y-2">
-        <h3 className="text-lg font-semibold text-slate-900">Configuration des plugins</h3>
-        <p className="text-slate-600">
-          Configurez RefSpring directement sur WordPress et Shopify sans code
-        </p>
-      </div>
-
       <div className="flex justify-end">
         <Button onClick={generateApiKey} disabled={isLoading} variant="outline">
           <Key className="h-4 w-4 mr-2" />

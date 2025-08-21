@@ -10,13 +10,9 @@ interface IntegrationTypeSelectorProps {
 
 export const IntegrationTypeSelector = ({ activeType, onTypeChange, children }: IntegrationTypeSelectorProps) => {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Type d'intégration</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <Tabs value={activeType} onValueChange={(value) => onTypeChange(value as 'code' | 'plugin')}>
-          <TabsList className="grid w-full grid-cols-2 mb-6">
+    <div>
+      <Tabs value={activeType} onValueChange={(value) => onTypeChange(value as 'code' | 'plugin')}>
+        <TabsList className="grid w-full grid-cols-2 mb-6">
             <TabsTrigger value="code" className="flex items-center gap-2">
               <Code className="h-4 w-4" />
               Intégration par code
@@ -29,7 +25,6 @@ export const IntegrationTypeSelector = ({ activeType, onTypeChange, children }: 
           
           {children}
         </Tabs>
-      </CardContent>
-    </Card>
+    </div>
   );
 };

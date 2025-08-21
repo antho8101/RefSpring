@@ -42,14 +42,7 @@ export const CodeIntegration = ({ campaign }: CodeIntegrationProps) => {
 
   return (
     <div className="space-y-8">
-      <div className="space-y-2">
-        <h3 className="text-lg font-semibold text-slate-900">Scripts d'intégration</h3>
-        <p className="text-slate-600">
-          Copiez et collez ces scripts sur votre site marchand pour activer le tracking d'affiliation.
-        </p>
-      </div>
-
-      <TrackingScriptSection 
+      <TrackingScriptSection
         trackingScript={trackingScript}
         copiedItems={copiedItems}
         setCopiedItems={setCopiedItems}
