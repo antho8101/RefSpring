@@ -6,12 +6,12 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { Globe, ShoppingBag, Key, Copy, ExternalLink } from 'lucide-react';
+import { Globe, ShoppingBag, Key, ExternalLink } from 'lucide-react';
 import { CopyButton } from '@/components/CopyButton';
 import { httpsCallable } from 'firebase/functions';
 import { functions } from '@/lib/firebase';
 
-interface PluginManagerProps {
+interface PluginIntegrationProps {
   campaignId: string;
   userId: string;
 }
@@ -24,7 +24,7 @@ interface PluginConfig {
   createdAt: Date;
 }
 
-export const PluginManager: React.FC<PluginManagerProps> = ({ campaignId, userId }) => {
+export const PluginIntegration: React.FC<PluginIntegrationProps> = ({ campaignId, userId }) => {
   const [activeTab, setActiveTab] = useState('wordpress');
   const [wordpressDomain, setWordpressDomain] = useState('');
   const [shopifyShop, setShopifyShop] = useState('');
@@ -153,19 +153,16 @@ export const PluginManager: React.FC<PluginManagerProps> = ({ campaignId, userId
 
     setIsLoading(true);
     try {
-      // Générer l'URL d'autorisation Shopify avec l'état nécessaire
       const state = btoa(JSON.stringify({ campaignId, userId, apiKey }));
       const shopifyUrl = `https://${shopifyShop}.myshopify.com/admin/oauth/authorize?client_id=YOUR_SHOPIFY_APP_ID&scope=read_orders,write_script_tags&redirect_uri=https://refspring.com/shopify/callback&state=${state}`;
       
-      // Ouvrir dans une nouvelle fenêtre
       window.open(shopifyUrl, '_blank');
       
-      // Simuler l'ajout de la configuration en attendant le callback
       const newConfig: PluginConfig = {
         id: 'shopify_' + Date.now(),
         type: 'shopify',
         domain: shopifyShop + '.myshopify.com',
-        active: false, // Sera activé après autorisation
+        active: false,
         createdAt: new Date()
       };
       
@@ -190,13 +187,14 @@ export const PluginManager: React.FC<PluginManagerProps> = ({ campaignId, userId
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold">Gestion des Plugins</h2>
-          <p className="text-muted-foreground">
-            Configurez RefSpring sur WordPress et Shopify en quelques clics
-          </p>
-        </div>
+      <div className="space-y-2">
+        <h3 className="text-lg font-semibold text-slate-900">Configuration des plugins</h3>
+        <p className="text-slate-600">
+          Configurez RefSpring directement sur WordPress et Shopify sans code
+        </p>
+      </div>
+
+      <div className="flex justify-end">
         <Button onClick={generateApiKey} disabled={isLoading} variant="outline">
           <Key className="h-4 w-4 mr-2" />
           Générer Clé API
