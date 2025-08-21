@@ -1,6 +1,8 @@
 
 import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import { functions } from '@/lib/firebase';
+import { httpsCallable } from 'firebase/functions';
 
 export const useStripePayment = () => {
   const [loading, setLoading] = useState(false);
@@ -16,7 +18,7 @@ export const useStripePayment = () => {
     setError(null);
 
     try {
-      console.log('🔄 STRIPE: Création du setup de paiement pour la campagne:', campaignId);
+      console.log('🔄 FIREBASE: Création du setup de paiement pour la campagne:', campaignId);
       
       // Si c'est pour une nouvelle campagne, stocker les données en local
       if (campaignId === 'temp_new_campaign') {
@@ -24,33 +26,23 @@ export const useStripePayment = () => {
         console.log('💾 Données campagne stockées pour après validation Stripe:', pendingData);
       }
       
-      // Appel à l'API Vercel pour créer le setup
-      const response = await fetch('/api/stripe?action=create-setup', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          campaignId,
-          campaignName,
-          userEmail: user.email,
-        }),
+      // Appel à la fonction Firebase
+      const createSetup = httpsCallable(functions, 'stripeCreateSetup');
+      const result = await createSetup({
+        campaignId,
+        campaignName,
+        userEmail: user.email,
       });
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Erreur ${response.status}: ${errorText}`);
-      }
-
-      const setupData = await response.json();
-      console.log('✅ STRIPE: Setup de paiement créé:', setupData);
+      const setupData = result.data as any;
+      console.log('✅ FIREBASE: Setup de paiement créé:', setupData);
       
       // Rediriger vers Stripe
       window.location.href = setupData.checkoutUrl;
       
       return setupData;
     } catch (err: any) {
-      console.error('❌ STRIPE: Erreur setup paiement:', err);
+      console.error('❌ FIREBASE: Erreur setup paiement:', err);
       setError(err.message);
       throw err;
     } finally {
@@ -63,31 +55,22 @@ export const useStripePayment = () => {
     setError(null);
 
     try {
-      console.log('🔄 STRIPE: Vérification du setup pour:', setupIntentId);
+      console.log('🔄 FIREBASE: Vérification du setup pour:', setupIntentId);
       
-      // Appel à l'API Vercel pour vérifier et finaliser le setup
-      const response = await fetch(`/api/stripe?action=check-setup&setupIntentId=${encodeURIComponent(setupIntentId)}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+      // Appel à la fonction Firebase
+      const checkSetup = httpsCallable(functions, 'stripeCheckSetup');
+      const result = await checkSetup({ setupIntentId });
       
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Erreur ${response.status}: ${errorText}`);
-      }
-
-      const result = await response.json();
-      console.log('✅ STRIPE: Setup vérifié et finalisé:', result);
+      const data = result.data as any;
+      console.log('✅ FIREBASE: Setup vérifié et finalisé:', data);
       
       // **IMPORTANT: Retourner aussi le paymentMethodId pour la finalisation**
       return {
-        ...result,
-        paymentMethodId: result.paymentMethodId
+        ...data,
+        paymentMethodId: data.paymentMethodId
       };
     } catch (err: any) {
-      console.error('❌ STRIPE: Erreur vérification setup:', err);
+      console.error('❌ FIREBASE: Erreur vérification setup:', err);
       setError(err.message);
       throw err;
     } finally {

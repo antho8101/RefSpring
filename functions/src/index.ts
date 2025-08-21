@@ -9,6 +9,8 @@ import { wordpressConfig, shopifyInstall, generatePluginApiKey } from './pluginA
 import { stripeGetPaymentMethods } from './stripeGetPaymentMethods';
 import { stripeDeletePaymentMethod } from './stripeDeletePaymentMethod';
 import { stripeSetDefaultPaymentMethod } from './stripeSetDefaultPaymentMethod';
+import { stripeCreateSetup } from './stripeCreateSetup';
+import { stripeCheckSetup } from './stripeCheckSetup';
 
 // Initialize Firebase Admin
 admin.initializeApp();
@@ -25,5 +27,7 @@ export {
   generatePluginApiKey,
   stripeGetPaymentMethods,
   stripeDeletePaymentMethod,
-  stripeSetDefaultPaymentMethod
+  stripeSetDefaultPaymentMethod,
+  stripeCreateSetup,
+  stripeCheckSetup
 };
