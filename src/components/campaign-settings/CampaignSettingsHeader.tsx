@@ -1,6 +1,7 @@
 
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle, Code, Globe, ShoppingBag, AlertTriangle, XCircle, Clock } from 'lucide-react';
+import { CheckCircle, Code, Globe, ShoppingBag, AlertTriangle, XCircle, Clock, HelpCircle } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 interface IntegrationStatus {
   hasCodeIntegration: boolean;
@@ -128,9 +129,36 @@ export const CampaignSettingsHeader = ({ activeTab, integrationStatus }: Campaig
                 </Badge>
               )}
               {status === 'error' && (
-                <Badge className="bg-red-100 text-red-800 border-red-200 text-xs font-medium">
-                  ❌ Erreur d'intégration
-                </Badge>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Badge className="bg-red-100 text-red-800 border-red-200 text-xs font-medium cursor-pointer hover:bg-red-200 transition-colors flex items-center gap-1">
+                      ❌ Erreur d'intégration
+                      <HelpCircle className="h-3 w-3" />
+                    </Badge>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-80">
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2">
+                        <XCircle className="h-4 w-4 text-red-500" />
+                        <h4 className="font-medium text-red-800">Problème d'intégration détecté</h4>
+                      </div>
+                      
+                      <div className="text-sm text-slate-600">
+                        {errorMessage || 'Une erreur est survenue lors de la vérification de l\'intégration.'}
+                      </div>
+
+                      <div className="border-t pt-3">
+                        <h5 className="font-medium text-slate-800 mb-2">Solutions possibles :</h5>
+                        <ul className="text-xs text-slate-600 space-y-1">
+                          <li>• Vérifiez que le code de tracking est bien installé sur votre site</li>
+                          <li>• Assurez-vous que la méthode de paiement est configurée</li>
+                          <li>• Vérifiez que votre campagne est bien activée</li>
+                          <li>• Contactez le support si le problème persiste</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </PopoverContent>
+                </Popover>
               )}
               {status === 'inactive' && (
                 <Badge className="bg-orange-100 text-orange-800 border-orange-200 text-xs font-medium">
