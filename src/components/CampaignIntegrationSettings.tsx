@@ -5,6 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { IntegrationTypeSelector } from './campaign-integration/IntegrationTypeSelector';
 import { CodeIntegration } from './campaign-integration/CodeIntegration';
 import { PluginIntegration } from './campaign-integration/PluginIntegration';
+import { IntegrationStatusCard } from './campaign-integration/IntegrationStatusCard';
 import { TabsContent } from '@/components/ui/tabs';
 
 interface CampaignIntegrationSettingsProps {
@@ -17,6 +18,11 @@ export const CampaignIntegrationSettings = ({ campaign }: CampaignIntegrationSet
 
   return (
     <div className="space-y-6">
+      <IntegrationStatusCard 
+        campaignId={campaign.id}
+        activeIntegrationType={integrationType}
+      />
+      
       <IntegrationTypeSelector 
         activeType={integrationType} 
         onTypeChange={setIntegrationType}

@@ -24,7 +24,7 @@ export const CampaignSettingsHeader = ({ activeTab }: CampaignSettingsHeaderProp
       case 'general':
         return 'Configurez les informations de base de votre campagne';
       case 'integration':
-        return 'Scripts à intégrer sur votre site marchand';
+        return 'Configurez le tracking d\'affiliation sur votre site';
       case 'payment':
         return 'Gérez votre méthode de paiement pour les commissions';
       case 'affiliates':
