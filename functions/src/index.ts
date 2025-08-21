@@ -11,6 +11,8 @@ import { stripeDeletePaymentMethod } from './stripeDeletePaymentMethod';
 import { stripeSetDefaultPaymentMethod } from './stripeSetDefaultPaymentMethod';
 import { stripeCreateSetup } from './stripeCreateSetup';
 import { stripeCheckSetup } from './stripeCheckSetup';
+import { stripeCreateConnectAccount, stripeCreateAccountLink, stripeCreateTransfer } from './stripeConnectAccount';
+import { stripeCreateInvoice } from './stripeInvoice';
 
 // Initialize Firebase Admin
 admin.initializeApp();
@@ -29,5 +31,9 @@ export {
   stripeDeletePaymentMethod,
   stripeSetDefaultPaymentMethod,
   stripeCreateSetup,
-  stripeCheckSetup
+  stripeCheckSetup,
+  stripeCreateConnectAccount,
+  stripeCreateAccountLink,
+  stripeCreateTransfer,
+  stripeCreateInvoice
 };

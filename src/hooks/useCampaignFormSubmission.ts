@@ -84,16 +84,13 @@ export const useCampaignFormSubmission = (
       // Attendre pour s'assurer de la synchronisation
       await new Promise(resolve => setTimeout(resolve, 500));
       
-      // Récupérer les données fraîches
-      const freshCardsResponse = await fetch('/api/stripe?action=get-payment-methods', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ userEmail: user?.email }),
-      });
+      // Récupérer les données fraîches via Firebase
+      const { functions } = await import('@/lib/firebase');
+      const { httpsCallable } = await import('firebase/functions');
+      const getPaymentMethods = httpsCallable(functions, 'stripeGetPaymentMethods');
+      const freshCardsResponse = await getPaymentMethods({ userEmail: user?.email });
+      const freshCardsData = freshCardsResponse.data as { paymentMethods?: any[] };
       
-      const freshCardsData = await freshCardsResponse.json();
       const availableCards = freshCardsData.paymentMethods || [];
       
       console.log('💳 Cartes disponibles:', availableCards.length);

@@ -1,4 +1,7 @@
 
+import { functions } from '@/lib/firebase';
+import { httpsCallable } from 'firebase/functions';
+
 // Service pour créer et envoyer des factures Stripe pour les commissions RefSpring
 export interface RefSpringInvoiceData {
   userEmail: string;
@@ -15,37 +18,28 @@ export class StripeInvoiceService {
     error?: string;
   }> {
     try {
-      console.log('💳 STRIPE INVOICE: Création facture RefSpring:', invoiceData);
+      console.log('💳 FIREBASE STRIPE INVOICE: Création facture RefSpring:', invoiceData);
       
-      // Appel à l'API Vercel pour créer la facture
-      const response = await fetch('/api/stripe?action=create-invoice', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userEmail: invoiceData.userEmail,
-          amount: invoiceData.amount,
-          description: invoiceData.description,
+      const createInvoice = httpsCallable(functions, 'stripeCreateInvoice');
+      const result = await createInvoice({
+        userEmail: invoiceData.userEmail,
+        amount: invoiceData.amount,
+        description: invoiceData.description,
+        metadata: {
           campaignName: invoiceData.campaignName,
-          stripePaymentMethodId: invoiceData.stripePaymentMethodId, // 🔥 TRANSMISSION du paramètre
-        }),
+          stripePaymentMethodId: invoiceData.stripePaymentMethodId,
+        },
       });
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Erreur ${response.status}: ${errorText}`);
-      }
-
-      const result = await response.json();
-      console.log('✅ STRIPE INVOICE: Facture créée avec succès:', result);
+      const data = result.data as any;
+      console.log('✅ FIREBASE STRIPE INVOICE: Facture créée avec succès:', data);
       
       return {
         success: true,
-        invoiceId: result.invoiceId,
+        invoiceId: data.invoiceId,
       };
     } catch (error: any) {
-      console.error('❌ STRIPE INVOICE: Erreur création facture:', error);
+      console.error('❌ FIREBASE STRIPE INVOICE: Erreur création facture:', error);
       return {
         success: false,
         error: error.message,

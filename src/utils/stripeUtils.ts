@@ -1,4 +1,7 @@
 
+import { functions } from '@/lib/firebase';
+import { httpsCallable } from 'firebase/functions';
+
 // Configuration Stripe sécurisée via variables d'environnement
 export const STRIPE_PUBLIC_KEY = import.meta.env.VITE_STRIPE_PUBLIC_KEY || '';
 
@@ -10,61 +13,45 @@ export interface CreatePaymentSetupRequest {
 
 export interface CreatePaymentSetupResponse {
   setupIntentId: string;
-  stripeCustomerId: string;
   checkoutUrl: string;
+  clientSecret: string;
 }
 
-// Fonction pour créer un SetupIntent Stripe (PRODUCTION UNIQUEMENT)
+// Fonction pour créer un SetupIntent Stripe via Firebase
 export const createPaymentSetup = async (data: CreatePaymentSetupRequest): Promise<CreatePaymentSetupResponse> => {
-  console.log('🔄 PRODUCTION: Création réelle du setup de paiement pour:', data.campaignName);
+  console.log('🔄 FIREBASE: Création réelle du setup de paiement pour:', data.campaignName);
   
   try {
-    // Utilisation des vraies API Vercel Edge Functions
-    const response = await fetch('/api/stripe?action=create-setup', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Erreur ${response.status}: ${errorText}`);
-    }
-
-    const result = await response.json();
-    console.log('✅ PRODUCTION: Setup de paiement créé:', result);
-    return result;
-  } catch (error) {
-    console.error('❌ PRODUCTION: Erreur création setup:', error);
-    throw new Error('Erreur lors de la création du setup de paiement');
+    const createSetup = httpsCallable(functions, 'stripeCreateSetup');
+    const result = await createSetup(data);
+    const setupData = result.data as CreatePaymentSetupResponse;
+    
+    console.log('✅ FIREBASE: Setup de paiement créé:', setupData.setupIntentId);
+    return setupData;
+  } catch (error: any) {
+    console.error('❌ FIREBASE: Erreur création setup:', error);
+    throw new Error(`Erreur lors de la création du setup: ${error.message}`);
   }
 };
 
-// Fonction pour vérifier le statut d'un SetupIntent (PRODUCTION UNIQUEMENT)
+// Fonction pour vérifier le statut d'un SetupIntent via Firebase
 export const checkPaymentSetupStatus = async (setupIntentId: string): Promise<{ status: string; paymentMethod?: string }> => {
-  console.log('🔄 PRODUCTION: Vérification réelle du statut pour:', setupIntentId);
+  console.log('🔄 FIREBASE: Vérification réelle du statut pour:', setupIntentId);
   
   try {
-    const response = await fetch(`/api/stripe?action=check-setup&setupIntentId=${encodeURIComponent(setupIntentId)}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    const checkSetup = httpsCallable(functions, 'stripeCheckSetup');
+    const result = await checkSetup({ setupIntentId });
+    const data = result.data as any;
     
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Erreur ${response.status}: ${errorText}`);
-    }
-
-    const result = await response.json();
-    console.log('✅ PRODUCTION: Statut vérifié:', result);
-    return result;
-  } catch (error) {
-    console.error('❌ PRODUCTION: Erreur vérification statut:', error);
-    throw new Error('Erreur lors de la vérification du statut');
+    console.log('✅ FIREBASE: Statut vérifié:', data.success ? 'success' : 'failed');
+    
+    return {
+      status: data.success ? 'succeeded' : 'failed',
+      paymentMethod: data.paymentMethodId,
+    };
+  } catch (error: any) {
+    console.error('❌ FIREBASE: Erreur vérification statut:', error);
+    throw new Error(`Erreur lors de la vérification: ${error.message}`);
   }
 };
 

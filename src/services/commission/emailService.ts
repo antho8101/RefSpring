@@ -34,31 +34,24 @@ export const processStripeTransfers = async (
 
         console.log(`💸 Création transfer pour ${payment.affiliateName} - ${payment.totalCommission}€`);
         
-        // Créer le transfer Stripe
-        const response = await fetch('/api/stripe?action=create-transfer', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
+        // Créer le transfer Stripe via Firebase
+        const { functions } = await import('@/lib/firebase');
+        const { httpsCallable } = await import('firebase/functions');
+        const createTransfer = httpsCallable(functions, 'stripeCreateTransfer');
+        
+        const transferResult = await createTransfer({
+          accountId: payment.stripeAccountId,
+          amount: Math.round(payment.totalCommission * 100), // Convertir en centimes
+          description: `Commission RefSpring - Campagne "${campaignName}"`,
+          metadata: {
+            affiliate_id: payment.affiliateId,
+            affiliate_name: payment.affiliateName,
+            campaign_name: campaignName,
+            commission_amount: payment.totalCommission.toString(),
           },
-          body: JSON.stringify({
-            accountId: payment.stripeAccountId,
-            amount: Math.round(payment.totalCommission * 100), // Convertir en centimes
-            description: `Commission RefSpring - Campagne "${campaignName}"`,
-            metadata: {
-              affiliate_id: payment.affiliateId,
-              affiliate_name: payment.affiliateName,
-              campaign_name: campaignName,
-              commission_amount: payment.totalCommission.toString(),
-            },
-          }),
         });
 
-        if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(`Erreur transfer: ${response.status} - ${errorText}`);
-        }
-
-        const transferData = await response.json();
+        const transferData = transferResult.data as any;
         console.log(`✅ Transfer créé pour ${payment.affiliateName}:`, transferData.transferId);
         
         transferResults.push({

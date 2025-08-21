@@ -1,18 +1,18 @@
 import { useState } from 'react';
+import { functions } from '@/lib/firebase';
+import { httpsCallable } from 'firebase/functions';
 
 export interface StripeConnectAccount {
   accountId: string;
   email: string;
+  name: string;
+  country: string;
   created: number;
-  capabilities: any;
-  charges_enabled: boolean;
-  payouts_enabled: boolean;
 }
 
 export interface StripeConnectLink {
-  onboardingUrl: string;
-  accountId: string;
-  expiresAt: number;
+  url: string;
+  expires_at: number;
 }
 
 export interface StripeTransfer {
@@ -20,9 +20,7 @@ export interface StripeTransfer {
   amount: number;
   currency: string;
   destination: string;
-  status: string;
   created: number;
-  description: string;
 }
 
 export const useStripeConnect = () => {
@@ -38,31 +36,20 @@ export const useStripeConnect = () => {
     setError(null);
 
     try {
-      console.log('🔄 STRIPE CONNECT: Creating account for:', affiliateEmail);
+      console.log('🔄 FIREBASE STRIPE CONNECT: Creating account for:', affiliateEmail);
 
-      const response = await fetch('/api/stripe?action=create-connect-account', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          affiliateEmail,
-          affiliateName,
-          country,
-        }),
+      const createAccount = httpsCallable(functions, 'stripeCreateConnectAccount');
+      const result = await createAccount({
+        affiliateEmail,
+        affiliateName,
+        country,
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Erreur lors de la création du compte');
-      }
-
-      const accountData = await response.json();
-      console.log('✅ STRIPE CONNECT: Account created:', accountData.accountId);
-      
-      return accountData;
+      const data = result.data as StripeConnectAccount;
+      console.log('✅ FIREBASE: Connect account created:', data.accountId);
+      return data;
     } catch (err: any) {
-      console.error('❌ STRIPE CONNECT: Error creating account:', err);
+      console.error('❌ FIREBASE: Error creating Connect account:', err);
       setError(err.message);
       throw err;
     } finally {
@@ -80,32 +67,21 @@ export const useStripeConnect = () => {
     setError(null);
 
     try {
-      console.log('🔄 STRIPE CONNECT: Creating account link for:', accountId);
+      console.log('🔄 FIREBASE STRIPE CONNECT: Creating account link for:', accountId);
 
-      const response = await fetch('/api/stripe?action=create-account-link', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          accountId,
-          affiliateId,
-          refreshUrl,
-          returnUrl,
-        }),
+      const createLink = httpsCallable(functions, 'stripeCreateAccountLink');
+      const result = await createLink({
+        accountId,
+        affiliateId,
+        refreshUrl,
+        returnUrl,
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Erreur lors de la création du lien');
-      }
-
-      const linkData = await response.json();
-      console.log('✅ STRIPE CONNECT: Account link created');
-      
-      return linkData;
+      const data = result.data as StripeConnectLink;
+      console.log('✅ FIREBASE: Account link created');
+      return data;
     } catch (err: any) {
-      console.error('❌ STRIPE CONNECT: Error creating account link:', err);
+      console.error('❌ FIREBASE: Error creating account link:', err);
       setError(err.message);
       throw err;
     } finally {
@@ -123,35 +99,24 @@ export const useStripeConnect = () => {
     setError(null);
 
     try {
-      console.log('🔄 STRIPE CONNECT: Creating transfer:', {
+      console.log('🔄 FIREBASE STRIPE CONNECT: Creating transfer:', {
         accountId,
         amount: amount / 100,
       });
 
-      const response = await fetch('/api/stripe?action=create-transfer', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          accountId,
-          amount,
-          description,
-          metadata,
-        }),
+      const createTransferFn = httpsCallable(functions, 'stripeCreateTransfer');
+      const result = await createTransferFn({
+        accountId,
+        amount,
+        description,
+        metadata,
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Erreur lors du transfer');
-      }
-
-      const transferData = await response.json();
-      console.log('✅ STRIPE CONNECT: Transfer created:', transferData.transferId);
-      
-      return transferData;
+      const data = result.data as StripeTransfer;
+      console.log('✅ FIREBASE: Transfer created:', data.transferId);
+      return data;
     } catch (err: any) {
-      console.error('❌ STRIPE CONNECT: Error creating transfer:', err);
+      console.error('❌ FIREBASE: Error creating transfer:', err);
       setError(err.message);
       throw err;
     } finally {

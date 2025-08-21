@@ -66,7 +66,7 @@ export default function CommissionInfoPage() {
 
       // Étape 3: Rediriger vers Stripe
       console.log('✅ Redirecting to Stripe onboarding...');
-      window.open(linkData.onboardingUrl, '_blank');
+      window.open(linkData.url, '_blank');
 
       toast({
         title: "Configuration Stripe lancée",
