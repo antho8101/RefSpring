@@ -1,5 +1,23 @@
 
 {
+  "errors": {
+    "titles": {
+      "critical": "Erreur Critique",
+      "high": "Erreur Importante",
+      "medium": "Erreur",
+      "low": "Avertissement",
+      "default": "Erreur"
+    },
+    "types": {
+      "network": "Problème de connexion. Vérifiez votre réseau.",
+      "auth": "Problème d'authentification. Veuillez vous reconnecter.",
+      "permission": "Vous n'avez pas les permissions nécessaires.",
+      "notFound": "Élément introuvable.",
+      "validation": "Données invalides.",
+      "server": "Erreur du serveur. Veuillez réessayer plus tard.",
+      "unknown": "Une erreur inattendue s'est produite."
+    }
+  },
   "auth": {
     "title": "RefSpring",
     "loginDescription": "Connectez-vous à votre compte",
@@ -198,23 +216,4 @@
     "subtitle": "Pendant que d'autres paient des frais mensuels pour des résultats incertains, les entreprises intelligentes gagnent déjà avec le modèle basé sur la performance de RefSpring. Ne les laissez pas prendre de l'avance.",
     "startEarning": "Commencer à gagner maintenant",
     "seeDemo": "Voir une démo live"
-  },
-  "errors": {
-    "titles": {
-      "critical": "🚨 Oups, problème critique !",
-      "high": "⚠️ Attention, erreur importante",
-      "medium": "🤔 Quelque chose ne va pas",
-      "low": "💡 Information",
-      "default": "❌ Erreur"
-    },
-    "types": {
-      "network": "Problème de connexion. Vérifiez votre réseau.",
-      "auth": "Problème d'authentification. Veuillez vous reconnecter.",
-      "permission": "Vous n'avez pas les permissions nécessaires.",
-      "notFound": "Élément introuvable.",
-      "validation": "Données invalides.",
-      "server": "Erreur du serveur. Veuillez réessayer plus tard.",
-      "unknown": "Une erreur inattendue s'est produite."
-    }
-  }
 }
