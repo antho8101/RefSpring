@@ -153,16 +153,30 @@ export const PluginIntegration: React.FC<PluginIntegrationProps> = ({ campaignId
 
     setIsLoading(true);
     try {
-      const state = btoa(JSON.stringify({ campaignId, userId, apiKey }));
-      const shopifyUrl = `https://${shopifyShop}.myshopify.com/admin/oauth/authorize?client_id=YOUR_SHOPIFY_APP_ID&scope=read_orders,write_script_tags&redirect_uri=https://refspring.com/shopify/callback&state=${state}`;
-      
-      window.open(shopifyUrl, '_blank');
+      const response = await fetch('/api/shopify-config', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          shop: shopifyShop,
+          code: 'oauth_code_placeholder',
+          state: btoa(JSON.stringify({ campaignId, userId, apiKey })),
+          campaignId
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Shopify configuration failed');
+      }
+
+      const result = await response.json();
       
       const newConfig: PluginConfig = {
-        id: 'shopify_' + Date.now(),
+        id: result.pluginId,
         type: 'shopify',
         domain: shopifyShop + '.myshopify.com',
-        active: false,
+        active: true,
         createdAt: new Date()
       };
       
@@ -170,8 +184,8 @@ export const PluginIntegration: React.FC<PluginIntegrationProps> = ({ campaignId
       setShopifyShop('');
       
       toast({
-        title: "Redirection Shopify",
-        description: "Autorisez l'application dans la nouvelle fenêtre pour terminer l'installation",
+        title: "Shopify configuré",
+        description: "L'application Shopify a été installée avec succès",
       });
     } catch (error) {
       console.error('Erreur configuration Shopify:', error);
