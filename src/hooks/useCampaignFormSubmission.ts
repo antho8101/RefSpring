@@ -85,7 +85,7 @@ export const useCampaignFormSubmission = (
       await new Promise(resolve => setTimeout(resolve, 500));
       
       // Récupérer les données fraîches
-      const freshCardsResponse = await fetch('/api/stripe/get-payment-methods', {
+      const freshCardsResponse = await fetch('/api/stripe?action=get-payment-methods', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

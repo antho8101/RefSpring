@@ -25,7 +25,7 @@ export const useStripePayment = () => {
       }
       
       // Appel à l'API Vercel pour créer le setup
-      const response = await fetch('/api/stripe/create-setup', {
+      const response = await fetch('/api/stripe?action=create-setup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -66,7 +66,7 @@ export const useStripePayment = () => {
       console.log('🔄 STRIPE: Vérification du setup pour:', setupIntentId);
       
       // Appel à l'API Vercel pour vérifier et finaliser le setup
-      const response = await fetch(`/api/stripe/check-setup?setupIntentId=${encodeURIComponent(setupIntentId)}`, {
+      const response = await fetch(`/api/stripe?action=check-setup&setupIntentId=${encodeURIComponent(setupIntentId)}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

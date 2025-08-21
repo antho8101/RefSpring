@@ -35,7 +35,7 @@ export const processStripeTransfers = async (
         console.log(`💸 Création transfer pour ${payment.affiliateName} - ${payment.totalCommission}€`);
         
         // Créer le transfer Stripe
-        const response = await fetch('/api/stripe/create-transfer', {
+        const response = await fetch('/api/stripe?action=create-transfer', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

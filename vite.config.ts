@@ -25,9 +25,10 @@ export default defineConfig(({ mode }) => ({
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom'],
-          ui: ['@radix-ui/react-dialog', '@radix-ui/react-select'],
+          ui: ['@radix-ui/react-dialog', '@radix-ui/react-select', '@radix-ui/react-tabs', '@radix-ui/react-toast'],
           charts: ['recharts'],
-          firebase: ['firebase/app', 'firebase/auth', 'firebase/firestore']
+          firebase: ['firebase/app', 'firebase/auth', 'firebase/firestore', 'firebase/functions'],
+          utils: ['date-fns', 'crypto-js', 'canvas-confetti', 'jspdf']
         }
       }
     },

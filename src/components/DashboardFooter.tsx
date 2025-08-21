@@ -1,6 +1,8 @@
 
 import { Link } from 'react-router-dom';
 import { LogOut } from 'lucide-react';
+import { signOut } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
 
 export const DashboardFooter = () => {
   return (
@@ -10,14 +12,13 @@ export const DashboardFooter = () => {
           {/* Bouton déconnexion à gauche */}
           <div className="flex items-center lg:absolute lg:left-0">
             <button 
-              onClick={() => {
-                import('firebase/auth').then(({ signOut }) => {
-                  import('@/lib/firebase').then(({ auth }) => {
-                    signOut(auth).then(() => {
-                      window.location.href = '/';
-                    });
-                  });
-                });
+              onClick={async () => {
+                try {
+                  await signOut(auth);
+                  window.location.href = '/';
+                } catch (error) {
+                  console.error('Erreur déconnexion:', error);
+                }
               }}
               className="flex items-center gap-2 text-sm text-slate-700 bg-white/80 backdrop-blur-sm px-3 py-2 rounded-[10px] border border-slate-200 hover:bg-white/95 hover:border-slate-300 transition-all duration-300 hover:scale-105"
             >

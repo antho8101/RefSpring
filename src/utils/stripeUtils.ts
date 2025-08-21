@@ -20,7 +20,7 @@ export const createPaymentSetup = async (data: CreatePaymentSetupRequest): Promi
   
   try {
     // Utilisation des vraies API Vercel Edge Functions
-    const response = await fetch('/api/stripe/create-setup', {
+    const response = await fetch('/api/stripe?action=create-setup', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -47,7 +47,7 @@ export const checkPaymentSetupStatus = async (setupIntentId: string): Promise<{ 
   console.log('🔄 PRODUCTION: Vérification réelle du statut pour:', setupIntentId);
   
   try {
-    const response = await fetch(`/api/stripe/check-setup?setupIntentId=${encodeURIComponent(setupIntentId)}`, {
+    const response = await fetch(`/api/stripe?action=check-setup&setupIntentId=${encodeURIComponent(setupIntentId)}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

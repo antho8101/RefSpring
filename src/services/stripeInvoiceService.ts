@@ -18,7 +18,7 @@ export class StripeInvoiceService {
       console.log('💳 STRIPE INVOICE: Création facture RefSpring:', invoiceData);
       
       // Appel à l'API Vercel pour créer la facture
-      const response = await fetch('/api/stripe/create-invoice', {
+      const response = await fetch('/api/stripe?action=create-invoice', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

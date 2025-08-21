@@ -16,7 +16,7 @@ export const paymentMethodService = {
     
     try {
       // Appel à l'API Vercel Edge Function pour récupérer les cartes
-      const response = await fetch('/api/stripe/get-payment-methods', {
+      const response = await fetch('/api/stripe?action=get-payment-methods', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -42,7 +42,7 @@ export const paymentMethodService = {
     console.log(`🗑️ PRODUCTION: Suppression de la carte ${paymentMethodId}`);
     
     try {
-      const response = await fetch('/api/stripe/delete-payment-method', {
+      const response = await fetch('/api/stripe?action=delete-payment-method', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -65,7 +65,7 @@ export const paymentMethodService = {
     console.log(`⭐ PRODUCTION: Définition de la carte par défaut ${paymentMethodId} pour ${userEmail}`);
     
     try {
-      const response = await fetch('/api/stripe/set-default-payment-method', {
+      const response = await fetch('/api/stripe?action=set-default-payment-method', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

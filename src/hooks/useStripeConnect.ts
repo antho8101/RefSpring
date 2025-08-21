@@ -40,7 +40,7 @@ export const useStripeConnect = () => {
     try {
       console.log('🔄 STRIPE CONNECT: Creating account for:', affiliateEmail);
 
-      const response = await fetch('/api/stripe/create-connect-account', {
+      const response = await fetch('/api/stripe?action=create-connect-account', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -82,7 +82,7 @@ export const useStripeConnect = () => {
     try {
       console.log('🔄 STRIPE CONNECT: Creating account link for:', accountId);
 
-      const response = await fetch('/api/stripe/create-account-link', {
+      const response = await fetch('/api/stripe?action=create-account-link', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -128,7 +128,7 @@ export const useStripeConnect = () => {
         amount: amount / 100,
       });
 
-      const response = await fetch('/api/stripe/create-transfer', {
+      const response = await fetch('/api/stripe?action=create-transfer', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
