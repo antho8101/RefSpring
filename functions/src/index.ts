@@ -6,6 +6,9 @@ import { validateTracking } from './validateTracking';
 import { calculateCommissions } from './calculateCommissions';
 import { antifraudCheck } from './antifraudCheck';
 import { wordpressConfig, shopifyInstall, generatePluginApiKey } from './pluginAPI';
+import { stripeGetPaymentMethods } from './stripeGetPaymentMethods';
+import { stripeDeletePaymentMethod } from './stripeDeletePaymentMethod';
+import { stripeSetDefaultPaymentMethod } from './stripeSetDefaultPaymentMethod';
 
 // Initialize Firebase Admin
 admin.initializeApp();
@@ -19,5 +22,8 @@ export {
   antifraudCheck,
   wordpressConfig,
   shopifyInstall,
-  generatePluginApiKey
+  generatePluginApiKey,
+  stripeGetPaymentMethods,
+  stripeDeletePaymentMethod,
+  stripeSetDefaultPaymentMethod
 };
