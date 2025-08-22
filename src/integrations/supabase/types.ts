@@ -14,7 +14,75 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      shopify_integrations: {
+        Row: {
+          access_token: string
+          active: boolean | null
+          campaign_id: string
+          created_at: string
+          id: string
+          settings: Json | null
+          shop_domain: string
+          shop_info: Json | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          access_token: string
+          active?: boolean | null
+          campaign_id: string
+          created_at?: string
+          id?: string
+          settings?: Json | null
+          shop_domain: string
+          shop_info?: Json | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          access_token?: string
+          active?: boolean | null
+          campaign_id?: string
+          created_at?: string
+          id?: string
+          settings?: Json | null
+          shop_domain?: string
+          shop_info?: Json | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      shopify_oauth_states: {
+        Row: {
+          campaign_id: string
+          created_at: string
+          expires_at: string
+          id: string
+          shop_domain: string
+          state_token: string
+          user_id: string
+        }
+        Insert: {
+          campaign_id: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          shop_domain: string
+          state_token: string
+          user_id: string
+        }
+        Update: {
+          campaign_id?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          shop_domain?: string
+          state_token?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
