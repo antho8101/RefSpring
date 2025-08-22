@@ -2,6 +2,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ShopifyTestComponent } from '@/components/ShopifyTestComponent';
 import { ShopifyDiagnostic } from '@/components/ShopifyDiagnostic';
+import { ShopifyTokenRecovery } from '@/components/ShopifyTokenRecovery';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
@@ -46,6 +47,8 @@ export const ShopifyTestPage: React.FC = () => {
           </Card>
 
           <ShopifyDiagnostic />
+          
+          <ShopifyTokenRecovery />
           
           <ShopifyTestComponent campaignId="test-campaign-123" />
         </div>
