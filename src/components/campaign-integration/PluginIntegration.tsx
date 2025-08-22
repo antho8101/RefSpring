@@ -10,6 +10,9 @@ import { Globe, ShoppingBag, Key, ExternalLink } from 'lucide-react';
 import { CopyButton } from '@/components/CopyButton';
 import { httpsCallable } from 'firebase/functions';
 import { functions } from '@/lib/firebase';
+import { ShopifyConfigDialog } from '@/components/ShopifyConfigDialog';
+import { useShopifyIntegration } from '@/hooks/useShopifyIntegration';
+import { ShopifyInstallationsList } from '@/components/ShopifyInstallationsList';
 
 interface PluginIntegrationProps {
   campaignId: string;
@@ -27,13 +30,21 @@ interface PluginConfig {
 export const PluginIntegration: React.FC<PluginIntegrationProps> = ({ campaignId, userId }) => {
   const [activeTab, setActiveTab] = useState('wordpress');
   const [wordpressDomain, setWordpressDomain] = useState('');
-  const [shopifyShop, setShopifyShop] = useState('');
   const [apiKey, setApiKey] = useState('');
   const [trackingScript, setTrackingScript] = useState('');
   const [configs, setConfigs] = useState<PluginConfig[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [copiedItems, setCopiedItems] = useState<Set<string>>(new Set());
   const { toast } = useToast();
+  
+  // Hook pour gérer Shopify
+  const {
+    configs: shopifyConfigs,
+    isLoading: shopifyLoading,
+    initiateShopifyInstall,
+    removeShopifyConfig,
+    setupWebhooks
+  } = useShopifyIntegration(campaignId, userId);
 
   const generateApiKey = async () => {
     setIsLoading(true);
@@ -132,70 +143,16 @@ export const PluginIntegration: React.FC<PluginIntegrationProps> = ({ campaignId
     }
   };
 
-  const configureShopify = async () => {
-    if (!shopifyShop.trim()) {
-      toast({
-        title: "Erreur",
-        description: "Veuillez entrer le nom de votre boutique Shopify",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    if (!apiKey) {
-      toast({
-        title: "Erreur", 
-        description: "Veuillez d'abord générer une clé API",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    setIsLoading(true);
+  const handleShopifyInstall = async (shopName: string) => {
     try {
-      const response = await fetch('/api/shopify-config', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          shop: shopifyShop,
-          code: 'oauth_code_placeholder',
-          state: btoa(JSON.stringify({ campaignId, userId, apiKey })),
-          campaignId
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error('Shopify configuration failed');
-      }
-
-      const result = await response.json();
-      
-      const newConfig: PluginConfig = {
-        id: result.pluginId,
-        type: 'shopify',
-        domain: shopifyShop + '.myshopify.com',
-        active: true,
-        createdAt: new Date()
-      };
-      
-      setConfigs([...configs, newConfig]);
-      setShopifyShop('');
-      
-      toast({
-        title: "Shopify configuré",
-        description: "L'application Shopify a été installée avec succès",
-      });
+      await initiateShopifyInstall(shopName);
     } catch (error) {
-      console.error('Erreur configuration Shopify:', error);
+      console.error('Erreur installation Shopify:', error);
       toast({
         title: "Erreur",
-        description: "Impossible de configurer Shopify",
+        description: "Impossible de démarrer l'installation Shopify",
         variant: "destructive"
       });
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -301,26 +258,23 @@ export const PluginIntegration: React.FC<PluginIntegrationProps> = ({ campaignId
         <TabsContent value="shopify" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Configuration Shopify</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <Label htmlFor="shopify-shop">Nom de votre boutique Shopify</Label>
-                <Input
-                  id="shopify-shop"
-                  placeholder="ma-boutique"
-                  value={shopifyShop}
-                  onChange={(e) => setShopifyShop(e.target.value)}
-                />
-                <p className="text-sm text-muted-foreground mt-1">
-                  Sans .myshopify.com (ex: ma-boutique)
-                </p>
+              <div className="flex items-center justify-between">
+                <CardTitle>Configuration Shopify</CardTitle>
+                <div className="flex items-center gap-2">
+                  <ShopifyConfigDialog userId={userId} />
+                  <Badge variant={shopifyConfigs.length > 0 ? "default" : "secondary"}>
+                    {shopifyConfigs.length} boutique{shopifyConfigs.length !== 1 ? 's' : ''} connectée{shopifyConfigs.length !== 1 ? 's' : ''}
+                  </Badge>
+                </div>
               </div>
-                <Button onClick={configureShopify} disabled={isLoading} className="w-full">
-                  <ShoppingBag className="h-4 w-4 mr-2" />
-                  {isLoading ? 'Configuration...' : 'Installer sur Shopify'}
-                  <ExternalLink className="h-4 w-4 ml-2" />
-                </Button>
+            </CardHeader>
+            <CardContent>
+              <ShopifyInstallationsList
+                configs={shopifyConfigs}
+                isLoading={shopifyLoading}
+                onRemove={removeShopifyConfig}
+                onSetupWebhooks={setupWebhooks}
+              />
             </CardContent>
           </Card>
         </TabsContent>

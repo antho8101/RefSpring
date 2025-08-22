@@ -1,4 +1,5 @@
 import * as functions from 'firebase-functions';
+import { getFirestore } from 'firebase-admin/firestore';
 
 // Configuration de l'app Shopify
 export interface ShopifyAppConfig {
@@ -9,12 +10,29 @@ export interface ShopifyAppConfig {
   webhookSecret: string;
 }
 
-// Récupérer la configuration de l'app Shopify
-export function shopifyAppConfig(): ShopifyAppConfig {
-  // En production, ces valeurs doivent être dans les secrets Firebase
-  // Pour le développement, on peut utiliser des variables d'environnement
-  const config = functions.config();
+// Récupérer la configuration de l'app Shopify depuis Firestore
+export async function shopifyAppConfig(userId: string): Promise<ShopifyAppConfig> {
+  try {
+    // Récupérer la config depuis Firestore
+    const db = getFirestore();
+    const configDoc = await db.collection('shopify_configs').doc(userId).get();
+    
+    if (configDoc.exists) {
+      const data = configDoc.data();
+      return {
+        apiKey: data?.apiKey || '',
+        apiSecret: data?.apiSecret || '',
+        scopes: data?.scopes || ['read_orders', 'read_products', 'write_script_tags', 'read_customers'],
+        appUrl: data?.appUrl || 'https://refspring.com',
+        webhookSecret: data?.webhookSecret || ''
+      };
+    }
+  } catch (error) {
+    console.error('Erreur lors de la récupération de la config Shopify:', error);
+  }
   
+  // Fallback sur les variables d'environnement si pas de config Firestore
+  const config = functions.config();
   return {
     apiKey: config.shopify?.api_key || process.env.SHOPIFY_API_KEY || '',
     apiSecret: config.shopify?.api_secret || process.env.SHOPIFY_API_SECRET || '',
@@ -25,8 +43,8 @@ export function shopifyAppConfig(): ShopifyAppConfig {
 }
 
 // Valider la configuration de l'app
-export function validateShopifyConfig(): boolean {
-  const config = shopifyAppConfig();
+export async function validateShopifyConfig(userId: string): Promise<boolean> {
+  const config = await shopifyAppConfig(userId);
   
   if (!config.apiKey || !config.apiSecret) {
     console.error('Shopify API credentials not configured');
