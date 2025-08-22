@@ -95,8 +95,22 @@ export const useShopifySupabase = (campaignId: string) => {
         throw new Error('URL d\'autorisation non reçue');
       }
 
-      // Rediriger vers Shopify
-      window.location.href = data.authUrl;
+      // Rediriger vers Shopify dans une nouvelle fenêtre
+      const popup = window.open(data.authUrl, 'shopify-auth', 'width=600,height=700,scrollbars=yes,resizable=yes');
+      
+      if (!popup) {
+        throw new Error('Le popup a été bloqué. Veuillez autoriser les popups pour ce site.');
+      }
+
+      // Surveiller la fermeture du popup
+      const checkClosed = setInterval(() => {
+        if (popup.closed) {
+          clearInterval(checkClosed);
+          setIsLoading(false);
+          // Rafraîchir les intégrations au cas où l'autorisation aurait réussi
+          fetchIntegrations();
+        }
+      }, 1000);
 
     } catch (error) {
       console.error('Erreur initiation OAuth:', error);
