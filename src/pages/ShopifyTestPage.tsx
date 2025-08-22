@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ShopifyTestComponent } from '@/components/ShopifyTestComponent';
+import { ShopifyDiagnostic } from '@/components/ShopifyDiagnostic';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
@@ -44,6 +45,8 @@ export const ShopifyTestPage: React.FC = () => {
             </CardContent>
           </Card>
 
+          <ShopifyDiagnostic />
+          
           <ShopifyTestComponent campaignId="test-campaign-123" />
         </div>
       </div>

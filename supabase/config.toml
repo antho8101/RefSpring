@@ -8,3 +8,12 @@ verify_jwt = false
 
 [functions.shopify-webhooks]
 verify_jwt = false
+
+[functions.shopify-test-api]
+verify_jwt = false
+
+[functions.shopify-config-test]
+verify_jwt = false
+
+[functions.shopify-private-app]
+verify_jwt = false
