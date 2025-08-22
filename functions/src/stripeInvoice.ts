@@ -1,86 +1,66 @@
-import * as functions from 'firebase-functions';
-import { stripe } from './stripeConfig';
+import * as functions from "firebase-functions";
+import { stripe } from "./stripeConfig";
 
 export const stripeCreateInvoice = functions.https.onRequest(async (req, res) => {
-  res.set('Access-Control-Allow-Origin', '*');
-  res.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.set('Access-Control-Allow-Headers', 'Content-Type');
+  res.set("Access-Control-Allow-Origin", "*");
+  res.set("Access-Control-Allow-Methods", "POST, OPTIONS");
+  res.set("Access-Control-Allow-Headers", "Content-Type");
 
-  if (req.method === 'OPTIONS') {
+  if (req.method === "OPTIONS") {
     res.status(200).end();
     return;
   }
 
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+  if (req.method !== "POST") {
+    res.status(405).json({ error: "Method not allowed" });
+    return;
   }
 
   try {
-    const { 
-      userEmail, 
-      amount, 
-      description, 
-      metadata,
-      dueDate 
-    } = req.body;
+    const { customerId, amount, currency = "eur", description } = req.body;
 
-    if (!userEmail || !amount) {
-      return res.status(400).json({ error: 'userEmail and amount are required' });
+    if (!customerId || !amount) {
+      res.status(400).json({ error: "Customer ID and amount required" });
+      return;
     }
 
-    console.log('🧾 Creating invoice for:', userEmail, 'Amount:', amount);
-
-    // Chercher ou créer le customer
-    let customerId;
-    const customers = await stripe.customers.list({
-      email: userEmail,
-      limit: 1
-    });
-
-    if (customers.data.length > 0) {
-      customerId = customers.data[0].id;
-    } else {
-      const customer = await stripe.customers.create({
-        email: userEmail,
-      });
-      customerId = customer.id;
-    }
-
-    // Créer l'invoice item
+    // Créer un item de facture
     await stripe.invoiceItems.create({
       customer: customerId,
-      amount: Math.round(amount * 100), // Convert to cents
-      currency: 'eur',
-      description: description || 'RefSpring Service',
+      amount: Math.round(amount * 100), // Convertir en centimes
+      currency,
+      description: description || "Commission RefSpring",
     });
 
     // Créer la facture
     const invoice = await stripe.invoices.create({
       customer: customerId,
-      collection_method: 'send_invoice',
-      days_until_due: dueDate ? Math.ceil((new Date(dueDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24)) : 30,
-      metadata: metadata || {},
+      auto_advance: true, // Finaliser automatiquement
+      collection_method: "charge_automatically", // Prélever automatiquement
     });
 
-    // Finaliser la facture
+    // Finaliser et payer la facture
     const finalizedInvoice = await stripe.invoices.finalizeInvoice(invoice.id);
+    
+    console.log("Invoice created and finalized:", finalizedInvoice.id);
 
-    console.log('✅ Invoice created and finalized:', finalizedInvoice.id);
-
-    return res.json({
-      invoiceId: finalizedInvoice.id,
-      invoiceUrl: finalizedInvoice.hosted_invoice_url,
-      invoicePdf: finalizedInvoice.invoice_pdf,
-      status: finalizedInvoice.status,
-      amount: finalizedInvoice.amount_due,
-      currency: finalizedInvoice.currency,
+    res.status(200).json({
+      success: true,
+      invoice: {
+        id: finalizedInvoice.id,
+        status: finalizedInvoice.status,
+        amount: finalizedInvoice.amount_due / 100,
+        currency: finalizedInvoice.currency,
+        pdf: finalizedInvoice.invoice_pdf,
+        hostedUrl: finalizedInvoice.hosted_invoice_url,
+      },
     });
 
   } catch (error) {
-    console.error('❌ Error creating invoice:', error);
-    return res.status(500).json({ 
-      error: 'Failed to create invoice',
-      details: error instanceof Error ? error.message : 'Unknown error'
+    console.error("Stripe invoice error:", error);
+    res.status(500).json({ 
+      error: "Internal server error",
+      details: error instanceof Error ? error.message : "Unknown error"
     });
   }
 });

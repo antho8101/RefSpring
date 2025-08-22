@@ -1,10 +1,15 @@
-import * as functions from 'firebase-functions';
-import * as admin from 'firebase-admin';
-import * as cors from 'cors';
-import { shopifyAppConfig } from './shopifyApp';
+import * as functions from "firebase-functions";
+import * as admin from "firebase-admin";
+import * as cors from "cors";
+import { shopifyAppConfig } from "./shopifyApp";
 
-const corsHandler = cors({ origin: true });
+// Configuration CORS
+const corsHandler = cors({
+  origin: true,
+  credentials: true,
+});
 
+// Types pour les requêtes OAuth
 interface ShopifyOAuthRequest {
   shop: string;
   campaignId: string;
@@ -19,27 +24,30 @@ interface ShopifyTokenExchange {
 }
 
 // Générer l'URL d'autorisation Shopify
-export const shopifyAuthUrl = functions.https.onRequest((request, response) => {  
+export const shopifyAuthUrl = functions.https.onRequest(async (request, response) => {
   return corsHandler(request, response, async () => {
-    if (request.method !== 'POST') {
-      return response.status(405).json({ error: 'Method not allowed' });
+    if (request.method !== "POST") {
+      response.status(405).json({ error: "Method not allowed" });
+      return;
     }
 
     try {
       const { shop, campaignId, state }: ShopifyOAuthRequest = request.body;
 
       if (!shop || !campaignId || !state) {
-        return response.status(400).json({ error: 'Missing required fields' });
+        response.status(400).json({ error: "Missing required fields" });
+        return;
       }
 
       // Validation du nom de shop Shopify
-      const shopName = shop.replace('.myshopify.com', '');
+      const shopName = shop.replace(".myshopify.com", "");
       if (!/^[a-zA-Z0-9-]+$/.test(shopName)) {
-        return response.status(400).json({ error: 'Invalid shop name' });
+        response.status(400).json({ error: "Invalid shop name" });
+        return;
       }
 
-      const config = await shopifyAppConfig('system');
-      const scopes = 'read_orders,read_products,write_script_tags';
+      const config = await shopifyAppConfig("system");
+      const scopes = "read_orders,read_products,write_script_tags";
       const redirectUri = `${config.appUrl}/auth/shopify/callback`;
 
       const authUrl = `https://${shopName}.myshopify.com/admin/oauth/authorize?` +
@@ -49,41 +57,40 @@ export const shopifyAuthUrl = functions.https.onRequest((request, response) => {
         `state=${state}&` +
         `response_type=code`;
 
-      response.json({
-        success: true,
-        authUrl,
-        redirectUri
-      });
+      console.log("Shopify auth URL generated:", { shop: shopName, campaignId });
 
+      response.json({ success: true, authUrl });
     } catch (error) {
-      console.error('Shopify auth URL error:', error);
-      response.status(500).json({ error: 'Internal server error' });
+      console.error("Shopify auth URL error:", error);
+      response.status(500).json({ error: "Internal server error" });
     }
   });
 });
 
 // Échanger le code OAuth contre un access token
-export const shopifyTokenExchange = functions.https.onRequest((request, response) => {
+export const shopifyTokenExchange = functions.https.onRequest(async (request, response) => {
   return corsHandler(request, response, async () => {
-    if (request.method !== 'POST') {
-      return response.status(405).json({ error: 'Method not allowed' });
+    if (request.method !== "POST") {
+      response.status(405).json({ error: "Method not allowed" });
+      return;
     }
 
     try {
       const { shop, code, state, campaignId }: ShopifyTokenExchange = request.body;
 
       if (!shop || !code || !state || !campaignId) {
-        return response.status(400).json({ error: 'Missing required fields' });
+        response.status(400).json({ error: "Missing required fields" });
+        return;
       }
 
-      const config = await shopifyAppConfig('system');
-      const shopName = shop.replace('.myshopify.com', '');
+      const config = await shopifyAppConfig("system");
+      const shopName = shop.replace(".myshopify.com", "");
       
       // Échanger le code contre un access token
       const tokenResponse = await fetch(`https://${shopName}.myshopify.com/admin/oauth/access_token`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           client_id: config.apiKey,
@@ -93,110 +100,148 @@ export const shopifyTokenExchange = functions.https.onRequest((request, response
       });
 
       if (!tokenResponse.ok) {
-        throw new Error('Failed to exchange code for token');
+        throw new Error(`Token exchange failed: ${tokenResponse.status}`);
       }
 
       const tokenData = await tokenResponse.json();
-      const { access_token } = tokenData;
+      const accessToken = tokenData.access_token;
 
-      // Vérifier la validité du token en faisant un appel test
-      const shopInfoResponse = await fetch(`https://${shopName}.myshopify.com/admin/api/2023-10/shop.json`, {
-        headers: {
-          'X-Shopify-Access-Token': access_token
-        }
-      });
-
-      if (!shopInfoResponse.ok) {
-        throw new Error('Invalid access token');
+      if (!accessToken) {
+        throw new Error("No access token received");
       }
 
-      const shopInfo = await shopInfoResponse.json();
-
       // Stocker la configuration Shopify dans Firestore
-      const shopifyDoc = await admin.firestore()
-        .collection('plugin_configs')
-        .add({
-          pluginType: 'shopify',
-          domain: shop,
-          campaignId,
-          accessToken: access_token,
-          shopInfo: shopInfo.shop,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          active: true,
-          settings: {
-            autoInject: true,
-            trackingEnabled: true,
-            scriptsInstalled: false
-          }
-        });
+      const db = admin.firestore();
+      const shopifyData = {
+        shop: shopName,
+        accessToken,
+        campaignId,
+        state,
+        installedAt: admin.firestore.FieldValue.serverTimestamp(),
+        scopes: "read_orders,read_products,write_script_tags"
+      };
 
-      // Installer automatiquement le script de tracking
-      await installTrackingScript(shopName, access_token, campaignId);
+      await db.collection("shopify_installations").doc(campaignId).set(shopifyData);
 
-      response.json({
-        success: true,
-        pluginId: shopifyDoc.id,
-        shopInfo: shopInfo.shop,
-        message: 'Shopify app connected successfully'
+      // Installer le script de tracking sur le shop
+      await installTrackingScript(shopName, accessToken, campaignId);
+
+      console.log("Shopify app installed successfully:", { shop: shopName, campaignId });
+
+      response.json({ 
+        success: true, 
+        message: "App installed successfully",
+        shopName
       });
 
     } catch (error) {
-      console.error('Shopify token exchange error:', error);
-      response.status(500).json({ 
-        error: 'Failed to connect Shopify app',
-        details: error instanceof Error ? error.message : 'Unknown error'
-      });
+      console.error("Shopify token exchange error:", error);
+      response.status(500).json({ error: "Internal server error" });
     }
   });
 });
 
-// Installer le script de tracking via l'API ScriptTag
+// Installer le script de tracking sur le shop Shopify
 async function installTrackingScript(shop: string, accessToken: string, campaignId: string) {
   try {
     const scriptTag = {
       script_tag: {
-        event: 'onload',
-        src: `https://refspring.com/tracking.js?campaign=${campaignId}`,
-        display_scope: 'online_store'
+        event: "onload",
+        src: `https://your-domain.com/tracking.js?campaign=${campaignId}`,
+        display_scope: "all"
       }
     };
 
     const response = await fetch(`https://${shop}.myshopify.com/admin/api/2023-10/script_tags.json`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'X-Shopify-Access-Token': accessToken,
-        'Content-Type': 'application/json'
+        "X-Shopify-Access-Token": accessToken,
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(scriptTag)
     });
 
     if (!response.ok) {
-      console.error('Failed to install tracking script:', await response.text());
-      return false;
+      throw new Error(`Script installation failed: ${response.status}`);
     }
 
     const result = await response.json();
-    console.log('Tracking script installed:', result.script_tag.id);
+    console.log("Tracking script installed:", result.script_tag.id);
 
-    // Mettre à jour le statut dans Firestore
-    const configs = await admin.firestore()
-      .collection('plugin_configs')
-      .where('domain', '==', `${shop}.myshopify.com`)
-      .where('campaignId', '==', campaignId)
-      .get();
+    // Sauvegarder l'ID du script pour pouvoir le supprimer plus tard
+    const db = admin.firestore();
+    await db.collection("shopify_installations").doc(campaignId).update({
+      scriptTagId: result.script_tag.id
+    });
 
-    if (!configs.empty) {
-      await configs.docs[0].ref.update({
-        'settings.scriptsInstalled': true,
-        'settings.scriptTagId': result.script_tag.id,
-        updatedAt: new Date()
-      });
+  } catch (error) {
+    console.error("Error installing tracking script:", error);
+    throw error;
+  }
+}
+
+// Supprimer l'installation Shopify
+export const shopifyUninstall = functions.https.onRequest(async (request, response) => {
+  return corsHandler(request, response, async () => {
+    if (request.method !== "POST") {
+      response.status(405).json({ error: "Method not allowed" });
+      return;
     }
 
-    return true;
+    try {
+      const { campaignId } = request.body;
+
+      if (!campaignId) {
+        response.status(400).json({ error: "Campaign ID required" });
+        return;
+      }
+
+      const db = admin.firestore();
+      const installDoc = await db.collection("shopify_installations").doc(campaignId).get();
+
+      if (!installDoc.exists) {
+        response.status(404).json({ error: "Installation not found" });
+        return;
+      }
+
+      const installData = installDoc.data()!;
+      
+      // Supprimer le script de tracking
+      if (installData.scriptTagId && installData.accessToken && installData.shop) {
+        await removeTrackingScript(installData.shop, installData.accessToken, installData.scriptTagId);
+      }
+
+      // Supprimer la configuration de Firestore
+      await installDoc.ref.delete();
+
+      console.log("Shopify app uninstalled:", { campaignId, shop: installData.shop });
+
+      response.json({ success: true, message: "App uninstalled successfully" });
+
+    } catch (error) {
+      console.error("Shopify uninstall error:", error);
+      response.status(500).json({ error: "Internal server error" });
+    }
+  });
+});
+
+// Supprimer le script de tracking
+async function removeTrackingScript(shop: string, accessToken: string, scriptTagId: string) {
+  try {
+    const response = await fetch(`https://${shop}.myshopify.com/admin/api/2023-10/script_tags/${scriptTagId}.json`, {
+      method: "DELETE",
+      headers: {
+        "X-Shopify-Access-Token": accessToken,
+      }
+    });
+
+    if (!response.ok) {
+      console.error(`Failed to remove script tag: ${response.status}`);
+    } else {
+      console.log("Tracking script removed successfully");
+    }
+
   } catch (error) {
-    console.error('Error installing tracking script:', error);
-    return false;
+    console.error("Error removing tracking script:", error);
   }
 }

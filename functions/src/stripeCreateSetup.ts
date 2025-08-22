@@ -1,94 +1,53 @@
-import * as functions from 'firebase-functions';
-import { stripe } from './stripeConfig';
+import * as functions from "firebase-functions";
+import { stripe } from "./stripeConfig";
 
 export const stripeCreateSetup = functions.https.onRequest(async (req, res) => {
-  res.set('Access-Control-Allow-Origin', '*');
-  res.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.set('Access-Control-Allow-Headers', 'Content-Type');
+  res.set("Access-Control-Allow-Origin", "*");
+  res.set("Access-Control-Allow-Methods", "POST, OPTIONS");
+  res.set("Access-Control-Allow-Headers", "Content-Type");
 
-  if (req.method === 'OPTIONS') {
+  if (req.method === "OPTIONS") {
     res.status(200).end();
     return;
   }
 
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+  if (req.method !== "POST") {
+    res.status(405).json({ error: "Method not allowed" });
+    return;
   }
 
   try {
-    const { campaignId, campaignName, userEmail } = req.body;
+    const { customerId, paymentMethodId } = req.body;
 
-    if (!campaignId || !campaignName || !userEmail) {
-      return res.status(400).json({ error: 'campaignId, campaignName and userEmail are required' });
+    if (!customerId || !paymentMethodId) {
+      res.status(400).json({ error: "Customer ID and Payment Method ID required" });
+      return;
     }
 
-    console.log('💳 Creating setup intent for:', { campaignId, campaignName, userEmail });
-
-    // Chercher ou créer le customer Stripe
-    let customerId;
-    const customers = await stripe.customers.list({
-      email: userEmail,
-      limit: 1
+    // Attacher le moyen de paiement au client
+    await stripe.paymentMethods.attach(paymentMethodId, {
+      customer: customerId,
     });
 
-    if (customers.data.length > 0) {
-      customerId = customers.data[0].id;
-      console.log('✅ Existing customer found:', customerId);
-    } else {
-      const customer = await stripe.customers.create({
-        email: userEmail,
-        metadata: {
-          campaignId,
-          campaignName
-        }
-      });
-      customerId = customer.id;
-      console.log('✅ New customer created:', customerId);
-    }
-
-    // Créer le setup intent
-    const setupIntent = await stripe.setupIntents.create({
-      customer: customerId,
-      payment_method_types: ['card'],
-      usage: 'off_session',
-      metadata: {
-        campaignId,
-        campaignName,
-        userEmail
-      }
-    });
-
-    console.log('✅ Setup intent created:', setupIntent.id);
-
-    // Créer la session checkout pour le setup
-    const checkoutSession = await stripe.checkout.sessions.create({
-      customer: customerId,
-      mode: 'setup',
-      payment_method_types: ['card'],
-      setup_intent_data: {
-        metadata: {
-          campaignId,
-          campaignName,
-          userEmail
-        }
+    // Mettre à jour le client pour définir ce moyen de paiement par défaut
+    await stripe.customers.update(customerId, {
+      invoice_settings: {
+        default_payment_method: paymentMethodId,
       },
-      success_url: `${req.headers.origin || 'http://localhost:5173'}/payment-success?setup_intent={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${req.headers.origin || 'http://localhost:5173'}/app`,
     });
 
-    console.log('✅ Checkout session created:', checkoutSession.id);
+    console.log("Payment method attached:", paymentMethodId);
 
-    return res.json({
-      setupIntentId: setupIntent.id,
-      checkoutUrl: checkoutSession.url,
-      clientSecret: setupIntent.client_secret
+    res.status(200).json({
+      success: true,
+      message: "Payment method configured successfully",
     });
 
   } catch (error) {
-    console.error('❌ Error creating setup intent:', error);
-    return res.status(500).json({ 
-      error: 'Failed to create setup intent',
-      details: error instanceof Error ? error.message : 'Unknown error'
+    console.error("Stripe setup error:", error);
+    res.status(500).json({ 
+      error: "Internal server error",
+      details: error instanceof Error ? error.message : "Unknown error"
     });
   }
 });

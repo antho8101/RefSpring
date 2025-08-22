@@ -72,7 +72,7 @@ export const processConversionQueue = onCall(
           const conversionData = conversionDoc.data();
           
           if (!conversionData) {
-            console.error('No conversion data found');
+            console.error("No conversion data found");
             continue;
           }
           

@@ -1,80 +1,79 @@
-import * as functions from 'firebase-functions';
-import * as admin from 'firebase-admin';
-import * as cors from 'cors';
+import * as functions from "firebase-functions";
+import * as admin from "firebase-admin";
+import * as cors from "cors";
 
-const corsHandler = cors({ origin: true });
+// Configuration CORS
+const corsHandler = cors({
+  origin: true,
+  credentials: true,
+});
 
-// Interface pour la configuration des plugins
-interface PluginConfig {
-  pluginType: 'wordpress' | 'shopify';
-  domain: string;
-  apiKey?: string;
+// Types pour les requêtes
+interface WordPressConfigRequest {
   campaignId: string;
-  userId: string;
-  settings: {
-    autoInject?: boolean;
-    trackingEnabled?: boolean;
-    commissionRate?: number;
-  };
+  domain: string;
 }
 
-// Interface pour l'installation Shopify
-interface ShopifyInstall {
-  shop: string;
-  code: string;
-  state: string;
+interface ShopifyInstallRequest {
   campaignId: string;
+  shopDomain: string;
 }
 
 // API pour la configuration WordPress
 export const wordpressConfig = functions.https.onRequest((request, response) => {
   return corsHandler(request, response, async () => {
-    if (request.method !== 'POST') {
-      return response.status(405).json({ error: 'Method not allowed' });
+    if (request.method !== "POST") {
+      response.status(405).json({ error: "Method not allowed" });
+      return;
     }
 
     try {
-      const config: PluginConfig = request.body;
-      
-      // Validation
-      if (!config.domain || !config.campaignId || !config.userId) {
-        return response.status(400).json({ error: 'Missing required fields' });
+      const { campaignId, domain }: WordPressConfigRequest = request.body;
+
+      if (!campaignId || !domain) {
+        response.status(400).json({ error: "Missing required fields" });
+        return;
       }
 
-      // Vérifier que la campagne existe et appartient à l'utilisateur
-      const campaignDoc = await admin.firestore()
-        .collection('campaigns')
-        .doc(config.campaignId)
-        .get();
-
-      if (!campaignDoc.exists || campaignDoc.data()?.userId !== config.userId) {
-        return response.status(403).json({ error: 'Campaign not found or access denied' });
+      // Valider le domaine
+      const domainRegex = /^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]?\.[a-zA-Z]{2,}$/;
+      if (!domainRegex.test(domain)) {
+        response.status(400).json({ error: "Invalid domain format" });
+        return;
       }
 
-      // Stocker la configuration du plugin
-      const pluginDoc = await admin.firestore()
-        .collection('plugin_configs')
-        .add({
-          ...config,
-          pluginType: 'wordpress',
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          active: true
-        });
+      // Générer le script de tracking WordPress
+      const trackingScript = generateWordPressTrackingScript(campaignId, domain);
 
-      // Générer le script de tracking personnalisé
-      const trackingScript = generateWordPressTrackingScript(config.campaignId, config.domain);
+      // Sauvegarder la configuration
+      const db = admin.firestore();
+      const configData = {
+        campaignId,
+        domain,
+        platform: "wordpress",
+        trackingScript,
+        installedAt: admin.firestore.FieldValue.serverTimestamp(),
+        status: "active"
+      };
+
+      await db.collection("plugin_configurations").doc(campaignId).set(configData);
+
+      console.log("WordPress config generated:", { campaignId, domain });
 
       response.json({
         success: true,
-        pluginId: pluginDoc.id,
         trackingScript,
-        message: 'WordPress plugin configured successfully'
+        instructions: [
+          "1. Copiez le code PHP ci-dessous",
+          "2. Ajoutez-le dans le fichier functions.php de votre thème WordPress",
+          "3. Ou utilisez un plugin comme 'Code Snippets' pour l'ajouter",
+          "4. Le tracking sera automatiquement activé sur toutes les pages"
+        ]
       });
 
     } catch (error) {
-      console.error('WordPress config error:', error);
-      response.status(500).json({ error: 'Internal server error' });
+      console.error("WordPress config error:", error);
+      response.status(500).json({ error: "Internal server error" });
     }
   });
 });
@@ -82,75 +81,99 @@ export const wordpressConfig = functions.https.onRequest((request, response) => 
 // API pour l'installation Shopify (redirige vers le processus OAuth)
 export const shopifyInstall = functions.https.onRequest((request, response) => {
   return corsHandler(request, response, async () => {
-    if (request.method !== 'POST') {
-      return response.status(405).json({ error: 'Method not allowed' });
+    if (request.method !== "POST") {
+      response.status(405).json({ error: "Method not allowed" });
+      return;
     }
 
     try {
-      const installData: ShopifyInstall = request.body;
-      
-      // Validation
-      if (!installData.shop || !installData.campaignId) {
-        return response.status(400).json({ error: 'Missing required fields' });
+      const { campaignId, shopDomain }: ShopifyInstallRequest = request.body;
+
+      if (!campaignId || !shopDomain) {
+        response.status(400).json({ error: "Missing required fields" });
+        return;
       }
 
-      // Génération de l'état OAuth sécurisé
-      const state = Buffer.from(`${installData.campaignId}:${Date.now()}`).toString('base64');
-      
-      // Rediriger vers le processus OAuth réel
+      // Valider le domaine Shopify
+      const shopName = shopDomain.replace(".myshopify.com", "");
+      if (!/^[a-zA-Z0-9-]+$/.test(shopName)) {
+        response.status(400).json({ error: "Invalid Shopify domain" });
+        return;
+      }
+
+      // Générer un state unique pour la sécurité OAuth
+      const state = admin.firestore().collection("temp").doc().id;
+
+      // Sauvegarder temporairement les données de la requête
+      const db = admin.firestore();
+      await db.collection("shopify_oauth_states").doc(state).set({
+        campaignId,
+        shopDomain,
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        expiresAt: new Date(Date.now() + 10 * 60 * 1000) // 10 minutes
+      });
+
+      // Retourner les informations pour rediriger vers OAuth
       response.json({
         success: true,
-        requiresOAuth: true,
-        state,
-        message: 'Please complete OAuth authorization',
-        nextStep: 'oauth'
+        redirectData: {
+          shop: shopName,
+          campaignId,
+          state
+        },
+        instructions: [
+          "Utilisez ces données pour initier le processus OAuth Shopify",
+          "Appelez l'endpoint shopifyAuthUrl avec ces paramètres"
+        ]
       });
 
     } catch (error) {
-      console.error('Shopify install error:', error);
-      response.status(500).json({ error: 'Internal server error' });
+      console.error("Shopify install error:", error);
+      response.status(500).json({ error: "Internal server error" });
     }
   });
 });
 
-// API pour générer les clés API des plugins
-export const generatePluginApiKey = functions.https.onCall(async (data, context) => {
-  if (!context.auth) {
-    throw new functions.https.HttpsError('unauthenticated', 'User must be authenticated');
-  }
+// API pour obtenir le statut d'une installation
+export const getInstallationStatus = functions.https.onRequest((request, response) => {
+  return corsHandler(request, response, async () => {
+    if (request.method !== "GET") {
+      response.status(405).json({ error: "Method not allowed" });
+      return;
+    }
 
-  const { campaignId } = data;
-  
-  if (!campaignId) {
-    throw new functions.https.HttpsError('invalid-argument', 'Campaign ID is required');
-  }
+    try {
+      const campaignId = request.query.campaignId as string;
 
-  // Vérifier que la campagne appartient à l'utilisateur
-  const campaignDoc = await admin.firestore()
-    .collection('campaigns')
-    .doc(campaignId)
-    .get();
+      if (!campaignId) {
+        response.status(400).json({ error: "Campaign ID required" });
+        return;
+      }
 
-  if (!campaignDoc.exists || campaignDoc.data()?.userId !== context.auth.uid) {
-    throw new functions.https.HttpsError('permission-denied', 'Campaign not found or access denied');
-  }
+      const db = admin.firestore();
 
-  // Générer une clé API unique
-  const apiKey = 'rsp_' + Buffer.from(campaignId + '_' + Date.now()).toString('base64');
+      // Vérifier les installations WordPress
+      const wordpressDoc = await db.collection("plugin_configurations").doc(campaignId).get();
+      
+      // Vérifier les installations Shopify
+      const shopifyDoc = await db.collection("shopify_installations").doc(campaignId).get();
 
-  // Stocker la clé API
-  await admin.firestore()
-    .collection('plugin_api_keys')
-    .doc(apiKey)
-    .set({
-      campaignId,
-      userId: context.auth.uid,
-      createdAt: new Date(),
-      lastUsed: null,
-      active: true
-    });
+      const installations = {
+        wordpress: wordpressDoc.exists ? wordpressDoc.data() : null,
+        shopify: shopifyDoc.exists ? shopifyDoc.data() : null
+      };
 
-  return { apiKey };
+      response.json({
+        success: true,
+        installations,
+        hasActiveInstallations: wordpressDoc.exists || shopifyDoc.exists
+      });
+
+    } catch (error) {
+      console.error("Get installation status error:", error);
+      response.status(500).json({ error: "Internal server error" });
+    }
+  });
 });
 
 // Fonction utilitaire pour générer le script WordPress
@@ -159,23 +182,82 @@ function generateWordPressTrackingScript(campaignId: string, _domain: string): s
 // RefSpring Tracking Script for WordPress
 function refspring_add_tracking_script() {
     $campaign_id = '${campaignId}';
-    $script_url = 'https://refspring.com/tracking.js';
-    
-    echo '<script data-campaign="' . $campaign_id . '" src="' . $script_url . '"></script>';
-}
-add_action('wp_head', 'refspring_add_tracking_script');
-
-// Hook pour WooCommerce conversions
-function refspring_woocommerce_conversion($order_id) {
-    $order = wc_get_order($order_id);
-    $total = $order->get_total();
-    
-    echo '<script>
-        if (window.RefSpring) {
-            window.RefSpring.trackConversion(' . $total . ');
+    ?>
+    <script>
+    (function() {
+        // RefSpring Tracking Code
+        window.refspring = window.refspring || {};
+        window.refspring.campaignId = '<?php echo esc_js($campaign_id); ?>';
+        
+        // Track page views
+        function trackPageView() {
+            const data = {
+                campaignId: window.refspring.campaignId,
+                page: window.location.pathname,
+                referrer: document.referrer,
+                timestamp: new Date().toISOString(),
+                userAgent: navigator.userAgent
+            };
+            
+            // Send tracking data
+            fetch('https://your-functions-url/trackPageView', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            }).catch(console.error);
         }
-    </script>';
+        
+        // Track conversions
+        function trackConversion(value, currency = 'USD') {
+            const data = {
+                campaignId: window.refspring.campaignId,
+                value: value,
+                currency: currency,
+                page: window.location.pathname,
+                timestamp: new Date().toISOString()
+            };
+            
+            fetch('https://your-functions-url/trackConversion', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            }).catch(console.error);
+        }
+        
+        // Initialize tracking
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', trackPageView);
+        } else {
+            trackPageView();
+        }
+        
+        // Make trackConversion available globally
+        window.refspring.trackConversion = trackConversion;
+    })();
+    </script>
+    <?php
 }
-add_action('woocommerce_thankyou', 'refspring_woocommerce_conversion');
+add_action('wp_footer', 'refspring_add_tracking_script');
+
+// Hook into WooCommerce order completion (if WooCommerce is active)
+if (class_exists('WooCommerce')) {
+    function refspring_track_woocommerce_conversion($order_id) {
+        $order = wc_get_order($order_id);
+        $total = $order->get_total();
+        $currency = $order->get_currency();
+        ?>
+        <script>
+        if (window.refspring && window.refspring.trackConversion) {
+            window.refspring.trackConversion(<?php echo esc_js($total); ?>, '<?php echo esc_js($currency); ?>');
+        }
+        </script>
+        <?php
+    }
+    add_action('woocommerce_thankyou', 'refspring_track_woocommerce_conversion');
+}
 ?>`;
 }

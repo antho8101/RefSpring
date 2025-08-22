@@ -1,69 +1,63 @@
-import * as functions from 'firebase-functions';
-import { stripe } from './stripeConfig';
-// import { db } from "firebase-admin/firestore";
+import * as functions from "firebase-functions";
+import { stripe } from "./stripeConfig";
 
 export const stripeGetPaymentMethods = functions.https.onRequest(async (req, res) => {
-  res.set('Access-Control-Allow-Origin', '*');
-  res.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.set('Access-Control-Allow-Headers', 'Content-Type');
+  res.set("Access-Control-Allow-Origin", "*");
+  res.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.set("Access-Control-Allow-Headers", "Content-Type");
 
-  if (req.method === 'OPTIONS') {
+  if (req.method === "OPTIONS") {
     res.status(200).end();
     return;
   }
 
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+  if (req.method !== "GET" && req.method !== "POST") {
+    res.status(405).json({ error: "Method not allowed" });
+    return;
   }
 
   try {
-    const { userEmail } = req.body;
+    const customerId = req.method === "GET" ? req.query.customerId as string : req.body.customerId;
 
-    if (!userEmail) {
-      return res.status(400).json({ error: 'userEmail is required' });
+    if (!customerId) {
+      res.status(400).json({ error: "Customer ID required" });
+      return;
     }
 
-    console.log('🔍 Getting payment methods for:', userEmail);
-
-    // Chercher le customer Stripe par email
-    const customers = await stripe.customers.list({
-      email: userEmail,
-      limit: 1
-    });
-
-    if (customers.data.length === 0) {
-      console.log('📭 No Stripe customer found for:', userEmail);
-      return res.json({ paymentMethods: [] });
-    }
-
-    const customer = customers.data[0];
-    console.log('👤 Found customer:', customer.id);
-
-    // Récupérer les méthodes de paiement
+    // Récupérer les moyens de paiement du client
     const paymentMethods = await stripe.paymentMethods.list({
-      customer: customer.id,
-      type: 'card',
+      customer: customerId,
+      type: "card",
     });
 
-    const formattedMethods = paymentMethods.data.map(pm => ({
+    // Récupérer les informations du client pour le moyen de paiement par défaut
+    const customer = await stripe.customers.retrieve(customerId);
+    const defaultPaymentMethodId = customer && typeof customer !== "string" 
+      ? customer.invoice_settings?.default_payment_method 
+      : null;
+
+    const formattedPaymentMethods = paymentMethods.data.map(pm => ({
       id: pm.id,
       type: pm.type,
-      last4: pm.card?.last4 || '',
-      brand: pm.card?.brand || '',
-      exp_month: pm.card?.exp_month || 0,
-      exp_year: pm.card?.exp_year || 0,
-      isDefault: customer.invoice_settings?.default_payment_method === pm.id
+      card: pm.card ? {
+        brand: pm.card.brand,
+        last4: pm.card.last4,
+        exp_month: pm.card.exp_month,
+        exp_year: pm.card.exp_year,
+      } : null,
+      isDefault: pm.id === defaultPaymentMethodId,
     }));
 
-    console.log('💳 Found payment methods:', formattedMethods.length);
-
-    return res.json({ paymentMethods: formattedMethods });
+    res.status(200).json({
+      success: true,
+      paymentMethods: formattedPaymentMethods,
+    });
 
   } catch (error) {
-    console.error('❌ Error getting payment methods:', error);
-    return res.status(500).json({ 
-      error: 'Failed to get payment methods',
-      details: error instanceof Error ? error.message : 'Unknown error'
+    console.error("Stripe get payment methods error:", error);
+    res.status(500).json({ 
+      error: "Internal server error",
+      details: error instanceof Error ? error.message : "Unknown error"
     });
   }
 });
