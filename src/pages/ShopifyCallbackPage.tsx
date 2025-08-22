@@ -36,17 +36,17 @@ export const ShopifyCallbackPage: React.FC = () => {
 
         const { campaignId } = JSON.parse(storedData);
 
-        // Finaliser l'installation
-        const response = await fetch('/api/shopify-auth-callback', {
+        // Finaliser l'installation avec Supabase
+        const response = await fetch('https://wsvhmozduyiftmuuynpi.supabase.co/functions/v1/shopify-callback', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indzdmhtb3pkdXlpZnRtdXV5bnBpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU4NDQ3OTEsImV4cCI6MjA3MTQyMDc5MX0.eLzX-f5tIJvbqBLB1lbSM0ex1Rz1p6Izemi0NnqiWz4`
           },
           body: JSON.stringify({
             shop,
             code,
-            state,
-            campaignId
+            state
           })
         });
 

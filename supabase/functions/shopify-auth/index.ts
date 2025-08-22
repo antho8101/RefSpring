@@ -60,7 +60,12 @@ serve(async (req) => {
       'write_themes'
     ].join(',');
 
-    const redirectUri = `${req.headers.get('origin')}/shopify/callback`;
+    // Utiliser une URL de redirection fixe pour éviter les problèmes avec les URLs dynamiques
+    const origin = req.headers.get('origin') || '';
+    const isProduction = origin.includes('refspring.com');
+    const redirectUri = isProduction 
+      ? 'https://refspring.com/shopify/callback'
+      : `${origin}/shopify/callback`;
     
     const authUrl = new URL(`https://${shopDomain}/admin/oauth/authorize`);
     authUrl.searchParams.set('client_id', shopifyApiKey);
