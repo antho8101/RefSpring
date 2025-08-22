@@ -18,22 +18,24 @@ function verifyShopifyWebhook(body: string, signature: string, secret: string): 
 // Webhook pour les commandes Shopify
 export const shopifyOrderWebhook = functions.https.onRequest(async (request, response) => {
   if (request.method !== 'POST') {
-    return response.status(405).json({ error: 'Method not allowed' });
+    response.status(405).json({ error: 'Method not allowed' });
+    return;
   }
 
   try {
-    const config = shopifyAppConfig();
+    const config = await shopifyAppConfig('system');
     const signature = request.headers['x-shopify-hmac-sha256'] as string;
     const body = JSON.stringify(request.body);
 
     // Vérifier la signature webhook
     if (!verifyShopifyWebhook(body, signature, config.webhookSecret)) {
       console.error('Invalid webhook signature');
-      return response.status(401).json({ error: 'Unauthorized' });
+      response.status(401).json({ error: 'Unauthorized' });
+      return;
     }
 
     const webhookData: ShopifyWebhookData = request.body;
-    const order: ShopifyOrder = webhookData;
+    const order = webhookData as any;
 
     console.log('Shopify order webhook received:', {
       orderId: order.id,
@@ -205,35 +207,36 @@ async function updateAffiliateStats(affiliateId: string, campaignId: string, com
 // Webhook pour l'installation/désinstallation de l'app
 export const shopifyAppWebhook = functions.https.onRequest(async (request, response) => {
   if (request.method !== 'POST') {
-    return response.status(405).json({ error: 'Method not allowed' });
+    response.status(405).json({ error: 'Method not allowed' });
+    return;
   }
 
   try {
-    const config = shopifyAppConfig();
+    const config = await shopifyAppConfig('system');
     const signature = request.headers['x-shopify-hmac-sha256'] as string;
     const body = JSON.stringify(request.body);
     const topic = request.headers['x-shopify-topic'] as string;
 
     // Vérifier la signature
     if (!verifyShopifyWebhook(body, signature, config.webhookSecret)) {
-      return response.status(401).json({ error: 'Unauthorized' });
+      response.status(401).json({ error: 'Unauthorized' });
+      return;
     }
 
     const webhookData: ShopifyWebhookData = request.body;
 
     switch (topic) {
-      case 'app/uninstalled':
-        await handleAppUninstall(webhookData.shop_domain);
-        break;
-      default:
-        console.log('Unhandled webhook topic:', topic);
+    case 'app/uninstalled':
+      await handleAppUninstall(webhookData.shop_domain);
+      break;
+    default:
+      console.log('Unhandled webhook topic:', topic);
     }
 
-    response.json({ success: true });
-
+    response.status(200).json({ success: true });
   } catch (error) {
-    console.error('Shopify app webhook error:', error);
-    response.status(500).json({ error: 'Internal server error' });
+    console.error("Shopify app webhook error:", error);
+    return response.status(500).json({ error: "Internal server error" });
   }
 });
 

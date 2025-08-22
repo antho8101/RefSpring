@@ -19,8 +19,8 @@ interface ShopifyTokenExchange {
 }
 
 // Générer l'URL d'autorisation Shopify
-export const shopifyAuthUrl = functions.https.onRequest((request, response) => {
-  corsHandler(request, response, async () => {
+export const shopifyAuthUrl = functions.https.onRequest((request, response) => {  
+  return corsHandler(request, response, async () => {
     if (request.method !== 'POST') {
       return response.status(405).json({ error: 'Method not allowed' });
     }
@@ -38,7 +38,7 @@ export const shopifyAuthUrl = functions.https.onRequest((request, response) => {
         return response.status(400).json({ error: 'Invalid shop name' });
       }
 
-      const config = shopifyAppConfig();
+      const config = await shopifyAppConfig('system');
       const scopes = 'read_orders,read_products,write_script_tags';
       const redirectUri = `${config.appUrl}/auth/shopify/callback`;
 
@@ -64,7 +64,7 @@ export const shopifyAuthUrl = functions.https.onRequest((request, response) => {
 
 // Échanger le code OAuth contre un access token
 export const shopifyTokenExchange = functions.https.onRequest((request, response) => {
-  corsHandler(request, response, async () => {
+  return corsHandler(request, response, async () => {
     if (request.method !== 'POST') {
       return response.status(405).json({ error: 'Method not allowed' });
     }
@@ -76,7 +76,7 @@ export const shopifyTokenExchange = functions.https.onRequest((request, response
         return response.status(400).json({ error: 'Missing required fields' });
       }
 
-      const config = shopifyAppConfig();
+      const config = await shopifyAppConfig('system');
       const shopName = shop.replace('.myshopify.com', '');
       
       // Échanger le code contre un access token

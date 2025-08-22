@@ -30,24 +30,24 @@ export const processStripeWebhook = onRequest(
 
     try {
       switch (event.type) {
-        case 'checkout.session.completed':
-          await handleCheckoutCompleted(event.data.object as Stripe.Checkout.Session);
-          break;
+      case 'checkout.session.completed':
+        await handleCheckoutCompleted(event.data.object as Stripe.Checkout.Session);
+        break;
+      
+      case 'invoice.payment_succeeded':
+        await handlePaymentSucceeded(event.data.object as Stripe.Invoice);
+        break;
+      
+      case 'customer.subscription.updated':
+        await handleSubscriptionUpdated(event.data.object as Stripe.Subscription);
+        break;
+      
+      case 'setup_intent.succeeded':
+        await handleSetupIntentSucceeded(event.data.object as Stripe.SetupIntent);
+        break;
         
-        case 'invoice.payment_succeeded':
-          await handlePaymentSucceeded(event.data.object as Stripe.Invoice);
-          break;
-        
-        case 'customer.subscription.updated':
-          await handleSubscriptionUpdated(event.data.object as Stripe.Subscription);
-          break;
-        
-        case 'setup_intent.succeeded':
-          await handleSetupIntentSucceeded(event.data.object as Stripe.SetupIntent);
-          break;
-        
-        default:
-          console.log(`🔔 WEBHOOK - Type non traité: ${event.type}`);
+      default:
+        console.log(`🔔 WEBHOOK - Type non traité: ${event.type}`);
       }
 
       res.json({ received: true });

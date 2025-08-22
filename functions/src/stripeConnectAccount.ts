@@ -7,7 +7,8 @@ export const stripeCreateConnectAccount = functions.https.onRequest(async (req, 
   res.set('Access-Control-Allow-Headers', 'Content-Type');
 
   if (req.method === 'OPTIONS') {
-    return res.status(200).end();
+    res.status(200).end();
+    return;
   }
 
   if (req.method !== 'POST') {
@@ -70,7 +71,7 @@ export const stripeCreateAccountLink = functions.https.onRequest(async (req, res
   }
 
   try {
-    const { accountId, affiliateId, refreshUrl, returnUrl } = req.body;
+    const { accountId, refreshUrl, returnUrl } = req.body;
 
     if (!accountId) {
       return res.status(400).json({ error: 'accountId is required' });

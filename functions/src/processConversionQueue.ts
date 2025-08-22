@@ -71,6 +71,11 @@ export const processConversionQueue = onCall(
 
           const conversionData = conversionDoc.data();
           
+          if (!conversionData) {
+            console.error('No conversion data found');
+            continue;
+          }
+          
           // Analyser automatiquement la conversion
           const autoDecision = await analyzeConversionAutomatically(conversionData);
           

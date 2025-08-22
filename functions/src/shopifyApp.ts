@@ -109,5 +109,5 @@ export interface ShopifyOrder {
 export interface ShopifyWebhookData {
   shop_domain: string;
   order?: ShopifyOrder;
-  [key: string]: any;
+  [key: string]: any as Record<string, unknown>;
 }

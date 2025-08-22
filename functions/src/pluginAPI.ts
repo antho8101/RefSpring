@@ -28,7 +28,7 @@ interface ShopifyInstall {
 
 // API pour la configuration WordPress
 export const wordpressConfig = functions.https.onRequest((request, response) => {
-  corsHandler(request, response, async () => {
+  return corsHandler(request, response, async () => {
     if (request.method !== 'POST') {
       return response.status(405).json({ error: 'Method not allowed' });
     }
@@ -81,7 +81,7 @@ export const wordpressConfig = functions.https.onRequest((request, response) => 
 
 // API pour l'installation Shopify (redirige vers le processus OAuth)
 export const shopifyInstall = functions.https.onRequest((request, response) => {
-  corsHandler(request, response, async () => {
+  return corsHandler(request, response, async () => {
     if (request.method !== 'POST') {
       return response.status(405).json({ error: 'Method not allowed' });
     }
@@ -154,7 +154,7 @@ export const generatePluginApiKey = functions.https.onCall(async (data, context)
 });
 
 // Fonction utilitaire pour générer le script WordPress
-function generateWordPressTrackingScript(campaignId: string, domain: string): string {
+function generateWordPressTrackingScript(campaignId: string, _domain: string): string {
   return `<?php
 // RefSpring Tracking Script for WordPress
 function refspring_add_tracking_script() {

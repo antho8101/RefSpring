@@ -100,11 +100,11 @@ async function detectExcessiveClicks(
   startDate?: Date, 
   suspiciousActivities?: SuspiciousActivity[]
 ) {
-  let clicksQuery = admin.firestore().collection('clicks');
+  let clicksQuery: admin.firestore.Query = admin.firestore().collection('clicks');
 
-  if (campaignId) clicksQuery = clicksQuery.where('campaignId', '==', campaignId) as admin.firestore.Query;
-  if (affiliateId) clicksQuery = clicksQuery.where('affiliateId', '==', affiliateId) as admin.firestore.Query;
-  if (startDate) clicksQuery = clicksQuery.where('timestamp', '>=', startDate) as admin.firestore.Query;
+  if (campaignId) clicksQuery = clicksQuery.where('campaignId', '==', campaignId);
+  if (affiliateId) clicksQuery = clicksQuery.where('affiliateId', '==', affiliateId);
+  if (startDate) clicksQuery = clicksQuery.where('timestamp', '>=', startDate);
 
   const clicksSnapshot = await clicksQuery.get();
 
@@ -135,11 +135,11 @@ async function detectSuspiciousConversions(
   startDate?: Date, 
   suspiciousActivities?: SuspiciousActivity[]
 ) {
-  let conversionsQuery = admin.firestore().collection('conversions');
+  let conversionsQuery: admin.firestore.Query = admin.firestore().collection('conversions');
 
-  if (campaignId) conversionsQuery = conversionsQuery.where('campaignId', '==', campaignId) as admin.firestore.Query;
-  if (affiliateId) conversionsQuery = conversionsQuery.where('affiliateId', '==', affiliateId) as admin.firestore.Query;
-  if (startDate) conversionsQuery = conversionsQuery.where('timestamp', '>=', startDate) as admin.firestore.Query;
+  if (campaignId) conversionsQuery = conversionsQuery.where('campaignId', '==', campaignId);
+  if (affiliateId) conversionsQuery = conversionsQuery.where('affiliateId', '==', affiliateId);
+  if (startDate) conversionsQuery = conversionsQuery.where('timestamp', '>=', startDate);
 
   const conversionsSnapshot = await conversionsQuery.get();
 
@@ -165,11 +165,11 @@ async function detectTimePatterns(
   startDate?: Date, 
   suspiciousActivities?: SuspiciousActivity[]
 ) {
-  let clicksQuery = admin.firestore().collection('clicks');
+  let clicksQuery: admin.firestore.Query = admin.firestore().collection('clicks');
 
-  if (campaignId) clicksQuery = clicksQuery.where('campaignId', '==', campaignId) as admin.firestore.Query;
-  if (affiliateId) clicksQuery = clicksQuery.where('affiliateId', '==', affiliateId) as admin.firestore.Query;
-  if (startDate) clicksQuery = clicksQuery.where('timestamp', '>=', startDate) as admin.firestore.Query;
+  if (campaignId) clicksQuery = clicksQuery.where('campaignId', '==', campaignId);
+  if (affiliateId) clicksQuery = clicksQuery.where('affiliateId', '==', affiliateId);
+  if (startDate) clicksQuery = clicksQuery.where('timestamp', '>=', startDate);
 
   const clicksSnapshot = await clicksQuery.get();
 
@@ -206,11 +206,11 @@ async function detectSuspiciousIPs(
 ) {
   console.log('🛡️ ANTIFRAUD - Analyse IP et blacklist...');
   
-  let clicksQuery = admin.firestore().collection('clicks');
+  let clicksQuery: admin.firestore.Query = admin.firestore().collection('clicks');
   
-  if (campaignId) clicksQuery = clicksQuery.where('campaignId', '==', campaignId) as admin.firestore.Query;
-  if (affiliateId) clicksQuery = clicksQuery.where('affiliateId', '==', affiliateId) as admin.firestore.Query;
-  if (startDate) clicksQuery = clicksQuery.where('timestamp', '>=', startDate) as admin.firestore.Query;
+  if (campaignId) clicksQuery = clicksQuery.where('campaignId', '==', campaignId);
+  if (affiliateId) clicksQuery = clicksQuery.where('affiliateId', '==', affiliateId);
+  if (startDate) clicksQuery = clicksQuery.where('timestamp', '>=', startDate);
   
   const clicksSnapshot = await clicksQuery.get();
   
@@ -222,7 +222,7 @@ async function detectSuspiciousIPs(
     const ip = data.ip || 'unknown';
     const hasFlags = data.antifraudFlags && data.antifraudFlags.length > 0;
     
-    if (hasFlags || data.validated === false) {
+    if (hasFlags) {
       suspiciousIPs[ip] = (suspiciousIPs[ip] || 0) + 1;
     }
   });
@@ -248,11 +248,11 @@ async function detectBotsAndSuspiciousUserAgents(
 ) {
   console.log('🛡️ ANTIFRAUD - Détection bots et user-agents...');
   
-  let clicksQuery = admin.firestore().collection('clicks');
+  let clicksQuery: admin.firestore.Query = admin.firestore().collection('clicks');
   
-  if (campaignId) clicksQuery = clicksQuery.where('campaignId', '==', campaignId) as admin.firestore.Query;
-  if (affiliateId) clicksQuery = clicksQuery.where('affiliateId', '==', affiliateId) as admin.firestore.Query;
-  if (startDate) clicksQuery = clicksQuery.where('timestamp', '>=', startDate) as admin.firestore.Query;
+  if (campaignId) clicksQuery = clicksQuery.where('campaignId', '==', campaignId);
+  if (affiliateId) clicksQuery = clicksQuery.where('affiliateId', '==', affiliateId);
+  if (startDate) clicksQuery = clicksQuery.where('timestamp', '>=', startDate);
   
   const clicksSnapshot = await clicksQuery.get();
   
@@ -324,9 +324,9 @@ function calculateRiskScore(suspiciousActivities: SuspiciousActivity[]): number 
   
   suspiciousActivities.forEach(activity => {
     switch (activity.severity) {
-      case 'high': score += 30; break;
-      case 'medium': score += 15; break;
-      case 'low': score += 5; break;
+    case 'high': score += 30; break;
+    case 'medium': score += 15; break;
+    case 'low': score += 5; break;
     }
   });
 

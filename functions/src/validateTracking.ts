@@ -202,7 +202,7 @@ async function performAdvancedFraudCheck(data: TrackingData, ip?: string): Promi
         /refspring/i, /tracking/i
       ];
       
-      const isSuspiciousBot = botPatterns.some(pattern => pattern.test(data.userAgent));
+      const isSuspiciousBot = data.userAgent ? botPatterns.some(pattern => pattern.test(data.userAgent)) : false;
       if (isSuspiciousBot) {
         riskScore += 90;
         checks.push('CRITICAL: Bot user-agent detected');

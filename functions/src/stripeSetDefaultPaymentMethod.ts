@@ -7,7 +7,8 @@ export const stripeSetDefaultPaymentMethod = functions.https.onRequest(async (re
   res.set('Access-Control-Allow-Headers', 'Content-Type');
 
   if (req.method === 'OPTIONS') {
-    return res.status(200).end();
+    res.status(200).end();
+    return;
   }
 
   if (req.method !== 'POST') {
