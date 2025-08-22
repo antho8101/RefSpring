@@ -39,7 +39,7 @@ serve(async (req) => {
       .from('shopify_oauth_states')
       .insert({
         state_token: stateToken,
-        user_id: userId,
+        user_id: userId, // Firebase UID directement
         campaign_id: campaignId,
         shop_domain: shopDomain
       });
