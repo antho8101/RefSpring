@@ -1,6 +1,6 @@
 import * as functions from 'firebase-functions';
 import { stripe } from './stripeConfig';
-import { db } from 'firebase-admin/firestore';
+// import { db } from "firebase-admin/firestore";
 
 export const stripeGetPaymentMethods = functions.https.onRequest(async (req, res) => {
   res.set('Access-Control-Allow-Origin', '*');

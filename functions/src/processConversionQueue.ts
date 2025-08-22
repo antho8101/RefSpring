@@ -151,14 +151,14 @@ export const processConversionQueue = onCall(
   }
 );
 
-async function analyzeConversionAutomatically(conversionData: any): Promise<{
+async function analyzeConversionAutomatically(conversionData: Record<string, unknown>): Promise<{
   action?: 'approve' | 'reject';
   reason: string;
   confidence: number;
 }> {
   const amount = conversionData.amount || 0;
   const riskScore = conversionData.riskScore || 0;
-  const timestamp = conversionData.timestamp?.toDate() || new Date();
+  // const timestamp = conversionData.timestamp?.toDate() || new Date();
   
   // Règles automatiques
   

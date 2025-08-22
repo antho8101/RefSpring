@@ -1,5 +1,5 @@
-import { onCall, HttpsError } from 'firebase-functions/v2/https';
-import * as admin from 'firebase-admin';
+import { onCall, HttpsError } from "firebase-functions/v2/https";
+import * as admin from "firebase-admin";
 
 interface FraudCheckRequest {
   campaignId?: string;
@@ -9,7 +9,7 @@ interface FraudCheckRequest {
 
 interface SuspiciousActivity {
   type: string;
-  severity: 'low' | 'medium' | 'high';
+  severity: "low" | "medium" | "high";
   description: string;
   data: Record<string, unknown>;
 }
@@ -34,7 +34,7 @@ export const antifraudCheck = onCall(
   { cors: true },
   async (request) => {
     try {
-      console.log('🛡️ ANTIFRAUD - Début vérification anti-fraude');
+      console.log("🛡️ ANTIFRAUD - Début vérification anti-fraude");
       
       // Vérifier l'authentification
       if (!request.auth) {
