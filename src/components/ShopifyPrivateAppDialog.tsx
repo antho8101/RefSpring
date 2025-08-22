@@ -6,19 +6,20 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from '@/hooks/use-toast';
 import { ExternalLink, Copy, CheckCircle } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 interface ShopifyPrivateAppDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   shopName: string;
-  onConnect: (accessToken: string, shopDomain: string) => void;
+  onSuccess: () => void; // Changé de onConnect vers onSuccess
 }
 
 export const ShopifyPrivateAppDialog = ({ 
   open, 
   onOpenChange, 
   shopName,
-  onConnect 
+  onSuccess 
 }: ShopifyPrivateAppDialogProps) => {
   const [accessToken, setAccessToken] = useState('');
   const [loading, setLoading] = useState(false);
@@ -52,21 +53,44 @@ export const ShopifyPrivateAppDialog = ({
 
     setLoading(true);
     try {
-      // Pas de validation côté client à cause des problèmes CORS
-      // La validation se fera côté serveur
-      toast({
-        title: "Connexion en cours...",
-        description: "Vérification du token avec votre boutique",
+      // Récupérer l'utilisateur connecté
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast({
+          title: "Erreur",
+          description: "Vous devez être connecté",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      // Appeler l'edge function pour sauvegarder l'intégration
+      const response = await supabase.functions.invoke('shopify-private-app', {
+        body: {
+          shopDomain,
+          accessToken: accessToken.trim(),
+          campaignId: 'test-campaign-123', // TODO: récupérer le vrai campaign ID
+          userId: user.id
+        }
       });
 
-      onConnect(accessToken, shopDomain);
+      if (response.error) {
+        throw new Error(response.error.message || 'Erreur lors de la connexion');
+      }
+
+      toast({
+        title: "Shopify connecté !",
+        description: `Boutique ${response.data.shopInfo.name} connectée avec succès`,
+      });
+
       onOpenChange(false);
+      onSuccess();
       
     } catch (error) {
-      console.error('Erreur connexion:', error);
+      console.error('Erreur connexion Shopify:', error);
       toast({
         title: "Erreur de connexion",
-        description: "Une erreur s'est produite",
+        description: error instanceof Error ? error.message : "Vérifiez votre token et réessayez",
         variant: "destructive"
       });
     } finally {

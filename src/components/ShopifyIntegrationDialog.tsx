@@ -159,7 +159,13 @@ export const ShopifyIntegrationDialog: React.FC<ShopifyIntegrationDialogProps> =
         open={showPrivateAppDialog}
         onOpenChange={setShowPrivateAppDialog}
         shopName={shopName}
-        onConnect={handleConnect}
+        onSuccess={() => {
+          toast({
+            title: "Configuration terminée !",
+            description: "Votre boutique Shopify est maintenant connectée",
+          });
+          handleClose();
+        }}
       />
     </>
   );
