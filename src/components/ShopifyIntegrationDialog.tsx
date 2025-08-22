@@ -11,6 +11,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ShoppingBag, ArrowRight } from 'lucide-react';
 import { ShopifyPrivateAppDialog } from '@/components/ShopifyPrivateAppDialog';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from '@/hooks/use-toast';
 
 interface ShopifyIntegrationDialogProps {
   open: boolean;
@@ -42,12 +44,48 @@ export const ShopifyIntegrationDialog: React.FC<ShopifyIntegrationDialogProps> =
     }
   };
 
-  const handleConnect = (accessToken: string, shopDomain: string) => {
-    // Ici on pourrait sauvegarder directement l'intégration
-    // Pour l'instant on utilise la méthode existante
-    onInstall(shopDomain);
-    setShowPrivateAppDialog(false);
-    handleClose();
+  const handleConnect = async (accessToken: string, shopDomain: string) => {
+    // Sauvegarder l'intégration via l'edge function
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast({
+          title: "Erreur",
+          description: "Vous devez être connecté",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      const response = await supabase.functions.invoke('shopify-private-app', {
+        body: {
+          shopDomain,
+          accessToken,
+          campaignId: 'test-campaign-123', // TODO: récupérer le vrai campaign ID
+          userId: user.id
+        }
+      });
+
+      if (response.error) {
+        throw new Error(response.error.message);
+      }
+
+      toast({
+        title: "Shopify connecté !",
+        description: `Boutique ${response.data.shopInfo.name} connectée avec succès`,
+      });
+
+      setShowPrivateAppDialog(false);
+      handleClose();
+      
+    } catch (error) {
+      console.error('Erreur connexion Shopify:', error);
+      toast({
+        title: "Erreur",
+        description: error instanceof Error ? error.message : "Erreur lors de la connexion",
+        variant: "destructive"
+      });
+    }
   };
 
   return (
