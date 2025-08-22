@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
 
 export interface ShopifyIntegration {
   id: string;
@@ -25,17 +26,18 @@ export interface ShopifyIntegration {
 export const useShopifySupabase = (campaignId: string) => {
   const [integrations, setIntegrations] = useState<ShopifyIntegration[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const { user } = useAuth();
 
   // Récupérer les intégrations existantes
   const fetchIntegrations = useCallback(async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Utilisateur non connecté');
 
       const { data, error } = await supabase
         .from('shopify_integrations')
         .select('*')
         .eq('campaign_id', campaignId)
+        .eq('user_id', user.uid)
         .eq('active', true)
         .order('created_at', { ascending: false });
 
@@ -60,7 +62,7 @@ export const useShopifySupabase = (campaignId: string) => {
         variant: "destructive"
       });
     }
-  }, [campaignId]);
+  }, [campaignId, user]);
 
   // Initier l'installation Shopify
   const initiateShopifyInstall = useCallback(async (shopName: string) => {
@@ -76,7 +78,6 @@ export const useShopifySupabase = (campaignId: string) => {
     setIsLoading(true);
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Utilisateur non connecté');
 
       // Appeler l'Edge Function pour générer l'URL d'autorisation
@@ -84,7 +85,7 @@ export const useShopifySupabase = (campaignId: string) => {
         body: {
           shop: shopName.includes('.myshopify.com') ? shopName : `${shopName}.myshopify.com`,
           campaignId,
-          userId: user.id
+          userId: user.uid
         }
       });
 
