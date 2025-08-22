@@ -52,33 +52,21 @@ export const ShopifyPrivateAppDialog = ({
 
     setLoading(true);
     try {
-      // Valider le token en faisant un appel test à l'API Shopify
-      const response = await fetch(`https://${shopDomain}/admin/api/2023-10/shop.json`, {
-        headers: {
-          'X-Shopify-Access-Token': accessToken,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error('Token invalide ou boutique inaccessible');
-      }
-
-      const data = await response.json();
-      
+      // Pas de validation côté client à cause des problèmes CORS
+      // La validation se fera côté serveur
       toast({
-        title: "Connexion réussie !",
-        description: `Connecté à ${data.shop.name}`,
+        title: "Connexion en cours...",
+        description: "Vérification du token avec votre boutique",
       });
 
       onConnect(accessToken, shopDomain);
       onOpenChange(false);
       
     } catch (error) {
-      console.error('Erreur validation token:', error);
+      console.error('Erreur connexion:', error);
       toast({
         title: "Erreur de connexion",
-        description: "Vérifiez votre token et réessayez",
+        description: "Une erreur s'est produite",
         variant: "destructive"
       });
     } finally {
