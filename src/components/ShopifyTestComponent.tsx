@@ -18,7 +18,7 @@ export const ShopifyTestComponent: React.FC<ShopifyTestComponentProps> = ({ camp
     fetchIntegrations, 
     initiateShopifyInstall, 
     removeIntegration 
-  } = useShopifySupabase(campaignId);
+  } = useShopifySupabase();
   
   const [showDialog, setShowDialog] = useState(false);
 

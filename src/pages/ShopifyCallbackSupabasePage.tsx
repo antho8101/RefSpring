@@ -13,9 +13,8 @@ export const ShopifyCallbackSupabasePage: React.FC = () => {
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [message, setMessage] = useState('');
   
-  // Récupérer campaignId depuis sessionStorage ou URL
-  const campaignId = sessionStorage.getItem('shopify_campaign_id') || 'default';
-  const { finalizeShopifyInstall } = useShopifySupabase(campaignId);
+  // Récupérer campaignId depuis sessionStorage ou URL (plus nécessaire avec Private Apps)
+  const { finalizeShopifyInstall } = useShopifySupabase();
 
   useEffect(() => {
     const handleCallback = async () => {

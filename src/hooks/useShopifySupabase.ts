@@ -23,12 +23,12 @@ export interface ShopifyIntegration {
   created_at: string;
 }
 
-export const useShopifySupabase = (campaignId: string) => {
+export const useShopifySupabase = () => {
   const [integrations, setIntegrations] = useState<ShopifyIntegration[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const { user } = useAuth();
 
-  // Récupérer les intégrations existantes
+  // Récupérer les intégrations existantes pour un utilisateur
   const fetchIntegrations = useCallback(async () => {
     try {
       if (!user) throw new Error('Utilisateur non connecté');
@@ -36,7 +36,6 @@ export const useShopifySupabase = (campaignId: string) => {
       const { data, error } = await supabase
         .from('shopify_integrations')
         .select('*')
-        .eq('campaign_id', campaignId)
         .eq('user_id', user.uid)
         .eq('active', true)
         .order('created_at', { ascending: false });
@@ -62,66 +61,12 @@ export const useShopifySupabase = (campaignId: string) => {
         variant: "destructive"
       });
     }
-  }, [campaignId, user]);
+  }, [user]);
 
-  // Initier l'installation Shopify
+  // Initier l'installation Shopify (supprimé car maintenant géré par ShopifyPrivateAppDialog)
   const initiateShopifyInstall = useCallback(async (shopName: string) => {
-    if (!shopName.trim()) {
-      toast({
-        title: "Erreur",
-        description: "Veuillez entrer le nom de votre boutique Shopify",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    setIsLoading(true);
-
-    try {
-      if (!user) throw new Error('Utilisateur non connecté');
-
-      // Appeler l'Edge Function pour générer l'URL d'autorisation
-      const { data, error } = await supabase.functions.invoke('shopify-auth', {
-        body: {
-          shop: shopName.includes('.myshopify.com') ? shopName : `${shopName}.myshopify.com`,
-          campaignId,
-          userId: user.uid
-        }
-      });
-
-      if (error) throw error;
-      
-      if (!data?.authUrl) {
-        throw new Error('URL d\'autorisation non reçue');
-      }
-
-      // Rediriger vers Shopify dans une nouvelle fenêtre
-      const popup = window.open(data.authUrl, 'shopify-auth', 'width=600,height=700,scrollbars=yes,resizable=yes');
-      
-      if (!popup) {
-        throw new Error('Le popup a été bloqué. Veuillez autoriser les popups pour ce site.');
-      }
-
-      // Surveiller la fermeture du popup
-      const checkClosed = setInterval(() => {
-        if (popup.closed) {
-          clearInterval(checkClosed);
-          setIsLoading(false);
-          // Rafraîchir les intégrations au cas où l'autorisation aurait réussi
-          fetchIntegrations();
-        }
-      }, 1000);
-
-    } catch (error) {
-      console.error('Erreur initiation OAuth:', error);
-      toast({
-        title: "Erreur",
-        description: error.message || "Impossible d'initier l'installation Shopify",
-        variant: "destructive"
-      });
-      setIsLoading(false);
-    }
-  }, [campaignId]);
+    console.log('Cette méthode est maintenant gérée par ShopifyPrivateAppDialog');
+  }, []);
 
   // Finaliser l'installation après le callback
   const finalizeShopifyInstall = useCallback(async (code: string, state: string, shop: string) => {

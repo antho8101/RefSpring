@@ -12,13 +12,15 @@ interface ShopifyPrivateAppDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   shopName: string;
-  onSuccess: () => void; // Changé de onConnect vers onSuccess
+  campaignId: string;
+  onSuccess: () => void;
 }
 
 export const ShopifyPrivateAppDialog = ({ 
   open, 
   onOpenChange, 
   shopName,
+  campaignId,
   onSuccess 
 }: ShopifyPrivateAppDialogProps) => {
   const [accessToken, setAccessToken] = useState('');
@@ -69,7 +71,7 @@ export const ShopifyPrivateAppDialog = ({
         body: {
           shopDomain,
           accessToken: accessToken.trim(),
-          campaignId: 'test-campaign-123', // TODO: récupérer le vrai campaign ID
+          campaignId,
           userId: user.id
         }
       });
