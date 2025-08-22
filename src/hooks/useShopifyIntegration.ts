@@ -24,7 +24,7 @@ export const useShopifyIntegration = (campaignId: string, userId: string) => {
   const [isLoading, setIsLoading] = useState(false);
   const [configs, setConfigs] = useState<ShopifyConfig[]>([]);
 
-  // Initier le processus d'installation Shopify
+  // Initier le processus d'installation Shopify (Private App)
   const initiateShopifyInstall = async (shopName: string) => {
     if (!shopName.trim()) {
       toast({
@@ -35,49 +35,55 @@ export const useShopifyIntegration = (campaignId: string, userId: string) => {
       return;
     }
 
-    setIsLoading(true);
-
     try {
-      // Générer un state sécurisé pour OAuth
-      const oauthState = btoa(`${campaignId}:${userId}:${Date.now()}:${uuidv4()}`);
+      setIsLoading(true);
       
-      // Stocker les infos dans sessionStorage pour le callback
-      sessionStorage.setItem('shopify_oauth_state', JSON.stringify({
-        state: oauthState,
-        campaignId,
-        userId,
-        shopName
-      }));
+      // Nettoyer le nom de boutique
+      const cleanShopName = shopName.replace(/\.myshopify\.com$/, '');
+      const shopDomain = `${cleanShopName}.myshopify.com`;
+      
+      // Pour les private apps, on utilise une approche manuelle
+      const instructions = `
+📝 Instructions pour connecter votre boutique Shopify :
 
-      // Obtenir l'URL d'autorisation Shopify
-      const response = await fetch('/api/shopify-auth-callback', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          shop: shopName.includes('.myshopify.com') ? shopName : `${shopName}.myshopify.com`,
-          campaignId,
-          state: oauthState
-        })
+1. Allez dans votre admin Shopify (${shopDomain}/admin)
+2. Paramètres → Applications et canaux de vente  
+3. Cliquez sur "Développer des applications"
+4. Cliquez sur "Autoriser le développement d'applications personnalisées" si nécessaire
+5. Cliquez sur "Créer une application"
+6. Nommez l'app "RefSpring Integration"
+7. Dans "Configuration" → "Admin API access" :
+   - Orders: read_orders, write_orders
+   - Customers: read_customers, write_customers  
+   - Products: read_products
+   - Script Tags: write_script_tags
+8. Cliquez sur "Sauvegarder"
+9. Dans "Identifiants d'API", copiez le "Admin API access token"
+10. Revenez dans RefSpring et collez ce token
+
+Cette méthode est plus simple et évite les problèmes OAuth !
+      `;
+      
+      // Ouvrir Shopify dans un nouvel onglet
+      const shopifyUrl = `https://${shopDomain}/admin/settings/apps`;
+      window.open(shopifyUrl, '_blank');
+      
+      // Afficher les instructions
+      alert(instructions);
+      
+      toast({
+        title: "Instructions affichées",
+        description: "Suivez les étapes pour créer votre app privée Shopify",
       });
-
-      if (!response.ok) {
-        throw new Error('Impossible de générer l\'URL d\'autorisation');
-      }
-
-      const { authUrl } = await response.json();
       
-      // Rediriger vers Shopify pour l'autorisation
-      window.location.href = authUrl;
-
     } catch (error) {
       console.error('Erreur initiation Shopify:', error);
       toast({
         title: "Erreur",
-        description: "Impossible d'initier l'installation Shopify",
+        description: "Impossible d'ouvrir Shopify",
         variant: "destructive"
       });
+    } finally {
       setIsLoading(false);
     }
   };

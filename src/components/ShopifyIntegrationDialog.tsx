@@ -3,15 +3,14 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
-import { ShoppingBag, ExternalLink } from 'lucide-react';
+import { ShoppingBag, ArrowRight } from 'lucide-react';
+import { ShopifyPrivateAppDialog } from '@/components/ShopifyPrivateAppDialog';
 
 interface ShopifyIntegrationDialogProps {
   open: boolean;
@@ -27,11 +26,12 @@ export const ShopifyIntegrationDialog: React.FC<ShopifyIntegrationDialogProps> =
   isLoading
 }) => {
   const [shopName, setShopName] = useState('');
+  const [showPrivateAppDialog, setShowPrivateAppDialog] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (shopName.trim()) {
-      onInstall(shopName.trim());
+      setShowPrivateAppDialog(true);
     }
   };
 
@@ -42,76 +42,87 @@ export const ShopifyIntegrationDialog: React.FC<ShopifyIntegrationDialogProps> =
     }
   };
 
+  const handleConnect = (accessToken: string, shopDomain: string) => {
+    // Ici on pourrait sauvegarder directement l'intégration
+    // Pour l'instant on utilise la méthode existante
+    onInstall(shopDomain);
+    setShowPrivateAppDialog(false);
+    handleClose();
+  };
+
   return (
-    <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
-          <div className="flex items-center space-x-3 mb-2">
-            <div className="p-2 bg-green-100 rounded-lg">
-              <ShoppingBag className="h-6 w-6 text-green-600" />
+    <>
+      <Dialog open={open} onOpenChange={handleClose}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <div className="flex items-center space-x-3 mb-2">
+              <div className="p-2 bg-green-100 rounded-lg">
+                <ShoppingBag className="h-6 w-6 text-green-600" />
+              </div>
+              <div>
+                <DialogTitle>Connecter Shopify</DialogTitle>
+                <DialogDescription>
+                  Connectez votre boutique Shopify via une application privée (plus simple et sécurisé)
+                </DialogDescription>
+              </div>
             </div>
-            <div>
-              <DialogTitle>Connecter Shopify</DialogTitle>
-              <DialogDescription>
-                Connectez votre boutique Shopify pour activer le suivi d'affiliation
-              </DialogDescription>
+          </DialogHeader>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="shopName">Nom de votre boutique Shopify</Label>
+              <Input
+                id="shopName"
+                type="text"
+                placeholder="ma-boutique"
+                value={shopName}
+                onChange={(e) => setShopName(e.target.value)}
+                disabled={isLoading}
+                className="w-full"
+              />
+              <p className="text-xs text-muted-foreground">
+                Entrez uniquement le nom de votre boutique (sans .myshopify.com)
+              </p>
             </div>
-          </div>
-        </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="shopName">Nom de votre boutique Shopify</Label>
-            <Input
-              id="shopName"
-              type="text"
-              placeholder="ma-boutique"
-              value={shopName}
-              onChange={(e) => setShopName(e.target.value)}
-              disabled={isLoading}
-              className="w-full"
-            />
-            <p className="text-xs text-muted-foreground">
-              Entrez uniquement le nom de votre boutique (sans .myshopify.com)
-            </p>
-          </div>
+            <div className="bg-green-50 p-4 rounded-lg space-y-2">
+              <h4 className="font-medium text-green-900">Nouvelle méthode simplifiée !</h4>
+              <ul className="text-sm text-green-800 space-y-1">
+                <li>• Plus de problèmes d'OAuth ou d'URLs de redirection</li>
+                <li>• Vous créez une "application privée" dans votre admin Shopify</li>
+                <li>• Vous copiez/collez simplement le token d'accès</li>
+                <li>• Configuration en 2 minutes maximum</li>
+              </ul>
+            </div>
 
-          <div className="bg-blue-50 p-4 rounded-lg space-y-2">
-            <h4 className="font-medium text-blue-900">Que va-t-il se passer ?</h4>
-            <ul className="text-sm text-blue-800 space-y-1">
-              <li>• Vous serez redirigé vers Shopify pour autoriser l'application</li>
-              <li>• RefSpring accédera à vos commandes et produits en lecture seule</li>
-              <li>• Les scripts de suivi seront installés automatiquement</li>
-              <li>• Vos commandes d'affiliation seront trackées en temps réel</li>
-            </ul>
-          </div>
+            <div className="flex justify-between">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleClose}
+                disabled={isLoading}
+              >
+                Annuler
+              </Button>
+              <Button
+                type="submit"
+                disabled={!shopName.trim() || isLoading}
+                className="flex items-center space-x-2"
+              >
+                <ArrowRight className="h-4 w-4" />
+                <span>Continuer</span>
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
 
-          <DialogFooter className="flex justify-between">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleClose}
-              disabled={isLoading}
-            >
-              Annuler
-            </Button>
-            <Button
-              type="submit"
-              disabled={!shopName.trim() || isLoading}
-              className="flex items-center space-x-2"
-            >
-              {isLoading ? (
-                <LoadingSpinner size="sm" />
-              ) : (
-                <ExternalLink className="h-4 w-4" />
-              )}
-              <span>
-                {isLoading ? 'Connexion...' : 'Connecter à Shopify'}
-              </span>
-            </Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
+      <ShopifyPrivateAppDialog
+        open={showPrivateAppDialog}
+        onOpenChange={setShowPrivateAppDialog}
+        shopName={shopName}
+        onConnect={handleConnect}
+      />
+    </>
   );
 };
