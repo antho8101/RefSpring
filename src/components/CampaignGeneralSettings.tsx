@@ -102,10 +102,12 @@ export const CampaignGeneralSettings = ({
       setShowPaymentSelector(false);
       
       // Stocker les données de réactivation pour le retour de Stripe
-      localStorage.setItem('campaignReactivationData', JSON.stringify({
+      const { secureStorage } = await import('@/utils/secureClientStorage');
+      secureStorage.setCampaignData('campaignReactivationData', {
         campaignId: campaign.id,
         campaignName: campaign.name,
-      }));
+        timestamp: Date.now()
+      }, 24);
       console.log('💾 Données de réactivation stockées pour campagne:', campaign.name);
       
       // Utiliser le système de redirection Stripe existant
@@ -113,7 +115,8 @@ export const CampaignGeneralSettings = ({
     } catch (error: any) {
       console.error('❌ Erreur redirection Stripe:', error);
       // Nettoyer les données si erreur
-      localStorage.removeItem('campaignReactivationData');
+      const { secureStorage: secureStorageCleanup } = await import('@/utils/secureClientStorage');
+      secureStorageCleanup.removeSecure('campaign_campaignReactivationData');
     }
   };
 

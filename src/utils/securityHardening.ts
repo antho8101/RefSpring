@@ -4,6 +4,7 @@
  */
 
 import Logger from './logger';
+import { initEnhancedCSP } from './enhancedCSP';
 
 // Protection contre les attaques XSS
 export const enableXSSProtection = () => {
@@ -151,6 +152,9 @@ export const initSecurityHardening = () => {
   console.log('🔐 SECURITY: Initializing enhanced security hardening');
   
   if (typeof window !== 'undefined') {
+    // Initialize enhanced CSP first
+    initEnhancedCSP();
+    
     enableXSSProtection();
     sanitizeDOM();
     protectSensitiveData();

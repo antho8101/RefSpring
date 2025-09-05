@@ -127,12 +127,13 @@ export const useCampaignsSupabase = () => {
 
       console.log('✅ SUPABASE - Campagne créée:', newCampaign.id);
       
-      // Store campaign data for success modal
-      import('@/utils/secureClientStorage').then(({ secureStorage }) => {
-        secureStorage.setSecure('newCampaignCreated', {
+      // Store campaign data for success modal using dynamic import
+      const { secureStorage } = await import('@/utils/secureClientStorage');
+      secureStorage.setCampaignData('newCampaignCreated', {
         id: newCampaign.id,
-        name: newCampaign.name
-      }));
+        name: newCampaign.name,
+        timestamp: Date.now()
+      }, 1);
 
       // Reload campaigns
       await loadCampaigns();

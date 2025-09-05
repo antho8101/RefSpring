@@ -275,10 +275,12 @@ export const Dashboard = memo(() => {
           setShowSuccessModal(true);
           
           // Nettoyer immédiatement pour éviter les répétitions
-          localStorage.removeItem('newCampaignCreated');
+          const { secureStorage } = await import('@/utils/secureClientStorage');
+          secureStorage.removeSecure('campaign_newCampaignCreated');
         } catch (error) {
           console.error('❌ DASHBOARD: Erreur parsing newCampaignCreated:', error);
-          localStorage.removeItem('newCampaignCreated');
+          const { secureStorage: secureStorageError } = await import('@/utils/secureClientStorage');
+          secureStorageError.removeSecure('campaign_newCampaignCreated');
         }
       }
     };
