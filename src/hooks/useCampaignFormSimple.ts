@@ -63,9 +63,29 @@ export const useCampaignFormSimple = () => {
     setLoading(true);
 
     try {
+      console.log('🚀 SIMPLE: Vérification des méthodes de paiement...');
+      
+      // 🔒 SÉCURITÉ : Vérifier qu'une méthode de paiement existe avant de créer la campagne
+      await refreshPaymentMethods();
+      
+      if (paymentMethods.length === 0) {
+        console.log('❌ SIMPLE: Aucune méthode de paiement trouvée');
+        toast({
+          title: "Méthode de paiement requise",
+          description: "Vous devez ajouter une carte bancaire avant de créer une campagne",
+          variant: "destructive",
+        });
+        setShowPaymentSelector(true);
+        setLoading(false);
+        return;
+      }
+
+      const defaultPaymentMethod = paymentMethods[0];
+      console.log('💳 SIMPLE: Utilisation méthode de paiement:', defaultPaymentMethod.id);
+      
       console.log('🚀 SIMPLE: Création campagne avec:', formData);
       
-      // Créer la campagne directement dans Supabase
+      // Créer la campagne avec méthode de paiement liée
       const { data: campaign, error } = await supabase
         .from('campaigns')
         .insert({
@@ -75,7 +95,8 @@ export const useCampaignFormSimple = () => {
           is_active: formData.isActive,
           user_id: user.uid,
           is_draft: false,
-          payment_configured: true,
+          payment_configured: true, // ✅ Maintenant vraiment configuré
+          stripe_payment_method_id: defaultPaymentMethod.id, // 🔗 Lié à la carte
           default_commission_rate: 0.10
         })
         .select()
@@ -86,7 +107,7 @@ export const useCampaignFormSimple = () => {
         throw new Error('Erreur lors de la création de la campagne');
       }
 
-      console.log('✅ SIMPLE: Campagne créée:', campaign);
+      console.log('✅ SIMPLE: Campagne créée avec paiement configuré:', campaign);
       
       // Déclencher la modale de succès
       setCreatedCampaign({ id: campaign.id, name: campaign.name });
@@ -94,7 +115,7 @@ export const useCampaignFormSimple = () => {
       
       toast({
         title: "Campagne créée avec succès !",
-        description: "Votre campagne est maintenant active.",
+        description: "Votre campagne est maintenant active avec paiement configuré.",
       });
       
     } catch (error: any) {
@@ -110,8 +131,14 @@ export const useCampaignFormSimple = () => {
   };
 
   const handleCardSelection = async (cardId: string) => {
-    console.log('💳 SIMPLE: Sélection carte (simplifié):', cardId);
+    console.log('💳 SIMPLE: Carte sélectionnée:', cardId);
     setShowPaymentSelector(false);
+    
+    // Après sélection de carte, relancer la création de campagne
+    toast({
+      title: "Carte sélectionnée",
+      description: "Vous pouvez maintenant créer votre campagne",
+    });
   };
 
   const handleSuccessModalClose = () => {
