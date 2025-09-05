@@ -9,13 +9,17 @@ export const useClientSecret = () => {
       return existingSecret;
     }
     
-    // Générer une clé basée sur des éléments uniques du client
+    // Secure client fingerprinting with additional entropy
+    const entropy = new Uint8Array(16);
+    crypto.getRandomValues(entropy);
+    
     const clientFingerprint = [
       navigator.userAgent,
       screen.width + 'x' + screen.height,
       Intl.DateTimeFormat().resolvedOptions().timeZone,
       navigator.language,
-      new Date().getTimezoneOffset().toString()
+      new Date().getTimezoneOffset().toString(),
+      Array.from(entropy).map(b => b.toString(16).padStart(2, '0')).join('')
     ].join('|');
     
     const secret = btoa(clientFingerprint).substring(0, 32);

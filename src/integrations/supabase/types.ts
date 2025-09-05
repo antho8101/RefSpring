@@ -526,10 +526,13 @@ export type Database = {
           active: boolean | null
           campaign_id: string
           created_at: string
+          encrypted_access_token: string | null
           id: string
           settings: Json | null
           shop_domain: string
           shop_info: Json | null
+          token_encrypted_at: string | null
+          token_iv: string | null
           updated_at: string
           user_id: string
         }
@@ -538,10 +541,13 @@ export type Database = {
           active?: boolean | null
           campaign_id: string
           created_at?: string
+          encrypted_access_token?: string | null
           id?: string
           settings?: Json | null
           shop_domain: string
           shop_info?: Json | null
+          token_encrypted_at?: string | null
+          token_iv?: string | null
           updated_at?: string
           user_id: string
         }
@@ -550,10 +556,13 @@ export type Database = {
           active?: boolean | null
           campaign_id?: string
           created_at?: string
+          encrypted_access_token?: string | null
           id?: string
           settings?: Json | null
           shop_domain?: string
           shop_info?: Json | null
+          token_encrypted_at?: string | null
+          token_iv?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -598,6 +607,10 @@ export type Database = {
         Args: { activity_type?: string; user_id?: string }
         Returns: boolean
       }
+      encrypt_shopify_token: {
+        Args: { integration_id: string; plain_token: string }
+        Returns: undefined
+      }
       log_billing_access: {
         Args: { access_type: string; record_id: string }
         Returns: undefined
@@ -616,6 +629,10 @@ export type Database = {
       }
       validate_campaign_ownership: {
         Args: { campaign_id: string; user_id?: string }
+        Returns: boolean
+      }
+      validate_shopify_access: {
+        Args: { integration_id: string; requesting_user_id?: string }
         Returns: boolean
       }
     }

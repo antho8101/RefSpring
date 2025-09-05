@@ -4,19 +4,34 @@ import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getFunctions } from "firebase/functions";
 
-// Configuration Firebase avec des valeurs par défaut pour le développement
-const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyAlHsC-w7Sx18XKJ6dIcxvqj-AUdqkjqSE",
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "refspring-8c3ac.firebaseapp.com",
-  databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL || "https://refspring-8c3ac-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "refspring-8c3ac",
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "refspring-8c3ac.firebasestorage.app",
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "519439687826",
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:519439687826:web:c0644e224f4ca23b57864b",
-  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || "G-QNK35Y7EE4"
-};
+// Secure configuration - no hardcoded fallbacks
+const firebaseConfig = (() => {
+  const requiredEnvVars = [
+    'VITE_FIREBASE_API_KEY',
+    'VITE_FIREBASE_AUTH_DOMAIN', 
+    'VITE_FIREBASE_PROJECT_ID'
+  ];
 
-console.log('🔥 Firebase config loaded with fallback values');
+  // Validate required environment variables
+  const missingVars = requiredEnvVars.filter(envVar => !import.meta.env[envVar]);
+  if (missingVars.length > 0) {
+    console.error('🔥 Missing required Firebase environment variables:', missingVars);
+    throw new Error('Firebase configuration incomplete - check environment variables');
+  }
+
+  return {
+    apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+    databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL,
+    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+    appId: import.meta.env.VITE_FIREBASE_APP_ID,
+    measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
+  };
+})();
+
+console.log('🔥 Firebase config loaded with environment validation');
 
 // Éviter la double initialisation de Firebase
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
