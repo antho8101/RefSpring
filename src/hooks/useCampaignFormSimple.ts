@@ -77,10 +77,10 @@ export const useCampaignFormSimple = () => {
           stripePaymentMethodId: paymentMethods[0].id,
         });
 
-        console.log('✅ SIMPLE: Campagne créée avec ID:', campaignId);
+        console.log('✅ SIMPLE: Campagne créée avec ID:', campaignId.id);
 
         // Déclencher la modale de succès
-        setCreatedCampaign({ id: campaignId, name: formData.name });
+        setCreatedCampaign({ id: campaignId.id, name: formData.name });
         setShowSuccessModal(true);
 
         toast({
@@ -125,7 +125,7 @@ export const useCampaignFormSimple = () => {
       
       // Fermer le sélecteur et ouvrir la modale de succès
       setShowPaymentSelector(false);
-      setCreatedCampaign({ id: campaignId, name: formData.name });
+      setCreatedCampaign({ id: campaignId.id, name: formData.name });
       setShowSuccessModal(true);
       
       toast({

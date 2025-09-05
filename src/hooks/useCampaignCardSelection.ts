@@ -47,14 +47,14 @@ export const useCampaignCardSelection = (
       
       // 🔥 FORCER le déclenchement de la modale IMMÉDIATEMENT
       setTimeout(() => {
-        console.log('🚀 TIMEOUT: Déclenchement modale avec:', campaignId, pendingCampaignData.name);
-        triggerSuccessModal(campaignId, pendingCampaignData.name);
+        console.log('🚀 TIMEOUT: Déclenchement modale avec:', campaignId.id, pendingCampaignData.name);
+        triggerSuccessModal(campaignId.id, pendingCampaignData.name);
       }, 500); // Petit délai pour s'assurer que tout est bien en place
       
       // RETOURNER LES DONNÉES POUR LE COMPOSANT PARENT
       return { 
         success: true, 
-        campaignId, 
+        campaignId: campaignId.id, 
         campaignName: pendingCampaignData.name,
         keepMainModalOpen: true 
       };

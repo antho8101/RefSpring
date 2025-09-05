@@ -73,7 +73,6 @@ export const CreateAffiliateDialog = ({ campaignId, campaignName }: CreateAffili
       await createAffiliate({
         ...formData,
         campaignId,
-        isActive: true,
       });
       
       toast({
