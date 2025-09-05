@@ -21,9 +21,6 @@ import { memo, useCallback, useMemo, useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { StatsPeriodToggle } from '@/components/StatsPeriodToggle';
 import { BarChart3, Users, DollarSign, Percent } from 'lucide-react';
-import { auth } from '@/lib/firebase';
-import { collection, query, where, getDocs } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
 import Logger from '@/utils/logger';
 
 interface GlobalStats {
@@ -293,17 +290,18 @@ export const Dashboard = memo(() => {
     }
   }, [isAuthenticated, tourCompleted, campaignsLoading, affiliatesLoading, startTour]);
 
+  const { signOut } = useAuth();
+
   const handleLogout = useCallback(async () => {
     try {
       Logger.security('User logout initiated');
-      await auth.signOut();
-      localStorage.removeItem('auth_user');
+      await signOut();
       sessionStorage.clear(); // Nettoyer toutes les données de session
       Logger.security('User logged out successfully');
     } catch (error) {
       console.error('🔐 SECURITY - Logout error:', error);
     }
-  }, []);
+  }, [signOut]);
 
   const dashboardMetrics = useMemo(() => {
     const activeCampaigns = campaigns.filter(c => c.isActive).length;

@@ -6,8 +6,7 @@ import { useState } from 'react';
 import { RefSpringLogo } from '@/components/RefSpringLogo';
 import { AccountSettingsDialog } from '@/components/AccountSettingsDialog';
 import { StatsPeriodToggle } from '@/components/StatsPeriodToggle';
-import { signOut } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import { useAuth } from '@/hooks/useAuth';
 import { StatsPeriod } from '@/hooks/useStatsFilters';
 
 interface DashboardHeaderProps {
@@ -20,10 +19,11 @@ interface DashboardHeaderProps {
 export const DashboardHeader = ({ user, onLogout, period, onPeriodChange }: DashboardHeaderProps) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  const { signOut } = useAuth();
+
   const handleLogout = async () => {
     try {
-      await signOut(auth);
-      // Rediriger vers la landing page
+      await signOut();
       window.location.href = '/';
     } catch (error) {
       console.error('Erreur lors de la déconnexion:', error);

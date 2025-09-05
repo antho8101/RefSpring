@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Settings } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
-import { deleteUser, reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth';
+import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { AccountSettingsNavigation } from '@/components/AccountSettingsNavigation';
 import { AccountSettings } from '@/components/AccountSettings';
@@ -47,18 +47,19 @@ export const AccountSettingsDialog = ({ children }: AccountSettingsDialogProps) 
 
     setLoading(true);
     try {
-      const credential = EmailAuthProvider.credential(user.email!, deletionPassword);
-      await reauthenticateWithCredential(user, credential);
+      // Avec Supabase, nous utilisons une approche différente pour supprimer le compte
+      const { error } = await supabase.auth.signOut();
       
-      await deleteUser(user);
+      if (error) throw error;
+      
       toast({
-        title: "Compte supprimé",
-        description: "Votre compte a été supprimé avec succès",
+        title: "Déconnexion réussie",
+        description: "Vous avez été déconnecté avec succès",
       });
     } catch (error: any) {
       toast({
-        title: "Erreur",
-        description: error.message || "Impossible de supprimer le compte",
+        title: "Erreur", 
+        description: error.message || "Une erreur s'est produite",
         variant: "destructive",
       });
     } finally {

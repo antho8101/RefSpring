@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/hooks/useAuth';
-import { updatePassword, reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth';
+import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
 interface AccountSecuritySettingsProps {
@@ -20,10 +20,10 @@ export const AccountSecuritySettings = ({ onCancel }: AccountSecuritySettingsPro
   const [confirmPassword, setConfirmPassword] = useState('');
 
   const handleUpdatePassword = async () => {
-    if (!user || !currentPassword || !newPassword) {
+    if (!user || !newPassword) {
       toast({
         title: "Erreur",
-        description: "Tous les champs sont requis",
+        description: "Nouveau mot de passe requis",
         variant: "destructive",
       });
       return;
@@ -49,10 +49,12 @@ export const AccountSecuritySettings = ({ onCancel }: AccountSecuritySettingsPro
 
     setLoading(true);
     try {
-      const credential = EmailAuthProvider.credential(user.email!, currentPassword);
-      await reauthenticateWithCredential(user, credential);
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword
+      });
       
-      await updatePassword(user, newPassword);
+      if (error) throw error;
+      
       toast({
         title: "Mot de passe mis à jour",
         description: "Votre mot de passe a été modifié avec succès",

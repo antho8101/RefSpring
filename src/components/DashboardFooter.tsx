@@ -1,10 +1,11 @@
 
 import { Link } from 'react-router-dom';
 import { LogOut } from 'lucide-react';
-import { signOut } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import { useAuth } from '@/hooks/useAuth';
 
 export const DashboardFooter = () => {
+  const { signOut } = useAuth();
+  
   return (
     <footer className="fixed bottom-0 left-0 right-0 z-50 border-t border-slate-200/50 bg-white/60 backdrop-blur-xl py-6 w-full">
       <div className="w-full px-4 sm:px-6 lg:px-8">
@@ -14,7 +15,7 @@ export const DashboardFooter = () => {
             <button 
               onClick={async () => {
                 try {
-                  await signOut(auth);
+                  await signOut();
                   window.location.href = '/';
                 } catch (error) {
                   console.error('Erreur déconnexion:', error);

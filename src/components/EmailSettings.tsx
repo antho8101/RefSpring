@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/hooks/useAuth';
-import { updateEmail, reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth';
+import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
 export const EmailSettings = () => {
@@ -15,10 +15,10 @@ export const EmailSettings = () => {
   const [emailPassword, setEmailPassword] = useState('');
 
   const handleUpdateEmail = async () => {
-    if (!user || !emailPassword) {
+    if (!user) {
       toast({
         title: "Erreur",
-        description: "Mot de passe actuel requis",
+        description: "Utilisateur non connecté",
         variant: "destructive",
       });
       return;
@@ -26,13 +26,15 @@ export const EmailSettings = () => {
 
     setLoading(true);
     try {
-      const credential = EmailAuthProvider.credential(user.email!, emailPassword);
-      await reauthenticateWithCredential(user, credential);
+      const { error } = await supabase.auth.updateUser({
+        email: newEmail
+      });
       
-      await updateEmail(user, newEmail);
+      if (error) throw error;
+      
       toast({
         title: "Email mis à jour",
-        description: "Votre email a été modifié avec succès",
+        description: "Votre email a été modifié avec succès. Vérifiez votre boîte mail pour confirmer.",
       });
       setEmailPassword('');
     } catch (error: any) {
