@@ -1,24 +1,22 @@
 
 import { useAuth } from '@/hooks/useAuth';
-import { useCampaignData } from '@/hooks/useCampaignData';
-import { useCampaignOperations } from '@/hooks/useCampaignOperations';
+import { useCampaignsSupabase } from '@/hooks/useCampaignsSupabase';
 import { useAuthGuard } from '@/hooks/useAuthGuard';
 
 export const useCampaigns = () => {
   const { user, loading: authLoading } = useAuth();
   const { requireAuthentication } = useAuthGuard();
   
-  // Vérification de sécurité avant toute opération
-  const secureUserId = (() => {
-    if (!authLoading && !user?.uid) {
-      console.log('🔐 SECURITY - useCampaigns called without authentication');
-      return null;
-    }
-    return user?.uid || null;
-  })();
-
-  const { campaigns, loading } = useCampaignData(secureUserId, authLoading);
-  const operations = useCampaignOperations(secureUserId);
+  // Use the new Supabase-based hook
+  const {
+    campaigns,
+    loading,
+    createCampaign,
+    updateCampaign,
+    finalizeCampaign,
+    deleteCampaign,
+    refreshCampaigns
+  } = useCampaignsSupabase();
 
   // Wrapper sécurisé pour les opérations
   const secureOperations = {
@@ -32,7 +30,7 @@ export const useCampaigns = () => {
       if (!requireAuthentication('créer une campagne')) {
         return;
       }
-      return operations.createCampaign(campaignData);
+      return createCampaign(campaignData);
     },
     updateCampaign: async (id: string, updates: any) => {
       if (authLoading) {
@@ -41,7 +39,7 @@ export const useCampaigns = () => {
       if (!requireAuthentication('modifier une campagne')) {
         return;
       }
-      return operations.updateCampaign(id, updates);
+      return updateCampaign(id, updates);
     },
     finalizeCampaign: async (id: string, stripeData: any) => {
       if (authLoading) {
@@ -50,7 +48,7 @@ export const useCampaigns = () => {
       if (!requireAuthentication('finaliser une campagne')) {
         return;
       }
-      return operations.finalizeCampaign(id, stripeData);
+      return finalizeCampaign(id, stripeData);
     },
     deleteCampaign: async (id: string) => {
       if (authLoading) {
@@ -59,13 +57,14 @@ export const useCampaigns = () => {
       if (!requireAuthentication('supprimer une campagne')) {
         return;
       }
-      return operations.deleteCampaign(id);
+      return deleteCampaign(id);
     },
   };
 
   return {
     campaigns,
     loading,
+    refreshCampaigns,
     ...secureOperations,
   };
 };
