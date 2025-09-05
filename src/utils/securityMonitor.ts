@@ -75,18 +75,20 @@ class SecurityMonitor {
   }
 
   private setupNetworkMonitoring() {
-    const originalFetch = window.fetch;
-    
-    window.fetch = async (...args) => {
-      const url = typeof args[0] === 'string' ? args[0] : (args[0] as Request).url;
-      
-      if (this.isSuspiciousRequest(url)) {
-        this.createAlert('MEDIUM', 'suspicious_request', 
-          'Suspicious network request detected', { url });
-      }
-      
-      return originalFetch.apply(window, args);
-    };
+    // Surveillance réseau désactivée car elle interfère avec Supabase dans Lovable
+    // const originalFetch = window.fetch;
+    // 
+    // window.fetch = async (...args) => {
+    //   const url = typeof args[0] === 'string' ? args[0] : (args[0] as Request).url;
+    //   
+    //   if (this.isSuspiciousRequest(url)) {
+    //     this.createAlert('MEDIUM', 'suspicious_request', 
+    //       'Suspicious network request detected', { url });
+    //   }
+    //   
+    //   return originalFetch.apply(window, args);
+    // };
+    console.log('🔒 SECURITY: Network monitoring désactivé pour éviter les conflits avec Supabase');
   }
 
   private setupConsoleMonitoring() {
