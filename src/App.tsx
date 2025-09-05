@@ -2,6 +2,7 @@
 import { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from '@/contexts/AuthContext';
+import { SecurityProvider } from '@/components/SecurityProvider';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Helmet, HelmetProvider } from 'react-helmet-async';
 import { CookieBanner } from '@/components/CookieBanner';
@@ -50,8 +51,9 @@ function App() {
     <ErrorBoundary>
       <HelmetProvider>
         <QueryClientProvider client={queryClient}>
-          <AuthProvider>
-            <Router>
+          <SecurityProvider>
+            <AuthProvider>
+              <Router>
               <Helmet>
                 <title>RefSpring - Plateforme d'affiliation</title>
                 <meta name="description" content="Gérez vos programmes d'affiliation avec RefSpring" />
@@ -97,10 +99,11 @@ function App() {
               </div>
             </Router>
           </AuthProvider>
-        </QueryClientProvider>
-      </HelmetProvider>
-    </ErrorBoundary>
-  );
+        </SecurityProvider>
+      </QueryClientProvider>
+    </HelmetProvider>
+  </ErrorBoundary>
+);
 }
 
 export default App;

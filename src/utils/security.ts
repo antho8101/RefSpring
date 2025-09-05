@@ -169,23 +169,52 @@ export const securityMonitoring = {
     userAgent?: string;
     details?: Record<string, unknown>;
   }): void => {
-    const logEntry = {
-      timestamp: new Date().toISOString(),
-      ...activity,
-      sessionId: sessionStorage.getItem('session_id')
-    };
-    
-    // En production, envoyer à un service de monitoring
-    if (import.meta.env.PROD) {
-      // TODO: Intégrer avec service de monitoring (Sentry, LogRocket, etc.)
-      console.warn('🚨 SECURITY ALERT:', logEntry);
-    } else {
-      console.warn('🚨 SECURITY ALERT (dev):', logEntry);
+    try {
+      const timestamp = new Date().toISOString();
+      const clientIP = activity.ip || 'unknown';
+      const userAgent = activity.userAgent || navigator?.userAgent || 'unknown';
+      
+      const logEntry = {
+        timestamp,
+        ...activity,
+        ip: clientIP,
+        userAgent: userAgent,
+        sessionId: sessionStorage.getItem('session_id')
+      };
+      
+      console.warn('🚨 SUSPICIOUS ACTIVITY:', logEntry);
+
+      // Store in secure storage for analysis
+      secureStorage.setSecure(`suspicious_activity_${timestamp}`, {
+        ...logEntry,
+        severity: getSeverityLevel(activity.type)
+      });
+
+      // Send to security monitoring endpoint in production
+      if (import.meta.env.PROD && typeof fetch !== 'undefined') {
+        fetch('https://wsvhmozduyiftmuuynpi.supabase.co/functions/v1/security-monitor', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            event: {
+              ...logEntry,
+              severity: getSeverityLevel(activity.type)
+            }
+          })
+        }).catch(error => {
+          console.error('Failed to send security event:', error);
+        });
+      }
+
+    } catch (error) {
+      console.error('Error logging suspicious activity:', error);
     }
   },
 
   // Détecter les tentatives de manipulation DOM
-  detectDOMManipulation: (): void => {
+  detectDOMManipulation: (): (() => void) => {
     const observer = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
         if (mutation.type === 'childList') {
@@ -193,15 +222,36 @@ export const securityMonitoring = {
             if (node.nodeType === Node.ELEMENT_NODE) {
               const element = node as Element;
               
-              // Détecter l'injection de scripts
+              // Check for script injections
               if (element.tagName === 'SCRIPT') {
                 securityMonitoring.logSuspiciousActivity({
                   type: 'script_injection',
                   details: {
-                    src: element.getAttribute('src'),
-                    content: element.textContent?.substring(0, 100)
+                    scriptContent: element.textContent,
+                    scriptSrc: element.getAttribute('src'),
+                    parentElement: element.parentElement?.tagName
                   }
                 });
+                
+                // Remove suspicious scripts
+                element.remove();
+              }
+              
+              // Check for iframe injections
+              if (element.tagName === 'IFRAME') {
+                const src = element.getAttribute('src');
+                if (src && !src.startsWith(window.location.origin)) {
+                  securityMonitoring.logSuspiciousActivity({
+                    type: 'iframe_injection',
+                    details: {
+                      iframeSrc: src,
+                      parentElement: element.parentElement?.tagName
+                    }
+                  });
+                  
+                  // Remove suspicious iframes
+                  element.remove();
+                }
               }
             }
           });
@@ -213,8 +263,97 @@ export const securityMonitoring = {
       childList: true,
       subtree: true
     });
+
+    return () => observer.disconnect();
+  },
+
+  checkForConsoleInjection: (): void => {
+    if (typeof window === 'undefined') return;
+
+    // Detect console-based attacks
+    const originalConsole = {
+      log: console.log.bind(console),
+      warn: console.warn.bind(console),
+      error: console.error.bind(console),
+      info: console.info.bind(console)
+    };
+    
+    (['log', 'warn', 'error', 'info'] as const).forEach(method => {
+      console[method] = (...args: any[]) => {
+        // Check for suspicious console activity
+        const message = args.join(' ');
+        const suspiciousPatterns = [
+          /trackConversion\s*\(/i,
+          /window\.RefSpring/i,
+          /localStorage\.setItem.*secure_/i,
+          /document\.cookie\s*=/i
+        ];
+
+        if (suspiciousPatterns.some(pattern => pattern.test(message))) {
+          securityMonitoring.logSuspiciousActivity({
+            type: 'console_injection_attempt',
+            details: {
+              method,
+              message: message.substring(0, 500), // Limit message length
+              stackTrace: new Error().stack
+            }
+          });
+        }
+
+        // Call original console method
+        originalConsole[method](...args);
+      };
+    });
+  },
+
+  monitorSecurityHeaders: (): void => {
+    if (typeof window === 'undefined') return;
+
+    // Check for security headers on page load
+    fetch(window.location.href, { method: 'HEAD' })
+      .then(response => {
+        const securityHeaders = {
+          'content-security-policy': response.headers.get('content-security-policy'),
+          'x-frame-options': response.headers.get('x-frame-options'),
+          'x-content-type-options': response.headers.get('x-content-type-options'),
+          'referrer-policy': response.headers.get('referrer-policy')
+        };
+
+        const missingHeaders = Object.entries(securityHeaders)
+          .filter(([, value]) => !value)
+          .map(([header]) => header);
+
+        if (missingHeaders.length > 0) {
+          securityMonitoring.logSuspiciousActivity({
+            type: 'missing_security_headers',
+            details: {
+              missingHeaders,
+              currentHeaders: securityHeaders
+            }
+          });
+        }
+      })
+      .catch(error => {
+        console.error('Error checking security headers:', error);
+      });
   }
 };
+
+function getSeverityLevel(activityType: string): 'low' | 'medium' | 'high' | 'critical' {
+  const severityMap: Record<string, 'low' | 'medium' | 'high' | 'critical'> = {
+    'script_injection': 'critical',
+    'iframe_injection': 'critical',
+    'console_injection_attempt': 'high',
+    'data_breach_attempt': 'critical',
+    'unauthorized_access': 'high',
+    'suspicious_conversion': 'medium',
+    'rate_limit_exceeded': 'medium',
+    'missing_security_headers': 'low',
+    'dom_manipulation': 'medium'
+  };
+
+  return severityMap[activityType] || 'low';
+}
 
 /**
  * Validation des données côté client (à compléter par validation serveur)

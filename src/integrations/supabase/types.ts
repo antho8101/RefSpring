@@ -594,7 +594,18 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      check_suspicious_activity: {
+        Args: { activity_type?: string; user_id?: string }
+        Returns: boolean
+      }
+      log_security_event: {
+        Args: { details?: Json; event_type: string; user_id?: string }
+        Returns: undefined
+      }
+      validate_affiliate_access: {
+        Args: { campaign_id: string; requesting_user_id?: string }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never

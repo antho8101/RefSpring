@@ -146,13 +146,76 @@ export const monitorSecurityEvents = () => {
   });
 };
 
-// Initialisation de toutes les protections de sécurité
+// Enhanced security initialization with better protection
 export const initSecurityHardening = () => {
-  enableXSSProtection();
-  sanitizeDOM();
-  enableDeveloperToolsProtection();
-  protectSensitiveData();
-  monitorSecurityEvents();
+  console.log('🔐 SECURITY: Initializing enhanced security hardening');
   
-  Logger.security('Security hardening initialized for production');
+  if (typeof window !== 'undefined') {
+    enableXSSProtection();
+    sanitizeDOM();
+    protectSensitiveData();
+    monitorSecurityEvents();
+    
+    // Enhanced protection for production
+    if (import.meta.env.PROD) {
+      enableDeveloperToolsProtection();
+      enableAdvancedTamperProtection();
+      enableNetworkSecurityMonitoring();
+    }
+    
+    console.log('✅ SECURITY: All security measures activated');
+  }
+};
+
+// Advanced tamper protection
+const enableAdvancedTamperProtection = () => {
+  // Protect critical global objects
+  if (typeof window !== 'undefined') {
+    try {
+      // Monitor global variable assignments
+      const originalDefineProperty = Object.defineProperty;
+      Object.defineProperty = function(obj: any, prop: string, descriptor: PropertyDescriptor) {
+        if (prop === 'RefSpring' && obj === window) {
+          console.warn('🚨 SECURITY: Attempt to modify RefSpring global object');
+          Logger.security('Attempt to tamper with RefSpring object', { prop, descriptor });
+          return obj;
+        }
+        return originalDefineProperty.call(this, obj, prop, descriptor);
+      };
+      
+    } catch (error) {
+      console.error('Error enabling advanced tamper protection:', error);
+    }
+  }
+};
+
+// Network security monitoring
+const enableNetworkSecurityMonitoring = () => {
+  if (typeof window !== 'undefined' && typeof fetch !== 'undefined') {
+    const originalFetch = window.fetch;
+    
+    window.fetch = async function(input: RequestInfo | URL, init?: RequestInit) {
+      const url = typeof input === 'string' ? input : input.toString();
+      
+      // Monitor for suspicious network requests
+      const suspiciousPatterns = [
+        /\/admin\//i,
+        /\/debug/i,
+        /\/internal/i,
+        /password/i,
+        /token/i
+      ];
+      
+      if (suspiciousPatterns.some(pattern => pattern.test(url))) {
+        console.warn('🚨 SECURITY: Suspicious network request detected:', url);
+        Logger.security('Suspicious network request', {
+          url,
+          method: init?.method || 'GET',
+          timestamp: new Date().toISOString()
+        });
+      }
+      
+      return originalFetch.call(this, input, init);
+    };
+  }
 };
