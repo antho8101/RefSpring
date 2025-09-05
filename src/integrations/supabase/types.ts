@@ -606,6 +606,10 @@ export type Database = {
         Args: { campaign_id: string; requesting_user_id?: string }
         Returns: boolean
       }
+      validate_campaign_ownership: {
+        Args: { campaign_id: string; user_id?: string }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never
