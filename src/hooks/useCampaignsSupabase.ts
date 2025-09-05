@@ -128,7 +128,8 @@ export const useCampaignsSupabase = () => {
       console.log('✅ SUPABASE - Campagne créée:', newCampaign.id);
       
       // Store campaign data for success modal
-      localStorage.setItem('newCampaignCreated', JSON.stringify({
+      import('@/utils/secureClientStorage').then(({ secureStorage }) => {
+        secureStorage.setSecure('newCampaignCreated', {
         id: newCampaign.id,
         name: newCampaign.name
       }));

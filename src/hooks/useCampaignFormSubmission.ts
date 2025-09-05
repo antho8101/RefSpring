@@ -24,9 +24,11 @@ export const useCampaignFormSubmission = (
     console.log('🎯 NOUVEAU FLOW: Redirection vers Stripe SANS créer la campagne');
     
     try {
-      // Stocker les données de campagne dans localStorage pour après validation Stripe
-      localStorage.setItem('pendingCampaignData', JSON.stringify(campaignData));
-      console.log('💾 Données campagne stockées dans localStorage');
+      // Store campaign data securely with encryption
+      import('@/utils/secureClientStorage').then(({ secureStorage }) => {
+        secureStorage.setCampaignData('pendingCampaignData', campaignData, 2); // 2 hours expiry
+        console.log('🔒 Campaign data stored securely');
+      });
       
       // Stocker aussi dans le state pour le flow normal
       setPendingCampaignData(campaignData);
@@ -36,7 +38,9 @@ export const useCampaignFormSubmission = (
       console.log('✅ Redirection vers Stripe en cours (campagne PAS ENCORE créée)...');
     } catch (error) {
       console.error('❌ Erreur lors de la redirection vers Stripe:', error);
-      localStorage.removeItem('pendingCampaignData');
+      import('@/utils/secureClientStorage').then(({ secureStorage }) => {
+        secureStorage.removeSecure('campaign_pendingCampaignData');
+      });
       setPendingCampaignData(null);
       toast({
         title: "Erreur",

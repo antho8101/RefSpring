@@ -262,7 +262,10 @@ export const Dashboard = memo(() => {
   // 🆕 Détecter une nouvelle campagne créée et afficher la modale
   useEffect(() => {
     const checkForNewCampaign = () => {
-      const newCampaignCreated = localStorage.getItem('newCampaignCreated');
+      let newCampaignCreated: any = null;
+      import('@/utils/secureClientStorage').then(({ secureStorage }) => {
+        newCampaignCreated = secureStorage.getSecure('newCampaignCreated');
+      });
       if (newCampaignCreated) {
         try {
           const campaignData = JSON.parse(newCampaignCreated);

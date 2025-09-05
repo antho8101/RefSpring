@@ -520,6 +520,48 @@ export type Database = {
         }
         Relationships: []
       }
+      security_audit_logs: {
+        Row: {
+          alert_sent: boolean | null
+          created_at: string
+          event_data: Json | null
+          event_type: string
+          id: string
+          ip_address: unknown | null
+          processed: boolean | null
+          session_id: string | null
+          severity: string
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          alert_sent?: boolean | null
+          created_at?: string
+          event_data?: Json | null
+          event_type: string
+          id?: string
+          ip_address?: unknown | null
+          processed?: boolean | null
+          session_id?: string | null
+          severity?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          alert_sent?: boolean | null
+          created_at?: string
+          event_data?: Json | null
+          event_type?: string
+          id?: string
+          ip_address?: unknown | null
+          processed?: boolean | null
+          session_id?: string | null
+          severity?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       shopify_integrations: {
         Row: {
           access_token: string
@@ -607,6 +649,15 @@ export type Database = {
         Args: { activity_type?: string; user_id?: string }
         Returns: boolean
       }
+      check_suspicious_activity_enhanced: {
+        Args: {
+          activity_type?: string
+          threshold?: number
+          time_window_minutes?: number
+          user_id?: string
+        }
+        Returns: Json
+      }
       encrypt_shopify_token: {
         Args: { integration_id: string; plain_token: string }
         Returns: undefined
@@ -620,7 +671,14 @@ export type Database = {
         Returns: undefined
       }
       log_security_event: {
-        Args: { details?: Json; event_type: string; user_id?: string }
+        Args:
+          | {
+              details?: Json
+              event_type: string
+              severity_level?: string
+              user_id?: string
+            }
+          | { details?: Json; event_type: string; user_id?: string }
         Returns: undefined
       }
       validate_affiliate_access: {
@@ -631,12 +689,24 @@ export type Database = {
         Args: { affiliate_id: string; requesting_user_id?: string }
         Returns: boolean
       }
+      validate_affiliate_data_access_enhanced: {
+        Args: {
+          affiliate_id: string
+          log_access?: boolean
+          requesting_user_id?: string
+        }
+        Returns: boolean
+      }
       validate_billing_record_ownership: {
         Args: { record_id: string }
         Returns: boolean
       }
       validate_campaign_ownership: {
         Args: { campaign_id: string; user_id?: string }
+        Returns: boolean
+      }
+      validate_campaign_ownership_enhanced: {
+        Args: { campaign_id: string; log_access?: boolean; user_id?: string }
         Returns: boolean
       }
       validate_shopify_access: {
