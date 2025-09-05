@@ -1,4 +1,3 @@
-
 export interface PaymentMethod {
   id: string;
   type: string;
@@ -11,72 +10,76 @@ export interface PaymentMethod {
 
 export const paymentMethodService = {
   async getPaymentMethods(userEmail: string): Promise<PaymentMethod[]> {
-    console.log('🔍 API: Chargement des cartes bancaires pour:', userEmail);
+    console.log('🔍 SUPABASE: Chargement des cartes bancaires pour:', userEmail);
     
     try {
-      const response = await fetch('/api/stripe-payment-methods', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ userEmail }),
+      // Utiliser Supabase Edge Function au lieu de l'ancienne API
+      const { supabase } = await import('@/integrations/supabase/client');
+      
+      const { data, error } = await supabase.functions.invoke('stripe-payment-methods', {
+        body: { userEmail }
       });
       
-      if (!response.ok) {
-        throw new Error('Failed to fetch payment methods');
+      if (error) {
+        console.error('❌ SUPABASE: Erreur récupération méthodes de paiement:', error);
+        return [];
       }
       
-      const data = await response.json();
-      console.log('✅ API: Cartes bancaires chargées:', data.paymentMethods?.length || 0);
-      return data.paymentMethods || [];
+      console.log('✅ SUPABASE: Cartes bancaires chargées:', data?.paymentMethods?.length || 0);
+      return data?.paymentMethods || [];
     } catch (error) {
-      console.error('❌ API: Erreur chargement cartes:', error);
+      console.error('❌ SUPABASE: Erreur chargement cartes:', error);
       return [];
     }
   },
 
   async deletePaymentMethod(paymentMethodId: string): Promise<void> {
-    console.log(`🗑️ API: Suppression de la carte ${paymentMethodId}`);
+    console.log(`🗑️ SUPABASE: Suppression de la carte ${paymentMethodId}`);
     
     try {
-      const response = await fetch('/api/stripe-delete-payment-method', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ paymentMethodId }),
+      const { supabase } = await import('@/integrations/supabase/client');
+      
+      const { error } = await supabase.functions.invoke('stripe-payment-methods', {
+        body: { 
+          action: 'delete',
+          paymentMethodId 
+        }
       });
       
-      if (!response.ok) {
-        throw new Error('Failed to delete payment method');
+      if (error) {
+        console.error('❌ SUPABASE: Erreur suppression carte:', error);
+        throw error;
       }
       
-      console.log('✅ API: Carte supprimée de Stripe');
+      console.log('✅ SUPABASE: Carte supprimée de Stripe');
     } catch (error) {
-      console.error('❌ API: Erreur suppression carte:', error);
+      console.error('❌ SUPABASE: Erreur suppression carte:', error);
       throw error;
     }
   },
 
   async setDefaultPaymentMethod(userEmail: string, paymentMethodId: string): Promise<void> {
-    console.log(`⭐ API: Définition de la carte par défaut ${paymentMethodId} pour ${userEmail}`);
+    console.log(`⭐ SUPABASE: Définition de la carte par défaut ${paymentMethodId} pour ${userEmail}`);
     
     try {
-      const response = await fetch('/api/stripe-set-default-payment-method', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ userEmail, paymentMethodId }),
+      const { supabase } = await import('@/integrations/supabase/client');
+      
+      const { error } = await supabase.functions.invoke('stripe-payment-methods', {
+        body: { 
+          action: 'setDefault',
+          userEmail, 
+          paymentMethodId 
+        }
       });
       
-      if (!response.ok) {
-        throw new Error('Failed to set default payment method');
+      if (error) {
+        console.error('❌ SUPABASE: Erreur définition carte par défaut:', error);
+        throw error;
       }
       
-      console.log('✅ API: Carte par défaut mise à jour');
+      console.log('✅ SUPABASE: Carte par défaut mise à jour');
     } catch (error) {
-      console.error('❌ API: Erreur définition carte par défaut:', error);
+      console.error('❌ SUPABASE: Erreur définition carte par défaut:', error);
       throw error;
     }
   }

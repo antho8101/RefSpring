@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,8 +5,7 @@ import { useCampaigns } from '@/hooks/useCampaigns';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { Trash2, AlertTriangle } from 'lucide-react';
-import { collection, query, where, getDocs, doc, deleteDoc } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { supabase } from '@/integrations/supabase/client';
 
 export const CampaignDeletionUtility = () => {
   const [loading, setLoading] = useState(false);
@@ -20,30 +18,29 @@ export const CampaignDeletionUtility = () => {
     
     setLoading(true);
     try {
-      console.log('🔍 Recherche des campagnes brouillon pour:', user.uid);
+      console.log('🔍 SUPABASE: Recherche des campagnes brouillon pour:', user.uid);
       
-      const campaignsQuery = query(
-        collection(db, 'campaigns'),
-        where('userId', '==', user.uid),
-        where('isDraft', '==', true)
-      );
+      const { data: drafts, error } = await supabase
+        .from('campaigns')
+        .select('*')
+        .eq('user_id', user.uid)
+        .eq('is_draft', true)
+        .order('created_at', { ascending: false });
       
-      const campaignsSnapshot = await getDocs(campaignsQuery);
-      const drafts = campaignsSnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-        createdAt: doc.data().createdAt?.toDate() || new Date(),
-      }));
+      if (error) {
+        console.error('❌ SUPABASE: Erreur chargement brouillons:', error);
+        throw error;
+      }
       
-      console.log('📋 Campagnes brouillon trouvées:', drafts.length);
-      setDraftCampaigns(drafts);
+      console.log('📋 SUPABASE: Campagnes brouillon trouvées:', drafts?.length || 0);
+      setDraftCampaigns(drafts || []);
       
       toast({
         title: "Campagnes trouvées",
-        description: `${drafts.length} campagnes en brouillon trouvées`,
+        description: `${drafts?.length || 0} campagnes en brouillon trouvées`,
       });
     } catch (error) {
-      console.error('❌ Erreur chargement brouillons:', error);
+      console.error('❌ SUPABASE: Erreur chargement brouillons:', error);
       toast({
         title: "Erreur",
         description: "Impossible de charger les campagnes brouillon",
@@ -56,10 +53,18 @@ export const CampaignDeletionUtility = () => {
 
   const deleteDraftCampaign = async (campaignId: string, campaignName: string) => {
     try {
-      console.log('🗑️ Suppression de la campagne brouillon:', campaignId);
+      console.log('🗑️ SUPABASE: Suppression de la campagne brouillon:', campaignId);
       
-      const campaignRef = doc(db, 'campaigns', campaignId);
-      await deleteDoc(campaignRef);
+      const { error } = await supabase
+        .from('campaigns')
+        .delete()
+        .eq('id', campaignId)
+        .eq('user_id', user?.uid); // Sécurité supplémentaire
+      
+      if (error) {
+        console.error('❌ SUPABASE: Erreur suppression:', error);
+        throw error;
+      }
       
       // Mettre à jour la liste
       setDraftCampaigns(prev => prev.filter(c => c.id !== campaignId));
@@ -69,7 +74,7 @@ export const CampaignDeletionUtility = () => {
         description: `"${campaignName}" a été supprimée avec succès`,
       });
     } catch (error) {
-      console.error('❌ Erreur suppression:', error);
+      console.error('❌ SUPABASE: Erreur suppression:', error);
       toast({
         title: "Erreur",
         description: "Impossible de supprimer cette campagne",
@@ -83,13 +88,18 @@ export const CampaignDeletionUtility = () => {
     
     setLoading(true);
     try {
-      console.log('🗑️ Suppression de toutes les campagnes brouillon...');
+      console.log('🗑️ SUPABASE: Suppression de toutes les campagnes brouillon...');
       
-      const deletePromises = draftCampaigns.map(campaign => 
-        deleteDoc(doc(db, 'campaigns', campaign.id))
-      );
+      const { error } = await supabase
+        .from('campaigns')
+        .delete()
+        .eq('user_id', user.uid)
+        .eq('is_draft', true);
       
-      await Promise.all(deletePromises);
+      if (error) {
+        console.error('❌ SUPABASE: Erreur suppression globale:', error);
+        throw error;
+      }
       
       toast({
         title: "Nettoyage terminé",
@@ -98,7 +108,7 @@ export const CampaignDeletionUtility = () => {
       
       setDraftCampaigns([]);
     } catch (error) {
-      console.error('❌ Erreur suppression globale:', error);
+      console.error('❌ SUPABASE: Erreur suppression globale:', error);
       toast({
         title: "Erreur",
         description: "Erreur lors de la suppression globale",
@@ -143,7 +153,7 @@ export const CampaignDeletionUtility = () => {
                 <div>
                   <span className="font-medium">{campaign.name}</span>
                   <span className="text-sm text-gray-500 ml-2">
-                    ({campaign.createdAt.toLocaleDateString()})
+                    ({new Date(campaign.created_at).toLocaleDateString()})
                   </span>
                 </div>
                 <Button
