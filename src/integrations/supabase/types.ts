@@ -611,6 +611,10 @@ export type Database = {
         Args: { integration_id: string; plain_token: string }
         Returns: undefined
       }
+      log_affiliate_data_access: {
+        Args: { access_type: string; affiliate_id: string }
+        Returns: undefined
+      }
       log_billing_access: {
         Args: { access_type: string; record_id: string }
         Returns: undefined
@@ -621,6 +625,10 @@ export type Database = {
       }
       validate_affiliate_access: {
         Args: { campaign_id: string; requesting_user_id?: string }
+        Returns: boolean
+      }
+      validate_affiliate_data_access: {
+        Args: { affiliate_id: string; requesting_user_id?: string }
         Returns: boolean
       }
       validate_billing_record_ownership: {
