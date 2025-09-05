@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -16,7 +15,7 @@ export const useStripePayment = () => {
     setError(null);
 
     try {
-      console.log('🔄 API: Création du setup de paiement pour la campagne:', campaignId);
+      console.log('🔄 SUPABASE: Création du setup de paiement pour la campagne:', campaignId);
       
       // Si c'est pour une nouvelle campagne, stocker les données en local
       if (campaignId === 'temp_new_campaign') {
@@ -24,29 +23,26 @@ export const useStripePayment = () => {
         console.log('💾 Données campagne stockées pour après validation Stripe:', pendingData);
       }
       
-      // Appel à l'API Vercel
-      const response = await fetch('/api/stripe-setup-intent', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          userEmail: user.email, 
+      // Utiliser Supabase Edge Function au lieu de l'API Vercel
+      const { supabase } = await import('@/integrations/supabase/client');
+      
+      const { data: setupData, error: supabaseError } = await supabase.functions.invoke('stripe-setup-intent', {
+        body: { 
           campaignName 
-        }),
+        }
       });
       
-      if (!response.ok) {
-        throw new Error('Failed to create setup intent');
+      if (supabaseError) {
+        console.error('❌ SUPABASE: Erreur setup paiement:', supabaseError);
+        throw new Error(supabaseError.message || 'Failed to create setup intent');
       }
       
-      const setupData = await response.json();
-      console.log('✅ API: Setup de paiement créé:', setupData);
+      console.log('✅ SUPABASE: Setup de paiement créé:', setupData);
       
       // Retourner les données pour utilisation avec Stripe Elements
       return setupData;
     } catch (err: any) {
-      console.error('❌ API: Erreur setup paiement:', err);
+      console.error('❌ SUPABASE: Erreur setup paiement:', err);
       setError(err.message);
       throw err;
     } finally {
@@ -59,23 +55,21 @@ export const useStripePayment = () => {
     setError(null);
 
     try {
-      console.log('🔄 API: Vérification du setup pour:', setupIntentId);
+      console.log('🔄 SUPABASE: Vérification du setup pour:', setupIntentId);
       
-      // Appel à l'API Vercel
-      const response = await fetch('/api/stripe-check-setup', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ setupIntentId }),
+      // Utiliser Supabase Edge Function au lieu de l'API Vercel
+      const { supabase } = await import('@/integrations/supabase/client');
+      
+      const { data, error: supabaseError } = await supabase.functions.invoke('stripe-check-setup', {
+        body: { setupIntentId }
       });
       
-      if (!response.ok) {
-        throw new Error('Failed to verify setup intent');
+      if (supabaseError) {
+        console.error('❌ SUPABASE: Erreur vérification setup:', supabaseError);
+        throw new Error(supabaseError.message || 'Failed to verify setup intent');
       }
       
-      const data = await response.json();
-      console.log('✅ API: Setup vérifié et finalisé:', data);
+      console.log('✅ SUPABASE: Setup vérifié et finalisé:', data);
       
       // **IMPORTANT: Retourner aussi le paymentMethodId pour la finalisation**
       return {
@@ -83,7 +77,7 @@ export const useStripePayment = () => {
         paymentMethodId: data.paymentMethodId
       };
     } catch (err: any) {
-      console.error('❌ API: Erreur vérification setup:', err);
+      console.error('❌ SUPABASE: Erreur vérification setup:', err);
       setError(err.message);
       throw err;
     } finally {

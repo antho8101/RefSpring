@@ -13,11 +13,11 @@ export const paymentMethodService = {
     console.log('🔍 SUPABASE: Chargement des cartes bancaires pour:', userEmail);
     
     try {
-      // Utiliser Supabase Edge Function au lieu de l'ancienne API
       const { supabase } = await import('@/integrations/supabase/client');
       
+      // Utiliser POST sans action pour déclencher le GET dans la fonction Edge
       const { data, error } = await supabase.functions.invoke('stripe-payment-methods', {
-        body: { userEmail }
+        body: {} // POST vide pour déclencher handleGetPaymentMethods
       });
       
       if (error) {
@@ -26,7 +26,19 @@ export const paymentMethodService = {
       }
       
       console.log('✅ SUPABASE: Cartes bancaires chargées:', data?.paymentMethods?.length || 0);
-      return data?.paymentMethods || [];
+      
+      // Mapper les données pour correspondre à l'interface PaymentMethod
+      const paymentMethods = data?.paymentMethods?.map((pm: any) => ({
+        id: pm.id,
+        type: pm.type,
+        last4: pm.card?.last4 || '',
+        brand: pm.card?.brand || '',
+        exp_month: pm.card?.exp_month || 0,
+        exp_year: pm.card?.exp_year || 0,
+        isDefault: pm.isDefault || false
+      })) || [];
+      
+      return paymentMethods;
     } catch (error) {
       console.error('❌ SUPABASE: Erreur chargement cartes:', error);
       return [];
@@ -39,6 +51,7 @@ export const paymentMethodService = {
     try {
       const { supabase } = await import('@/integrations/supabase/client');
       
+      // Utiliser la méthode POST avec action delete
       const { error } = await supabase.functions.invoke('stripe-payment-methods', {
         body: { 
           action: 'delete',
@@ -64,10 +77,10 @@ export const paymentMethodService = {
     try {
       const { supabase } = await import('@/integrations/supabase/client');
       
+      // Utiliser la méthode POST avec action set_default
       const { error } = await supabase.functions.invoke('stripe-payment-methods', {
         body: { 
-          action: 'setDefault',
-          userEmail, 
+          action: 'set_default',
           paymentMethodId 
         }
       });

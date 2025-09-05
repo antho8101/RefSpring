@@ -44,10 +44,13 @@ serve(async (req) => {
       return await handleGetPaymentMethods(stripe, user.email);
     } else if (req.method === "POST") {
       const body = await req.json();
+      
+      // Si aucune action spécifiée, c'est un GET via POST (pour compatibilité)
+      if (!body.action) {
+        return await handleGetPaymentMethods(stripe, user.email);
+      }
+      
       return await handlePaymentMethodAction(stripe, body, user.email);
-    } else if (req.method === "DELETE") {
-      const body = await req.json();
-      return await handleDeletePaymentMethod(stripe, body);
     }
 
     return new Response(JSON.stringify({ error: "Method not allowed" }), {
@@ -95,6 +98,11 @@ async function handleGetPaymentMethods(stripe: Stripe, userEmail: string) {
 
     console.log('💳 GET PAYMENT METHODS - Méthodes trouvées:', paymentMethods.data.length);
 
+    // Get default payment method
+    const defaultPaymentMethodId = typeof customer.invoice_settings?.default_payment_method === 'string' 
+      ? customer.invoice_settings.default_payment_method
+      : null;
+
     // Format payment methods for frontend
     const formattedMethods = paymentMethods.data.map(pm => ({
       id: pm.id,
@@ -105,6 +113,7 @@ async function handleGetPaymentMethods(stripe: Stripe, userEmail: string) {
         exp_month: pm.card.exp_month,
         exp_year: pm.card.exp_year,
       } : null,
+      isDefault: pm.id === defaultPaymentMethodId,
       created: pm.created,
     }));
 
@@ -127,7 +136,24 @@ async function handlePaymentMethodAction(stripe: Stripe, body: any, userEmail: s
 
   console.log('⚙️ PAYMENT METHOD ACTION - Action:', action);
 
-  if (action === 'attach') {
+  if (action === 'delete') {
+    // Delete/detach payment method
+    if (!paymentMethodId) {
+      return new Response(JSON.stringify({ error: "Payment method ID required" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    await stripe.paymentMethods.detach(paymentMethodId);
+    console.log('✅ PAYMENT METHOD ACTION - Méthode supprimée');
+    
+    return new Response(JSON.stringify({ success: true }), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      status: 200,
+    });
+
+  } else if (action === 'attach') {
     // Attach payment method to customer
     await stripe.paymentMethods.attach(paymentMethodId, {
       customer: customerId,
@@ -140,8 +166,31 @@ async function handlePaymentMethodAction(stripe: Stripe, body: any, userEmail: s
     });
 
   } else if (action === 'set_default') {
+    // Set as default payment method - need to find customer first
+    if (!paymentMethodId) {
+      return new Response(JSON.stringify({ error: "Payment method ID required" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Find customer by email
+    const customers = await stripe.customers.list({
+      email: userEmail,
+      limit: 1
+    });
+
+    if (customers.data.length === 0) {
+      return new Response(JSON.stringify({ error: "Customer not found" }), {
+        status: 404,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const customer = customers.data[0];
+    
     // Set as default payment method
-    await stripe.customers.update(customerId, {
+    await stripe.customers.update(customer.id, {
       invoice_settings: {
         default_payment_method: paymentMethodId,
       },
@@ -157,27 +206,5 @@ async function handlePaymentMethodAction(stripe: Stripe, body: any, userEmail: s
   return new Response(JSON.stringify({ error: "Invalid action" }), {
     status: 400,
     headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
-}
-
-async function handleDeletePaymentMethod(stripe: Stripe, body: any) {
-  const { paymentMethodId } = body;
-
-  console.log('🗑️ DELETE PAYMENT METHOD - ID:', paymentMethodId);
-
-  if (!paymentMethodId) {
-    return new Response(JSON.stringify({ error: "Payment method ID required" }), {
-      status: 400,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
-  }
-
-  // Detach payment method (this effectively deletes it from the customer)
-  await stripe.paymentMethods.detach(paymentMethodId);
-
-  console.log('✅ DELETE PAYMENT METHOD - Méthode supprimée');
-  return new Response(JSON.stringify({ success: true }), {
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-    status: 200,
   });
 }

@@ -13,15 +13,8 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  if (req.method !== "POST") {
-    return new Response(JSON.stringify({ error: "Method not allowed" }), {
-      status: 405,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
-  }
-
   try {
-    console.log('🔧 STRIPE SETUP - Début création Setup Intent');
+    console.log('🎯 STRIPE SETUP INTENT - Début traitement');
 
     // Initialize Supabase client
     const supabaseClient = createClient(
@@ -39,88 +32,59 @@ serve(async (req) => {
       throw new Error("User not authenticated");
     }
 
-    console.log('👤 STRIPE SETUP - Utilisateur authentifié:', user.email);
+    console.log('👤 STRIPE SETUP INTENT - Utilisateur:', user.email);
 
     // Initialize Stripe
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
       apiVersion: "2023-10-16",
     });
 
-    const { userEmail, campaignName, campaignId } = await req.json();
+    const { campaignName } = await req.json();
 
-    if (!userEmail || !campaignName) {
-      return new Response(JSON.stringify({ error: "Missing required fields" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
+    console.log('🏷️ STRIPE SETUP INTENT - Campagne:', campaignName);
 
-    // Get or create Stripe customer
-    let customers = await stripe.customers.list({
-      email: userEmail,
+    // Find or create customer
+    let customer;
+    const customers = await stripe.customers.list({
+      email: user.email,
       limit: 1
     });
 
-    let customer;
-    if (customers.data.length === 0) {
-      console.log('👤 STRIPE SETUP - Création nouveau client Stripe');
-      customer = await stripe.customers.create({
-        email: userEmail,
-        metadata: {
-          campaign: campaignName,
-          userId: user.id
-        }
-      });
-    } else {
-      console.log('👤 STRIPE SETUP - Client Stripe existant trouvé');
+    if (customers.data.length > 0) {
       customer = customers.data[0];
+      console.log('👤 STRIPE SETUP INTENT - Client existant trouvé:', customer.id);
+    } else {
+      customer = await stripe.customers.create({
+        email: user.email,
+        name: user.user_metadata?.display_name || user.email,
+      });
+      console.log('👤 STRIPE SETUP INTENT - Nouveau client créé:', customer.id);
     }
 
     // Create setup intent
     const setupIntent = await stripe.setupIntents.create({
       customer: customer.id,
-      payment_method_types: ['card'],
       usage: 'off_session',
+      payment_method_types: ['card'],
       metadata: {
-        campaign_id: campaignId || '',
-        user_id: user.id
+        campaignName: campaignName || 'RefSpring Campaign',
+        userEmail: user.email,
       }
     });
 
-    console.log('✅ STRIPE SETUP - Setup Intent créé:', setupIntent.id);
+    console.log('✅ STRIPE SETUP INTENT - SetupIntent créé:', setupIntent.id);
 
-    // Update campaign with Stripe customer info if campaignId is provided
-    if (campaignId) {
-      const supabaseService = createClient(
-        Deno.env.get("SUPABASE_URL") ?? "",
-        Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
-        { auth: { persistSession: false } }
-      );
-
-      await supabaseService
-        .from('campaigns')
-        .update({
-          stripe_customer_id: customer.id,
-          stripe_setup_intent_id: setupIntent.id,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', campaignId)
-        .eq('user_id', user.id);
-
-      console.log('📊 STRIPE SETUP - Campagne mise à jour avec infos Stripe');
-    }
-
-    return new Response(JSON.stringify({ 
+    return new Response(JSON.stringify({
+      setupIntentId: setupIntent.id,
       clientSecret: setupIntent.client_secret,
       customerId: customer.id,
-      setupIntentId: setupIntent.id
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
     });
 
   } catch (error) {
-    console.error('❌ STRIPE SETUP - Erreur:', error);
+    console.error('❌ STRIPE SETUP INTENT - Erreur:', error);
     return new Response(JSON.stringify({ 
       error: error instanceof Error ? error.message : "Internal server error"
     }), {

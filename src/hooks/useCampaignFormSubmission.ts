@@ -1,12 +1,9 @@
-
 import { useAuth } from '@/hooks/useAuth';
 import { useCampaigns } from '@/hooks/useCampaigns';
 import { useStripePayment } from '@/hooks/useStripePayment';
 import { usePaymentMethods } from '@/hooks/usePaymentMethods';
 import { useToast } from '@/hooks/use-toast';
 import { CampaignFormData } from './useCampaignFormState';
-import { functions } from '@/lib/firebase';
-import { httpsCallable } from 'firebase/functions';
 
 export const useCampaignFormSubmission = (
   formData: CampaignFormData,
@@ -17,20 +14,19 @@ export const useCampaignFormSubmission = (
   const { user } = useAuth();
   const { createCampaign } = useCampaigns();
   const { setupPaymentForCampaign } = useStripePayment();
-  const { refreshPaymentMethods } = usePaymentMethods();
+  const { refreshPaymentMethods, paymentMethods } = usePaymentMethods();
   const { toast } = useToast();
 
   const redirectToStripeForNewCard = async (campaignData: CampaignFormData) => {
-    console.log('🎯 NOUVEAU FLOW: Redirection vers Stripe SANS créer la campagne');
+    console.log('🎯 SUPABASE: Redirection vers Stripe SANS créer la campagne');
     
     try {
-      // Store campaign data securely with encryption
+      // Store campaign data securely
       import('@/utils/secureClientStorage').then(({ secureStorage }) => {
-        secureStorage.setCampaignData('pendingCampaignData', campaignData, 2); // 2 hours expiry
+        secureStorage.setCampaignData('pendingCampaignData', campaignData, 2);
         console.log('🔒 Campaign data stored securely');
       });
       
-      // Stocker aussi dans le state pour le flow normal
       setPendingCampaignData(campaignData);
       
       // Rediriger vers Stripe avec un ID temporaire
@@ -53,19 +49,32 @@ export const useCampaignFormSubmission = (
   };
 
   const createCampaignWithExistingCard = async (campaignData: CampaignFormData, cardId: string) => {
-    console.log('🎯 Création campagne avec carte existante validée:', cardId);
+    console.log('🎯 SUPABASE: Création campagne avec carte existante validée:', cardId);
     
-    // Créer la campagne directement finalisée car la carte est déjà validée
-    const campaignId = await createCampaign({
-      ...campaignData,
-      isDraft: false,
-      paymentConfigured: true,
-      defaultCommissionRate: 10,
-      stripePaymentMethodId: cardId,
-    });
-    
-    console.log('✅ Campagne créée et finalisée:', campaignId);
-    return campaignId;
+    try {
+      // Utiliser la nouvelle Edge Function Supabase pour finaliser la campagne
+      const { supabase } = await import('@/integrations/supabase/client');
+      
+      const { data, error } = await supabase.functions.invoke('finalize-campaign', {
+        body: { 
+          campaignData: {
+            ...campaignData,
+            defaultCommissionRate: 10
+          },
+          cardId 
+        }
+      });
+      
+      if (error) {
+        throw new Error(error.message || 'Failed to create campaign');
+      }
+      
+      console.log('✅ SUPABASE: Campagne créée et finalisée:', data.campaign.id);
+      return data.campaign.id;
+    } catch (error) {
+      console.error('❌ SUPABASE: Erreur création campagne:', error);
+      throw error;
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -73,46 +82,32 @@ export const useCampaignFormSubmission = (
     setLoading(true);
 
     try {
-      console.log('🎯 FLOW CORRIGÉ: Validation AVANT création de campagne...');
+      console.log('🎯 SUPABASE: Validation AVANT création de campagne...');
       
-      if (!formData.name) {
-        throw new Error('Le nom de la campagne est requis');
-      }
-      
-      if (!formData.targetUrl) {
-        throw new Error('L\'URL de destination est requise');
+      if (!formData.name || !formData.targetUrl) {
+        throw new Error('Le nom et l\'URL de la campagne sont requis');
       }
 
-      // Vérifier les cartes disponibles
-      console.log('🔄 Vérification des cartes existantes...');
+      // Vérifier les cartes disponibles via Supabase
+      console.log('🔄 SUPABASE: Vérification des cartes existantes...');
       await refreshPaymentMethods();
       
-      // Attendre pour s'assurer de la synchronisation
-      await new Promise(resolve => setTimeout(resolve, 500));
+      console.log('💳 Cartes disponibles:', paymentMethods.length);
       
-      // Récupérer les données fraîches via Firebase
-      const getPaymentMethods = httpsCallable(functions, 'stripeGetPaymentMethods');
-      const freshCardsResponse = await getPaymentMethods({ userEmail: user?.email });
-      const freshCardsData = freshCardsResponse.data as { paymentMethods?: any[] };
-      
-      const availableCards = freshCardsData.paymentMethods || [];
-      
-      console.log('💳 Cartes disponibles:', availableCards.length);
-      
-      if (availableCards.length === 0) {
-        console.log('💳 FLOW CORRIGÉ: Aucune carte → Redirection Stripe (PAS de création campagne)');
+      if (paymentMethods.length === 0) {
+        console.log('💳 SUPABASE: Aucune carte → Redirection Stripe');
         await redirectToStripeForNewCard(formData);
         return;
       }
 
-      // 🔥 CORRECTION: TOUJOURS afficher le sélecteur, même avec une seule carte
-      console.log('💳 FLOW CORRIGÉ: Cartes disponibles → TOUJOURS afficher le sélecteur');
+      // Afficher le sélecteur de cartes
+      console.log('💳 SUPABASE: Cartes disponibles → Afficher le sélecteur');
       setPendingCampaignData(formData);
       setShowPaymentSelector(true);
       setLoading(false);
       
     } catch (error: any) {
-      console.error('❌ Erreur dans le flow corrigé:', error);
+      console.error('❌ SUPABASE: Erreur dans le flow:', error);
       toast({
         title: "Erreur",
         description: error.message || "Impossible de traiter la demande",
