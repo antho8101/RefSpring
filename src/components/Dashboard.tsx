@@ -6,6 +6,7 @@ import { useStatsFilters } from '@/hooks/useStatsFilters';
 import { useAuthGuard } from '@/hooks/useAuthGuard';
 import { useTawkTo } from '@/hooks/useTawkTo';
 import { useGuidedTour } from '@/hooks/useGuidedTour';
+import { supabase } from '@/integrations/supabase/client';
 import { DashboardBackground } from '@/components/DashboardBackground';
 import { DashboardHeader } from '@/components/DashboardHeader';
 import { DashboardContent } from '@/components/DashboardContent';
@@ -59,9 +60,17 @@ const DashboardStats = ({ activeCampaigns, totalCampaigns, totalAffiliates, user
         Logger.security(`Loading secured global stats ${periodLabel} for: ${userId}`);
         
         // Récupérer les campagnes de l'utilisateur avec vérification de propriété
-        const campaignsQuery = query(collection(db, 'campaigns'), where('userId', '==', userId));
-        const campaignsSnapshot = await getDocs(campaignsQuery);
-        const campaignIds = campaignsSnapshot.docs.map(doc => doc.id);
+        const { data: userCampaigns, error: campaignsError } = await supabase
+          .from('campaigns')
+          .select('id')
+          .eq('user_id', userId);
+        
+        if (campaignsError) {
+          console.error('Error fetching campaigns:', campaignsError);
+          return;
+        }
+        
+        const campaignIds = userCampaigns?.map(c => c.id) || [];
         
         if (campaignIds.length === 0) {
           Logger.security('No campaigns found for user');
@@ -70,9 +79,9 @@ const DashboardStats = ({ activeCampaigns, totalCampaigns, totalAffiliates, user
         }
 
         // Récupérer tous les clics et conversions en parallèle avec vérification de sécurité
-        const [clicksSnapshot, conversionsSnapshot] = await Promise.all([
-          getDocs(query(collection(db, 'clicks'), where('campaignId', 'in', campaignIds))),
-          getDocs(query(collection(db, 'conversions'), where('campaignId', 'in', campaignIds)))
+        const [clicksResult, conversionsResult] = await Promise.all([
+          supabase.from('clicks').select('*').in('campaign_id', campaignIds),
+          supabase.from('conversions').select('*').in('campaign_id', campaignIds)
         ]);
 
         // Filtrer par période si nécessaire
@@ -80,11 +89,9 @@ const DashboardStats = ({ activeCampaigns, totalCampaigns, totalAffiliates, user
           if (!filterDate) return data;
           
           return data.filter(item => {
-            if (!item.timestamp) return false;
+            if (!item.created_at) return false;
             try {
-              const itemDate = item.timestamp.toDate ? 
-                item.timestamp.toDate() : 
-                new Date(item.timestamp);
+              const itemDate = new Date(item.created_at);
               return itemDate >= filterDate;
             } catch (error) {
               return false;
@@ -92,8 +99,8 @@ const DashboardStats = ({ activeCampaigns, totalCampaigns, totalAffiliates, user
           });
         };
 
-        const filteredClicks = filterDataByDate(clicksSnapshot.docs.map(doc => doc.data()));
-        const filteredConversions = filterDataByDate(conversionsSnapshot.docs.map(doc => doc.data()));
+        const filteredClicks = filterDataByDate(clicksResult.data || []);
+        const filteredConversions = filterDataByDate(conversionsResult.data || []);
 
         const totalClicks = filteredClicks.length;
         let totalRevenue = 0;
