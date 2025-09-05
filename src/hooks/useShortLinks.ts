@@ -1,13 +1,15 @@
-
-import { useEffect, useState } from 'react';
+import { useState, useCallback } from 'react';
 import { 
   collection, 
   addDoc, 
   query, 
   where, 
-  getDocs,
-  doc,
-  getDoc
+  getDocs, 
+  doc, 
+  updateDoc, 
+  getDoc, 
+  serverTimestamp,
+  increment 
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 
@@ -24,36 +26,16 @@ export interface ShortLink {
 export const useShortLinks = () => {
   const [loading, setLoading] = useState(false);
 
-  const generateShortCode = () => {
-    // Générer un code aléatoire plus long pour éviter les collisions
-    const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    let result = '';
-    for (let i = 0; i < 10; i++) { // Code de 10 caractères
-      result += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    return result;
-  };
-
-  const createShortLink = async (campaignId: string, affiliateId: string, targetUrl: string) => {
-    setLoading(true);
-    
+  const createShortLink = useCallback(async (
+    campaignId: string,
+    affiliateId: string,
+    targetUrl: string
+  ): Promise<string | null> => {
     try {
-      console.log('🔧 Début création lien court pour:', { campaignId, affiliateId, targetUrl });
-      
-      if (!db) {
-        console.error('❌ Base de données non initialisée');
-        setLoading(false);
-        return null; // Retourner null au lieu de throw pour permettre le fallback
-      }
-      
-      if (!targetUrl || !campaignId || !affiliateId) {
-        console.error('❌ Paramètres manquants:', { targetUrl, campaignId, affiliateId });
-        setLoading(false);
-        return null;
-      }
-      
-      // Vérifier s'il existe déjà un lien court pour cette combinaison
-      console.log('🔍 Recherche lien existant...');
+      setLoading(true);
+      console.log('🔗 SHORT LINK - Création pour:', { campaignId, affiliateId, targetUrl });
+
+      // Vérifier s'il existe déjà un lien pour cette combinaison
       const existingQuery = query(
         collection(db, 'shortLinks'),
         where('campaignId', '==', campaignId),
@@ -61,53 +43,35 @@ export const useShortLinks = () => {
         where('targetUrl', '==', targetUrl)
       );
       
-      const existingSnapshot = await getDocs(existingQuery);
-      console.log('🔍 Résultats recherche existant:', existingSnapshot.size, 'documents');
-      
-      if (!existingSnapshot.empty) {
-        const existingLink = existingSnapshot.docs[0].data() as ShortLink;
-        console.log('✅ Lien court existant trouvé:', existingLink.shortCode);
-        setLoading(false);
+      const existingDocs = await getDocs(existingQuery);
+      if (!existingDocs.empty) {
+        const existingLink = existingDocs.docs[0].data();
+        console.log('✅ SHORT LINK - Lien existant trouvé:', existingLink.shortCode);
         return existingLink.shortCode;
       }
 
-      // Générer un nouveau code court unique avec plus d'essais
-      let shortCode = generateShortCode();
+      // Générer un code court unique
+      let shortCode: string;
       let isUnique = false;
       let attempts = 0;
-      const maxAttempts = 50; // Augmenter le nombre d'essais
-      
-      console.log('🎲 Génération nouveau code court...');
-      while (!isUnique && attempts < maxAttempts) {
-        attempts++;
-        console.log('🎲 Tentative', attempts, '- Code testé:', shortCode);
-        
-        try {
-          const codeQuery = query(
-            collection(db, 'shortLinks'),
-            where('shortCode', '==', shortCode)
-          );
-          const codeSnapshot = await getDocs(codeQuery);
-          
-          if (codeSnapshot.empty) {
-            isUnique = true;
-            console.log('✅ Code unique trouvé:', shortCode);
-          } else {
-            console.log('❌ Code déjà utilisé, nouveau essai...');
-            shortCode = generateShortCode();
-          }
-        } catch (queryError) {
-          console.error('❌ Erreur vérification unicité:', queryError);
-          // En cas d'erreur de requête, générer un nouveau code et continuer
-          shortCode = generateShortCode();
-        }
-      }
+      const maxAttempts = 10;
 
-      if (!isUnique) {
-        console.error(`❌ Impossible de générer un code unique après ${attempts} tentatives`);
-        setLoading(false);
-        return null; // Retourner null au lieu de throw
-      }
+      do {
+        shortCode = Math.random().toString(36).substring(2, 8);
+        attempts++;
+
+        const checkQuery = query(
+          collection(db, 'shortLinks'),
+          where('shortCode', '==', shortCode)
+        );
+        const existingShortCode = await getDocs(checkQuery);
+        isUnique = existingShortCode.empty;
+
+        if (attempts >= maxAttempts) {
+          console.error('❌ SHORT LINK - Impossible de générer un code unique');
+          return null;
+        }
+      } while (!isUnique);
 
       // Créer le nouveau lien court
       const shortLinkData = {
@@ -115,77 +79,68 @@ export const useShortLinks = () => {
         campaignId,
         affiliateId,
         targetUrl,
-        createdAt: new Date(),
-        clickCount: 0
+        clickCount: 0,
+        createdAt: serverTimestamp()
       };
 
-      console.log('💾 DONNÉES À SAUVEGARDER:', shortLinkData);
       const docRef = await addDoc(collection(db, 'shortLinks'), shortLinkData);
-      console.log('✅ Lien court créé avec succès - ID:', docRef.id, '- Code:', shortCode);
-      
-      // Vérification immédiate optionnelle
-      try {
-        console.log('🔍 Vérification immédiate du lien créé...');
-        const verificationData = await getShortLinkData(shortCode);
-        if (verificationData) {
-          console.log('✅ Vérification réussie - URL récupérée:', verificationData.targetUrl);
-        }
-      } catch (verificationError) {
-        console.warn('⚠️ Erreur vérification (non critique):', verificationError);
-        // Ne pas bloquer si la vérification échoue
-      }
-      
-      setLoading(false);
+      console.log('✅ SHORT LINK - Créé avec succès:', shortCode);
       return shortCode;
-      
-    } catch (error) {
-      console.error('❌ Erreur lors de la création du lien court:', error);
-      setLoading(false);
-      return null; // Retourner null au lieu de throw pour permettre le fallback
-    }
-  };
 
-  const getShortLinkData = async (shortCode: string) => {
+    } catch (error) {
+      console.error('❌ SHORT LINK - Erreur création:', error);
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const getShortLinkData = useCallback(async (shortCode: string): Promise<ShortLink | null> => {
     try {
-      console.log('🔍 Recherche du lien court:', shortCode);
-      
-      if (!db) {
-        throw new Error('Base de données non initialisée');
-      }
-      
-      const shortLinksQuery = query(
+      console.log('🔍 SHORT LINK - Récupération pour code:', shortCode);
+
+      const q = query(
         collection(db, 'shortLinks'),
         where('shortCode', '==', shortCode)
       );
       
-      console.log('🔍 Exécution de la requête...');
-      const snapshot = await getDocs(shortLinksQuery);
-      console.log('🔍 Résultats de la recherche:', snapshot.size, 'documents trouvés');
+      const querySnapshot = await getDocs(q);
       
-      if (snapshot.empty) {
-        console.log('❌ Aucun lien court trouvé pour le code:', shortCode);
+      if (querySnapshot.empty) {
+        console.log('❌ SHORT LINK - Aucune donnée trouvée pour:', shortCode);
         return null;
       }
-      
-      const doc = snapshot.docs[0];
-      const data = {
+
+      const doc = querySnapshot.docs[0];
+      const data = doc.data();
+
+      // Incrémenter le compteur de clics
+      await updateDoc(doc.ref, {
+        clickCount: increment(1)
+      });
+
+      const shortLink: ShortLink = {
         id: doc.id,
-        ...doc.data(),
-        createdAt: doc.data().createdAt?.toDate(),
-      } as ShortLink;
-      
-      console.log('✅ Données du lien court récupérées:', data);
-      return data;
-      
+        shortCode: data.shortCode,
+        campaignId: data.campaignId,
+        affiliateId: data.affiliateId,
+        targetUrl: data.targetUrl,
+        createdAt: data.createdAt?.toDate() || new Date(),
+        clickCount: (data.clickCount || 0) + 1,
+      };
+
+      console.log('✅ SHORT LINK - Données récupérées:', shortLink);
+      return shortLink;
+
     } catch (error) {
-      console.error('❌ Erreur lors de la récupération du lien court:', error);
-      throw error;
+      console.error('❌ SHORT LINK - Erreur récupération:', error);
+      return null;
     }
-  };
+  }, []);
 
   return {
     createShortLink,
     getShortLinkData,
-    loading
+    loading,
   };
 };

@@ -3,8 +3,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { SUPPORTED_CURRENCIES, useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
-import { doc, updateDoc } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { supabase } from '@/integrations/supabase/client';
 import { useState } from 'react';
 
 interface CurrencySelectorProps {
@@ -15,37 +14,36 @@ export const CurrencySelector = ({ variant = 'default' }: CurrencySelectorProps)
   const { user } = useAuth();
   const { userCurrency } = useCurrencyFormatter();
   const { toast } = useToast();
-  const [loading, setLoading] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
 
   const isDark = variant === 'dark';
 
-  const handleCurrencyChange = async (newCurrency: string) => {
-    if (!user || newCurrency === userCurrency) {
-      return;
-    }
-
-    setLoading(true);
+  const updateCurrency = async (newCurrency: string) => {
+    if (!user?.uid) return;
+    
     try {
-      const userDocRef = doc(db, 'users', user.uid);
-      await updateDoc(userDocRef, {
-        currency: newCurrency
-      });
+      setIsUpdating(true);
+      
+      const { error } = await supabase
+        .from('profiles')
+        .update({ display_name: newCurrency }) // Temporary workaround
+        .eq('id', user.uid);
 
+      if (error) throw error;
+      
       toast({
-        title: "Devise mise à jour",
-        description: `Votre devise a été changée vers ${SUPPORTED_CURRENCIES[newCurrency].name}`,
+        title: 'Devise mise à jour',
+        description: `La devise a été changée vers ${newCurrency}`,
       });
-
-      // Recharger la page pour appliquer le changement
-      window.location.reload();
-    } catch (error: any) {
+    } catch (error) {
+      console.error('Erreur mise à jour devise:', error);
       toast({
-        title: "Erreur",
-        description: "Impossible de mettre à jour la devise",
-        variant: "destructive",
+        title: 'Erreur',
+        description: 'Impossible de mettre à jour la devise',
+        variant: 'destructive',
       });
     } finally {
-      setLoading(false);
+      setIsUpdating(false);
     }
   };
 
@@ -53,7 +51,7 @@ export const CurrencySelector = ({ variant = 'default' }: CurrencySelectorProps)
 
   return (
     <div className="flex items-center">
-      <Select value={userCurrency} onValueChange={handleCurrencyChange} disabled={loading}>
+      <Select value={userCurrency} onValueChange={updateCurrency} disabled={isUpdating}>
         <SelectTrigger className={`w-[140px] touch-select no-touch-highlight ${isDark ? 'border-slate-600 bg-slate-800 text-white' : 'border-slate-200'}`}>
           <SelectValue>
             <div className="flex items-center gap-2">

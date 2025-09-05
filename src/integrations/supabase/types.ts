@@ -640,6 +640,39 @@ export type Database = {
         }
         Relationships: []
       }
+      short_links: {
+        Row: {
+          affiliate_id: string
+          campaign_id: string
+          click_count: number
+          created_at: string
+          id: string
+          short_code: string
+          target_url: string
+          updated_at: string
+        }
+        Insert: {
+          affiliate_id: string
+          campaign_id: string
+          click_count?: number
+          created_at?: string
+          id?: string
+          short_code: string
+          target_url: string
+          updated_at?: string
+        }
+        Update: {
+          affiliate_id?: string
+          campaign_id?: string
+          click_count?: number
+          created_at?: string
+          id?: string
+          short_code?: string
+          target_url?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

@@ -5,8 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Download, Calendar, Euro, Users } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
-import { collection, query, where, orderBy, getDocs } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { supabase } from '@/integrations/supabase/client';
 import { BillingRecord } from '@/types';
 import { useCurrencyConverter } from '@/hooks/useCurrencyConverter';
 import { generateInvoicePDF } from '@/utils/invoiceGenerator';
@@ -34,18 +33,26 @@ export const BillingHistorySettings = ({ onCancel }: BillingHistorySettingsProps
     try {
       console.log('📊 Chargement historique facturation pour:', user.uid);
       
-      const billingQuery = query(
-        collection(db, 'billingRecords'),
-        where('userId', '==', user.uid),
-        orderBy('createdAt', 'desc')
-      );
+      const { data, error } = await supabase
+        .from('billing_records')
+        .select('*')
+        .eq('user_id', user.uid)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
       
-      const billingSnapshot = await getDocs(billingQuery);
-      const records: BillingRecord[] = billingSnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-        createdAt: doc.data().createdAt?.toDate() || new Date(),
-        processedAt: doc.data().processedAt?.toDate() || null,
+      const records: BillingRecord[] = (data || []).map(row => ({
+        id: row.id,
+        campaignId: row.campaign_id,
+        userId: row.user_id,
+        totalRevenue: row.total_revenue,
+        commissionAmount: row.commission_amount,
+        feeAmount: row.fee_amount,
+        period: row.period,
+        status: row.status,
+        stripeChargeId: row.stripe_charge_id,
+        createdAt: new Date(row.created_at),
+        processedAt: row.processed_at ? new Date(row.processed_at) : null,
       })) as BillingRecord[];
       
       setBillingRecords(records);
