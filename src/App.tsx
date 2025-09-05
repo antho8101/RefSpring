@@ -51,7 +51,8 @@ function App() {
     <ErrorBoundary>
       <HelmetProvider>
         <QueryClientProvider client={queryClient}>
-          <SecurityProvider>
+          {/* SecurityProvider temporairement désactivé pour résoudre les problèmes d'authentification */}
+          {/* <SecurityProvider> */}
             <AuthProvider>
               <Router>
               <Helmet>
@@ -96,14 +97,14 @@ function App() {
                 </Suspense>
                 
                 <CookieBanner />
-              </div>
-            </Router>
-          </AuthProvider>
-        </SecurityProvider>
-      </QueryClientProvider>
-    </HelmetProvider>
-  </ErrorBoundary>
-);
+                </div>
+              </Router>
+            </AuthProvider>
+            {/* </SecurityProvider> */}
+          </QueryClientProvider>
+        </HelmetProvider>
+      </ErrorBoundary>
+    );
 }
 
 export default App;

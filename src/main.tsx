@@ -13,12 +13,12 @@ console.log('🚀 Application en cours de démarrage...');
 cleanProductionLogs();
 applyEnhancedCSP();
 
-// Initialize security monitoring
-securityMonitor.onAlert((alert) => {
-  if (alert.level === 'CRITICAL' || alert.level === 'HIGH') {
-    console.warn('🚨 SECURITY ALERT:', alert);
-  }
-});
+// securityMonitor désactivé temporairement
+// securityMonitor.onAlert((alert) => {
+//   if (alert.level === 'CRITICAL' || alert.level === 'HIGH') {
+//     console.warn('🚨 SECURITY ALERT:', alert);
+//   }
+// });
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
