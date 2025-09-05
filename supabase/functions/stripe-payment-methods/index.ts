@@ -46,7 +46,8 @@ serve(async (req) => {
       const body = await req.json();
       
       // Si aucune action spécifiée, c'est un GET via POST (pour compatibilité)
-      if (!body.action) {
+      if (!body || !body.action || body.action === undefined) {
+        console.log('📋 POST sans action - Redirection vers GET');
         return await handleGetPaymentMethods(stripe, user.email);
       }
       
