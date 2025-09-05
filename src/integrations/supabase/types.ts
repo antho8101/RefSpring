@@ -598,12 +598,20 @@ export type Database = {
         Args: { activity_type?: string; user_id?: string }
         Returns: boolean
       }
+      log_billing_access: {
+        Args: { access_type: string; record_id: string }
+        Returns: undefined
+      }
       log_security_event: {
         Args: { details?: Json; event_type: string; user_id?: string }
         Returns: undefined
       }
       validate_affiliate_access: {
         Args: { campaign_id: string; requesting_user_id?: string }
+        Returns: boolean
+      }
+      validate_billing_record_ownership: {
+        Args: { record_id: string }
         Returns: boolean
       }
       validate_campaign_ownership: {
