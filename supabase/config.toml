@@ -1,5 +1,6 @@
 project_id = "wsvhmozduyiftmuuynpi"
 
+# Shopify functions (public)
 [functions.shopify-auth]
 verify_jwt = false
 
@@ -16,4 +17,12 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.shopify-private-app]
+verify_jwt = false
+
+# Stripe functions from Firebase migration
+[functions.stripe-webhook]
+verify_jwt = false
+
+# Tracking functions (public for external tracking)
+[functions.track-conversion]
 verify_jwt = false
