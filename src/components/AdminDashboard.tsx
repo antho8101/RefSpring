@@ -1,17 +1,18 @@
 import { useEffect, useState } from 'react';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import { useServiceHealth } from '@/hooks/useServiceHealth';
-import { useFirestoreMonitoring } from '@/hooks/useFirestoreMonitoring';
+import { useSupabaseMonitoring } from '@/hooks/useSupabaseMonitoring';
 import { useProductionDBMonitoring } from '@/hooks/useProductionDBMonitoring';
-import { collection, getDocs, getCountFromServer } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+// Suppression des imports Firebase - utilisation de Supabase maintenant
+// import { collection, getDocs, getCountFromServer } from 'firebase/firestore';
+// import { db } from '@/lib/firebase';
 import Logger from '@/utils/logger';
 import { AdminHeader } from './admin/AdminHeader';
 import { SystemStatusCard } from './admin/SystemStatusCard';
 import { SystemMetricsGrid } from './admin/SystemMetricsGrid';
 import { ServiceHealthList } from './admin/ServiceHealthList';
 import { AdminActions } from './admin/AdminActions';
-import { FirestoreMetricsCard } from './admin/FirestoreMetricsCard';
+import { SupabaseMetricsCard } from './admin/SupabaseMetricsCard';
 import { ProductionDBCard } from './admin/ProductionDBCard';
 
 interface SystemStats {
@@ -32,7 +33,7 @@ interface SystemHealth {
 export const AdminDashboard = () => {
   const { currentEmail, adminEmail } = useAdminAuth();
   const { healthChecks, isChecking, lastUpdate, runHealthChecks } = useServiceHealth();
-  const { metrics: firestoreMetrics, isLoading: isFirestoreLoading, refreshMetrics } = useFirestoreMonitoring();
+  const { metrics: supabaseMetrics, isLoading: isSupabaseLoading, refreshMetrics } = useSupabaseMonitoring();
   const { metrics: productionMetrics, isLoading: isProductionLoading, refreshMetrics: refreshProductionMetrics } = useProductionDBMonitoring();
   const [systemStats, setSystemStats] = useState<SystemStats>({
     totalCollections: 0,
@@ -56,45 +57,21 @@ export const AdminDashboard = () => {
 
   const loadSystemStats = async () => {
     try {
-      Logger.admin('Loading real system statistics');
+      Logger.admin('Loading system statistics from Supabase');
 
-      // Compter les documents dans les collections principales
-      const collections = ['campaigns', 'affiliates', 'clicks', 'conversions'];
-      let totalDocs = 0;
-      
-      for (const collectionName of collections) {
-        try {
-          const countQuery = await getCountFromServer(collection(db, collectionName));
-          totalDocs += countQuery.data().count;
-        } catch (error) {
-          Logger.warning(`Could not count ${collectionName}, falling back to getDocs`);
-          const snapshot = await getDocs(collection(db, collectionName));
-          totalDocs += snapshot.size;
-        }
-      }
-
-      // Calculer les vraies métriques basées sur les health checks
-      const avgResponseTime = healthChecks.length > 0 
-        ? Math.round(healthChecks.reduce((sum, check) => sum + check.responseTime, 0) / healthChecks.length)
-        : 0;
-
-      const healthyServices = healthChecks.filter(check => check.status === 'operational').length;
-      
-      setSystemStats({
-        totalCollections: collections.length,
-        totalDocuments: totalDocs,
-        averageResponseTime: avgResponseTime,
-        healthyServices,
+      // Utiliser les métriques Supabase au lieu de Firebase
+      const stats = {
+        totalCollections: 4, // campaigns, affiliates, clicks, conversions
+        totalDocuments: supabaseMetrics.totalCampaigns + supabaseMetrics.totalAffiliates + supabaseMetrics.totalClicks + supabaseMetrics.totalConversions,
+        averageResponseTime: supabaseMetrics.avgResponseTime,
+        healthyServices: healthChecks.filter(check => check.status === 'operational').length,
         totalServices: healthChecks.length,
         lastUpdateTime: new Date(),
-      });
+      };
+      
+      setSystemStats(stats);
 
-      Logger.admin('Real system stats loaded', {
-        totalDocuments: totalDocs,
-        avgResponseTime,
-        healthyServices,
-        totalServices: healthChecks.length
-      });
+      Logger.admin('System stats loaded from Supabase', stats);
     } catch (error) {
       Logger.error('ADMIN - Error loading system stats', error);
     } finally {
@@ -176,9 +153,9 @@ export const AdminDashboard = () => {
           onRefresh={refreshProductionMetrics}
         />
         
-        <FirestoreMetricsCard 
-          metrics={firestoreMetrics}
-          isLoading={isFirestoreLoading}
+        <SupabaseMetricsCard 
+          metrics={supabaseMetrics}
+          isLoading={isSupabaseLoading}
           onRefresh={refreshMetrics}
         />
         

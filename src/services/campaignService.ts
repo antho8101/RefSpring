@@ -1,18 +1,24 @@
 
-// Re-export all campaign service functionality from the modular files
+// Re-export all campaign service functionality from Supabase
 export { type CampaignSummary } from './campaign/types';
-export { getCampaigns } from './campaign/campaignQueries';
 export { 
-  createCampaignInFirestore, 
-  updateCampaignInFirestore, 
-  finalizeCampaignInFirestore 
-} from './campaign/campaignOperations';
-export { 
-  deleteCampaignCascade, 
-  deleteCampaignFromFirestore 
-} from './campaign/campaignDeletion';
+  createCampaignInSupabase as createCampaignInFirestore, 
+  updateCampaignInSupabase as updateCampaignInFirestore, 
+  finalizeCampaignInSupabase as finalizeCampaignInFirestore,
+  deleteCampaignFromSupabase as deleteCampaignFromFirestore
+} from './campaign/campaignOperationsSupabase';
 
-// Create a unified service object for backward compatibility
+// Legacy compatibility - redirect to Supabase versions
 export const campaignService = {
-  getCampaigns: (userId: string) => import('./campaign/campaignQueries').then(m => m.getCampaigns(userId))
+  getCampaigns: async (userId: string) => {
+    const { supabase } = await import('@/integrations/supabase/client');
+    const { data, error } = await supabase
+      .from('campaigns')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+    
+    if (error) throw error;
+    return data || [];
+  }
 };

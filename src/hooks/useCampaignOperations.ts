@@ -2,18 +2,28 @@
 import { useCallback } from 'react';
 import { Campaign } from '@/types';
 import { 
-  createCampaignInFirestore,
-  updateCampaignInFirestore,
-  finalizeCampaignInFirestore,
-  deleteCampaignFromFirestore
-} from '@/services/campaignService';
+  createCampaignInSupabase as createCampaignInFirestore,
+  updateCampaignInSupabase as updateCampaignInFirestore,
+  finalizeCampaignInSupabase as finalizeCampaignInFirestore,
+  deleteCampaignFromSupabase as deleteCampaignFromFirestore
+} from '@/services/campaign/campaignOperationsSupabase';
 
 export const useCampaignOperations = (userId: string | null) => {
   const createCampaign = useCallback(async (
     campaignData: Omit<Campaign, 'id' | 'createdAt' | 'updatedAt' | 'userId'>
   ) => {
     if (!userId) throw new Error('User not authenticated');
-    return createCampaignInFirestore(campaignData, userId);
+    
+    // Adapter les données pour Supabase
+    const supabaseData = {
+      name: campaignData.name,
+      description: campaignData.description,
+      target_url: campaignData.targetUrl,
+      is_active: campaignData.isActive,
+      default_commission_rate: campaignData.defaultCommissionRate || 0.10
+    };
+    
+    return createCampaignInFirestore(supabaseData, userId);
   }, [userId]);
 
   const updateCampaign = useCallback(async (id: string, updates: Partial<Campaign>) => {
