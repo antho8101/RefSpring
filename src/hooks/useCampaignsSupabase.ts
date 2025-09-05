@@ -65,10 +65,8 @@ export const useCampaignsSupabase = () => {
 
       console.log('🎯 SUPABASE - Campagnes trouvées:', campaignsData?.length || 0);
       
-      // Filter visible campaigns (those with payment method configured)
-      const visibleCampaigns = campaignsData?.filter(campaign => 
-        Boolean(campaign.stripe_payment_method_id)
-      ) || [];
+      // Afficher toutes les campagnes (pas seulement celles avec une méthode de paiement)
+      const visibleCampaigns = campaignsData || [];
 
       console.log('🎯 SUPABASE - Campagnes visibles:', visibleCampaigns.length);
       setCampaigns(visibleCampaigns);
@@ -91,31 +89,20 @@ export const useCampaignsSupabase = () => {
     }
 
     try {
-      console.log('🎯 SUPABASE - Création campagne');
+      console.log('🎯 SUPABASE - Création campagne directe');
 
-      // Validate campaign data first using Edge Function
-      const { data: validationResult, error: validationError } = await supabase.functions.invoke('validate-campaign', {
-        body: campaignData
-      });
-
-      if (validationError) {
-        console.error('❌ SUPABASE - Erreur validation:', validationError);
-        throw new Error(validationError.message || 'Erreur de validation');
-      }
-
-      if (!validationResult?.valid) {
-        const errorMessage = validationResult?.errors?.join(', ') || 'Données invalides';
-        throw new Error(errorMessage);
-      }
-
-      // Create campaign in Supabase
+      // Créer directement la campagne dans Supabase (version simplifiée)
       const { data: newCampaign, error } = await supabase
         .from('campaigns')
         .insert({
-          ...validationResult.sanitizedData,
+          name: campaignData.name,
+          description: campaignData.description || '',
+          target_url: campaignData.target_url,
+          is_active: campaignData.is_active !== undefined ? campaignData.is_active : true,
           user_id: user!.id,
-          is_draft: true,
-          payment_configured: false,
+          is_draft: false, // Directement active
+          payment_configured: true, // Simplifié
+          default_commission_rate: campaignData.default_commission_rate || 0.10
         })
         .select()
         .single();
@@ -127,14 +114,6 @@ export const useCampaignsSupabase = () => {
 
       console.log('✅ SUPABASE - Campagne créée:', newCampaign.id);
       
-      // Store campaign data for success modal using dynamic import
-      const { secureStorage } = await import('@/utils/secureClientStorage');
-      secureStorage.setCampaignData('newCampaignCreated', {
-        id: newCampaign.id,
-        name: newCampaign.name,
-        timestamp: Date.now()
-      }, 1);
-
       // Reload campaigns
       await loadCampaigns();
       

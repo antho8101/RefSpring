@@ -8,7 +8,7 @@ import { useToast } from '@/hooks/use-toast';
 import { CampaignCard } from '@/components/CampaignCard';
 import { CompactCampaignCard } from '@/components/CompactCampaignCard';
 import { useState, useCallback, memo } from 'react';
-import { CreateCampaignDialog } from '@/components/CreateCampaignDialog';
+import { CreateCampaignDialogSimple } from '@/components/CreateCampaignDialogSimple';
 import Logger from '@/utils/logger';
 
 interface CampaignsListProps {
@@ -67,7 +67,7 @@ export const CampaignsList = memo(({ onSuccessModalTrigger }: CampaignsListProps
             Créez votre première campagne pour commencer à gérer vos affiliés et générer des revenus.
           </p>
           <div className="mt-6">
-            <CreateCampaignDialog onSuccessModalTrigger={onSuccessModalTrigger}>
+            <CreateCampaignDialogSimple>
               <Button 
                 size="lg" 
                 className="text-base lg:text-lg px-6 py-3 lg:px-8 lg:py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transition-all duration-300 hover:scale-[1.02] border-0 text-white group relative overflow-hidden" 
@@ -82,7 +82,7 @@ export const CampaignsList = memo(({ onSuccessModalTrigger }: CampaignsListProps
                 <Plus className="h-4 w-4 mr-2 relative z-10" />
                 <span className="relative z-10">Lancer ma première campagne</span>
               </Button>
-            </CreateCampaignDialog>
+            </CreateCampaignDialogSimple>
           </div>
         </CardContent>
       </Card>
