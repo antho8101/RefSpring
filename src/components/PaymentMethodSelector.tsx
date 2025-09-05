@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -25,6 +25,19 @@ export const PaymentMethodSelector = ({
   loading = false
 }: PaymentMethodSelectorProps) => {
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
+
+  // Si aucune carte n'est disponible et le dialog s'ouvre, rediriger vers l'ajout d'une nouvelle carte
+  useEffect(() => {
+    if (open && paymentMethods.length === 0 && !loading) {
+      onOpenChange(false); // Fermer le dialog
+      onAddNewCard(); // Rediriger vers l'ajout d'une nouvelle carte
+    }
+  }, [open, paymentMethods.length, loading, onOpenChange, onAddNewCard]);
+
+  // Ne pas afficher le dialog s'il n'y a pas de cartes
+  if (paymentMethods.length === 0) {
+    return null;
+  }
 
   const handleSelectCard = (cardId: string) => {
     setSelectedCardId(cardId);
