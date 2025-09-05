@@ -261,27 +261,28 @@ export const Dashboard = memo(() => {
 
   // 🆕 Détecter une nouvelle campagne créée et afficher la modale
   useEffect(() => {
-    const checkForNewCampaign = () => {
-      let newCampaignCreated: any = null;
-      import('@/utils/secureClientStorage').then(({ secureStorage }) => {
-        newCampaignCreated = secureStorage.getSecure('newCampaignCreated');
-      });
-      if (newCampaignCreated) {
-        try {
-          const campaignData = JSON.parse(newCampaignCreated);
-          Logger.info('Nouvelle campagne détectée:', campaignData);
-          
-          setNewCampaignData(campaignData);
-          setShowSuccessModal(true);
-          
-          // Nettoyer immédiatement pour éviter les répétitions
-          const { secureStorage } = await import('@/utils/secureClientStorage');
-          secureStorage.removeSecure('campaign_newCampaignCreated');
-        } catch (error) {
-          console.error('❌ DASHBOARD: Erreur parsing newCampaignCreated:', error);
-          const { secureStorage: secureStorageError } = await import('@/utils/secureClientStorage');
-          secureStorageError.removeSecure('campaign_newCampaignCreated');
+    const checkForNewCampaign = async () => {
+      try {
+        const { secureStorage } = await import('@/utils/secureClientStorage');
+        const newCampaignCreated = secureStorage.getSecure('campaign_newCampaignCreated');
+        
+        if (newCampaignCreated) {
+          try {
+            const campaignData = JSON.parse(newCampaignCreated);
+            Logger.info('Nouvelle campagne détectée:', campaignData);
+            
+            setNewCampaignData(campaignData);
+            setShowSuccessModal(true);
+            
+            // Nettoyer immédiatement pour éviter les répétitions
+            secureStorage.removeSecure('campaign_newCampaignCreated');
+          } catch (error) {
+            console.error('❌ DASHBOARD: Erreur parsing newCampaignCreated:', error);
+            secureStorage.removeSecure('campaign_newCampaignCreated');
+          }
         }
+      } catch (error) {
+        console.error('❌ DASHBOARD: Erreur importation secureStorage:', error);
       }
     };
 
