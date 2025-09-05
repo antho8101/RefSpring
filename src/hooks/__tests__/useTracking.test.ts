@@ -2,240 +2,151 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useTracking } from '@/hooks/useTracking';
 
-// Mock Firebase
-const mockAddDoc = vi.fn();
-const mockGetDoc = vi.fn();
+// Mock Supabase
+const mockSupabaseInsert = vi.fn();
+const mockSupabaseSelect = vi.fn();
 
-vi.mock('firebase/firestore', () => ({
-  collection: vi.fn(),
-  addDoc: mockAddDoc,
-  doc: vi.fn(),
-  getDoc: mockGetDoc,
+vi.mock('@/integrations/supabase/client', () => ({
+  supabase: {
+    from: vi.fn(() => ({
+      insert: mockSupabaseInsert,
+      select: vi.fn(() => ({
+        eq: vi.fn(() => ({
+          maybeSingle: mockSupabaseSelect,
+        })),
+      })),
+    })),
+  },
 }));
 
-// Mock hooks
-const mockUseAntifraud = vi.fn();
-const mockUseConversionVerification = vi.fn();
-
-vi.mock('@/hooks/useAntifraud', () => ({
-  useAntifraud: mockUseAntifraud,
-}));
-
-vi.mock('@/hooks/useConversionVerification', () => ({
-  useConversionVerification: mockUseConversionVerification,
+// Mock auth
+vi.mock('@/hooks/useAuth', () => ({
+  useAuth: () => ({
+    user: { uid: 'test-user-123' },
+  }),
 }));
 
 describe('useTracking Hook', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     
-    mockUseAntifraud.mockReturnValue({
-      validateClick: vi.fn().mockResolvedValue({
-        valid: true,
-        riskScore: 0.1,
-        reasons: [],
-      }),
-    });
-    
-    mockUseConversionVerification.mockReturnValue({
-      createConversion: vi.fn().mockResolvedValue({
-        id: 'conversion-123',
-        success: true,
-      }),
-    });
-    
-    // Mock sessionStorage
-    Object.defineProperty(window, 'sessionStorage', {
-      value: {
-        getItem: vi.fn(),
-        setItem: vi.fn(),
-        removeItem: vi.fn(),
-        clear: vi.fn(),
-      },
-      writable: true,
+    mockSupabaseInsert.mockResolvedValue({ error: null });
+    mockSupabaseSelect.mockResolvedValue({ 
+      data: { id: 'campaign-456', name: 'Test Campaign' },
+      error: null 
     });
   });
 
-  it('should record click successfully', async () => {
-    mockAddDoc.mockResolvedValue({ id: 'click-123' });
-    window.sessionStorage.getItem = vi.fn().mockReturnValue(null);
-    
+  it('should track click successfully', async () => {
     const { result } = renderHook(() => useTracking());
     
     await act(async () => {
-      const clickId = await result.current.recordClick(
-        'affiliate-123',
-        'campaign-456',
-        'https://example.com'
-      );
-      expect(typeof clickId).toBe('string');
+      await result.current.trackClick({
+        affiliateId: 'affiliate-123',
+        campaignId: 'campaign-456'
+      });
     });
     
-    expect(mockAddDoc).toHaveBeenCalled();
-    expect(window.sessionStorage.setItem).toHaveBeenCalled();
+    expect(mockSupabaseInsert).toHaveBeenCalledWith({
+      affiliate_id: 'affiliate-123',
+      campaign_id: 'campaign-456',
+      user_agent: undefined,
+      referrer: undefined
+    });
   });
 
-  it('should prevent duplicate clicks in same session', async () => {
-    window.sessionStorage.getItem = vi.fn().mockReturnValue('existing-click-id');
-    
+  it('should track conversion successfully', async () => {
     const { result } = renderHook(() => useTracking());
     
     await act(async () => {
-      const clickId = await result.current.recordClick(
-        'affiliate-123',
-        'campaign-456',
-        'https://example.com'
-      );
-      expect(clickId).toBe('existing-click-id');
-    });
-    
-    expect(mockAddDoc).not.toHaveBeenCalled();
-  });
-
-  it('should record conversion successfully', async () => {
-    mockGetDoc.mockResolvedValue({
-      exists: () => true,
-      data: () => ({ 
+      await result.current.trackConversion({
         affiliateId: 'affiliate-123',
         campaignId: 'campaign-456',
-        commissionRate: 15,
-      }),
+        amount: 100,
+        commission: 15
+      });
     });
+    
+    expect(mockSupabaseInsert).toHaveBeenCalledWith({
+      affiliate_id: 'affiliate-123',
+      campaign_id: 'campaign-456',
+      amount: 100,
+      commission: 15,
+      status: 'pending',
+      verified: false
+    });
+  });
+
+  it('should get campaign by id successfully', async () => {
+    const { result } = renderHook(() => useTracking());
+    
+    let campaign;
+    await act(async () => {
+      campaign = await result.current.getCampaignById('campaign-456');
+    });
+    
+    expect(mockSupabaseSelect).toHaveBeenCalled();
+    expect(campaign).toEqual({ id: 'campaign-456', name: 'Test Campaign' });
+  });
+
+  it('should handle track click errors', async () => {
+    mockSupabaseInsert.mockResolvedValue({ error: new Error('Database error') });
     
     const { result } = renderHook(() => useTracking());
     
     await act(async () => {
-      const conversion = await result.current.recordConversion(
-        'affiliate-123',
-        'campaign-456',
-        100,
-        15
-      );
-      expect(conversion).toBeDefined();
+      await expect(result.current.trackClick({
+        affiliateId: 'affiliate-123',
+        campaignId: 'campaign-456'
+      })).rejects.toThrow();
     });
-    
-    expect(mockUseConversionVerification().createConversion).toHaveBeenCalled();
   });
 
-  it('should handle antifraud rejection', async () => {
-    mockUseAntifraud.mockReturnValue({
-      validateClick: vi.fn().mockResolvedValue({
-        valid: false,
-        riskScore: 0.9,
-        reasons: ['Suspicious IP', 'Bot detected'],
-      }),
-    });
-    
-    window.sessionStorage.getItem = vi.fn().mockReturnValue(null);
+  it('should handle track conversion errors', async () => {
+    mockSupabaseInsert.mockResolvedValue({ error: new Error('Database error') });
     
     const { result } = renderHook(() => useTracking());
     
     await act(async () => {
-      await expect(result.current.recordClick(
-        'affiliate-123',
-        'campaign-456',
-        'https://example.com'
-      )).rejects.toThrow('Clic rejeté');
-    });
-    
-    expect(mockAddDoc).not.toHaveBeenCalled();
-  });
-
-  it('should validate click data before recording', async () => {
-    const { result } = renderHook(() => useTracking());
-    
-    await act(async () => {
-      await expect(result.current.recordClick(
-        '', // Empty affiliate ID
-        'campaign-456',
-        'https://example.com'
-      )).rejects.toThrow();
-    });
-  });
-
-  it('should handle network errors gracefully', async () => {
-    mockAddDoc.mockRejectedValue(new Error('Network error'));
-    window.sessionStorage.getItem = vi.fn().mockReturnValue(null);
-    
-    const { result } = renderHook(() => useTracking());
-    
-    await act(async () => {
-      await expect(result.current.recordClick(
-        'affiliate-123',
-        'campaign-456',
-        'https://example.com'
-      )).rejects.toThrow('Network error');
-    });
-  });
-
-  it('should calculate commission correctly', async () => {
-    mockGetDoc.mockResolvedValue({
-      exists: () => true,
-      data: () => ({ 
+      await expect(result.current.trackConversion({
         affiliateId: 'affiliate-123',
         campaignId: 'campaign-456',
-        commissionRate: 10,
-      }),
-    });
-    
-    const { result } = renderHook(() => useTracking());
-    
-    await act(async () => {
-      await result.current.recordConversion(
-        'affiliate-123',
-        'campaign-456',
-        100, // Revenue
-        10   // Commission rate
-      );
-    });
-    
-    const createConversionCall = mockUseConversionVerification().createConversion.mock.calls[0];
-    expect(createConversionCall[0]).toEqual(
-      expect.objectContaining({
-        revenue: 100,
-        commissionAmount: 10, // 10% of 100
-      })
-    );
-  });
-
-  it('should handle invalid conversion data', async () => {
-    const { result } = renderHook(() => useTracking());
-    
-    await act(async () => {
-      await expect(result.current.recordConversion(
-        '', // Empty affiliate ID
-        'campaign-456',
-        100,
-        10
-      )).rejects.toThrow();
+        amount: 100,
+        commission: 15
+      })).rejects.toThrow();
     });
   });
 
-  it('should detect bot traffic', async () => {
-    // Mock bot user agent
-    Object.defineProperty(navigator, 'userAgent', {
-      value: 'Mozilla/5.0 (compatible; Googlebot/2.1)',
-      writable: true,
+  it('should handle get campaign errors', async () => {
+    mockSupabaseSelect.mockResolvedValue({ 
+      data: null,
+      error: new Error('Campaign not found') 
     });
-    
-    mockUseAntifraud.mockReturnValue({
-      validateClick: vi.fn().mockResolvedValue({
-        valid: false,
-        riskScore: 1.0,
-        reasons: ['Bot detected'],
-      }),
-    });
-    
-    window.sessionStorage.getItem = vi.fn().mockReturnValue(null);
     
     const { result } = renderHook(() => useTracking());
     
     await act(async () => {
-      await expect(result.current.recordClick(
-        'affiliate-123',
-        'campaign-456',
-        'https://example.com'
-      )).rejects.toThrow('Bot detected');
+      await expect(result.current.getCampaignById('invalid-campaign')).rejects.toThrow();
+    });
+  });
+
+  it('should include user agent and referrer when provided', async () => {
+    const { result } = renderHook(() => useTracking());
+    
+    await act(async () => {
+      await result.current.trackClick({
+        affiliateId: 'affiliate-123',
+        campaignId: 'campaign-456',
+        userAgent: 'Mozilla/5.0 Test Browser',
+        referrer: 'https://example.com'
+      });
+    });
+    
+    expect(mockSupabaseInsert).toHaveBeenCalledWith({
+      affiliate_id: 'affiliate-123',
+      campaign_id: 'campaign-456',
+      user_agent: 'Mozilla/5.0 Test Browser',
+      referrer: 'https://example.com'
     });
   });
 });

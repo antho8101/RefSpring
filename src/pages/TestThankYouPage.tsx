@@ -8,7 +8,7 @@ import { useTracking } from '@/hooks/useTracking';
 
 const TestThankYouPage = () => {
   const [searchParams] = useSearchParams();
-  const { recordConversion } = useTracking();
+  const { trackConversion } = useTracking();
   const [conversionRecorded, setConversionRecorded] = useState(false);
   const [conversionId, setConversionId] = useState<string | null>(null);
   const hasProcessedRef = useRef(false);
@@ -42,16 +42,11 @@ const TestThankYouPage = () => {
         
         console.log('💰 Enregistrement conversion avec montant:', amount);
         
-        const newConversionId = await recordConversion(ref, campaign, amount);
+        await trackConversion({ affiliateId: ref, campaignId: campaign, amount, commission: amount * 0.1 });
         
-        if (newConversionId) {
-          console.log('✅ Conversion enregistrée avec succès:', newConversionId);
-          setConversionRecorded(true);
-          setConversionId(newConversionId);
-        } else {
-          console.log('❌ Échec enregistrement conversion');
-          hasProcessedRef.current = false; // Permettre un retry
-        }
+        console.log('✅ Conversion enregistrée avec succès');
+        setConversionRecorded(true);
+        setConversionId(`conv-${Date.now()}`);
       } catch (error) {
         console.error('❌ Erreur lors de l\'enregistrement de la conversion:', error);
         hasProcessedRef.current = false; // Permettre un retry

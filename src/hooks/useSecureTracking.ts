@@ -4,7 +4,7 @@ import { useTracking } from './useTracking';
 import { useTrackingCrypto } from './useTrackingCrypto';
 
 export const useSecureTracking = () => {
-  const { recordClick, recordConversion } = useTracking();
+  const { trackClick, trackConversion } = useTracking();
   const { 
     secureStore, 
     secureRetrieve, 
@@ -34,31 +34,28 @@ export const useSecureTracking = () => {
       }
       
       // Enregistrer le clic avec le système existant
-      const clickId = await recordClick(affiliateId, campaignId, targetUrl);
+      await trackClick({ affiliateId, campaignId });
       
-      if (clickId) {
-        // Stocker de manière sécurisée
-        const clickData = {
-          clickId,
-          affiliateId,
-          campaignId,
-          targetUrl,
-          secureToken,
-          timestamp: Date.now()
-        };
-        
-        secureStore('first_click', clickData);
-        secureStore('affiliate_data', { affiliateId, campaignId });
-        
-        console.log('🔒 SECURE TRACKING - Clic enregistré et chiffré');
-      }
+      // Stocker de manière sécurisée
+      const clickData = {
+        affiliateId,
+        campaignId,
+        targetUrl,
+        secureToken,
+        timestamp: Date.now()
+      };
       
-      return clickId;
+      secureStore('first_click', clickData);
+      secureStore('affiliate_data', { affiliateId, campaignId });
+      
+      console.log('🔒 SECURE TRACKING - Clic enregistré et chiffré');
+      
+      return true;
     } catch (error) {
       console.error('🔒 SECURE TRACKING - Erreur clic sécurisé:', error);
-      return null;
+      return false;
     }
-  }, [recordClick, generateSecureToken, secureRetrieve, secureStore]);
+  }, [trackClick, generateSecureToken, secureRetrieve, secureStore]);
 
   // 🔒 Enregistrement sécurisé des conversions
   const secureRecordConversion = useCallback(async (
@@ -102,34 +99,31 @@ export const useSecureTracking = () => {
       }
       
       // Enregistrer la conversion avec le système existant
-      const conversionId = await recordConversion(affiliateId, campaignId, amount, customCommission);
+      await trackConversion({ affiliateId, campaignId, amount, commission: customCommission || 0 });
       
-      if (conversionId) {
-        // Ajouter à la liste des conversions récentes (chiffrée)
-        const conversionRecord = {
-          ...conversionData,
-          conversionId,
-          signature
-        };
-        
-        recentConversions.push(conversionRecord);
-        
-        // Garder seulement les 10 dernières conversions des 10 dernières minutes
-        const filtered = recentConversions.filter((conv: any) => 
-          Date.now() - conv.timestamp < 10 * 60 * 1000
-        ).slice(-10);
-        
-        secureStore('recent_conversions', filtered);
-        
-        console.log('🔒 SECURE TRACKING - Conversion sécurisée enregistrée:', conversionId);
-      }
+      // Ajouter à la liste des conversions récentes (chiffrée)
+      const conversionRecord = {
+        ...conversionData,
+        signature
+      };
       
-      return conversionId;
+      recentConversions.push(conversionRecord);
+      
+      // Garder seulement les 10 dernières conversions des 10 dernières minutes
+      const filtered = recentConversions.filter((conv: any) => 
+        Date.now() - conv.timestamp < 10 * 60 * 1000
+      ).slice(-10);
+      
+      secureStore('recent_conversions', filtered);
+      
+      console.log('🔒 SECURE TRACKING - Conversion sécurisée enregistrée');
+      
+      return true;
     } catch (error) {
       console.error('🔒 SECURE TRACKING - Erreur conversion sécurisée:', error);
-      return null;
+      return false;
     }
-  }, [recordConversion, secureRetrieve, secureStore, signData]);
+  }, [trackConversion, secureRetrieve, secureStore, signData]);
 
   // 🛡️ API sécurisée pour la console (avec vérification)
   const createSecureAPI = useCallback(() => {

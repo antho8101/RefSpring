@@ -10,7 +10,7 @@ import { Campaign } from '@/types';
 const ShortLinkPage = () => {
   const { shortCode } = useParams();
   const { getShortLinkData } = useShortLinks();
-  const { recordClick } = useTracking();
+  const { trackClick } = useTracking();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [campaign, setCampaign] = useState<Campaign | null>(null);
@@ -76,11 +76,11 @@ const ShortLinkPage = () => {
       setCampaign(campaignData);
       console.log(`✅ Campagne trouvée: ${campaignData.name}`);
 
-      // APPEL UNIQUE et PROTÉGÉ de recordClick
-      console.log('🔥 APPEL UNIQUE de recordClick - PROTECTION ACTIVÉE !');
+      // APPEL UNIQUE et PROTÉGÉ de trackClick
+      console.log('🔥 APPEL UNIQUE de trackClick - PROTECTION ACTIVÉE !');
       
-      const clickId = await recordClick(shortLinkData.affiliateId, shortLinkData.campaignId, shortLinkData.targetUrl);
-      console.log(`✅ recordClick terminé, retour: ${clickId}`);
+      await trackClick({ affiliateId: shortLinkData.affiliateId, campaignId: shortLinkData.campaignId });
+      console.log('✅ trackClick terminé');
       
       // Marquer comme traité APRÈS le recordClick
       hasProcessedRef.current = true;
@@ -108,7 +108,7 @@ const ShortLinkPage = () => {
       setLoading(false);
       isProcessingRef.current = false;
     }
-  }, [shortCode, getShortLinkData, recordClick]);
+  }, [shortCode, getShortLinkData, trackClick]);
 
   // Effet unique au montage
   useEffect(() => {

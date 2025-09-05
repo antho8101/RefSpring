@@ -12,7 +12,7 @@ const TrackingPage = () => {
   const [isTracking, setIsTracking] = useState(true);
   const [campaign, setCampaign] = useState<Campaign | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const { recordClick } = useTracking();
+  const { trackClick } = useTracking();
 
   // Protection contre les appels multiples
   const hasProcessedRef = useRef(false);
@@ -66,10 +66,10 @@ const TrackingPage = () => {
       
       console.log(`🎯 URL de destination: ${targetUrl}`);
 
-      // APPEL UNIQUE et PROTÉGÉ de recordClick
-      console.log('🔥 APPEL UNIQUE de recordClick - PROTECTION ACTIVÉE !');
-      const clickId = await recordClick(affiliateId, campaignId, targetUrl);
-      console.log(`✅ recordClick terminé, retour: ${clickId}`);
+      // APPEL UNIQUE et PROTÉGÉ de trackClick
+      console.log('🔥 APPEL UNIQUE de trackClick - PROTECTION ACTIVÉE !');
+      await trackClick({ affiliateId, campaignId });
+      console.log('✅ trackClick terminé');
       
       // Marquer comme traité APRÈS le recordClick
       hasProcessedRef.current = true;
@@ -95,7 +95,7 @@ const TrackingPage = () => {
       setIsTracking(false);
       isProcessingRef.current = false;
     }
-  }, [campaignId, affiliateId, searchParams, recordClick]);
+  }, [campaignId, affiliateId, searchParams, trackClick]);
 
   // Effet unique au montage
   useEffect(() => {
