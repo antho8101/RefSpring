@@ -1,8 +1,7 @@
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { Users } from 'lucide-react';
-import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { supabase } from '@/integrations/supabase/client';
 import { Affiliate } from '@/types';
 import { useAffiliateStats } from '@/hooks/useAffiliateStats';
 import { AffiliateSelector } from '@/components/AffiliateSelector';
@@ -44,14 +43,16 @@ const AffiliatePage = () => {
         console.log('Fetching campaign with ID:', campaignId);
         
         try {
-          const campaignRef = doc(db, 'campaigns', campaignId);
-          const campaignDoc = await getDoc(campaignRef);
+          const { data: campaignData, error } = await supabase
+            .from('campaigns')
+            .select('name, target_url')
+            .eq('id', campaignId)
+            .single();
           
-          if (campaignDoc.exists()) {
-            const campaignData = campaignDoc.data();
+          if (!error && campaignData) {
             console.log('Campaign data:', campaignData);
             setCampaignName(campaignData.name || 'Campagne');
-            setTargetUrl(campaignData.targetUrl || '');
+            setTargetUrl(campaignData.target_url || '');
           } else {
             console.log('Campaign not found with ID:', campaignId);
             setCampaignName('Campagne publique');
@@ -63,29 +64,36 @@ const AffiliatePage = () => {
         
         try {
           console.log('Fetching affiliates for campaign:', campaignId);
-          const affiliatesQuery = query(
-            collection(db, 'affiliates'), 
-            where('campaignId', '==', campaignId)
-          );
+          const { data: affiliatesData, error } = await supabase
+            .from('affiliates')
+            .select('*')
+            .eq('campaign_id', campaignId);
           
-          const affiliatesSnapshot = await getDocs(affiliatesQuery);
-          console.log('Affiliates snapshot size:', affiliatesSnapshot.size);
+          if (error) throw error;
           
-          const affiliatesData = affiliatesSnapshot.docs.map(doc => {
-            const data = doc.data();
-            console.log('Affiliate doc:', doc.id, data);
-            return {
-              id: doc.id,
-              ...data
-            };
-          }) as Affiliate[];
+          console.log('Affiliates data size:', affiliatesData?.length || 0);
           
-          console.log('Processed affiliates data:', affiliatesData);
-          setAffiliates(affiliatesData);
+          const processedAffiliates = (affiliatesData || []).map(row => ({
+            id: row.id,
+            name: row.name,
+            email: row.email,
+            commissionRate: row.commission_rate,
+            campaignId: row.campaign_id,
+            userId: row.user_id,
+            isActive: row.is_active,
+            trackingCode: row.tracking_code,
+            stripeAccountId: row.stripe_account_id,
+            stripeAccountStatus: row.stripe_account_status,
+            createdAt: new Date(row.created_at),
+            updatedAt: new Date(row.updated_at),
+          })) as Affiliate[];
+          
+          console.log('Processed affiliates data:', processedAffiliates);
+          setAffiliates(processedAffiliates);
           
           if (refCode) {
             console.log('Looking for affiliate with tracking code:', refCode);
-            const affiliate = affiliatesData.find(a => a.trackingCode === refCode);
+            const affiliate = processedAffiliates.find(a => a.trackingCode === refCode);
             if (affiliate) {
               console.log('Found affiliate:', affiliate);
               setSelectedAffiliate(affiliate.id);

@@ -3,8 +3,7 @@ import { useParams } from 'react-router-dom';
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { useShortLinks } from '@/hooks/useShortLinks';
 import { useTracking } from '@/hooks/useTracking';
-import { doc, getDoc } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { supabase } from '@/integrations/supabase/client';
 import { Campaign } from '@/types';
 
 const ShortLinkPage = () => {
@@ -56,9 +55,13 @@ const ShortLinkPage = () => {
 
       // Récupérer les informations de la campagne
       console.log('🔍 Récupération des données de la campagne...');
-      const campaignDoc = await getDoc(doc(db, 'campaigns', shortLinkData.campaignId));
+      const { data: campaignRow, error: campaignError } = await supabase
+        .from('campaigns')
+        .select('*')
+        .eq('id', shortLinkData.campaignId)
+        .single();
       
-      if (!campaignDoc.exists()) {
+      if (campaignError || !campaignRow) {
         console.log('❌ Campagne introuvable');
         setError('Campagne introuvable');
         setLoading(false);
@@ -67,10 +70,21 @@ const ShortLinkPage = () => {
       }
 
       const campaignData = {
-        id: campaignDoc.id,
-        ...campaignDoc.data(),
-        createdAt: campaignDoc.data().createdAt?.toDate(),
-        updatedAt: campaignDoc.data().updatedAt?.toDate(),
+        id: campaignRow.id,
+        name: campaignRow.name,
+        description: campaignRow.description,
+        targetUrl: campaignRow.target_url,
+        isActive: campaignRow.is_active,
+        isDraft: campaignRow.is_draft,
+        paymentConfigured: campaignRow.payment_configured,
+        defaultCommissionRate: campaignRow.default_commission_rate,
+        userId: campaignRow.user_id,
+        stripeCustomerId: campaignRow.stripe_customer_id,
+        stripePaymentMethodId: campaignRow.stripe_payment_method_id,
+        stripeSetupIntentId: campaignRow.stripe_setup_intent_id,
+        trackingScript: campaignRow.tracking_script,
+        createdAt: new Date(campaignRow.created_at),
+        updatedAt: new Date(campaignRow.updated_at),
       } as Campaign;
 
       setCampaign(campaignData);

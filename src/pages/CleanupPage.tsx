@@ -4,8 +4,7 @@ import { DashboardHeader } from '@/components/DashboardHeader';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { useAuth } from '@/hooks/useAuth';
 import { useStatsFilters } from '@/hooks/useStatsFilters';
-import { signOut } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import { supabase } from '@/integrations/supabase/client';
 
 const CleanupPage = () => {
   const { user } = useAuth();
@@ -13,7 +12,7 @@ const CleanupPage = () => {
 
   const handleLogout = async () => {
     try {
-      await signOut(auth);
+      await supabase.auth.signOut();
       window.location.href = '/';
     } catch (error) {
       console.error('Erreur lors de la déconnexion:', error);
