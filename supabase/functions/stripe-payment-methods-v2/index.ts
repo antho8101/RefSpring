@@ -14,7 +14,7 @@ serve(async (req) => {
   }
 
   try {
-    console.log('💳 STRIPE PAYMENT METHODS V2 - Début traitement [FRESH-DEPLOYMENT-2025-01-11]');
+    console.log('💳 STRIPE PAYMENT METHODS V2 - Début traitement [SECRET-UPDATED-2025-01-11]');
 
     // DIAGNOSTIC COMPLET DES VARIABLES D'ENVIRONNEMENT
     console.log('🔍 DIAGNOSTIC V2 - Variables d\'environnement disponibles:');
