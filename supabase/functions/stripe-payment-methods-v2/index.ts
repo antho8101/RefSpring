@@ -14,10 +14,10 @@ serve(async (req) => {
   }
 
   try {
-    console.log('💳 STRIPE PAYMENT METHODS - Début traitement [REDEPLOYMENT-2025-01-11]');
+    console.log('💳 STRIPE PAYMENT METHODS V2 - Début traitement [FRESH-DEPLOYMENT-2025-01-11]');
 
     // DIAGNOSTIC COMPLET DES VARIABLES D'ENVIRONNEMENT
-    console.log('🔍 DIAGNOSTIC - Variables d\'environnement disponibles:');
+    console.log('🔍 DIAGNOSTIC V2 - Variables d\'environnement disponibles:');
     console.log('  - SUPABASE_URL:', !!Deno.env.get("SUPABASE_URL"));
     console.log('  - SUPABASE_ANON_KEY:', !!Deno.env.get("SUPABASE_ANON_KEY"));
     console.log('  - SUPABASE_SERVICE_ROLE_KEY:', !!Deno.env.get("SUPABASE_SERVICE_ROLE_KEY"));
@@ -28,10 +28,9 @@ serve(async (req) => {
     
     // Liste TOUTES les variables d'environnement disponibles (masquées)
     const allEnvVars = Object.keys(Deno.env.toObject());
-    console.log('🔍 DIAGNOSTIC - Toutes les variables disponibles:', allEnvVars.length, 'variables');
-    console.log('🔍 DIAGNOSTIC - Liste des variables:', allEnvVars.map(key => 
-      key.includes('SECRET') || key.includes('KEY') ? `${key}=[MASKED]` : `${key}=${!!Deno.env.get(key)}`
-    ).join(', '));
+    console.log('🔍 DIAGNOSTIC V2 - Toutes les variables disponibles:', allEnvVars.length, 'variables');
+    console.log('🔍 DIAGNOSTIC V2 - Variables contenant "STRIPE":', allEnvVars.filter(key => key.includes('STRIPE')));
+    console.log('🔍 DIAGNOSTIC V2 - Variables contenant "SECRET":', allEnvVars.filter(key => key.includes('SECRET')).map(key => `${key}=[MASKED]`));
 
     // Initialize Supabase client
     const supabaseClient = createClient(
@@ -46,29 +45,33 @@ serve(async (req) => {
     const user = data.user;
     
     if (!user?.email) {
-      console.error('❌ AUTH - Utilisateur non authentifié');
+      console.error('❌ AUTH V2 - Utilisateur non authentifié');
       throw new Error("User not authenticated");
     }
 
-    console.log('👤 UTILISATEUR - Email:', user.email);
+    console.log('👤 UTILISATEUR V2 - Email:', user.email);
 
     // Check if Stripe secret key is available avec diagnostic avancé
     const stripeSecretKey = Deno.env.get("STRIPE_SECRET_KEY");
-    console.log('🔑 STRIPE SECRET KEY - Disponible:', !!stripeSecretKey);
-    console.log('🔑 STRIPE SECRET KEY - Longueur:', stripeSecretKey?.length || 0);
-    console.log('🔑 STRIPE SECRET KEY - Commence par sk_:', stripeSecretKey?.startsWith('sk_') || false);
+    console.log('🔑 STRIPE SECRET KEY V2 - Disponible:', !!stripeSecretKey);
+    console.log('🔑 STRIPE SECRET KEY V2 - Longueur:', stripeSecretKey?.length || 0);
+    console.log('🔑 STRIPE SECRET KEY V2 - Commence par sk_:', stripeSecretKey?.startsWith('sk_') || false);
     
     if (!stripeSecretKey) {
-      console.error('❌ STRIPE SECRET KEY - Variable manquante dans l\'environnement');
-      console.error('❌ DIAGNOSTIC - Vérifiez que le secret STRIPE_SECRET_KEY existe dans Supabase');
-      console.error('❌ DIAGNOSTIC - Vérifiez que supabase/config.toml contient [functions.stripe-payment-methods]');
+      console.error('❌ STRIPE SECRET KEY V2 - Variable manquante dans l\'environnement');
+      console.error('❌ DIAGNOSTIC V2 - Vérifiez que le secret STRIPE_SECRET_KEY existe dans Supabase');
+      console.error('❌ DIAGNOSTIC V2 - Vérifiez que supabase/config.toml contient [functions.stripe-payment-methods-v2]');
       throw new Error("STRIPE_SECRET_KEY not found in environment variables - Check Supabase secrets configuration");
     }
+
+    console.log('✅ V2 - STRIPE SECRET KEY trouvée, initialisation de Stripe...');
 
     // Initialize Stripe
     const stripe = new Stripe(stripeSecretKey, {
       apiVersion: "2023-10-16",
     });
+
+    console.log('✅ V2 - Stripe initialisé avec succès');
 
     // Handle different HTTP methods
     if (req.method === "GET") {
@@ -78,7 +81,7 @@ serve(async (req) => {
       
       // Si aucune action spécifiée, c'est un GET via POST (pour compatibilité)
       if (!body || !body.action || body.action === undefined) {
-        console.log('📋 POST sans action - Redirection vers GET');
+        console.log('📋 V2 - POST sans action - Redirection vers GET');
         return await handleGetPaymentMethods(stripe, user.email);
       }
       
@@ -91,9 +94,11 @@ serve(async (req) => {
     });
 
   } catch (error) {
-    console.error('❌ STRIPE PAYMENT METHODS - Erreur:', error);
+    console.error('❌ STRIPE PAYMENT METHODS V2 - Erreur:', error);
     return new Response(JSON.stringify({ 
-      error: error instanceof Error ? error.message : "Internal server error"
+      error: error instanceof Error ? error.message : "Internal server error",
+      function_version: "v2",
+      timestamp: new Date().toISOString()
     }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -102,7 +107,7 @@ serve(async (req) => {
 });
 
 async function handleGetPaymentMethods(stripe: Stripe, userEmail: string) {
-  console.log('📋 GET PAYMENT METHODS - Récupération pour:', userEmail);
+  console.log('📋 GET PAYMENT METHODS V2 - Récupération pour:', userEmail);
 
   try {
     // Find customer by email
@@ -112,7 +117,7 @@ async function handleGetPaymentMethods(stripe: Stripe, userEmail: string) {
     });
 
     if (customers.data.length === 0) {
-      console.log('👤 GET PAYMENT METHODS - Aucun client Stripe trouvé');
+      console.log('👤 GET PAYMENT METHODS V2 - Aucun client Stripe trouvé');
       return new Response(JSON.stringify({ paymentMethods: [] }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 200,
@@ -120,7 +125,7 @@ async function handleGetPaymentMethods(stripe: Stripe, userEmail: string) {
     }
 
     const customer = customers.data[0];
-    console.log('👤 GET PAYMENT METHODS - Client trouvé:', customer.id);
+    console.log('👤 GET PAYMENT METHODS V2 - Client trouvé:', customer.id);
 
     // Get payment methods for customer
     const paymentMethods = await stripe.paymentMethods.list({
@@ -128,7 +133,7 @@ async function handleGetPaymentMethods(stripe: Stripe, userEmail: string) {
       type: 'card',
     });
 
-    console.log('💳 GET PAYMENT METHODS - Méthodes trouvées:', paymentMethods.data.length);
+    console.log('💳 GET PAYMENT METHODS V2 - Méthodes trouvées:', paymentMethods.data.length);
 
     // Get default payment method
     const defaultPaymentMethodId = typeof customer.invoice_settings?.default_payment_method === 'string' 
@@ -149,16 +154,19 @@ async function handleGetPaymentMethods(stripe: Stripe, userEmail: string) {
       created: pm.created,
     }));
 
+    console.log('✅ GET PAYMENT METHODS V2 - Méthodes formatées avec succès');
+
     return new Response(JSON.stringify({ 
       paymentMethods: formattedMethods,
-      customerId: customer.id 
+      customerId: customer.id,
+      function_version: "v2"
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
     });
 
   } catch (error) {
-    console.error('❌ GET PAYMENT METHODS - Erreur:', error);
+    console.error('❌ GET PAYMENT METHODS V2 - Erreur:', error);
     throw error;
   }
 }
@@ -166,7 +174,7 @@ async function handleGetPaymentMethods(stripe: Stripe, userEmail: string) {
 async function handlePaymentMethodAction(stripe: Stripe, body: any, userEmail: string) {
   const { action, customerId, paymentMethodId } = body;
 
-  console.log('⚙️ PAYMENT METHOD ACTION - Action:', action);
+  console.log('⚙️ PAYMENT METHOD ACTION V2 - Action:', action);
 
   if (action === 'delete') {
     // Delete/detach payment method
@@ -178,9 +186,9 @@ async function handlePaymentMethodAction(stripe: Stripe, body: any, userEmail: s
     }
 
     await stripe.paymentMethods.detach(paymentMethodId);
-    console.log('✅ PAYMENT METHOD ACTION - Méthode supprimée');
+    console.log('✅ PAYMENT METHOD ACTION V2 - Méthode supprimée');
     
-    return new Response(JSON.stringify({ success: true }), {
+    return new Response(JSON.stringify({ success: true, function_version: "v2" }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
     });
@@ -191,8 +199,8 @@ async function handlePaymentMethodAction(stripe: Stripe, body: any, userEmail: s
       customer: customerId,
     });
 
-    console.log('✅ PAYMENT METHOD ACTION - Méthode attachée');
-    return new Response(JSON.stringify({ success: true }), {
+    console.log('✅ PAYMENT METHOD ACTION V2 - Méthode attachée');
+    return new Response(JSON.stringify({ success: true, function_version: "v2" }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
     });
@@ -228,8 +236,8 @@ async function handlePaymentMethodAction(stripe: Stripe, body: any, userEmail: s
       },
     });
 
-    console.log('✅ PAYMENT METHOD ACTION - Méthode définie par défaut');
-    return new Response(JSON.stringify({ success: true }), {
+    console.log('✅ PAYMENT METHOD ACTION V2 - Méthode définie par défaut');
+    return new Response(JSON.stringify({ success: true, function_version: "v2" }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
     });

@@ -4,6 +4,9 @@ project_id = "wsvhmozduyiftmuuynpi"
 [functions.stripe-payment-methods]
 verify_jwt = true
 
+[functions.stripe-payment-methods-v2]
+verify_jwt = true
+
 # Shopify functions (public)
 [functions.shopify-auth]
 verify_jwt = false
