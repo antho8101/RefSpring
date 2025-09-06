@@ -1,5 +1,9 @@
 project_id = "wsvhmozduyiftmuuynpi"
 
+# Stripe functions (authenticated)
+[functions.stripe-payment-methods]
+verify_jwt = true
+
 # Shopify functions (public)
 [functions.shopify-auth]
 verify_jwt = false

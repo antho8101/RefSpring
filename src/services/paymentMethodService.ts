@@ -20,50 +20,28 @@ export const paymentMethodService = {
         body: {} // POST vide pour déclencher handleGetPaymentMethods
       });
       
-      if (!error && data?.paymentMethods) {
-        console.log('✅ SUPABASE: Cartes bancaires chargées:', data?.paymentMethods?.length || 0);
-        
-        // Mapper les données pour correspondre à l'interface PaymentMethod
-        const paymentMethods = data?.paymentMethods?.map((pm: any) => ({
-          id: pm.id,
-          type: pm.type,
-          last4: pm.card?.last4 || '',
-          brand: pm.card?.brand || '',
-          exp_month: pm.card?.exp_month || 0,
-          exp_year: pm.card?.exp_year || 0,
-          isDefault: pm.isDefault || false
-        })) || [];
-        
-        return paymentMethods;
-      } else {
-        console.warn('⚠️ SUPABASE Edge Function failed, trying fallback API');
+      if (error) {
+        console.error('❌ SUPABASE: Erreur récupération méthodes de paiement:', error);
+        return [];
       }
-    } catch (supabaseError) {
-      console.warn('⚠️ SUPABASE Edge Function error, trying fallback API:', supabaseError);
-    }
-
-    // Fallback to old API endpoint if Supabase fails
-    try {
-      console.log('🔄 FALLBACK: Utilisation API de secours pour les cartes');
-      const response = await fetch('/api/stripe-payment-methods', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ userEmail }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      console.log('✅ FALLBACK: Cartes bancaires chargées:', data?.paymentMethods?.length || 0);
-
-      return data?.paymentMethods || [];
-    } catch (fallbackError) {
-      console.error('❌ FALLBACK: Erreur API de secours:', fallbackError);
-      return []; // Return empty array instead of throwing
+      
+      console.log('✅ SUPABASE: Cartes bancaires chargées:', data?.paymentMethods?.length || 0);
+      
+      // Mapper les données pour correspondre à l'interface PaymentMethod
+      const paymentMethods = data?.paymentMethods?.map((pm: any) => ({
+        id: pm.id,
+        type: pm.type,
+        last4: pm.card?.last4 || '',
+        brand: pm.card?.brand || '',
+        exp_month: pm.card?.exp_month || 0,
+        exp_year: pm.card?.exp_year || 0,
+        isDefault: pm.isDefault || false
+      })) || [];
+      
+      return paymentMethods;
+    } catch (error) {
+      console.error('❌ SUPABASE: Erreur chargement cartes:', error);
+      return [];
     }
   },
 
